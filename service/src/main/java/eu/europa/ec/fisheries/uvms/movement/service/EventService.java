@@ -1,0 +1,37 @@
+/*
+﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
+© European Union, 2015-2016.
+
+This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
+redistribute it and/or modify it under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
+the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
+copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+ */
+package eu.europa.ec.fisheries.uvms.movement.service;
+
+import eu.europa.ec.fisheries.uvms.movement.message.event.*;
+import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
+
+import javax.ejb.Local;
+import javax.enterprise.event.Observes;
+
+/**
+ **/
+@Local
+public interface EventService {
+
+    public void createMovement(@Observes @CreateMovementEvent EventMessage message);
+
+    public void getMovementMapByQuery(@Observes @GetMovementMapByQueryEvent EventMessage message);
+
+    public void getMovementListByQuery(@Observes @GetMovementListByQueryEvent EventMessage message);
+
+    public void createMovementBatch(@Observes @CreateMovementBatchEvent EventMessage message);
+
+    public void ping(@Observes @PingEvent EventMessage message);
+
+    public void getMovementListByAreaAndTimeInterval(@Observes @GetMovementListByAreaAndTimeIntervalEvent EventMessage message);
+
+}
