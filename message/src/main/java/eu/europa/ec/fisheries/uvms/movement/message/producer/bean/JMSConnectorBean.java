@@ -24,7 +24,6 @@ import javax.jms.*;
 
 @Startup
 @Singleton
-@DependsOn("MessageProducerBean")
 public class JMSConnectorBean {
     final static org.slf4j.Logger LOG = LoggerFactory.getLogger(JMSConnectorBean.class);
 
