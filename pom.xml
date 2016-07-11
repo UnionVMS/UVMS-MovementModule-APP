@@ -19,7 +19,7 @@
         <audit.model.version>2.0.7-SNAPSHOT</audit.model.version>
         <exchange.model.version>2.0.6</exchange.model.version>
         <logback.core.version>1.1.2</logback.core.version>
-        <usm4uvms.version>2.0.11</usm4uvms.version>
+        <usm4uvms.version>2.0.16-SNAPSHOT</usm4uvms.version>
         <dozer.version>5.5.1</dozer.version>
         <spatial.model.version>0.5.2</spatial.model.version>
         <uvms.config.version>2.0.7</uvms.config.version>
