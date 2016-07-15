@@ -18,7 +18,27 @@
         <application.version>${project.parent.version}</application.version>
         <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
         <application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log</application.error.logfile>
+        <!-- persistence.xml CONFIGS -->
+        <hibernate.dialect>org.hibernate.spatial.dialect.postgis.PostgisDialect</hibernate.dialect>
+        <jta.data-source>java:jboss/datasources/uvms_movement</jta.data-source>
+        <jta.platform>org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform</jta.platform>
     </properties>
+    
+    <profiles>
+        <profile>
+            <id>weblogic</id>
+            <properties>
+                <jta.data-source>jdbc.uvms_movement</jta.data-source>
+                <jta.platform>org.hibernate.service.jta.platform.internal.WeblogicJtaPlatform</jta.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>oracle</id>
+            <properties>
+                <hibernate.dialect>org.hibernate.spatial.dialect.oracle.OracleSpatial10gDialect</hibernate.dialect>
+            </properties>
+        </profile>
+    </profiles>
     
     <dependencies>
         <dependency>
@@ -51,8 +71,8 @@
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
             <version>${dozer.version}</version>
-       </dependency>
-       <dependency>
+        </dependency>
+        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.user</groupId>
             <artifactId>user-model</artifactId>
             <version>${user.model.version}</version>
@@ -96,6 +116,12 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
 </project>

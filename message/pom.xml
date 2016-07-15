@@ -32,8 +32,6 @@
         </dependency>
 
     </dependencies>
-    
-   
 
     <build>
         <finalName>${project.name}-${project.version}</finalName>

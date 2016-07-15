@@ -25,6 +25,18 @@
             <artifactId>usm4uvms</artifactId>
             <version>${usm4uvms.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>2.14</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.9.13</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
         
     <build>

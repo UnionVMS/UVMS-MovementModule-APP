@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jms.*;
@@ -25,6 +24,7 @@ import javax.jms.*;
 @Startup
 @Singleton
 public class JMSConnectorBean {
+    
     final static org.slf4j.Logger LOG = LoggerFactory.getLogger(JMSConnectorBean.class);
 
     @Resource(lookup = MessageConstants.CONNECTION_FACTORY)
@@ -60,7 +60,6 @@ public class JMSConnectorBean {
         LOG.debug("Close connection to JMS broker");
         try {
             if (connection != null) {
-                connection.stop();
                 connection.close();
             }
         } catch (JMSException e) {

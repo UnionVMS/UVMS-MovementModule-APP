@@ -11,14 +11,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.producer.bean;
 
-import java.math.BigInteger;
 
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import javax.jms.*;
 
 import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
@@ -36,6 +34,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import static eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean.LOG;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import javax.ejb.EJB;
 
 @Stateless
 public class MessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
@@ -63,7 +62,7 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
 
     private static final int CONFIG_TTL = 30000;
 
-    @Inject
+    @EJB
     JMSConnectorBean connector;
 
     @Override
