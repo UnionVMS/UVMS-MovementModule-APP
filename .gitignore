@@ -3,3 +3,4 @@ webapp
 rest/nb-configuration.xml
 service/src/main/resources/logging.properties
 service/src/main/resources/logging.properties
+service/src/main/resources/logging.properties
