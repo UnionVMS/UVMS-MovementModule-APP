@@ -11,25 +11,22 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
 
+import eu.europa.ec.fisheries.uvms.movement.model.MovementSearchGroupDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.service.constant.LookupConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.DataSourceQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementDataSourceRequestMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
@@ -44,6 +41,9 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
 
     @EJB
     MessageProducer producer;
+
+    @EJB(lookup = LookupConstant.SEARCH_GROUP_MODEL)
+    MovementSearchGroupDomainModel groupModel;
 
     //TODO SET AS PARAMETER
     private static final Long CREATE_MOVEMENT_TIMEOUT = 10000L;
@@ -60,14 +60,11 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
                 throw new MovementServiceException("Create MovementSearchGroup must have username set, cannot be null");
             }
             if (MovementGroupValidator.isMovementGroupOk(searchGroup)) {
-                String request = MovementDataSourceRequestMapper.mapToCreateMovementSearchGroupRequest(searchGroup, username);
-                String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-                TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-                return MovementDataSourceResponseMapper.mapToMovementSearchGroupFromResponse(response);
+                return groupModel.createMovementSearchGroup(searchGroup, username);
             } else {
                 throw new MovementServiceException("One or several movement types are misspelled or non existant. Allowed values are: [ " + MovementGroupValidator.ALLOWED_FIELD_VALUES + " ]");
             }
-        } catch (ModelMapperException | MovementMessageException | JMSException e) {
+        } catch (MovementModelException e) {
             LOG.error("[ Error when creating movement search group. ] {}", e.getMessage());
             throw new MovementServiceException("Error when creating movement search group", e);
         }
@@ -76,11 +73,8 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     @Override
     public MovementSearchGroup getMovementSearchGroup(Long id) throws MovementServiceException, MovementDuplicateException {
         try {
-            String request = MovementDataSourceRequestMapper.mapToGetMovementSearchGroupRequest(id);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            return MovementDataSourceResponseMapper.mapToMovementSearchGroupFromResponse(response);
-        } catch (ModelMapperException | MovementMessageException | JMSException e) {
+            return groupModel.getMovementSearchGroup(BigInteger.valueOf(id));
+        } catch (MovementModelException e) {
             LOG.error("[ Error when getting movement search group. ] {}", e.getMessage());
             throw new MovementServiceException("[ Error when getting movement search group. ]", e);
         }
@@ -89,11 +83,8 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     @Override
     public List<MovementSearchGroup> getMovementSearchGroupsByUser(String user) throws MovementServiceException, MovementDuplicateException {
         try {
-            String request = MovementDataSourceRequestMapper.mapToGetMovementSearchGroupsByUserRequest(user);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            return MovementDataSourceResponseMapper.mapToMovementSearchGroupListFromResponse(response);
-        } catch (ModelMapperException | MovementMessageException | JMSException e) {
+            return groupModel.getMovementSearchGroupsByUser(user);
+        } catch (MovementModelException e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage());
             throw new MovementServiceException("[ Error when getting movement search groups by user. ]", e);
         }
@@ -106,11 +97,8 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
             throw new MovementServiceException("Error when updating movement search group. MovementSearchGroup has no id set or the username is null");
         }
         try {
-            String request = MovementDataSourceRequestMapper.mapToUpdateMovementSearchGroup(searchGroup, username);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            return MovementDataSourceResponseMapper.mapToMovementSearchGroupFromResponse(response);
-        } catch (ModelMapperException | MovementMessageException | JMSException e) {
+            return groupModel.updateMovementSearchGroup(searchGroup, username);
+        } catch (MovementModelException e) {
             LOG.error("[ Error when updating movement search group. ] {}", e.getMessage());
             throw new MovementServiceException("[ Error when updating movement search group. ] " + e.getMessage(), e);
         }
@@ -119,11 +107,8 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     @Override
     public MovementSearchGroup deleteMovementSearchGroup(Long id) throws MovementServiceException, MovementDuplicateException {
         try {
-            String request = MovementDataSourceRequestMapper.mapToDeleteMovementSearchGroupRequest(id);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            return MovementDataSourceResponseMapper.mapToMovementSearchGroupFromResponse(response);
-        } catch (ModelMapperException | MovementMessageException | JMSException e) {
+            return groupModel.deleteMovementSearchGroup(BigInteger.valueOf(id));
+        } catch (MovementModelException e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage());
             throw new MovementServiceException("[ Error when deleting movement search group. ]", e);
         }

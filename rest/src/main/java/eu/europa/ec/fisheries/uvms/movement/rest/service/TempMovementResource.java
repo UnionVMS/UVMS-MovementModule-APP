@@ -109,7 +109,7 @@ public class TempMovementResource {
     public ResponseDto remove(@PathParam("guid") String guid) {
         LOG.info("Archive temp movement invoked in rest layer");
         try {
-            return new ResponseDto(service.setStatusTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
+            return new ResponseDto(service.archiveTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when archiving temp movement. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);

@@ -116,6 +116,36 @@ public class MovementRestResource {
         }
     }
 
+    /**
+     *
+     * @responseMessage 200 Movement list successfully retreived
+     * @responseMessage 500 Error when retrieveing the list values for
+     * transponders
+     *
+     * @summary Gets the latest movements for the selected connectIds
+     *
+     */
+    @GET
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path("/latest/{numberOfMovements}")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public ResponseDto<List<MovementDto>> getLatestMovements(@PathParam(value = "numberOfMovements") Integer numberOfMovements) {
+        LOG.info("getLatestMovements invoked in rest layer");
+        if (numberOfMovements == null || numberOfMovements < 1) {
+            return new ResponseDto("numberOfMovements cannot be null and must be greater than 0" , ResponseCode.ERROR);
+        }
+        try {
+            return new ResponseDto(serviceLayer.getLatestMovements(numberOfMovements), ResponseCode.OK);
+        } catch (MovementServiceException | NullPointerException ex) {
+            LOG.error("[ Error when getting list. ]", ex);
+            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+        } catch (MovementDuplicateException ex) {
+            LOG.error("[ Error when getting list. ]", ex);
+            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+        }
+    }
+
     @GET
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})

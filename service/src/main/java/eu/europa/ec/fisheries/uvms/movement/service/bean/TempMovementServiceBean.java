@@ -20,17 +20,19 @@ import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallExcep
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.DataSourceQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
+import eu.europa.ec.fisheries.uvms.movement.model.TempMovementDomainModel;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementDataSourceRequestMapper;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.constant.LookupConstant;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
@@ -59,20 +61,21 @@ public class TempMovementServiceBean implements TempMovementService {
     @CreatedManualMovement
     Event<NotificationMessage> createdManualMovement;
 
+    @EJB(lookup = LookupConstant.TEMP_MOVEMENT_MODEL_BEAN)
+    TempMovementDomainModel tempMovementModel;
+
     //TODO SET AS PARAMETER
     private static final Long CREATE_MOVEMENT_TIMEOUT = 5000L;
     private static final Long CREATE_TEMP_MOVEMENT_TIMEOUT = 30000L;
 
     @Override
-    public TempMovementType createTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException, MovementDuplicateException {
+    public TempMovementType createTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException {
         LOG.info("Creating temp movement");
         checkUsernameProvided(username);
         validatePosition(tempMovementType.getPosition());
         try {
-            String request = MovementDataSourceRequestMapper.mapToCreateTempMovementRequest(tempMovementType, username);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            TempMovementType createdMovement = MovementDataSourceResponseMapper.mapToCreateTempMovementFromResponse(response);
+            TempMovementType createdMovement = tempMovementModel.createTempMovement(tempMovementType, username);
+
             fireMovementEvent(createdMovement);
 
             try {
@@ -82,35 +85,29 @@ public class TempMovementServiceBean implements TempMovementService {
             }
 
             return createdMovement;
-        } catch (ModelMapperException | MovementMessageException | JMSException e) {
+        } catch (MovementModelException | MovementMessageException e) {
             LOG.error("[ Error when creating temp movement. ] {}", e.getMessage());
             throw new MovementServiceException("Error when creating temp movement: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public TempMovementType setStatusTempMovement(String guid, String username) throws MovementServiceException, MovementDuplicateException {
+    public TempMovementType archiveTempMovement(String guid, String username) throws MovementServiceException {
         checkUsernameProvided(username);
         try {
-            String request = MovementDataSourceRequestMapper.mapToSetStatusMovementRequest(guid, username);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            return MovementDataSourceResponseMapper.mapToSetStatusMovementFromResponse(response);
-        } catch (ModelMapperException | MovementMessageException | JMSException e) {
+            return tempMovementModel.archiveTempMovement(guid, username);
+        } catch (MovementModelException e) {
             LOG.error("[ Error when updating temp movement status. ] {}", e.getMessage());
             throw new MovementServiceException("Error when updating temp movement status", e);
         }
     }
 
     @Override
-    public TempMovementType updateTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException, MovementDuplicateException {
+    public TempMovementType updateTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException {
         checkUsernameProvided(username);
         try {
-            String request = MovementDataSourceRequestMapper.mapToUpdateTempMovementRequest(tempMovementType, username);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            return MovementDataSourceResponseMapper.mapToUpdateTempMovementFromResponse(response);
-        } catch (ModelMapperException | MovementMessageException | JMSException e) {
+            return tempMovementModel.updateTempMovement(tempMovementType, username);
+        } catch (MovementModelException e) {
             LOG.error("[ Error when updating temp movement. ] {}", e.getMessage());
             throw new MovementServiceException("Error when updating temp movement", e);
         }
@@ -119,25 +116,20 @@ public class TempMovementServiceBean implements TempMovementService {
     @Override
     public GetTempMovementListResponse getTempMovements(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
-            String request = MovementDataSourceRequestMapper.mapToGetTempMovementListRequest(query);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            return MovementDataSourceResponseMapper.mapToTempMovementListFromResponse(response);
-        } catch (ModelMapperException | MovementMessageException | JMSException e) {
+            TempMovementsListResponseDto tempMovements = tempMovementModel.getTempMovementList(query);
+            return MovementDataSourceResponseMapper.tempMovementListResponse(tempMovements);
+        } catch (MovementModelException | ModelMarshallException e) {
             LOG.error("[ Error when updating temp movement. ] {}", e.getMessage());
             throw new MovementServiceException("Error when updating temp movement", e);
         }
     }
 
     @Override
-    public TempMovementType sendTempMovement(String guid, String username) throws MovementServiceException, MovementDuplicateException {
+    public TempMovementType sendTempMovement(String guid, String username) throws MovementServiceException {
         checkUsernameProvided(username);
         try {
             LOG.info("Getting tempMovement from db");
-            String request = MovementDataSourceRequestMapper.mapToSendTempMovementRequest(guid, username);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            TempMovementType movement = MovementDataSourceResponseMapper.mapToSendTempMovementFromResponse(response);
+            TempMovementType movement = tempMovementModel.sendTempMovement(guid, username);
             LOG.info("Sending temp movement to Exchange");
 
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
@@ -146,7 +138,7 @@ public class TempMovementServiceBean implements TempMovementService {
             TextMessage exchangeResponse = consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
 
             return movement;
-        }catch ( ModelMapperException | MovementMessageException | JMSException e) {
+        }catch ( MovementModelException | MovementMessageException  e) {
             LOG.error("[ Error when sending temp movement status. ] {}", e.getMessage());
             throw new MovementServiceException("Error when sending temp movement status", e);
         } catch (ExchangeModelMarshallException ex) {
@@ -158,11 +150,8 @@ public class TempMovementServiceBean implements TempMovementService {
     @Override
     public TempMovementType getTempMovement(String guid) throws MovementServiceException {
         try {
-            String request = MovementDataSourceRequestMapper.mapToGetTempMovementRequest(guid);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            return MovementDataSourceResponseMapper.mapToGetTempMovementResponse(response);
-        } catch (MovementDuplicateException |MovementMessageException | ModelMapperException | JMSException e) {
+            return tempMovementModel.getTempMovement(guid);
+        } catch (MovementModelException e) {
             throw new MovementServiceException("Error when getting temp movement", e);
         }
     }

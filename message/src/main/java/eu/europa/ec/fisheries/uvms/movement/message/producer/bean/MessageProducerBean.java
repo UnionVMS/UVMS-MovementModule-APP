@@ -11,8 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.producer.bean;
 
-import java.math.BigInteger;
-
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -25,7 +23,6 @@ import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
 import eu.europa.ec.fisheries.uvms.config.constants.ConfigConstants;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
 import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.DataSourceQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
@@ -39,10 +36,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 
 @Stateless
 public class MessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
-
-    @Resource(mappedName = MessageConstants.QUEUE_DATASOURCE_INTERNAL)
-    private Queue localDbQueue;
-
     @Resource(mappedName = MessageConstants.COMPONENT_RESPONSE_QUEUE)
     private Queue responseQueue;
 
@@ -65,30 +58,6 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
 
     @Inject
     JMSConnectorBean connector;
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendDataSourceMessage(String text, DataSourceQueue queue) throws MovementMessageException {
-        try {
-            Session session = connector.getNewSession();
-            TextMessage message = session.createTextMessage();
-            message.setJMSReplyTo(responseQueue);
-            message.setText(text);
-
-            switch (queue) {
-                case INTERNAL:
-                    getProducer(session, localDbQueue).send(message);
-                    break;
-                case INTEGRATION:
-                default:
-                    throw new MovementMessageException(" Queue not defined ot implemented");
-            }
-            return message.getJMSMessageID();
-        } catch (Exception e) {
-            LOG.error("[ Error when sending message. ] {}", e.getMessage());
-            throw new MovementMessageException("[ Error when sending message. ]", e);
-        }
-    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

@@ -18,12 +18,16 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
-import javax.jms.TextMessage;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementBatchModel;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementDomainModel;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
+import eu.europa.ec.fisheries.uvms.movement.service.constant.LookupConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,15 +38,11 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.DataSourceQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementDataSourceRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -69,6 +69,12 @@ public class MovementServiceBean implements MovementService {
     @EJB
     SpatialServiceBean spatial;
 
+    @EJB(lookup = LookupConstant.BATCH_MODEL_BEAN)
+    MovementBatchModel movementBatch;
+
+    @EJB(lookup = LookupConstant.DOMAIN_MODEL_BEAN)
+    MovementDomainModel model;
+
     @Inject
     @CreatedMovement
     Event<NotificationMessage> createdMovementEvent;
@@ -91,10 +97,7 @@ public class MovementServiceBean implements MovementService {
         try {
 
             MovementType enrichedMovement = spatial.enrichMovementWithSpatialData(data);
-            String request = MovementDataSourceRequestMapper.mapCreateMovement(enrichedMovement, username);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            MovementType createdMovement = MovementDataSourceResponseMapper.mapToMovementBaseTypeFromResponse(response);
+            MovementType createdMovement = movementBatch.createMovement(enrichedMovement, username);
             fireMovementEvent(createdMovement);
 
             try {
@@ -109,7 +112,7 @@ public class MovementServiceBean implements MovementService {
                 LOG.error("Failed to send audit log message! Movement with guid {} was created ", createdMovement.getGuid());
             }
             return createdMovement;
-        } catch (ModelMapperException | MovementMessageException | JMSException ex) {
+        } catch (MovementModelException | MovementMessageException ex) {
             throw new MovementServiceException(ex.getMessage(), ex);
         }
     }
@@ -119,19 +122,14 @@ public class MovementServiceBean implements MovementService {
     public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
             LOG.info("Get map invoked in service layer");
-            String request = MovementDataSourceRequestMapper.mapGetMapByQuery(query);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, GET_MOVEMENT_MAP_TIMEOUT);
-            if (response == null) {
+            List<MovementMapResponseType> mapResponse = model.getMovementMapByQuery(query);
+            if (mapResponse == null) {
                 LOG.error("[ Error when getting map, response from JMS Queue is null ]");
                 throw new MovementServiceException("[ Error when getting map, response from JMS Queue is null ]");
             }
-            return MovementDataSourceResponseMapper.mapToMovementMapResponse(response);
-        } catch (ModelMarshallException | MovementMessageException | JMSException ex) {
+            return MovementDataSourceResponseMapper.createMovementMapResponse(mapResponse);
+        } catch (ModelMarshallException | MovementModelException ex) {
             LOG.error("[ Error when getting movement map by query ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement map by query ]", ex);
-        } catch (ModelMapperException ex) {
-            LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
             throw new MovementServiceException("[ Error when getting movement map by query ]", ex);
         }
     }
@@ -147,18 +145,13 @@ public class MovementServiceBean implements MovementService {
     public GetMovementListByQueryResponse getList(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
             LOG.info("Get list invoked in service layer");
-            String request = MovementDataSourceRequestMapper.mapGetListByQuery(query);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
+            ListResponseDto response = model.getMovementListByQuery(query);
             if (response == null) {
                 LOG.error("[ Error when getting list, response from JMS Queue is null ]");
                 throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
             }
-            return MovementDataSourceResponseMapper.mapToGetMovementListByQueryResponse(response);
-        } catch (ModelMarshallException | MovementMessageException | JMSException ex) {
-            LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
-        } catch (ModelMapperException ex) {
+            return MovementDataSourceResponseMapper.createMovementListResponse(response);
+        } catch (MovementModelException | ModelMapperException ex) {
             LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
             throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
         }
@@ -175,16 +168,14 @@ public class MovementServiceBean implements MovementService {
     public MovementListResponseDto getListAsRestDto(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
             LOG.info("Get list invoked in service layer");
-            String request = MovementDataSourceRequestMapper.mapGetListByQuery(query);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
+            ListResponseDto response = model.getMovementListByQuery(query);
             if (response == null) {
                 LOG.error("[ Error when getting list, response from JMS Queue is null ]");
                 throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
             }
-            GetMovementListByQueryResponse mappedResponse = MovementDataSourceResponseMapper.mapToGetMovementListByQueryResponse(response);
+            GetMovementListByQueryResponse mappedResponse = MovementDataSourceResponseMapper.createMovementListResponse(response);
             return MovementMapper.mapToMovementListDto(mappedResponse);
-        } catch (ModelMarshallException | MovementMessageException | JMSException ex) {
+        } catch (MovementModelException ex) {
             LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
             throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
         } catch (ModelMapperException ex) {
@@ -203,23 +194,18 @@ public class MovementServiceBean implements MovementService {
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public MovementType getById(String id) throws MovementServiceException, MovementDuplicateException {
+    public MovementType getById(String id) throws MovementServiceException {
         try {
             LOG.info("Get list invoked in service layer");
-            String request = MovementDataSourceRequestMapper.mapGetMovementByGUID(id);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
+            MovementType response = model.getMovementByGUID(id);
 
             if (response == null) {
                 LOG.error("[ Error when getting list, response from JMS Queue is null ]");
                 throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
             }
 
-            return MovementDataSourceResponseMapper.mapToGetMovementByGUIDResponse(response);
-        } catch (ModelMarshallException | MovementMessageException | JMSException ex) {
-            LOG.error("[ Error when getting movement by guid ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement by guid]", ex);
-        } catch (ModelMapperException ex) {
+            return response;
+        } catch (MovementModelException ex) {
             LOG.error("[ Error when getting movement by guid ] {}", ex.getMessage());
             throw new MovementServiceException("[ Error when getting movement by guid]", ex);
         }
@@ -262,10 +248,17 @@ public class MovementServiceBean implements MovementService {
                 enrichedMovements.add(enrichedMovement);
             }
 
-            String request = MovementDataSourceRequestMapper.mapCreateMovementBatch(enrichedMovements);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_BATCH_TIMEOUT);
-            SimpleResponse createdMovement = MovementDataSourceResponseMapper.mapToSimpleResponseFromCreateMovementBatchResponse(response);
+            SimpleResponse createdMovement = SimpleResponse.OK;
+            for (MovementType movement : enrichedMovements) {
+                try {
+                    movementBatch.createMovement(movement, "Batch movement");
+                } catch (MovementDuplicateException ex) {
+                    LOG.error("[ Error when creating movement. ] {}", ex.getMessage());
+                } catch (MovementModelException ex) {
+                    LOG.error("[ Error when creating movement. ] {}", ex);
+                    createdMovement = SimpleResponse.NOK;
+                }
+            }
 
             try {
                 String auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(createdMovement.name(), "UVMS batch movement");
@@ -275,7 +268,7 @@ public class MovementServiceBean implements MovementService {
             }
 
             return createdMovement;
-        } catch (ModelMapperException | MovementMessageException | JMSException ex) {
+        } catch (MovementMessageException ex) {
             throw new MovementServiceException(ex.getMessage(), ex);
         }
     }
@@ -285,12 +278,21 @@ public class MovementServiceBean implements MovementService {
     public List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementServiceException, MovementDuplicateException {
         LOG.info("GetLatestMovementsByConnectIds invoked in service layer");
         try {
-            String request = MovementDataSourceRequestMapper.mapGetLatestMovementsByConnectIds(connectIds);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            List<MovementType> latestMovements = MovementDataSourceResponseMapper.mapToLatestMovementsByConnectIdResponse(response);
+            List<MovementType> latestMovements = model.getLatestMovementsByConnectIds(connectIds);
             return MovementMapper.mapToMovementDtoList(latestMovements);
-        } catch (ModelMapperException | MovementMessageException | JMSException ex) {
+        } catch (MovementModelException ex) {
+            throw new MovementServiceException(ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public List<MovementDto> getLatestMovements(Integer numberOfMovements) throws MovementServiceException, MovementDuplicateException {
+        LOG.info("getLatestMovements invoked in service layer");
+        try {
+            List<MovementType> latestMovements = model.getLatestMovements(numberOfMovements);
+            return MovementMapper.mapToMovementDtoList(latestMovements);
+        } catch (MovementModelException ex) {
             throw new MovementServiceException(ex.getMessage(), ex);
         }
     }
@@ -300,15 +302,13 @@ public class MovementServiceBean implements MovementService {
     public GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementServiceException, MovementDuplicateException {
         try {
             LOG.info("Get list invoked in service layer");
-            String request = MovementDataSourceRequestMapper.mapGetListByAreaAndTimeIntervalRequest(criteria);
-            String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-            TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-            if (response == null) {
+            List<MovementType> movementListByAreaAndTimeInterval = model.getMovementListByAreaAndTimeInterval(criteria);
+            if (movementListByAreaAndTimeInterval == null) {
                 LOG.error("[ Error when getting list, response from JMS Queue is null ]");
                 throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
             }
-            return MovementDataSourceResponseMapper.mapToGetMovementListByAreaAndTimeIntervalResponse(response);
-        } catch (ModelMarshallException | MovementMessageException | JMSException ex) {
+            return MovementDataSourceResponseMapper.mapMovementListAreaAndTimeIntervalResponse(movementListByAreaAndTimeInterval);
+        } catch (MovementDaoException ex) {
             LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
             throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
         } catch (ModelMapperException ex) {
@@ -320,11 +320,8 @@ public class MovementServiceBean implements MovementService {
 	@Override
 	public List<AreaType> getAreas() throws MovementServiceException, MovementDuplicateException {
 		try {
-			String request = MovementDataSourceRequestMapper.mapGetAreasRequest();
-			String messageId = producer.sendDataSourceMessage(request, DataSourceQueue.INTERNAL);
-			TextMessage response = consumer.getMessage(messageId, TextMessage.class, CREATE_MOVEMENT_TIMEOUT);
-			return MovementDataSourceResponseMapper.getAreasFromResponse(response);
-		} catch (MovementMessageException | ModelMapperException | JMSException e) {
+			return model.getAreas();
+		} catch (MovementModelException e) {
 			LOG.error("[ Error when getting areas. ] {}", e.getMessage());
 			throw new MovementServiceException("[ Error when getting areas. ]", e);
 		}

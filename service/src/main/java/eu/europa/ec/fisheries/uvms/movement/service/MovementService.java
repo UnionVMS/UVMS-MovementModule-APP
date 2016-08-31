@@ -98,10 +98,17 @@ public interface MovementService {
      * @throws MovementServiceException
      */
     List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementServiceException, MovementDuplicateException;
+    /**
+     *
+     * @param numberOfMovements
+     * @return
+     * @throws MovementServiceException
+     */
+    List<MovementDto> getLatestMovements(Integer numberOfMovements) throws MovementServiceException, MovementDuplicateException;
 
     /**
      *
-     * @param MovementAreaAndTimeIntervalCriteria
+     * @param criteria
      * @return GetMovementListByAreaAndTimeIntervalResponse
      * @throws MovementServiceException
      */
