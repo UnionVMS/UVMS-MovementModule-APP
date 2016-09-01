@@ -132,11 +132,14 @@ public class MovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<List<MovementDto>> getLatestMovements(@PathParam(value = "numberOfMovements") Integer numberOfMovements) {
         LOG.info("getLatestMovements invoked in rest layer");
+        long start = System.currentTimeMillis();
         if (numberOfMovements == null || numberOfMovements < 1) {
             return new ResponseDto("numberOfMovements cannot be null and must be greater than 0" , ResponseCode.ERROR);
         }
         try {
-            return new ResponseDto(serviceLayer.getLatestMovements(numberOfMovements), ResponseCode.OK);
+            List<MovementDto> response = serviceLayer.getLatestMovements(numberOfMovements);
+            LOG.info("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
+            return new ResponseDto(response, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
