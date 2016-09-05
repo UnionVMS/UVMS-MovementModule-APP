@@ -11,27 +11,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package rest.service;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.uvms.movement.rest.service.MovementRestResource;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.doReturn;
 import org.mockito.MockitoAnnotations;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.model.mock.MockData;
-import org.junit.Ignore;
 
 /**
  **/
