@@ -76,7 +76,42 @@ public class MovementRestResource {
     public ResponseDto<MovementListResponseDto> getListByQuery(MovementQuery query) {
         LOG.info("Get list invoked in rest layer");
         try {
-            return new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
+            long start = System.currentTimeMillis();
+            ResponseDto response = new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
+            long end = System.currentTimeMillis();
+            LOG.info("GET STANDARD MOVEMENT: {} ms", (end - start));
+            return response;
+        } catch (MovementServiceException | NullPointerException ex) {
+            LOG.error("[ Error when getting list. ]", ex);
+            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+        } catch (MovementDuplicateException ex) {
+            LOG.error("[ Error when getting list. ]", ex);
+            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+        }
+    }
+
+    /**
+     *
+     * @responseMessage 200 Movement list successfully retreived
+     * @responseMessage 500 Error when retrieveing the list values for
+     * transponders
+     *
+     * @summary Gets a list of movements filtered by a query with minimal information
+     *
+     */
+    @POST
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path("/list/minimal")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public ResponseDto<MovementListResponseDto> getMinimalListByQuery(MovementQuery query) {
+        LOG.info("Get list invoked in rest layer");
+        try {
+            long start = System.currentTimeMillis();
+            ResponseDto response = new ResponseDto(serviceLayer.getMinimalList(query), ResponseCode.OK);
+            long end = System.currentTimeMillis();
+            LOG.info("GET MINIMAL MOVEMENT: {} ms", (end - start));
+            return response;
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);

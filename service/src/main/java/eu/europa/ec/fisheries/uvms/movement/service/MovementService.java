@@ -55,6 +55,15 @@ public interface MovementService {
      * @return
      * @throws MovementServiceException
      */
+    GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
+
+    /**
+     * Get a list with data
+     *
+     * @param query
+     * @return
+     * @throws MovementServiceException
+     */
     GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
 
     /**

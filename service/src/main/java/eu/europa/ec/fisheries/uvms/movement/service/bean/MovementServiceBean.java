@@ -165,6 +165,29 @@ public class MovementServiceBean implements MovementService {
      */
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
+        try {
+            LOG.info("Get list invoked in service layer");
+            ListResponseDto response = model.getMinimalMovementListByQuery(query);
+            if (response == null) {
+                LOG.error("[ Error when getting list, response from JMS Queue is null ]");
+                throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
+            }
+            return MovementDataSourceResponseMapper.createMovementListResponse(response);
+        } catch (MovementModelException | ModelMapperException ex) {
+            LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
+            throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     * @throws MovementServiceException
+     */
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public MovementListResponseDto getListAsRestDto(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
             LOG.info("Get list invoked in service layer");
