@@ -9,7 +9,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <release.branch.name>uvms-2.0.6-kili</release.branch.name>
+        <release.branch.name>uvms-2.1.1-kili</release.branch.name>
         <mockito.version>1.9.5</mockito.version>
         <junit.version>4.10</junit.version>
         <javaee.version>7.0</javaee.version>
@@ -24,7 +24,7 @@
         <longpolling.version>2.0.5</longpolling.version>
         <user.model.version>2.0.0</user.model.version>
         <spatial.model.version>0.5.2</spatial.model.version>
-        <movement.model.version>2.1.1-SNAPSHOT</movement.model.version>
+        <movement.model.version>2.1.1</movement.model.version>
         <audit.model.version>2.1.0</audit.model.version>
         <exchange.model.version>2.1.0</exchange.model.version>
 
