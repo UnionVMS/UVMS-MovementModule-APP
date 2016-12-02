@@ -18,14 +18,14 @@ The movement module has functionality for storing temporary ( manual ) positions
 
 The jndi name example is taken from wildfly8.2 application server
 
-|Name             |JNDI name example             |Description                               |
-|-----------------|---------------------------------|---------------------------------------|
-|UVMSMovementEvent|java:/jms/queue/UVMSMovementEvent|Request queue to movement main module  |
-|UVMSMovement     |java:/jms/queue/UVMSMovement     |Response queue to movement main module |
-|UVMSMovementModel|java:/jms/queue/UVMSMovementModel|Request queue to the Database module   |
-|UVMSAuditEvent   |java:/jms/queue/UVMSAuditEvent   |Rsponse queue for the Audit main module|
-|UVMSSpatialEvent |java:/jms/queue/UVMSSpatialEvent |Request queue to the Spatial module    |
-|UVMSExchangeEvent|java:/jms/queue/UVMSExchangeEvent|Request queue to the Exchange module   |
+|Name             |JNDI name example                |Description                                |
+|-----------------|---------------------------------|-------------------------------------------|
+|UVMSMovementEvent|java:/jms/queue/UVMSMovementEvent|Request queue to movement main module      |
+|UVMSMovement     |java:/jms/queue/UVMSMovement     |Response queue to movement main module     |
+|UVMSMovementModel|java:/jms/queue/UVMSMovementModel|Request queue to the Database module       |
+|UVMSAuditEvent   |java:/jms/queue/UVMSAuditEvent   |Request queue to the Audit main module     |
+|UVMSSpatialEvent |java:/jms/queue/UVMSSpatialEvent |Request queue to the Spatial main module   |
+|UVMSExchangeEvent|java:/jms/queue/UVMSExchangeEvent|Request queue to the Exchange main module  |
 
 ##Datasource dependencies
 
