@@ -15,11 +15,11 @@ The movement module can also store searches that a user makes on positions for l
 The movement module has functionality for storing temporary ( manual ) positions. These positions can be created saved and retrieved for later processing. When the user wants to he or she can execute the movement. When the movement is executed it is sent to the exchange module who in turn processes the position report.
 
 |Name             |JNDI name example             |Description                            |
-|-----------------|------------------------------|---------------------------------------|
-|UVMSMovementEvent|java:/jms/queue/UVMSAuditEvent|Request queue to Audit service module  |
-|UVMSMovement     |java:/jms/queue/UVMSAudit     |Rsponse queue for the audit main module|
-|UVMSMovementModel|java:/jms/queue/UVMSAudit     |Rsponse queue for the audit main module|
-|UVMSAuditEvent   |java:/jms/queue/UVMSAudit     |Rsponse queue for the audit main module|
-|UVMSSpatialEvent |java:/jms/queue/UVMSAudit     |Rsponse queue for the audit main module|
-|UVMSExchangeEvent|java:/jms/queue/UVMSAudit     |Rsponse queue for the audit main module|
+|-----------------|---------------------------------|---------------------------------------|
+|UVMSMovementEvent|java:/jms/queue/UVMSMovementEvent|Request queue to movement main module  |
+|UVMSMovement     |java:/jms/queue/UVMSMovement     |Response queue to movement main module |
+|UVMSMovementModel|java:/jms/queue/UVMSMovementModel|Request queue to the Database module   |
+|UVMSAuditEvent   |java:/jms/queue/UVMSAuditEvent   |Rsponse queue for the Audit main module|
+|UVMSSpatialEvent |java:/jms/queue/UVMSSpatialEvent |Request queue to the Spatial module    |
+|UVMSExchangeEvent|java:/jms/queue/UVMSExchangeEvent|Request queue to the Exchange module   |
 
