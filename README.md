@@ -1,6 +1,6 @@
 # MovementModule
 
-####Module description/purpose
+##Module description/purpose
 
 The main purpose of the Movement module is the storage and retrieval of position reports regarding movements for ships. 
 
@@ -14,7 +14,11 @@ The movement module can also store searches that a user makes on positions for l
 
 The movement module has functionality for storing temporary ( manual ) positions. These positions can be created saved and retrieved for later processing. When the user wants to he or she can execute the movement. When the movement is executed it is sent to the exchange module who in turn processes the position report.
 
-|Name             |JNDI name example             |Description                            |
+##JMS-Queue dependencies
+
+The jndi name example is taken from wildfly8.2 application server
+
+|Name             |JNDI name example             |Description                               |
 |-----------------|---------------------------------|---------------------------------------|
 |UVMSMovementEvent|java:/jms/queue/UVMSMovementEvent|Request queue to movement main module  |
 |UVMSMovement     |java:/jms/queue/UVMSMovement     |Response queue to movement main module |
@@ -23,3 +27,15 @@ The movement module has functionality for storing temporary ( manual ) positions
 |UVMSSpatialEvent |java:/jms/queue/UVMSSpatialEvent |Request queue to the Spatial module    |
 |UVMSExchangeEvent|java:/jms/queue/UVMSExchangeEvent|Request queue to the Exchange module   |
 
+##Datasource dependencies
+
+The jndi name example is taken from wildfly8.2 application server
+
+|Name             |JNDI name example                   |
+|-----------------|------------------------------------|
+|uvms_movement    |java:jboss/datasources/uvms_movement|
+
+## Related Repositories
+
+* https://github.com/UnionVMS/UVMS-MovementModule-DB
+* https://github.com/UnionVMS/UVMS-MovementModule-MODEL
