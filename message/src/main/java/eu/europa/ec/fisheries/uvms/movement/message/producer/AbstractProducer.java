@@ -14,8 +14,12 @@ package eu.europa.ec.fisheries.uvms.movement.message.producer;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
+
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.jms.*;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +30,33 @@ public abstract class AbstractProducer {
 
     final static Logger LOG = LoggerFactory.getLogger(MessageProducerBean.class);
 
-    @Resource(lookup = MessageConstants.CONNECTION_FACTORY)
     private ConnectionFactory connectionFactory;
+
+    @PostConstruct
+    private void connectToQueue() {
+        LOG.debug("Open connection to JMS broker");
+        InitialContext ctx;
+        try {
+            ctx = new InitialContext();
+        } catch (Exception e) {
+            LOG.error("Failed to get InitialContext",e);
+            throw new RuntimeException(e);
+        }
+        try {
+            connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
+        } catch (NamingException ne) {
+            //if we did not find the connection factory we might need to add java:/ at the start
+            LOG.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
+            String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
+            try {
+                LOG.debug("trying " + wfName);
+                connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
+            } catch (Exception e) {
+                LOG.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY  + " and " + wfName);
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     /**
      *
