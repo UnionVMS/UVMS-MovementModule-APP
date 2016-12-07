@@ -19,7 +19,6 @@ public class MessageConstants {
     public static final String COMPONENT_MESSAGE_IN_QUEUE = "jms/queue/UVMSMovementEvent";
     public static final String COMPONENT_MESSAGE_IN_QUEUE_NAME = "UVMSMovementEvent";
     public static final String COMPONENT_RESPONSE_QUEUE = "jms/queue/UVMSMovement";
-    public static final String QUEUE_DATASOURCE_INTERNAL = "jms/queue/UVMSMovementModel";
     public static final String AUDIT_MODULE_QUEUE = "jms/queue/UVMSAuditEvent";
     public static final String SPATIAL_MODULE_QUEUE = "jms/queue/UVMSSpatialEvent";
     public static final String EXCHANGE_MODULE_QUEUE = "jms/queue/UVMSExchangeEvent";

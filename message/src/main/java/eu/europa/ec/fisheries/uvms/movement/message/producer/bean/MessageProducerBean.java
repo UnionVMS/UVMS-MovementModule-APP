@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.producer.bean;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -22,6 +23,7 @@ import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
 import eu.europa.ec.fisheries.uvms.config.constants.ConfigConstants;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
 import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
+import eu.europa.ec.fisheries.uvms.message.JMSUtils;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
@@ -33,31 +35,36 @@ import static eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConn
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import javax.ejb.EJB;
+import javax.naming.InitialContext;
 
 @Stateless
 public class MessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
-    @Resource(mappedName = MessageConstants.COMPONENT_RESPONSE_QUEUE)
     private Queue responseQueue;
-
-    @Resource(mappedName = MessageConstants.AUDIT_MODULE_QUEUE)
     private Queue auditQueue;
-
-    @Resource(mappedName = MessageConstants.SPATIAL_MODULE_QUEUE)
     private Queue spatialQueue;
-
-    @Resource(mappedName = MessageConstants.EXCHANGE_MODULE_QUEUE)
     private Queue exchangeQueue;
-
-    @Resource(mappedName = ConfigConstants.CONFIG_MESSAGE_IN_QUEUE)
     private Queue configQueue;
-
-    @Resource(mappedName = MessageConstants.USER_MODULE_QUEUE)
     private Queue userQueue;
-
-    private static final int CONFIG_TTL = 30000;
 
     @EJB
     JMSConnectorBean connector;
+
+    @PostConstruct
+    public void init() {
+        InitialContext ctx;
+        try {
+            ctx = new InitialContext();
+        } catch (Exception e) {
+            LOG.error("Failed to get InitialContext",e);
+            throw new RuntimeException(e);
+        }
+        responseQueue = JMSUtils.lookupQueue(ctx, MessageConstants.COMPONENT_RESPONSE_QUEUE);
+        auditQueue = JMSUtils.lookupQueue(ctx, MessageConstants.AUDIT_MODULE_QUEUE);
+        exchangeQueue = JMSUtils.lookupQueue(ctx, MessageConstants.EXCHANGE_MODULE_QUEUE);
+        configQueue = JMSUtils.lookupQueue(ctx, ConfigConstants.CONFIG_MESSAGE_IN_QUEUE);
+        spatialQueue = JMSUtils.lookupQueue(ctx, MessageConstants.SPATIAL_MODULE_QUEUE);
+        userQueue = JMSUtils.lookupQueue(ctx, MessageConstants.USER_MODULE_QUEUE);
+    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
