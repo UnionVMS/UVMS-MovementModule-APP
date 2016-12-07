@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>2.0.8-SNAPSHOT</version>
+        <version>2.1.2-SNAPSHOT</version>
     </parent>
     
     <!-- PROPERTIES USED FOR LOGBACK -->
@@ -45,6 +45,7 @@
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>${project.parent.artifactId}-model</artifactId>
             <version>${movement.model.version}</version>
+            <classifier>date</classifier>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -61,6 +62,7 @@
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
+            <classifier>date</classifier>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>

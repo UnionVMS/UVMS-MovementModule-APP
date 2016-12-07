@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.producer;
 
-import eu.europa.ec.fisheries.uvms.movement.message.constants.DataSourceQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
@@ -24,8 +23,6 @@ import javax.jms.TextMessage;
  **/
 @Local
 public interface MessageProducer {
-
-    public String sendDataSourceMessage(String text, DataSourceQueue queue) throws MovementMessageException;
     
     public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException;
 

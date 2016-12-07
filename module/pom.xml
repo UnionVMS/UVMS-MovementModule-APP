@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>2.0.8-SNAPSHOT</version>
+        <version>2.1.2-SNAPSHOT</version>
     </parent>
 
     <build>
@@ -64,15 +64,16 @@
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-model</artifactId>
             <version>${movement.model.version}</version>
+            <classifier>date</classifier>
             <type>jar</type>
-        </dependency> 
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>  
             <artifactId>movement-rest</artifactId>
             <version>${project.parent.version}</version>
             <type>war</type>
         </dependency> 
-        
+
         <!-- For the skinny war -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -97,7 +98,7 @@
             <version>1.9.13</version>
             <type>jar</type>
         </dependency>
-                                       
+
     </dependencies>
 
     <!-- USE following command to run this profile: mvn clean install -P wildfly-deploy wildfly:deploy -Dhostname=127.0.0.1 -Dport=9990 -Dusername=admin -Dpassword=asdf  -->
