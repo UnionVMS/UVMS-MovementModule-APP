@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Date;
 
 /**
  **/
@@ -26,7 +27,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class MovementDto {
 
     @XmlElement(required = true)
-    XMLGregorianCalendar time;
+    Date time;
     @XmlElement(required = true)
     Double latitude;
     @XmlElement(required = true)
@@ -48,11 +49,11 @@ public class MovementDto {
     @XmlElement(required = true)
     String movementGUID;
 
-    public XMLGregorianCalendar getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(XMLGregorianCalendar time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 

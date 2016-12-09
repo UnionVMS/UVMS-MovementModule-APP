@@ -164,7 +164,7 @@ public class MovementMapper {
         SetReportMovementType report = new SetReportMovementType();
         report.setPluginName("ManualMovement");
         report.setPluginType(PluginType.MANUAL);
-        report.setTimestamp(DateUtil.parsePositionTime(DateUtil.nowUTC()));
+        report.setTimestamp(DateUtil.nowUTC());
         
         eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType exchangeMovementBaseType = new eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType();
         eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId exchangeAssetId = new eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId();
@@ -203,7 +203,7 @@ public class MovementMapper {
         
         try {
             Date date = DateUtil.parseToUTCDate(movement.getTime());
-            exchangeMovementBaseType.setPositionTime(DateUtil.parsePositionTime(date));
+            exchangeMovementBaseType.setPositionTime(date);
         } catch (Exception e) {
             LOG.error("Error when parsing position date for temp movement continuing ");
         }

@@ -57,7 +57,7 @@ public class SpatialServiceBean {
     MessageProducer producer;
 
     //TODO FIX AS PARAMETER
-    private static final Long TIMEOUT = 30000L;
+    private static final Long TIMEOUT = 60000L;
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public MovementType enrichMovementWithSpatialData(MovementBaseType movement) throws MovementServiceException {
