@@ -1,5 +1,4 @@
 target
 webapp
-/*.iml
 *.iml
 logging.properties

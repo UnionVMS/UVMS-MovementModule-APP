@@ -62,7 +62,6 @@ public class TempMovementResource {
     @POST
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
-    @Path("/")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
     public ResponseDto create(final TempMovementType data) {
         LOG.info("Create temp movement invoked in rest layer");
@@ -130,7 +129,6 @@ public class TempMovementResource {
     @PUT
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
-    @Path("/")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
     public ResponseDto update(final TempMovementType data) {
         LOG.info("Update temp movement invoked in rest layer");
