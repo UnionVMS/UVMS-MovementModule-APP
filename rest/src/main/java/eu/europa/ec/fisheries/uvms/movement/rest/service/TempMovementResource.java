@@ -62,7 +62,6 @@ public class TempMovementResource {
     @POST
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
-    @Path("/")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
     public ResponseDto create(final TempMovementType data) {
         LOG.info("Create temp movement invoked in rest layer");
@@ -109,7 +108,7 @@ public class TempMovementResource {
     public ResponseDto remove(@PathParam("guid") String guid) {
         LOG.info("Archive temp movement invoked in rest layer");
         try {
-            return new ResponseDto(service.setStatusTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
+            return new ResponseDto(service.archiveTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when archiving temp movement. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
@@ -130,7 +129,6 @@ public class TempMovementResource {
     @PUT
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
-    @Path("/")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
     public ResponseDto update(final TempMovementType data) {
         LOG.info("Update temp movement invoked in rest layer");

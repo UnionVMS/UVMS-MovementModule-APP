@@ -12,9 +12,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.longpolling.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ejb.Singleton;
 import javax.servlet.AsyncContext;
@@ -22,7 +22,7 @@ import javax.servlet.AsyncContext;
 @Singleton
 public class LongPollingContextHelper {
 
-    private Map<String, List<AsyncContext>> asyncContexts = new HashMap<>();
+    private final Map<String, List<AsyncContext>> asyncContexts = new ConcurrentHashMap<>();
 
     /**
      * Adds an async context, associated with the given path.
@@ -30,7 +30,7 @@ public class LongPollingContextHelper {
      * @param ctx an asynchronous context
      * @param longPollingPath a long-polling path
      */
-    public synchronized void add(AsyncContext ctx, String longPollingPath) {
+    public void add(AsyncContext ctx, String longPollingPath) {
         List<AsyncContext> ctxs = asyncContexts.get(longPollingPath);
         if (ctxs == null) {
             ctxs = new ArrayList<>();
@@ -46,7 +46,7 @@ public class LongPollingContextHelper {
      * @param longPollingPath a path
      * @return the first context for this path, or null if none exist
      */
-    public synchronized AsyncContext popContext(String longPollingPath) {
+    public AsyncContext popContext(String longPollingPath) {
         List<AsyncContext> ctxs = asyncContexts.get(longPollingPath);
         if (ctxs == null || ctxs.isEmpty()) {
             return null;
@@ -55,7 +55,7 @@ public class LongPollingContextHelper {
         return ctxs.remove(0);
     }
 
-    public synchronized void remove(AsyncContext ctx) {
+    public void remove(AsyncContext ctx) {
         for (List<AsyncContext> ctxs : asyncContexts.values()) {
             if (ctxs.contains(ctx)) {
                 ctxs.remove(ctx);

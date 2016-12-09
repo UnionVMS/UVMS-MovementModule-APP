@@ -109,7 +109,6 @@ public class ConfigResource {
     @GET
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
-    @Path(value = "/")
     public ResponseDto getConfiguration() {
         try {
             return new ResponseDto(MovementMockConfig.getValues(), ResponseCode.OK);

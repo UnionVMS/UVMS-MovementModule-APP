@@ -26,7 +26,7 @@ public interface TempMovementService {
 
     TempMovementType getTempMovement(String guid) throws MovementServiceException, MovementDuplicateException;
 
-    TempMovementType setStatusTempMovement(String guid, String username) throws MovementServiceException, MovementDuplicateException;
+    TempMovementType archiveTempMovement(String guid, String username) throws MovementServiceException, MovementDuplicateException;
 
     TempMovementType updateTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException, MovementDuplicateException;
 

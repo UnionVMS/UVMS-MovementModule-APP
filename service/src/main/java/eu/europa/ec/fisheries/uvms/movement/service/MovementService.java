@@ -55,6 +55,15 @@ public interface MovementService {
      * @return
      * @throws MovementServiceException
      */
+    GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
+
+    /**
+     * Get a list with data
+     *
+     * @param query
+     * @return
+     * @throws MovementServiceException
+     */
     GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
 
     /**
@@ -98,10 +107,17 @@ public interface MovementService {
      * @throws MovementServiceException
      */
     List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementServiceException, MovementDuplicateException;
+    /**
+     *
+     * @param numberOfMovements
+     * @return
+     * @throws MovementServiceException
+     */
+    List<MovementDto> getLatestMovements(Integer numberOfMovements) throws MovementServiceException, MovementDuplicateException;
 
     /**
      *
-     * @param MovementAreaAndTimeIntervalCriteria
+     * @param criteria
      * @return GetMovementListByAreaAndTimeIntervalResponse
      * @throws MovementServiceException
      */
