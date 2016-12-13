@@ -19,7 +19,7 @@
         <dozer.version>5.5.1</dozer.version>
         <jaxb2.basics.version>0.9.5</jaxb2.basics.version>
 
-        <usm4uvms.version>2.1.3-SNAPSHOT</usm4uvms.version>
+        <usm4uvms.version>2.1.4-SNAPSHOT</usm4uvms.version>
         <uvms.common.version>2.0.14-SNAPSHOT</uvms.common.version>
         <uvms.config.version>2.1.3-SNAPSHOT</uvms.config.version>
         <longpolling.version>2.0.5</longpolling.version>
