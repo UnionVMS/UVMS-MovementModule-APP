@@ -4,12 +4,12 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms</groupId>
         <artifactId>uvms-app-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
     <artifactId>movement</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <packaging>pom</packaging>
     <description>Maven projekt-archetype for UnionVms modules</description>
 
@@ -91,7 +91,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-APP.git</connection>
-        <tag>HEAD</tag>
+        <tag>movement-3.0.0</tag>
     </scm>
 
     <build>
