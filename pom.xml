@@ -16,15 +16,15 @@
     <properties>
         <release.branch.name>uvms-3.0.1-C3PO</release.branch.name>
 
-        <usm4uvms.version>3.0.0</usm4uvms.version>
-        <uvms.common.version>2.0.14</uvms.common.version>
-        <uvms.config.version>3.0.0</uvms.config.version>
-        <longpolling.version>2.0.5</longpolling.version>
+        <usm4uvms.version>3.0.4</usm4uvms.version>
+        <uvms.common.version>2.0.17</uvms.common.version>
+        <uvms.config.version>3.0.4</uvms.config.version>
+        <longpolling.version>2.0.13</longpolling.version>
         <user.model.version>2.0.0</user.model.version>
         <spatial.model.version>0.5.2</spatial.model.version>
-        <movement.model.version>3.0.0</movement.model.version>
-        <audit.model.version>3.0.0</audit.model.version>
-        <exchange.model.version>3.0.0</exchange.model.version>
+        <movement.model.version>3.0.4</movement.model.version>
+        <audit.model.version>3.0.4</audit.model.version>
+        <exchange.model.version>3.0.4</exchange.model.version>
     </properties>
 
     <dependencies>
