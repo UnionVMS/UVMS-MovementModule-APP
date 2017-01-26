@@ -14,7 +14,7 @@
     <description>Maven projekt-archetype for UnionVms modules</description>
 
     <properties>
-        <release.branch.name>uvms-3.0.3-C3PO-2</release.branch.name>
+        <release.branch.name>uvms-3.0.1-C3PO</release.branch.name>
 
         <usm4uvms.version>3.0.0</usm4uvms.version>
         <uvms.common.version>2.0.14</uvms.common.version>
