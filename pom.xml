@@ -15,6 +15,7 @@
 
     <properties>
         <release.branch.name>uvms-3.0.5-C3PO</release.branch.name>
+        <java.version>1.7</java.version>
 
         <usm4uvms.version>3.0.4</usm4uvms.version>
         <uvms.common.version>2.0.17</uvms.common.version>
@@ -22,51 +23,143 @@
         <longpolling.version>2.0.13</longpolling.version>
         <user.model.version>2.0.0</user.model.version>
         <spatial.model.version>0.5.2</spatial.model.version>
-        <movement.model.version>3.0.4</movement.model.version>
+        <movement.model.version>3.0.5-SNAPSHOT</movement.model.version>
         <audit.model.version>3.0.4</audit.model.version>
         <exchange.model.version>3.0.4</exchange.model.version>
+        <!--Arquillian test Properties-->
+        <version.org.jboss.arquillian>1.1.5.Final</version.org.jboss.arquillian>
+        <version.org.wildfly>8.2.0.Final</version.org.wildfly>
+        <version.arquillian.postgres>9.4.1212.jre7</version.arquillian.postgres>
+        <netbeans.hint.jdkPlatform>JDK-${java.version}</netbeans.hint.jdkPlatform>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>${javaee.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${sl4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.jaxb2_commons</groupId>
-            <artifactId>jaxb2-basics</artifactId>
-            <version>${jaxb2.basics.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Modules dep-->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>movement-model</artifactId>
+                <version>${movement.model.version}</version>
+                <classifier>date</classifier> <!-- TODO: Why this classifier=?-->
+                <type>jar</type>
+            </dependency>
+            <!-- ### HIBERNATE ###-->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-spatial</artifactId>
+                <version>4.3</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.vividsolutions</groupId>
+                        <artifactId>jts</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.postgis</groupId>
+                        <artifactId>postgis-jdbc</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-testing</artifactId>
+                <version>${hibernate.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-annotations</artifactId>
+                <version>${hibernate.annotation.version}</version>
+            </dependency>
+            <!-- *** /HIBERNATE ***-->
+            <!-- ### POSTGRES ###-->
+            <dependency>
+                <groupId>org.postgis</groupId>
+                <artifactId>postgis-jdbc</artifactId>
+                <version>${postgis.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- *** /POSTGRES *** -->
+            <!-- TODO: is this used and why-->
+            <dependency>
+                <groupId>com.vividsolutions</groupId>
+                <artifactId>jts</artifactId>
+                <version>${jts.version}</version>
+                <!--scope>provided</scope-->
+            </dependency>
+            <!-- Arquillian BOM (Bill Of Materials). -->
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${version.org.jboss.arquillian}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${javaee.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${sl4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jvnet.jaxb2_commons</groupId>
+                <artifactId>jaxb2-basics</artifactId>
+                <version>${jaxb2.basics.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 
     <repositories>
         <repository>
@@ -74,9 +167,17 @@
             <name>Focus nexus repository</name>
             <url>http://nexus.focus.fish/</url>
         </repository>
+        <repository>
+            <id>OSGEO GeoTools repo</id>
+            <url>http://download.osgeo.org/webdav/geotools</url>
+        </repository>
+        <repository>
+            <id>Hibernate Spatial repo</id>
+            <url>http://www.hibernatespatial.org/repository</url>
+        </repository>
     </repositories>
 
-    <distributionManagement> 
+    <distributionManagement>
         <repository>
             <id>focus-releases</id>
             <name>UnionVms Repository</name>
@@ -119,7 +220,31 @@
         </plugins>
     </build>
 
+    <profiles>
+        <!-- Arquillian WildFly remote profile -->
+        <profile>
+            <id>widlfly-remote</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.wildfly</groupId>
+                    <artifactId>wildfly-arquillian-container-remote</artifactId>
+                    <version>${version.org.wildfly}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                    <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
     <modules>
+        <module>domain</module>
         <module>rest</module>
         <module>service</module>
         <module>message</module>
