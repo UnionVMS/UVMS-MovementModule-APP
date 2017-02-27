@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="jojoha" id="Create metedata table">
+        
+        <createTable tableName="movementmetadata" remarks="Metadata for movement table">
+            
+            <column name="movemet_id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="moveme_pk"/>
+            </column>
+              
+            <column name="movemet_closestport_remoteid" type="varchar(100)" remarks="Remote id of the closest countrys coast"/>  
+            <column name="movemet_closestport_dist" type="decimal" remarks="The distance to the closest port in meters."/>            
+            <column name="movemet_closestport_code" type="varchar(100)" remarks="The code of the closest port."/>
+            <column name="movemet_closestport_name" type="varchar(100)" remarks="The name of the closest port."/>               
+            
+            <column name="movemet_closecounty_remoteid" type="varchar(100)" remarks="The distance to the closest countrys coast in meters."/>
+            <column name="movemet_closecounty_dist" type="decimal" remarks="The distance to the closest countrys coast in meters."/>
+            <column name="movemet_closecounty_code" type="varchar(100)" remarks="The code of the country."/>
+            <column name="movemet_closecounty_name" type="varchar(100)" remarks="The name of the country."/>
+			
+            <column name="movemet_updattim" type="timestamp" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="movemet_upuser" type="varchar(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+            
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="movementmetadata"/>
+        </rollback>
+
+    </changeSet>
+    
+</databaseChangeLog>

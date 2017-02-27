@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <!-- IF changes are made here.... DO NOT FORGET TO MAKE THE SAME CHANGES IN /oracle/track_oracle.xml -->
+    <changeSet author="jojoha" id="Create table track">
+        
+        <createTable tableName="track" remarks="Track table.">
+            
+            <column name="trac_id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="trac_pk"/>
+            </column>
+            <column name="trac_distance" type="double precision" remarks="Track total distance."/>
+            <column name="trac_avgspeed" type="double precision" remarks="Track total distance."/>                
+            <column name="trac_duration" type="double precision" remarks="Track total duration."/>
+            <column name="trac_updattim" type="timestamp" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="track_totalsea" type="double precision" remarks="The total time at sea excluding IN_PORT and ENTER_PORT."/>
+            <column name="trac_upuser" type="varchar(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trac_geom" type="geometry(LineString, 4326)">
+                <constraints nullable="false"/>
+            </column>
+            
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="track"/>
+        </rollback>
+        
+    </changeSet>
+
+</databaseChangeLog>
