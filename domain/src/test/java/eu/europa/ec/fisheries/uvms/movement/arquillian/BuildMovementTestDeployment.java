@@ -39,9 +39,6 @@ public abstract class BuildMovementTestDeployment {
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.bean");
         testWar.addClass(MovementBatchModelBean.class).addClass(MovementDomainModelBean.class)
                 .addClass(MovementSearchGroupDomainModelBean.class).addClass(TempMovementDomainModelBean.class);
-        // TODO: Fix this.
-        testWar.addPackages(true,"org.jvnet.jaxb2_commons");
-        testWar.addPackages(true, "org.joda.time");
 
         testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.model");
         testWar.addPackages(true, "eu.europa.ec.fisheries.schema");
