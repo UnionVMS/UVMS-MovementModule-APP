@@ -22,13 +22,13 @@ public abstract class BuildMovementTestDeployment {
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.constant");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.entity");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dao");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.mapper");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.exception");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.model.exception");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.util");
+        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.constant");
+        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.entity");
+        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dao");
+        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.mapper");
+        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.exception");
+        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.model.exception");
+        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.util");
         // No no, starts threaded job...
         // Need to exclude job first...
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement");
@@ -36,8 +36,8 @@ public abstract class BuildMovementTestDeployment {
  //       testWar.addClass(MovementBatchModelBean.class).addClass(MovementDomainModelBean.class)
    //             .addClass(MovementSearchGroupDomainModelBean.class).addClass(TempMovementDomainModelBean.class);
 
-        testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.model");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.schema");
+        //testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.model");
+        //testWar.addPackages(true, "eu.europa.ec.fisheries.schema");
         testWar.addClass(TransactionalTests.class);
 
 
