@@ -22,7 +22,7 @@ public abstract class BuildMovementTestDeployment {
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
-        
+
 
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.constant");
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.entity");
@@ -35,7 +35,7 @@ public abstract class BuildMovementTestDeployment {
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message.consumer");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message.producer");
+        testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.message.producer");
         testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.message.event.carrier");
         testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.message.constants");
         testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.service.bean");
