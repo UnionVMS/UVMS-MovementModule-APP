@@ -1,5 +1,11 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.bean.TempMovementDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -11,23 +17,25 @@ import java.io.File;
 /**
  * Created by andreasw on 2017-02-13.
  */
-public abstract class BuildMovementTestDeployment {
+public abstract class BuildMovementServiceTestDeployment {
 
     public static Archive<?> createDeployment() {
 
         // Import Maven runtime dependencies
-        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
-                .importRuntimeDependencies().resolve().withTransitivity().asFile();
+      //  File[] files = Maven.resolver().loadPomFromFile("pom.xml")
+      //          .importRuntimeDependencies().resolve().withTransitivity().asFile();
+
 
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
 
 
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.constant");
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.entity");
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dao");
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.mapper");
+        /*
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.constant");
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.entity");
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dao");
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.mapper");
 
 
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
@@ -52,25 +60,27 @@ public abstract class BuildMovementTestDeployment {
         testWar.addPackages(true,  "eu.europa.ec.fisheries.schema.config.module.v1");
         testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.user.model.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.audit.model.exception");
-        testWar.addPackages(true,  " eu.europa.ec.fisheries.uvms.spatial.model.exception");
+        //testWar.addPackages(true,  " eu.europa.ec.fisheries.uvms.spatial.model.exception");
         testWar.addPackages(true,  "org.jvnet.jaxb2_commons.lang");  // << URRRK
 
 
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.util");
         // No no, starts threaded job...
         // Need to exclude job first...
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.bean");
-  //      testWar.addClass(MovementBatchModelBean.class).addClass(MovementDomainModelBean.class)
-  //              .addClass(MovementSearchGroupDomainModelBean.class).addClass(TempMovementDomainModelBean.class);
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.bean");
+        testWar.addClass(MovementBatchModelBean.class).addClass(MovementDomainModelBean.class)
+                .addClass(MovementSearchGroupDomainModelBean.class).addClass(TempMovementDomainModelBean.class);
 
         testWar.addClass(TransactionalTests.class);
 
-
+*/
+        testWar.addClass(TransactionalTests.class);
+        //testWar.addClass(MovementSearchGroupServiceBean.class);
 
         testWar.addAsResource("persistence-integration.xml", "META-INF/persistence.xml");
         // Empty beans for EE6 CDI
         testWar.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        testWar.addAsLibraries(files);
+        //testWar.addAsLibraries(files);
 
         return testWar;
     }

@@ -27,7 +27,7 @@
         <audit.model.version>3.0.4</audit.model.version>
         <exchange.model.version>3.0.4</exchange.model.version>
         <!--Arquillian test Properties-->
-        <version.org.jboss.arquillian>1.1.5.Final</version.org.jboss.arquillian>
+        <version.org.jboss.arquillian>1.1.8.Final</version.org.jboss.arquillian>
         <version.org.wildfly>8.2.0.Final</version.org.wildfly>
         <version.arquillian.postgres>9.4.1212.jre7</version.arquillian.postgres>
         <netbeans.hint.jdkPlatform>JDK-${java.version}</netbeans.hint.jdkPlatform>

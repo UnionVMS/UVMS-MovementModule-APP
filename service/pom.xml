@@ -31,7 +31,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>movement-message</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.spatial</groupId>
@@ -64,6 +63,24 @@
             <artifactId>arquillian-junit-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency-->
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
+            <artifactId>movement-dbaccess-domain</artifactId>
+            <version>3.0.6-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>

@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import eu.europa.ec.fisheries.uvms.movement.model.MovementSearchGroupDomainModel;
