@@ -1,7 +1,9 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -20,8 +22,8 @@ import javax.ejb.EJB;
 public class MovementSearchGroupServiceIntTest extends TransactionalTests{
 
 
-  //@EJB
-  //  MovementSearchGroupServiceBean movementSearchGroupService;
+  @EJB
+  MovementSearchGroupServiceBean movementSearchGroupService;
 
 
     @Deployment
@@ -32,11 +34,12 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
 
 
     @Test
-    @Ignore
     public void createMovementSearchGroup(){
 
+        Assert.assertTrue(movementSearchGroupService != null);
 
-        /*
+
+
         try {
             movementSearchGroupService.createMovementSearchGroup(null,null);
         } catch (MovementServiceException e) {
@@ -45,7 +48,6 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
             e.printStackTrace();
         }
 
-*/
         Assert.assertTrue(true);
 
     }
