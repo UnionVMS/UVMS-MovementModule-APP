@@ -15,6 +15,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -59,11 +60,13 @@ public abstract class BuildMovementServiceTestDeployment {
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.model.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message.exception");
         testWar.addClass(MovementSearchGroupServiceBean.class).addClass(MovementSearchGroupService.class);
-        testWar.addClass(MessageProducer.class).addClass(MessageProducerBean.class);
-        testWar.addClass(MessageConsumer.class).addClass(MessageConsumerBean.class);
-        testWar.addClass(ConfigMessageProducer.class).addClass(AbstractProducer.class);
-        testWar.addClass(JMSConnectorBean.class).addClass(MessageConstants.class);
-        testWar.addClass(ModuleQueue.class).addClass(EventMessage.class);
+     //   testWar.addClass(MessageProducer.class).addClass(MessageProducerBean.class);
+ //       testWar.addClass(MessageConsumer.class);
+   //             testWar.addClass(MessageConsumerBean.class);
+  //      testWar.addClass(ConfigMessageProducer.class).addClass(AbstractProducer.class);
+  //      testWar.addClass(JMSConnectorBean.class).addClass(MessageConstants.class);
+  //      testWar.addClass(ModuleQueue.class).addClass(EventMessage.class);
+        testWar.addClass(MovementConfigHelper.class);
 
 
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service");
