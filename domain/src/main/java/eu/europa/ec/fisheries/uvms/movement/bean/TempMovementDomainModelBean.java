@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
@@ -35,6 +36,7 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.TempMovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 @Stateless
+@LocalBean
 public class TempMovementDomainModelBean implements TempMovementDomainModel {
 
     private static final Logger LOG = LoggerFactory.getLogger(TempMovementDomainModelBean.class);

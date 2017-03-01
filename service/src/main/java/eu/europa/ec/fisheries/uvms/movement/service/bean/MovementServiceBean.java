@@ -13,8 +13,8 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+
+import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
@@ -52,9 +52,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 
+@LocalBean
 @Stateless
 public class MovementServiceBean implements MovementService {
 
@@ -69,10 +68,12 @@ public class MovementServiceBean implements MovementService {
     @EJB
     SpatialServiceBean spatial;
 
-    @EJB(lookup = LookupConstant.BATCH_MODEL_BEAN)
+    //@EJB(lookup = LookupConstant.BATCH_MODEL_BEAN)
+    @EJB
     MovementBatchModel movementBatch;
 
-    @EJB(lookup = LookupConstant.DOMAIN_MODEL_BEAN)
+    //@EJB(lookup = LookupConstant.DOMAIN_MODEL_BEAN)
+    @EJB
     MovementDomainModel model;
 
     @Inject

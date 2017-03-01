@@ -20,6 +20,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageExc
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;

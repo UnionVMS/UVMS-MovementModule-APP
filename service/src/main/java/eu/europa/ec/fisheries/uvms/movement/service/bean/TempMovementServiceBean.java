@@ -61,7 +61,8 @@ public class TempMovementServiceBean implements TempMovementService {
     @CreatedManualMovement
     Event<NotificationMessage> createdManualMovement;
 
-    @EJB(lookup = LookupConstant.TEMP_MOVEMENT_MODEL_BEAN)
+    //@EJB(lookup = LookupConstant.TEMP_MOVEMENT_MODEL_BEAN)
+    @EJB
     TempMovementDomainModel tempMovementModel;
 
     //TODO SET AS PARAMETER

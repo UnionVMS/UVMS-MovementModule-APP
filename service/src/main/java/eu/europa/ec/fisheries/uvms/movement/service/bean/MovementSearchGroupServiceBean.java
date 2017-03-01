@@ -15,19 +15,15 @@ import java.math.BigInteger;
 import java.util.List;
 
 import javax.ejb.EJB;
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import eu.europa.ec.fisheries.uvms.movement.model.MovementSearchGroupDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.service.constant.LookupConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
@@ -37,13 +33,8 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
 
     private final static Logger LOG = LoggerFactory.getLogger(MovementSearchGroupServiceBean.class);
 
+    //@EJB(lookup = LookupConstant.SEARCH_GROUP_MODEL)
     @EJB
-    MessageConsumer consumer;
-
-    @EJB
-    MessageProducer producer;
-
-    @EJB(lookup = LookupConstant.SEARCH_GROUP_MODEL)
     MovementSearchGroupDomainModel groupModel;
 
     //TODO SET AS PARAMETER
