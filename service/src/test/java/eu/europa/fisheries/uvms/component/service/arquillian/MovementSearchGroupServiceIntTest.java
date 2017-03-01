@@ -37,6 +37,11 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
 
 
+
+    /******************************************************************************************************************
+     *   TEST FUNCTIONS
+     ******************************************************************************************************************/
+
     @Test
     public void createMovementSearchGroup_Movement_Dynamic() throws MovementServiceException, MovementDuplicateException {
 
@@ -153,6 +158,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     public void deleteMovementSearchGroup_MIN_VALUE_AS_ID() throws MovementServiceException, MovementDuplicateException {
         try {
             MovementSearchGroup deletedMovementSearchGroup = movementSearchGroupService.deleteMovementSearchGroup(Long.MIN_VALUE);
+            Assert.fail();
         } catch (MovementServiceException e) {
             Assert.assertTrue(e != null);
         }
@@ -169,6 +175,10 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
             Assert.assertTrue(e != null);
         }
     }
+
+
+
+
 
 
     /******************************************************************************************************************
