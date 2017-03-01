@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import java.math.BigInteger;
 import java.util.UUID;
 
 /**
@@ -22,7 +23,7 @@ import java.util.UUID;
  */
 
 @RunWith(Arquillian.class)
-public class MovementSearchGroupServiceIntTest extends TransactionalTests{
+public class MovementSearchGroupServiceIntTest extends TransactionalTests {
 
     private final static String TEST_USER_NAME = "MovementSearchGroupServiceIntTestUser";
 
@@ -36,12 +37,11 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
     }
 
 
-
     @Test
     public void createMovementSearchGroup_Movement_Dynamic() throws MovementServiceException, MovementDuplicateException {
 
-        for(SearchKey searchKey : SearchKey.values()){
-            MovementSearchGroup movementSearchGroup =  createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, searchKey.value());
+        for (SearchKey searchKey : SearchKey.values()) {
+            MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, searchKey.value());
             MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
             Assert.assertTrue(createdMovementSearchGroup != null);
         }
@@ -50,8 +50,8 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
     @Test
     public void createMovementSearchGroup_Movement_NONDynamic() throws MovementServiceException, MovementDuplicateException {
 
-        for(SearchKey searchKey : SearchKey.values()){
-            MovementSearchGroup movementSearchGroup =  createMovementSearchGroupHelper("TEST", false, SearchKeyType.MOVEMENT, searchKey.value());
+        for (SearchKey searchKey : SearchKey.values()) {
+            MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.MOVEMENT, searchKey.value());
             MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
             Assert.assertTrue(createdMovementSearchGroup != null);
         }
@@ -64,7 +64,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
             MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, "FAIL");
             MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
             Assert.fail();
-        }catch (MovementServiceException e){
+        } catch (MovementServiceException e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -76,7 +76,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
             MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, "null");
             MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
             Assert.fail();
-        }catch (MovementServiceException e){
+        } catch (MovementServiceException e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -85,10 +85,10 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
     public void createMovementSearchGroup_Movement_NONDynamic_FAIL() throws MovementServiceException, MovementDuplicateException {
 
         try {
-            MovementSearchGroup movementSearchGroup =  createMovementSearchGroupHelper("TEST", false, SearchKeyType.MOVEMENT, "FAIL");
+            MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.MOVEMENT, "FAIL");
             MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
             Assert.fail();
-        }catch (MovementServiceException e){
+        } catch (MovementServiceException e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -96,8 +96,8 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
     @Test
     public void createMovementSearchGroup_Asset_Dynamic() throws MovementServiceException, MovementDuplicateException {
 
-        for(SearchKey searchKey : SearchKey.values()){
-            MovementSearchGroup movementSearchGroup =  createMovementSearchGroupHelper("TEST", true, SearchKeyType.ASSET, searchKey.value());
+        for (SearchKey searchKey : SearchKey.values()) {
+            MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.ASSET, searchKey.value());
             MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
             Assert.assertTrue(createdMovementSearchGroup != null);
         }
@@ -106,8 +106,8 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
     @Test
     public void createMovementSearchGroup_Asset_NONDynamic() throws MovementServiceException, MovementDuplicateException {
 
-        for(SearchKey searchKey : SearchKey.values()){
-            MovementSearchGroup movementSearchGroup =  createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, searchKey.value());
+        for (SearchKey searchKey : SearchKey.values()) {
+            MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, searchKey.value());
             MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
             Assert.assertTrue(createdMovementSearchGroup != null);
         }
@@ -116,23 +116,65 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
     @Test
     public void createMovementSearchGroup_Asset_DynamicCrapData() throws MovementServiceException, MovementDuplicateException {
 
-            MovementSearchGroup movementSearchGroup =  createMovementSearchGroupHelper("TEST", true, SearchKeyType.ASSET, UUID.randomUUID().toString());
-            MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
-            Assert.assertTrue(createdMovementSearchGroup != null);
+        MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.ASSET, UUID.randomUUID().toString());
+        MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
+        Assert.assertTrue(createdMovementSearchGroup != null);
     }
 
     @Test
     public void createMovementSearchGroup_Asset_NONDynamicCrapData() throws MovementServiceException, MovementDuplicateException {
-            MovementSearchGroup movementSearchGroup =  createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, UUID.randomUUID().toString());
-            MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
-            Assert.assertTrue(createdMovementSearchGroup != null);
+        MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, UUID.randomUUID().toString());
+        MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
+        Assert.assertTrue(createdMovementSearchGroup != null);
+    }
+
+
+    @Test
+    public void deleteMovementSearchGroup() throws MovementServiceException, MovementDuplicateException {
+        MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+        MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
+        Assert.assertTrue(createdMovementSearchGroup != null);
+
+        BigInteger createdMovementSearchGroupID = createdMovementSearchGroup.getId();
+        Assert.assertTrue(createdMovementSearchGroupID != null);
+
+        Long key = createdMovementSearchGroupID.longValue();
+        try {
+            MovementSearchGroup deletedMovementSearchGroup = movementSearchGroupService.deleteMovementSearchGroup(key);
+            Assert.assertTrue(deletedMovementSearchGroup != null);
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void deleteMovementSearchGroup_MIN_VALUE_AS_ID() throws MovementServiceException, MovementDuplicateException {
+        try {
+            MovementSearchGroup deletedMovementSearchGroup = movementSearchGroupService.deleteMovementSearchGroup(Long.MIN_VALUE);
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e != null);
+        }
+    }
+
+    @Test
+    public void deleteMovementSearchGroup_NULL_AS_ID() throws MovementServiceException, MovementDuplicateException {
+        try {
+            MovementSearchGroup deletedMovementSearchGroup = movementSearchGroupService.deleteMovementSearchGroup(null);
+            Assert.fail();
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e != null);
+        } catch (Exception e) {
+            Assert.assertTrue(e != null);
+        }
     }
 
 
     /******************************************************************************************************************
      *   HELPER FUNCTIONS
      ******************************************************************************************************************/
-    private MovementSearchGroup createMovementSearchGroupHelper(String name, boolean dynamic, SearchKeyType criteriatype, String searchKey ){
+    private MovementSearchGroup createMovementSearchGroupHelper(String name, boolean dynamic, SearchKeyType criteriatype, String searchKey) {
 
 
         /*      FOR Movement these are allowed
@@ -153,9 +195,6 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests{
 
                 for Asset and Other   . . .  Anything is Ok
         */
-
-
-
         MovementSearchGroup movementSearchGroup = new MovementSearchGroup();
         movementSearchGroup.setName(name);
         movementSearchGroup.setDynamic(dynamic);
