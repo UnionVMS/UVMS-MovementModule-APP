@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -280,6 +281,44 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
             Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e != null);
+        }
+    }
+
+    @Test
+    public void getMovementSearchGroupsByUser() throws MovementServiceException, MovementDuplicateException {
+
+        try {
+            MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+            MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
+            List<MovementSearchGroup> rs = movementSearchGroupService.getMovementSearchGroupsByUser("TEST");
+            Assert.assertTrue(rs != null);
+            Assert.assertTrue(rs.size() != 0);
+        } catch (Exception e) {
+            Assert.fail(e.toString());
+        }
+    }
+
+    @Test
+    public void getMovementSearchGroupsBy_NON_EXISTING_User() throws MovementServiceException, MovementDuplicateException {
+
+        try {
+            List<MovementSearchGroup> rs = movementSearchGroupService.getMovementSearchGroupsByUser("UUID.randomUUID.toString()");
+            Assert.assertTrue(rs != null);
+            Assert.assertTrue(rs.size() == 0);
+        } catch (Exception e) {
+            Assert.fail(e.toString());
+        }
+    }
+
+    @Test
+    public void getMovementSearchGroupsBy_NULL_User() throws MovementServiceException, MovementDuplicateException {
+
+        try {
+            List<MovementSearchGroup> rs = movementSearchGroupService.getMovementSearchGroupsByUser(null);
+            Assert.assertTrue(rs != null);
+            Assert.assertTrue(rs.size() == 0);
+        } catch (Exception e) {
+            Assert.fail(e.toString());
         }
     }
 
