@@ -36,6 +36,9 @@ public class MovementServiceIntTest   extends TransactionalTests {
     public void createMovement(){
 
 
+        Assert.assertTrue(movementService != null);
+
+
         /*
         try {
             movementService.createMovement(null, "TEST");
