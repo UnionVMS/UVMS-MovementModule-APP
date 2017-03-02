@@ -91,6 +91,8 @@ public class MovementSearchGroupDomainModelBean implements MovementSearchGroupDo
                 LOG.error("[ Cannot update movement search group because it doesn't belong to this user]");
                 throw new MovementModelException("Could not update movement search groups");
             }
+
+            // TODO sloppy programming. should use the returnvalue from the function
             MovementGroupMapper.toGroupEntity(currentGroup, searchGroup, username);
             MovementFilterGroup updatedGroup = dao.updateMovementFilterGroup(currentGroup);
             return MovementGroupMapper.toMovementSearchGroup(updatedGroup);

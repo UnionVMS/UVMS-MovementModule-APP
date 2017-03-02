@@ -25,6 +25,14 @@ import java.util.UUID;
 @RunWith(Arquillian.class)
 public class MovementSearchGroupServiceIntTest extends TransactionalTests {
 
+    /** TODO TODO TODO
+     *   OBS in this artifact , there is confusion in the datatype of the Id
+     *   It returns BigInteger  , as input the methods takes Long
+     *
+     *   This is an error an should be corrected to Long as in the rest of the application
+     */
+
+
     private final static String TEST_USER_NAME = "MovementSearchGroupServiceIntTestUser";
 
     @EJB
@@ -176,8 +184,104 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
         }
     }
 
+    @Test
+    public void getMovementSearchGroup() throws MovementServiceException, MovementDuplicateException {
+        try {
+
+            // first create one
+            MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+            MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
+            Assert.assertTrue(createdMovementSearchGroup != null);
+            Assert.assertTrue(createdMovementSearchGroup.getId() != null);
+
+            BigInteger createdMovementSearchGroupId = createdMovementSearchGroup.getId();
+            MovementSearchGroup fetchedMovementSearchGroup = movementSearchGroupService.getMovementSearchGroup(createdMovementSearchGroupId.longValue());
+            Assert.assertTrue(fetchedMovementSearchGroup != null);
+            Assert.assertTrue(fetchedMovementSearchGroup.getId() != null);
+            BigInteger fetchedMovementSearchGroupId = fetchedMovementSearchGroup.getId();
+            Assert.assertTrue(createdMovementSearchGroupId.equals(fetchedMovementSearchGroupId));
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void getMovementSearchGroup_NULL_IN_KEY() throws MovementServiceException, MovementDuplicateException {
+        try {
+            MovementSearchGroup fetchedMovementSearchGroup = movementSearchGroupService.getMovementSearchGroup(null);
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertTrue(e != null);
+        }
+    }
+
+    @Test
+    public void getMovementSearchGroup_MINVAL_IN_KEY() throws MovementServiceException, MovementDuplicateException {
+        try {
+            MovementSearchGroup fetchedMovementSearchGroup = movementSearchGroupService.getMovementSearchGroup(Long.MIN_VALUE);
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertTrue(e != null);
+        }
+    }
 
 
+    @Test
+    public void updateMovementSearchGroup() throws MovementServiceException, MovementDuplicateException {
+
+        // TODO changed_by   not visible to client ??????
+
+        try {
+
+            // create one
+            MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+            MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
+            Assert.assertTrue(createdMovementSearchGroup != null);
+
+            BigInteger createdMovementSearchGroupID = createdMovementSearchGroup.getId();
+            Assert.assertTrue(createdMovementSearchGroupID != null);
+            Long createdKey = createdMovementSearchGroupID.longValue();
+
+            // fix a new one
+            MovementSearchGroup aNewMovementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+            // put id in it from the created so it can be used as update info
+            aNewMovementSearchGroup.setId(BigInteger.valueOf(createdKey));
+            aNewMovementSearchGroup.setName("CHANGED_NAME");
+
+            MovementSearchGroup updatedMovementSearchGroup = movementSearchGroupService.updateMovementSearchGroup(aNewMovementSearchGroup, "TEST_UPD");
+            Assert.assertTrue(updatedMovementSearchGroup != null);
+            Assert.assertTrue(updatedMovementSearchGroup.getId() != null);
+            BigInteger updatedMovementSearchGroupID = updatedMovementSearchGroup.getId();
+
+            Assert.assertTrue(updatedMovementSearchGroupID.equals(createdMovementSearchGroupID));
+
+            // now ensure the update actually were persisted
+            MovementSearchGroup fetchedMovementSearchGroup = movementSearchGroupService.getMovementSearchGroup(updatedMovementSearchGroupID.longValue());
+            Assert.assertTrue(fetchedMovementSearchGroup != null);
+            Assert.assertTrue(fetchedMovementSearchGroup.getName().equals("CHANGED_NAME"));
+        } catch (Exception e) {
+            Assert.fail();
+        }
+    }
+
+
+    @Test
+    public void updateMovementNON_EXISTING_SearchGroup() throws MovementServiceException, MovementDuplicateException {
+
+        try {
+            // fix a new one
+            MovementSearchGroup aNewMovementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+            // put id in it from the created so it can be used as update info
+            aNewMovementSearchGroup.setId(BigInteger.valueOf(Long.MIN_VALUE));
+            aNewMovementSearchGroup.setName("CHANGED_NAME");
+            MovementSearchGroup updatedMovementSearchGroup = movementSearchGroupService.updateMovementSearchGroup(aNewMovementSearchGroup, "TEST_UPD");
+            Assert.fail();
+        } catch (Exception e) {
+            Assert.assertTrue(e != null);
+        }
+    }
 
 
 
