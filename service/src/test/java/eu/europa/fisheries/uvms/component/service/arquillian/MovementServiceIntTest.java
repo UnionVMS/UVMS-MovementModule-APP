@@ -1,10 +1,12 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,11 +28,21 @@ public class MovementServiceIntTest   extends TransactionalTests {
 
     @Deployment
     public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createDeployment();
+        return BuildMovementServiceTestDeployment.createDeploymentFORMovementServiceIntTest();
     }
 
+
     @Test
-    public void xxx(){
+    public void createMovement(){
+
+
+        /*
+        try {
+            movementService.createMovement(null, "TEST");
+        } catch (Exception e) {
+            Assert.fail();
+        }
+        */
 
     }
 
