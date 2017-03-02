@@ -119,7 +119,7 @@ public abstract class BuildMovementServiceTestDeployment {
 
 
 
-    public static Archive<?> createDeploymentFORMovementServiceIntTest() {
+    public static Archive<?> createDeployment_FOR_MovementServiceIntTest() {
 
         // Import Maven runtime dependencies
         File[] files = Maven.resolver().loadPomFromFile("pom.xml")
@@ -155,7 +155,7 @@ public abstract class BuildMovementServiceTestDeployment {
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.model.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message.exception");
-        testWar.addClass(MovementSearchGroupServiceBean.class).addClass(MovementSearchGroupService.class).addClass(MovementListResponseDto.class).addClass(MovementDto.class);
+        testWar.addClass(MovementServiceBean.class).addClass(MovementService.class).addClass(MovementListResponseDto.class).addClass(MovementDto.class);
         //   testWar.addClass(MessageProducer.class).addClass(MessageProducerBean.class);
         //       testWar.addClass(MessageConsumer.class);
         //             testWar.addClass(MessageConsumerBean.class);
@@ -200,9 +200,6 @@ public abstract class BuildMovementServiceTestDeployment {
 
         return testWar;
     }
-
-
-
 
 
 

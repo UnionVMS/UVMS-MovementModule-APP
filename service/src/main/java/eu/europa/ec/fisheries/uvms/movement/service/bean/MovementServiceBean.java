@@ -59,6 +59,7 @@ public class MovementServiceBean implements MovementService {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementServiceBean.class);
 
+
     @EJB
     MessageConsumer consumer;
 
@@ -284,12 +285,14 @@ public class MovementServiceBean implements MovementService {
                 }
             }
 
+
             try {
                 String auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(createdMovement.name(), "UVMS batch movement");
                 producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
             } catch (AuditModelMarshallException e) {
                 LOG.error("Failed to send audit log message! Movement batch {} was created with outcome: ", createdMovement.name());
             }
+
 
             return createdMovement;
         } catch (MovementMessageException ex) {

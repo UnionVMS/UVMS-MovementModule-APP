@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.Random;
 
@@ -37,7 +38,7 @@ public class MovementServiceIntTest   extends TransactionalTests {
 
     @Deployment
     public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createDeploymentFORMovementServiceIntTest();
+        return BuildMovementServiceTestDeployment.createDeployment_FOR_MovementServiceIntTest();
     }
 
 
@@ -53,14 +54,14 @@ public class MovementServiceIntTest   extends TransactionalTests {
         Assert.assertTrue(movementService != null);
 
 
-        /*
 
+/*
             try {
                 MovementType createdMovementType = movementService.createMovement(movementType, "TEST");
             } catch (Exception e) {
                 Assert.fail();
             }
-        */
+  */
 
 
     }
