@@ -1,22 +1,17 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.TempMovementDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
-<<<<<<< HEAD
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
+import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.SpatialServiceBean;
-=======
-import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
->>>>>>> b01b1e51dd32044df541312150626f67525b93d7
+import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.spatial.model.exception.SpatialException;
