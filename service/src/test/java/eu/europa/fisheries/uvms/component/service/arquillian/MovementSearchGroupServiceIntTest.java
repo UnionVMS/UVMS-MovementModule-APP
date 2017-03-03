@@ -42,7 +42,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
 
     @Deployment
     public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createMovmentSearchDeployment();
+        return BuildMovementServiceTestDeployment.createMovementSearchDeployment();
     }
 
 

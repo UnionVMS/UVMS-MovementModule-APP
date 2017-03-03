@@ -16,7 +16,7 @@ public class EventServiceIntTest extends TransactionalTests {
 
     @Deployment
     public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createMovmentSearchDeployment();
+        return BuildMovementServiceTestDeployment.createMovementSearchDeployment();
     }
 
     @Test

@@ -81,7 +81,7 @@ public abstract class BuildMovementServiceTestDeployment {
         return testWar;
     }
 
-    public static Archive<?> createMovmentSearchDeployment() {
+    public static Archive<?> createMovementSearchDeployment() {
         WebArchive archive = createBasicDeployment();
 
         archive.addClass(MovementSearchGroupServiceBean.class).addClass(MovementSearchGroupService.class);
