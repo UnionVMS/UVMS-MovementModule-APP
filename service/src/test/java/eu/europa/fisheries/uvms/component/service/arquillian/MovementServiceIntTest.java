@@ -46,13 +46,13 @@ public class MovementServiceIntTest   extends TransactionalTests {
     public void createMovement(){
 
         Date now = DateUtil.nowUTC();
-        Double latitude = 1.00001;
-        Double longitude = 2.00001;
+        double longitude = 9.140625D;
+        double latitude = 57.683804D;
 
 
 
         // create a MovementConnect
-       String connectId =  UUID.randomUUID().toString();
+        String connectId =  UUID.randomUUID().toString();
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setValue(connectId);
         movementConnect.setUpdatedBy("arquillian");
@@ -138,9 +138,11 @@ public class MovementServiceIntTest   extends TransactionalTests {
         //movementType.setInternalReferenceNumber( );
         movementType.setTripNumber(rnd.nextDouble());
         movementType.setMovementType(MovementTypeType.POS);
-
         return movementType;
     }
+
+
+
 
 
     public static MovementMetaData getMappedMovementHelper(int numberOfAreas) {
