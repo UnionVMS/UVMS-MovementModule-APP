@@ -17,11 +17,12 @@ import java.util.List;
 import javax.ejb.Stateless;
 
 import eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 
 @Stateless
 public class MovementConfigHelper implements ConfigHelper {
+
+    private final static String MOVEMENT_PU = "movementPU";
 
     @Override
     public List<String> getAllParameterKeys() {
@@ -35,7 +36,7 @@ public class MovementConfigHelper implements ConfigHelper {
 
     @Override
     public String getModuleName() {
-        return MessageConstants.MODULE_NAME;
+        return MOVEMENT_PU;
     }
 
 }

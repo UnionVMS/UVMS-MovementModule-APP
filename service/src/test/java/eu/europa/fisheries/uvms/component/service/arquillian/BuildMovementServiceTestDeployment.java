@@ -1,26 +1,22 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
+import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.TempMovementDomainModelBean;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MessageConsumerBean;
-import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.AbstractProducer;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+<<<<<<< HEAD
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.SpatialServiceBean;
+=======
+import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
+>>>>>>> b01b1e51dd32044df541312150626f67525b93d7
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.spatial.model.exception.SpatialException;
@@ -40,7 +36,7 @@ import java.io.File;
  */
 public abstract class BuildMovementServiceTestDeployment {
 
-    public static Archive<?> createDeployment() {
+    private static WebArchive createBasicDeployment() {
 
         // Import Maven runtime dependencies
         File[] files = Maven.resolver().loadPomFromFile("pom.xml")
@@ -67,47 +63,24 @@ public abstract class BuildMovementServiceTestDeployment {
 
         // END
 
-
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.model.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message.exception");
-        testWar.addClass(MovementSearchGroupServiceBean.class).addClass(MovementSearchGroupService.class);
-     //   testWar.addClass(MessageProducer.class).addClass(MessageProducerBean.class);
- //       testWar.addClass(MessageConsumer.class);
-   //             testWar.addClass(MessageConsumerBean.class);
-  //      testWar.addClass(ConfigMessageProducer.class).addClass(AbstractProducer.class);
-  //      testWar.addClass(JMSConnectorBean.class).addClass(MessageConstants.class);
-  //      testWar.addClass(ModuleQueue.class).addClass(EventMessage.class);
-        testWar.addClass(MovementConfigHelper.class);
-
-
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service");
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message.consumer");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.message.producer");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.message.event.carrier");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.message.constants");
+        testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.exchange.model");
         testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.model");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.config.constants");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.config.exception");
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.config.module.exception");
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.config.model.exception");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.config.message");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.config.service");
         testWar.addPackages(true, "eu.europa.ec.fisheries.schema");
         testWar.addPackages(true,  "eu.europa.ec.fisheries.schema.config.types.v1");
         testWar.addPackages(true,  "eu.europa.ec.fisheries.schema.movement.search.v1");
         testWar.addPackages(true,  "eu.europa.ec.fisheries.schema.config.module.v1");
         testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.user.model.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.audit.model.exception");
-        //testWar.addPackages(true,  " eu.europa.ec.fisheries.uvms.spatial.model.exception");
         testWar.addPackages(true,  "org.jvnet.jaxb2_commons");  // << URRRK
-
-
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.util");
 
+        testWar.addClass(MovementConfigHelper.class);
         testWar.addClass(TransactionalTests.class);
-
-        //testWar.addClass(MovementSearchGroupServiceBean.class);
 
         testWar.addAsResource("persistence-integration.xml", "META-INF/persistence.xml");
         // Empty beans for EE6 CDI
@@ -117,7 +90,22 @@ public abstract class BuildMovementServiceTestDeployment {
         return testWar;
     }
 
+    public static Archive<?> createMovementSearchDeployment() {
+        WebArchive archive = createBasicDeployment();
 
+        archive.addClass(MovementSearchGroupServiceBean.class).addClass(MovementSearchGroupService.class);
+        archive.addClass(MovementConfigHelper.class);
+
+        return archive;
+    }
+
+
+    public static Archive<?> createTempMovementDeployment() {
+        WebArchive archive = createBasicDeployment();
+        archive.addClass(TempMovementServiceBean.class).addClass(TempMovementService.class);
+
+        return archive;
+    }
 
 
 
