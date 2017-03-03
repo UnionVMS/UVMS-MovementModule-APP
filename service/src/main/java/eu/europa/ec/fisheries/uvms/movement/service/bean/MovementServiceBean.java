@@ -27,6 +27,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.MovementBatchModel;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
+import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.LookupConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,7 @@ public class MovementServiceBean implements MovementService {
     MessageProducer producer;
 
     @EJB
-    SpatialServiceBean spatial;
+    SpatialService spatial;
 
     //@EJB(lookup = LookupConstant.BATCH_MODEL_BEAN)
     @EJB

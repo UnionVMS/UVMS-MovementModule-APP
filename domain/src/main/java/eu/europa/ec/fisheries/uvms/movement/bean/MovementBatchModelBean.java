@@ -164,8 +164,11 @@ public class MovementBatchModelBean implements MovementBatchModel {
                 Area areaEntity = dao.getAreaByRemoteIdAndCode(area.getCode(), area.getRemoteId());
 
                 if (areaEntity != null) {
-                    if (!areaEntity.getRemoteId().equals(area.getRemoteId())) {
-                        areaEntity.setRemoteId(area.getRemoteId());
+                    String wrkRemoteId = areaEntity.getRemoteId();
+                    if(wrkRemoteId != null) {
+                        if (!wrkRemoteId.equals(area.getRemoteId())) {
+                            areaEntity.setRemoteId(area.getRemoteId());
+                        }
                     }
                     movementArea.setMovareaAreaId(areaEntity);
                 } else {
