@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.message.producer.bean;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -31,11 +30,12 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import static eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean.LOG;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import javax.ejb.EJB;
 import javax.naming.InitialContext;
+
+import static eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean.LOG;
 
 @Stateless
 public class MessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
@@ -74,7 +74,7 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
             TextMessage message = session.createTextMessage();
             message.setJMSReplyTo(responseQueue);
             message.setText(text);
-            javax.jms.MessageProducer producer;
+            MessageProducer producer;
             switch (queue) {
                 case AUDIT:
                     getProducer(session, auditQueue).send(message);
@@ -102,7 +102,6 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
         }
     }
 
-    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException {
         try {
@@ -124,7 +123,6 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
         }
     }
 
-    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) throws MovementMessageException {
         try {

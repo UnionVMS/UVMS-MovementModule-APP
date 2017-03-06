@@ -157,7 +157,7 @@
         </dependencies>
     </dependencyManagement>
 
-
+<!--
     <repositories>
         <repository>
             <id>focus-repo</id>
@@ -186,7 +186,7 @@
             <url>http://nexus.focus.fish/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
+-->
     <scm>
         <connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-APP.git</connection>
         <tag>HEAD</tag>
@@ -245,6 +245,8 @@
         <module>rest</module>
         <module>service</module>
         <module>message</module>
+        <module>message-impl</module>
+        <module>message-mock</module>
         <module>module</module>
     </modules>
 </project>

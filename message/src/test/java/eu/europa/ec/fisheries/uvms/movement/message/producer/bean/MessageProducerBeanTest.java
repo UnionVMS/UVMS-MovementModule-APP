@@ -28,7 +28,7 @@ import org.mockito.MockitoAnnotations;
 /**
  **/
 public class MessageProducerBeanTest {
-
+/*
     @Mock
     Queue localDbQueue;
 
@@ -55,6 +55,7 @@ public class MessageProducerBeanTest {
 
     @Mock
     Session session;
+
 
     @InjectMocks
     MessageProducerBean theBeanToTest;
