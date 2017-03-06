@@ -1,6 +1,9 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
+import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -28,8 +31,15 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     public void testMe() {
-
-        Assert.assertTrue(true);
+        TempMovementType tt = null;
+        try {
+            tt = tempMovementService.getTempMovement("TEST");
+        } catch (MovementServiceException e) {
+            e.printStackTrace();
+        } catch (MovementDuplicateException e) {
+            e.printStackTrace();
+        }
+        Assert.assertNull(tt);
     }
 
 }
