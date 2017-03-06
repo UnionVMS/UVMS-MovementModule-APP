@@ -15,6 +15,7 @@
 
     <!-- PROPERTIES USED FOR LOGBACK -->
     <properties>
+        <hibernate.dialect>org.hibernate.spatial.dialect.postgis.PostgisDialect</hibernate.dialect>
         <application.name>${project.parent.artifactId}</application.name>
         <application.version>${project.parent.version}</application.version>
         <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log
