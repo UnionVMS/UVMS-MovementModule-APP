@@ -6,6 +6,7 @@ import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelB
 import eu.europa.ec.fisheries.uvms.movement.bean.TempMovementDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -13,6 +14,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.spatial.model.exception.SpatialException;
 import eu.europa.ec.fisheries.uvms.spatial.model.exception.SpatialModelException;
 import eu.europa.ec.fisheries.uvms.spatial.model.exception.SpatialModelMapperException;
+import eu.europa.fisheries.uvms.component.service.SpatialServiceMockedBean;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -127,7 +129,8 @@ public abstract class BuildMovementServiceTestDeployment {
                 .addClass(TempMovementDomainModelBean.class)
                 .addClass(MovementServiceBean.class)
                 .addClass(MovementService.class)
-                .addClass(SpatialServiceBean.class)
+                .addClass(SpatialService.class)
+                .addClass(SpatialServiceMockedBean.class)
                 .addClass(SpatialModelMapperException.class)
                 .addClass(SpatialModelException.class)
                 .addClass(SpatialException.class);
