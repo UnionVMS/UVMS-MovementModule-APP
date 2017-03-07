@@ -1,9 +1,6 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
-import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.*;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
@@ -57,6 +54,25 @@ public abstract class BuildMovementServiceTestDeployment {
         archive.addClass(MovementConfigHelper.class);
         archive.addClass(MovementServiceException.class);
         archive.addClass(MovementGroupValidator.class);
+
+
+        return archive;
+    }
+
+    public static Archive<?> createEventDeployment() {
+        WebArchive archive = createBasicDeployment();
+
+        archive.addClass(MovementEventServiceBean.class);
+        archive.addClass(EventService.class);
+        archive.addClass(MovementServiceException.class);
+
+        archive.addClass(MovementServiceBean.class)
+                .addClass(MovementService.class)
+                .addClass(SpatialService.class)
+                .addClass(SpatialServiceMockedBean.class)
+                .addClass(MovementListResponseDto.class)
+                .addClass(MovementDto.class);
+        archive.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
 
 
         return archive;
