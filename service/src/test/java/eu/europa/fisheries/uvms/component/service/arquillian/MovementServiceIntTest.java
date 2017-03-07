@@ -1,9 +1,19 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.*;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
@@ -21,10 +31,7 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import javax.inject.Inject;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import static eu.europa.fisheries.uvms.component.service.arquillian.BuildMovementServiceTestDeployment.LOG;
 
@@ -71,7 +78,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
 
-@Test
+    @Test
     public void getMapByQuery() {
 
         MovementQuery query = new MovementQuery();
@@ -90,15 +97,19 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     public void createMovementBatch() {
 
-        List<MovementBaseType> query = null;
+        List<MovementBaseType> query = createBaseTypeList();
         try {
-            SimpleResponse rseponse = movementService.createMovementBatch(query);
+            SimpleResponse response = movementService.createMovementBatch(query);
+            Assert.assertTrue(response!= null);
+            Assert.assertTrue(response == SimpleResponse.OK);
         } catch (MovementServiceException e) {
             Assert.fail();
         } catch (MovementDuplicateException e) {
             Assert.fail();
         }
     }
+
+
 
 
     @Test
@@ -143,6 +154,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.assertTrue(fetchedGuid.equals(guid));
 
         } catch (Exception e) {
+            // TODO  check this it is suspect
             //Assert.fail();
         }
     }
@@ -231,5 +243,33 @@ public class MovementServiceIntTest extends TransactionalTests {
         return area;
     }
 
+
+    private List<MovementBaseType> createBaseTypeList() {
+        List<MovementBaseType> query = new ArrayList<>();
+        String connectId = UUID.randomUUID().toString();
+        Integer n = rnd.nextInt(10);
+        for (int i = 0; i < n; i++) {
+            query.add(createMovementBaseType(i, connectId));
+        }
+        return query;
+    }
+
+    private MovementBaseType createMovementBaseType(Integer i, String connectId) {
+        MovementBaseType movementBaseType = new MovementBaseType();
+        movementBaseType.setConnectId(connectId);
+        movementBaseType.setSource(MovementSourceType.AIS);
+        movementBaseType.setMovementType(MovementTypeType.MAN);
+        movementBaseType.setPosition(position());
+        return movementBaseType;
+    }
+    public  MovementPoint position() {
+
+        Double longitude = rnd.nextDouble();
+        Double latitude = rnd.nextDouble();
+        MovementPoint movementPoint = new MovementPoint();
+        movementPoint.setLongitude(longitude);
+        movementPoint.setLatitude(latitude);
+        return movementPoint;
+    }
 
 }

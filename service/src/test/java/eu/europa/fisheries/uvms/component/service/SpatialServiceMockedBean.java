@@ -1,5 +1,6 @@
 package eu.europa.fisheries.uvms.component.service;
 
+import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
@@ -30,6 +31,8 @@ public class SpatialServiceMockedBean  implements SpatialService {
 
 
         movementType.setSource(MovementSourceType.NAF);
+
+
         return movementType;
     }
 
@@ -48,6 +51,8 @@ public class SpatialServiceMockedBean  implements SpatialService {
         area.setAreaType(areaCode);
         return area;
     }
+
+
 
 
 
