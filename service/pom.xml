@@ -118,33 +118,19 @@
             <version>${jts.version}</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
-
-    <profiles>
-        <profile>
-            <id>prod</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>movement-message-mock</artifactId>
+            <version>${project.parent.version}</version>
+            <exclusions>
+                <exclusion>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>movement-message-impl</artifactId>
-                    <version>${project.parent.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>test</id>
-            <dependencies>
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>movement-message-mock</artifactId>
-                    <version>${project.parent.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <finalName>${project.name}-${project.version}</finalName>

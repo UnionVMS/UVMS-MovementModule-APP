@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>movement-message-mock</artifactId>
-    <name>movement-message</name>
+    <name>movement-message-mock</name>
     <packaging>ejb</packaging>
 
     <parent>
