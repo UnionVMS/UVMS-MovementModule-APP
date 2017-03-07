@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.UUID;
 
 /**
  * Created by andreasw on 2017-03-03.
@@ -46,6 +47,21 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    public void createWithGivenId() throws MovementDuplicateException {
+        String id = UUID.randomUUID().toString();
+        TempMovementType tempMovementType = createTempMovement();
+        tempMovementType.setGuid(id);
+        try {
+            tempMovementService.createTempMovement(tempMovementType, "TEST");
+            em.flush();
+            TempMovementType fetched = tempMovementService.getTempMovement(id);
+            Assert.assertFalse("Should not reach this!", true);
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e.getMessage().contains("Error when getting temp movement"));
+        }
+    }
+
+    @Test
     public void getTempMovement() throws MovementServiceException, MovementDuplicateException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
@@ -56,7 +72,6 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         Assert.assertNotNull(fetched);
         Assert.assertEquals(fetched.getGuid(), result.getGuid());
     }
-
 
     @Test
     public void getTempMovementWithBogusId() {
@@ -71,8 +86,55 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         Assert.assertNull(tt);
     }
 
+    @Test
+    public void updateTempMovement() throws MovementServiceException, MovementDuplicateException {
+        TempMovementType tempMovementType = createTempMovement();
+        TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
+        em.flush();
+        String id = result.getGuid();
+        Assert.assertNotNull(id);
 
+        TempMovementType fetched = tempMovementService.getTempMovement(id);
+        Assert.assertNotNull(fetched);
+        Assert.assertEquals(id, fetched.getGuid());
+        Assert.assertEquals(TempMovementStateEnum.SENT, fetched.getState());
 
+        fetched.setState(TempMovementStateEnum.DELETED);
+        tempMovementService.updateTempMovement(fetched, "TEST");
+        em.flush();
+
+        TempMovementType fetchedAgain = tempMovementService.getTempMovement(id);
+        Assert.assertNotNull(fetched);
+        Assert.assertEquals(id, fetchedAgain.getGuid());
+        Assert.assertEquals(TempMovementStateEnum.DELETED, fetchedAgain.getState());
+    }
+
+    @Test
+    public void archiveTempMovement() throws MovementServiceException, MovementDuplicateException {
+        TempMovementType tempMovementType = createTempMovement();
+        TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
+        em.flush();
+        String id = result.getGuid();
+        Assert.assertNotNull(id);
+
+        tempMovementService.archiveTempMovement(id, "TEST");
+
+        TempMovementType fetched = tempMovementService.getTempMovement(id);
+        Assert.assertNotNull(fetched);
+        Assert.assertEquals(id, fetched.getGuid());
+        Assert.assertEquals(TempMovementStateEnum.DELETED, fetched.getState());
+    }
+
+    @Test
+    public void archiveTempMovementWithBogusId() throws MovementDuplicateException {
+        String id = "BOGUS";
+
+        try {
+            tempMovementService.archiveTempMovement(id, "TEST");
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e.getMessage().contains("Error when updating temp movement status"));
+        }
+    }
 
     private TempMovementType createTempMovement() {
         VesselType vesselType = new VesselType();
