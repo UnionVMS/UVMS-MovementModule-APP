@@ -75,33 +75,17 @@ public abstract class BuildMovementServiceTestDeployment {
 
     public static Archive<?> createDeployment_FOR_MovementServiceIntTest() {
 
-        // Import Maven runtime dependencies
-        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
-                .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
+        WebArchive archive = createBasicDeployment();
 
-        printFiles(files);
-
-        // Embedding war package which contains the test class is needed
-        // So that Arquillian can invoke test class through its servlet test runner
-        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
-
-        testWar.addClass(MovementServiceBean.class)
+        archive.addClass(MovementServiceBean.class)
                 .addClass(MovementService.class)
                 .addClass(SpatialService.class)
                 .addClass(SpatialServiceMockedBean.class)
                 .addClass(MovementListResponseDto.class)
                 .addClass(MovementDto.class);
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
-        testWar.addClass(MovementConfigHelper.class);
-        // END
-        testWar.addClass(TransactionalTests.class);
+        archive.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
 
-
-        // Empty beans for EE6 CDI
-        testWar.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        testWar.addAsLibraries(files);
-
-        return testWar;
+        return archive;
     }
 
 
