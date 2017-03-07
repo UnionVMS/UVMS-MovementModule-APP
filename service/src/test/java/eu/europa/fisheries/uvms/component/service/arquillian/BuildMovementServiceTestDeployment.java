@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.util.*;
 
 /**
  * Created by andreasw on 2017-02-13.
@@ -112,85 +114,26 @@ public abstract class BuildMovementServiceTestDeployment {
 
         // Import Maven runtime dependencies
         File[] files = Maven.resolver().loadPomFromFile("pom.xml")
-                .importRuntimeDependencies().resolve().withTransitivity().asFile();
+                .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
-        LOG.info("FROM POM - begin");
-        for(File f : files){
-            LOG.info("       --->>>   "   +   f.getName());
-        }
-        LOG.info("FROM POM - end");
-
-
+        printFiles(files);
 
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
 
-        // BEGIN DB and entities
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.constant");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.entity");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dao");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.mapper");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.exception");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.model");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.validation");
-        // No no, starts threaded job...
-        // Need to exclude job first...
-        testWar.addClass(MovementBatchModelBean.class).addClass(MovementDomainModelBean.class)
-                .addClass(MovementSearchGroupDomainModelBean.class)
-                .addClass(TempMovementDomainModelBean.class)
-                .addClass(MovementServiceBean.class)
+        testWar.addClass(MovementServiceBean.class)
                 .addClass(MovementService.class)
                 .addClass(SpatialService.class)
                 .addClass(SpatialServiceMockedBean.class)
-                .addClass(SpatialModelMapperException.class)
-                .addClass(SpatialModelException.class)
-                .addClass(SpatialException.class);
-        // END
-
-
+                .addClass(MovementListResponseDto.class)
+                .addClass(MovementDto.class);
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.model.exception");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message.exception");
-        testWar.addClass(MovementServiceBean.class).addClass(MovementService.class).addClass(MovementListResponseDto.class).addClass(MovementDto.class);
-        //   testWar.addClass(MessageProducer.class).addClass(MessageProducerBean.class);
-        //       testWar.addClass(MessageConsumer.class);
-        //             testWar.addClass(MessageConsumerBean.class);
-        //      testWar.addClass(ConfigMessageProducer.class).addClass(AbstractProducer.class);
-        //      testWar.addClass(JMSConnectorBean.class).addClass(MessageConstants.class);
-        //      testWar.addClass(ModuleQueue.class).addClass(EventMessage.class);
         testWar.addClass(MovementConfigHelper.class);
-
-
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service");
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message.consumer");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.message.producer");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.message.event.carrier");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.message.constants");
-        testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.movement.model");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.config.constants");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.config.exception");
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.config.module.exception");
-        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.config.model.exception");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.config.message");
-        //testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.config.service");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.schema");
-        testWar.addPackages(true,  "eu.europa.ec.fisheries.schema.config.types.v1");
-        testWar.addPackages(true,  "eu.europa.ec.fisheries.schema.movement.search.v1");
-        testWar.addPackages(true,  "eu.europa.ec.fisheries.schema.config.module.v1");
-        testWar.addPackages(true,  "eu.europa.ec.fisheries.uvms.user.model.exception");
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.audit.model.exception");
-        //testWar.addPackages(true,  " eu.europa.ec.fisheries.uvms.spatial.model.exception");
-        testWar.addPackages(true,  "org.jvnet.jaxb2_commons");  // << URRRK
-
-
-        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.util");
-
+        // END
         testWar.addClass(TransactionalTests.class);
 
-        //testWar.addClass(MovementSearchGroupServiceBean.class);
 
-        testWar.addAsResource("persistence-integration.xml", "META-INF/persistence.xml");
         // Empty beans for EE6 CDI
         testWar.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         testWar.addAsLibraries(files);
@@ -199,5 +142,25 @@ public abstract class BuildMovementServiceTestDeployment {
     }
 
 
+    private static void printFiles(File[] files) {
+
+        List<File> filesSorted = new ArrayList<>();
+        for(File f : files){
+            filesSorted.add(f);
+        }
+
+        Collections.sort(filesSorted, new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        LOG.info("FROM POM - begin");
+        for(File f : filesSorted){
+            LOG.info("       --->>>   "   +   f.getName());
+        }
+        LOG.info("FROM POM - end");
+    }
 
 }

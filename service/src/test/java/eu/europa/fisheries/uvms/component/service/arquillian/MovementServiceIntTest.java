@@ -49,36 +49,19 @@ public class MovementServiceIntTest   extends TransactionalTests {
         double longitude = 9.140625D;
         double latitude = 57.683804D;
 
-
-
         // create a MovementConnect
         String connectId =  UUID.randomUUID().toString();
-        /*
-        MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setValue(connectId);
-        movementConnect.setUpdatedBy("arquillian");
-        movementConnect.setUpdated(DateUtil.nowUTC());
-        em.persist(movementConnect);
-        em.flush();
-
-        */
-
-
-
         MovementType  movementType = createMovementTypeHelper(now,longitude, latitude);
         movementType.setConnectId(connectId);
 
 
         Assert.assertTrue(movementService != null);
 
-
-
-
-            try {
-                MovementType createdMovementType = movementService.createMovement(movementType, "TEST");
-            } catch (Exception e) {
-                Assert.fail();
-            }
+        try {
+            MovementType createdMovementType = movementService.createMovement(movementType, "TEST");
+        } catch (Exception e) {
+            Assert.fail();
+        }
 
 
     }
@@ -92,11 +75,11 @@ public class MovementServiceIntTest   extends TransactionalTests {
 
 
         String connectId = "";
-            try {
-                MovementType createdMovementType = movementService.getById(connectId);
-            } catch (Exception e) {
-                Assert.assertTrue(e != null);
-            }
+        try {
+            MovementType createdMovementType = movementService.getById(connectId);
+        } catch (Exception e) {
+            Assert.assertTrue(e != null);
+        }
 
 
     }
