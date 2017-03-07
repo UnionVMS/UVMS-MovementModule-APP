@@ -11,9 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.producer.bean;
 
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import javax.enterprise.event.Observes;
 import javax.jms.*;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
@@ -23,28 +21,49 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
 @Stateless
 public class MessageProducerBean implements MessageProducer, ConfigMessageProducer {
+
+    public static final String MESSAGE_PRODUCER_METHODS_FAIL = "MESSAGE_PRODUCER_METHODS_FAIL";
+
+    final static Logger LOG = LoggerFactory.getLogger(MessageProducerBean.class);
+
+    private void shouldIFail() throws MovementMessageException {
+        String fail = System.getProperty(MESSAGE_PRODUCER_METHODS_FAIL, "false");
+        if(!"false".equals(fail.toLowerCase())) {
+            throw new MovementMessageException();
+        }
+    }
+
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException {
+        shouldIFail();
+        LOG.info("sendModuleMessage (" + queue.name() + "): " + text);
         return UUID.randomUUID().toString();
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException {
+        shouldIFail();
+        LOG.info("sendErrorMessageBackToRecipient: " + message.getErrorMessage());
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) throws MovementMessageException {
+        shouldIFail();
+        LOG.info("sendMessageBackToRecipient: " + returnMessage);
     }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendConfigMessage(String text) throws ConfigMessageException {
+        LOG.info("sendConfigMessage: " + text);
         return text;
     }
 }

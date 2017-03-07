@@ -5,6 +5,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
@@ -12,6 +13,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,6 +29,11 @@ import java.util.UUID;
  */
 @RunWith(Arquillian.class)
 public class TempMovementServiceBeanIntTest extends TransactionalTests {
+
+    @Before
+    public void init() {
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
+    }
 
     @EJB
     private TempMovementService tempMovementService;
@@ -44,6 +51,19 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
         em.flush();
         Assert.assertNotNull(result.getGuid());
+    }
+
+    @Test
+    public void createWithBrokenJMS() throws MovementDuplicateException {
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
+        TempMovementType tempMovementType = createTempMovement();
+        try {
+            TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
+            em.flush();
+            Assert.assertFalse("Should not reach this!", true);
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e.getMessage().contains("Error when creating temp movement"));
+        }
     }
 
     @Test
