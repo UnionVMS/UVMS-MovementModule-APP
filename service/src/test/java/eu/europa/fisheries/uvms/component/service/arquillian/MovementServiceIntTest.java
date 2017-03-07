@@ -1,12 +1,9 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.*;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
@@ -14,7 +11,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
@@ -30,10 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
-import javax.inject.Inject;
 import java.util.*;
 
-import static eu.europa.fisheries.uvms.component.service.arquillian.BuildMovementServiceTestDeployment.LOG;
 
 /**
  * Created by thofan on 2017-03-02.
@@ -49,6 +43,14 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @EJB
     MovementService movementService;
+
+    /*
+update(Object data)
+getLatestMovementsByConnectIds(List<String> connectIds)
+getLatestMovements(Integer numberOfMovements)
+getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria)
+
+     */
 
 
     @Deployment
@@ -76,6 +78,19 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.fail();
         }
     }
+
+
+    public void getList(MovementQuery query){
+
+    }
+    public void getMinimalList(MovementQuery query){
+
+    }
+
+    public void getListAsRestDto(MovementQuery query){
+
+    }
+
 
 
     @Test
@@ -184,6 +199,9 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.assertTrue(e != null);
         }
     }
+
+
+
 
 
     /******************************************************************************************************************
