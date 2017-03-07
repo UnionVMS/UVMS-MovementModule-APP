@@ -20,6 +20,8 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -27,6 +29,9 @@ import java.io.File;
  * Created by andreasw on 2017-02-13.
  */
 public abstract class BuildMovementServiceTestDeployment {
+
+    final static Logger LOG = LoggerFactory.getLogger(BuildMovementServiceTestDeployment.class);
+
 
     private static WebArchive createBasicDeployment() {
 
@@ -108,6 +113,13 @@ public abstract class BuildMovementServiceTestDeployment {
         // Import Maven runtime dependencies
         File[] files = Maven.resolver().loadPomFromFile("pom.xml")
                 .importRuntimeDependencies().resolve().withTransitivity().asFile();
+
+        LOG.info("FROM POM - begin");
+        for(File f : files){
+            LOG.info("       --->>>   "   +   f.getName());
+        }
+        LOG.info("FROM POM - end");
+
 
 
         // Embedding war package which contains the test class is needed

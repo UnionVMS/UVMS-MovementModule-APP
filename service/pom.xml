@@ -22,6 +22,9 @@
         </application.logfile>
         <application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log
         </application.error.logfile>
+        <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
+        <commons-lang.version>2.6</commons-lang.version>
+        <postgis.version>1.5.2</postgis.version>
     </properties>
 
     <dependencies>
@@ -73,6 +76,47 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>movement-message</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+            <version>${hibernate-spatial.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.vividsolutions</groupId>
+                    <artifactId>jts</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.postgis</groupId>
+                    <artifactId>postgis-jdbc</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>${hibernate.annotation.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>${postgis.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>${jts.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

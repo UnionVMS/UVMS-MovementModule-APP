@@ -53,6 +53,7 @@ public class MovementServiceIntTest   extends TransactionalTests {
 
         // create a MovementConnect
         String connectId =  UUID.randomUUID().toString();
+        /*
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setValue(connectId);
         movementConnect.setUpdatedBy("arquillian");
@@ -60,6 +61,7 @@ public class MovementServiceIntTest   extends TransactionalTests {
         em.persist(movementConnect);
         em.flush();
 
+        */
 
 
 

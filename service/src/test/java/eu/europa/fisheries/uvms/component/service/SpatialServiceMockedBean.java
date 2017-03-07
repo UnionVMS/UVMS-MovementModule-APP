@@ -27,6 +27,8 @@ public class SpatialServiceMockedBean  implements SpatialService {
         movementType.setConnectId(movement.getConnectId());
         movementType.setMetaData(getMappedMovementHelper(1));
 
+
+
         movementType.setSource(MovementSourceType.NAF);
         return movementType;
     }
