@@ -4,6 +4,7 @@ import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
+import eu.europa.ec.fisheries.uvms.movement.message.event.CreateMovementBatchEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.CreateMovementEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
@@ -35,7 +36,6 @@ public class CreateMovementEventIntTest {
     @Inject
     @CreateMovementEvent
     Event<EventMessage> createMovementEvent;
-
 
     @Deployment
     public static Archive<?> createDeployment() {
@@ -72,6 +72,7 @@ public class CreateMovementEventIntTest {
         }
     }
 
+    //ToDo: Methods createMovementBaseType() and createTextMessage() could be extracted as they are used in more than one test class.
     private MovementBaseType createMovementBaseType() {
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
