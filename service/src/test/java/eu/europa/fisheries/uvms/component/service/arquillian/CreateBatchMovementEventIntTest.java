@@ -5,7 +5,6 @@ import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.message.event.CreateMovementBatchEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.CreateMovementEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
@@ -16,26 +15,28 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import javax.ejb.EJBException;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by andreasw on 2017-03-07.
+ * Created by roblar on 2017-03-07.
  */
 @RunWith(Arquillian.class)
-public class CreateMovementEventIntTest {
-
+public class CreateBatchMovementEventIntTest {
 
     @Inject
-    @CreateMovementEvent
-    Event<EventMessage> createMovementEvent;
+    @CreateMovementBatchEvent
+    Event<EventMessage> createMovementBatchEvent;
 
     @Deployment
     public static Archive<?> createDeployment() {
@@ -43,36 +44,43 @@ public class CreateMovementEventIntTest {
     }
 
     @Test
-    public void triggerEvent() throws JMSException, ModelMarshallException {
+    public void triggerBatchEvent() throws JMSException, ModelMarshallException {
+
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
         MovementBaseType movementBaseType = createMovementBaseType();
-        String text = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "TEST");
+        MovementBaseType movementBaseType2 = createMovementBaseType();
+        List<MovementBaseType> movementTypeList = Arrays.asList(movementBaseType, movementBaseType2);
 
+        String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
         TextMessage textMessage = createTextMessage(text);
+
         try {
-            createMovementEvent.fire(new EventMessage(textMessage));
-        } catch (EJBException EX) {
+            createMovementBatchEvent.fire(new EventMessage(textMessage));
+        } catch (EJBException ex) {
             Assert.assertTrue("Should not reach me!", false);
         }
     }
 
+
     @Test
-    public void triggerEventWithBrokenJMS() throws JMSException, ModelMarshallException {
+    public void triggerBatchEventWithBrokenJMS() throws JMSException, ModelMarshallException {
+
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
         MovementBaseType movementBaseType = createMovementBaseType();
-        String text = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "TEST");
+        MovementBaseType movementBaseType2 = createMovementBaseType();
+        List<MovementBaseType> movementTypeList = Arrays.asList(movementBaseType, movementBaseType2);
 
+        String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
         TextMessage textMessage = createTextMessage(text);
+
         try {
-            createMovementEvent.fire(new EventMessage(textMessage));
+            createMovementBatchEvent.fire(new EventMessage(textMessage));
             Assert.assertTrue("Should not reach me!", false);
-        } catch (EJBException ignore) {
-        }
+        } catch (EJBException ignore) {}
     }
 
-    //ToDo: Methods createMovementBaseType() and createTextMessage() could be extracted as they are used in more than one test class.
     private MovementBaseType createMovementBaseType() {
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
@@ -115,5 +123,4 @@ public class CreateMovementEventIntTest {
         when(textMessage.getText()).thenReturn(text);
         return  textMessage;
     }
-    
 }
