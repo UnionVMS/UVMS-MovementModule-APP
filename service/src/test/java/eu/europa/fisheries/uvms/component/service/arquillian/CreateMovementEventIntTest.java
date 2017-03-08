@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
  * Created by andreasw on 2017-03-07.
  */
 @RunWith(Arquillian.class)
-public class CreateMovementEventIntTest {
+public class CreateMovementEventIntTest extends TransactionalTests {
 
 
     @Inject
@@ -52,8 +52,9 @@ public class CreateMovementEventIntTest {
         TextMessage textMessage = createTextMessage(text);
         try {
             createMovementEvent.fire(new EventMessage(textMessage));
+            em.flush();
         } catch (EJBException EX) {
-            Assert.assertTrue("Should not reach me!", false);
+            Assert.fail("Should not reach me!");
         }
     }
 
@@ -67,7 +68,7 @@ public class CreateMovementEventIntTest {
         TextMessage textMessage = createTextMessage(text);
         try {
             createMovementEvent.fire(new EventMessage(textMessage));
-            Assert.assertTrue("Should not reach me!", false);
+            Assert.fail("Should not reach me!");
         } catch (EJBException ignore) {
         }
     }
@@ -115,5 +116,5 @@ public class CreateMovementEventIntTest {
         when(textMessage.getText()).thenReturn(text);
         return  textMessage;
     }
-    
+
 }
