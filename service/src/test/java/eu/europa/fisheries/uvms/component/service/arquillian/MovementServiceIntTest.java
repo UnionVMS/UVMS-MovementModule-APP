@@ -1,10 +1,8 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.search.v1.*;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
@@ -60,10 +58,24 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
-    public void getLatestMovementsByConnectIds() {}
+    public void getMovementListByAreaAndTimeInterval() {
 
-    @Test
-    public void getMovementListByAreaAndTimeInterval() {}
+        // TODO expand this test its a little tiny
+
+        MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
+
+
+        try {
+            GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
+            Assert.assertTrue(list != null);
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (MovementDuplicateException e) {
+            Assert.fail();
+        }
+
+
+    }
 
 
 
@@ -79,13 +91,26 @@ public class MovementServiceIntTest extends TransactionalTests {
         String connectId = UUID.randomUUID().toString();
         MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
         movementType.setConnectId(connectId);
-        Assert.assertTrue(movementService != null);
-
         try {
             MovementType createdMovementType = movementService.createMovement(movementType, "TEST");
             Assert.assertTrue(createdMovementType != null);
         } catch (Exception e) {
             Assert.fail();
+        }
+    }
+
+
+    @Test
+    public void getLatestMovementsByConnectIds_EmptyList() {
+
+        List<String> connectionIds = new ArrayList<>();
+        try {
+            List<MovementDto> movements =  movementService.getLatestMovementsByConnectIds(connectionIds);
+            Assert.fail();
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e != null);
+        } catch (MovementDuplicateException e) {
+            Assert.assertTrue(e != null);
         }
     }
 
