@@ -87,7 +87,6 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
     }
 
 
-    // In progress
     @Test
     public void getList() {
 
@@ -104,14 +103,13 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
 
     }
 
-    // In progress
-    // @Test
+    @Test
     public void getMinimalList() {
 
-        MovementQuery query = createMovementQuery();
-
+        MovementQuery query = createMovementQuery(true);
         try {
             GetMovementListByQueryResponse getMovementListByQueryResponse = movementService.getMinimalList(query);
+            Assert.assertTrue(getMovementListByQueryResponse != null);
         } catch (MovementServiceException e) {
             Assert.fail();
         } catch (MovementDuplicateException e) {
@@ -120,14 +118,14 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
 
     }
 
-    // In progress
-    // @Test
+    @Test
     public void getListAsRestDto() {
 
-        MovementQuery query = createMovementQuery();
+        MovementQuery query = createMovementQuery(true);
 
         try {
             MovementListResponseDto movementListResponseDto = movementService.getListAsRestDto(query);
+            Assert.assertTrue(movementListResponseDto != null);
         } catch (MovementServiceException e) {
             Assert.fail();
         } catch (MovementDuplicateException e) {

@@ -5,6 +5,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
 import eu.europa.fisheries.uvms.component.service.SpatialServiceMockedBean;
 import org.jboss.shrinkwrap.api.Archive;
@@ -98,7 +99,8 @@ public abstract class BuildMovementServiceTestDeployment {
                 .addClass(SpatialService.class)
                 .addClass(SpatialServiceMockedBean.class)
                 .addClass(MovementListResponseDto.class)
-                .addClass(MovementDto.class);
+                .addClass(MovementDto.class)
+                .addClass(MovementMapper.class);
         archive.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
 
         return archive;
