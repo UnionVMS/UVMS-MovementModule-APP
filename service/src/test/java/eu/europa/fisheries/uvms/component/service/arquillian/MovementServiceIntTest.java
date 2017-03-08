@@ -1,7 +1,11 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
@@ -16,6 +20,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -26,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import java.math.BigInteger;
 import java.util.*;
 
 
@@ -74,40 +80,98 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
 
         try {
             MovementType createdMovementType = movementService.createMovement(movementType, "TEST");
+            Assert.assertTrue(createdMovementType != null);
         } catch (Exception e) {
             Assert.fail();
         }
     }
 
 
-    public void getList(MovementQuery query){
+    // In progress
+    @Test
+    public void getList() {
+
+        MovementQuery query = createMovementQuery(true);
+        try {
+            GetMovementListByQueryResponse getMovementListByQueryResponse = movementService.getList(query);
+            Assert.assertTrue(getMovementListByQueryResponse != null);
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (MovementDuplicateException e) {
+            Assert.fail();
+        }
+
 
     }
-    public void getMinimalList(MovementQuery query){
+
+    // In progress
+    // @Test
+    public void getMinimalList() {
+
+        MovementQuery query = createMovementQuery();
+
+        try {
+            GetMovementListByQueryResponse getMovementListByQueryResponse = movementService.getMinimalList(query);
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (MovementDuplicateException e) {
+            Assert.fail();
+        }
 
     }
 
-    public void getListAsRestDto(MovementQuery query){
+    // In progress
+    // @Test
+    public void getListAsRestDto() {
+
+        MovementQuery query = createMovementQuery();
+
+        try {
+            MovementListResponseDto movementListResponseDto = movementService.getListAsRestDto(query);
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (MovementDuplicateException e) {
+            Assert.fail();
+        }
 
     }
-
 
 
     @Test
     public void getMapByQuery() {
 
-        MovementQuery query = new MovementQuery();
-        //query.
-
-
+        MovementQuery query = createMovementQuery(false);
         try {
-            GetMovementMapByQueryResponse reponse = movementService.getMapByQuery(query);
+            GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
+            Assert.assertTrue(response != null);
         } catch (MovementServiceException e) {
             Assert.fail();
         } catch (MovementDuplicateException e) {
             Assert.fail();
         }
     }
+
+    @Test
+    public void getMapByQuery_LATEST() {
+
+        MovementQuery query = createMovementQuery(false);
+
+        ListCriteria listCriteria = new ListCriteria();
+        listCriteria.setKey(SearchKey.NR_OF_LATEST_REPORTS);
+        listCriteria.setValue("3");
+
+        query.getMovementSearchCriteria().add(listCriteria);
+        try {
+            GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
+            Assert.assertTrue(response != null);
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (MovementDuplicateException e) {
+            Assert.fail();
+        }
+    }
+
+
 
     @Test
     public void createMovementBatch() {
@@ -115,7 +179,7 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
         List<MovementBaseType> query = createBaseTypeList();
         try {
             SimpleResponse response = movementService.createMovementBatch(query);
-            Assert.assertTrue(response!= null);
+            Assert.assertTrue(response != null);
             Assert.assertTrue(response == SimpleResponse.OK);
         } catch (MovementServiceException e) {
             Assert.fail();
@@ -123,8 +187,6 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
             Assert.fail();
         }
     }
-
-
 
 
     @Test
@@ -199,10 +261,6 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
             Assert.assertTrue(e != null);
         }
     }
-
-
-
-
 
     /******************************************************************************************************************
      *   HELPER FUNCTIONS
@@ -280,7 +338,8 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
         movementBaseType.setPosition(position());
         return movementBaseType;
     }
-    public  MovementPoint position() {
+
+    private MovementPoint position() {
 
         Double longitude = rnd.nextDouble();
         Double latitude = rnd.nextDouble();
@@ -289,5 +348,30 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
         movementPoint.setLatitude(latitude);
         return movementPoint;
     }
+
+
+    private MovementQuery createMovementQuery() {
+        return createMovementQuery(false);
+    }
+
+    private MovementQuery createMovementQuery(boolean usePagination) {
+
+        MovementQuery query = new MovementQuery();
+
+
+        if (usePagination) {
+            BigInteger listSize = BigInteger.valueOf(100L);
+            BigInteger page = BigInteger.valueOf(1L);
+            ListPagination listPagination = new ListPagination();
+            listPagination.setListSize(listSize);
+            listPagination.setPage(page);
+            query.setPagination(listPagination);
+        }
+
+
+        return query;
+
+    }
+
 
 }
