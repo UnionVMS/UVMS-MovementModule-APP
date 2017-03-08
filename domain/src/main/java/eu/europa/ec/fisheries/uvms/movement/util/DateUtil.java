@@ -51,6 +51,29 @@ public class DateUtil {
         return null;
     }
 
+    public static Date parseToUTCDate_a_more_stable_if_you_want_to_work_like_this(String dateTimeInUTC) {
+        try {
+            for (DateFormats format : DateFormats.values()) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormat.forPattern(format.getFormat());
+                    DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateTimeInUTC);
+                    if (dateTime != null) {
+                        return dateTime.toLocalDateTime().toDate();
+                    }
+                } catch (RuntimeException e) {
+                    LOG.error("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern any defined pattern.");
+                    continue;
+                }
+            }
+        } catch (RuntimeException e) {
+            LOG.error("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern any defined pattern.");
+            return null;
+        }
+        LOG.error("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern any defined pattern.");
+        return null;
+    }
+
+
     public static String parseUTCDateToString(Date date) {
         String dateString = null;
         if (date != null) {

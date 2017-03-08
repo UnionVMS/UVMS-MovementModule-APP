@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -58,12 +59,36 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
-    public void getMovementListByAreaAndTimeInterval() {
+    public void getMovementListByAreaAndTimeInterval_EmptyCriteria() {
+        MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
+        try {
+            GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
+            Assert.assertTrue(list != null);
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (MovementDuplicateException e) {
+            Assert.fail();
+        }
+    }
 
-        // TODO expand this test its a little tiny
 
+    @Test
+    public void getMovementListByAreaAndTimeInterval_NoResult_But_RunsTheCode() {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
 
+        Date curDate = DateUtil.nowUTC();
+        String fmt = "yyyy-MM-dd HH:mm:ss Z";
+
+        SimpleDateFormat format = new SimpleDateFormat(fmt);
+       String formattedDate = format.format(curDate);
+
+
+        // areaCode
+        criteria.setAreaCode("AREA0");
+        // fromDate
+        criteria.setFromDate(formattedDate);
+        // toDate
+        criteria.setToDate(formattedDate);
 
         try {
             GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
@@ -73,10 +98,36 @@ public class MovementServiceIntTest extends TransactionalTests {
         } catch (MovementDuplicateException e) {
             Assert.fail();
         }
-
-
     }
 
+
+    @Test
+    public void getMovementListByAreaAndTimeInterval_NoArea_ButDateAdded_NoResult_But_RunsTheCode() {
+        MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
+
+        Date curDate = DateUtil.nowUTC();
+        String fmt = "yyyy-MM-dd HH:mm:ss Z";
+
+        SimpleDateFormat format = new SimpleDateFormat(fmt);
+        String formattedDate = format.format(curDate);
+
+
+        // NO areaCode  shpuld make the dates NOT be used
+        //criteria.setAreaCode("AREA0");
+        // fromDate
+        criteria.setFromDate(formattedDate);
+        // toDate
+        criteria.setToDate(formattedDate);
+
+        try {
+            GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
+            Assert.assertTrue(list != null);
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (MovementDuplicateException e) {
+            Assert.fail();
+        }
+    }
 
 
 
@@ -456,15 +507,15 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
 
+    /*
     private MovementQuery createMovementQuery() {
         return createMovementQuery(false);
     }
+     */
 
     private MovementQuery createMovementQuery(boolean usePagination) {
 
         MovementQuery query = new MovementQuery();
-
-
         if (usePagination) {
             BigInteger listSize = BigInteger.valueOf(100L);
             BigInteger page = BigInteger.valueOf(1L);
@@ -473,10 +524,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             listPagination.setPage(page);
             query.setPagination(listPagination);
         }
-
-
         return query;
-
     }
 
 
