@@ -20,6 +20,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
@@ -63,6 +64,7 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
     public static Archive<?> createDeployment() {
         return BuildMovementServiceTestDeployment.createDeployment_FOR_MovementServiceIntTest();
     }
+
 
 
     @Test
@@ -169,6 +171,25 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
         }
     }
 
+    @Test
+    public void getMapByQuery_LATEST_with_pagination() {
+
+        MovementQuery query = createMovementQuery(true);
+
+        ListCriteria listCriteria = new ListCriteria();
+        listCriteria.setKey(SearchKey.NR_OF_LATEST_REPORTS);
+        listCriteria.setValue("3");
+
+        query.getMovementSearchCriteria().add(listCriteria);
+        try {
+            GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
+            Assert.fail();
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e != null);
+        } catch (MovementDuplicateException e) {
+            Assert.assertTrue(e != null);
+        }
+    }
 
 
     @Test
@@ -244,6 +265,52 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
             Assert.fail();
 
         } catch (Exception e) {
+            Assert.assertTrue(e != null);
+        }
+    }
+
+
+
+    @Test
+    public void getLatestMovements() {
+
+        try {
+            List<MovementDto> listMovementDto = movementService.getLatestMovements(5);
+            Assert.assertTrue(listMovementDto != null);
+        } catch (MovementDuplicateException e) {
+            Assert.fail();
+        } catch (MovementServiceException e) {
+            Assert.fail();
+        }
+
+    }
+
+    @Test
+    public void getLatestMovements_NumberNULL() {
+
+        try {
+            List<MovementDto> listMovementDto = movementService.getLatestMovements(null);
+            Assert.fail();
+        } catch  (MovementDuplicateException e) {
+            Assert.assertTrue(e != null);
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e != null);
+        } catch (Throwable e) {
+            Assert.assertTrue(e != null);
+        }
+    }
+
+    @Test
+    public void getLatestMovements_NegativeNumber() {
+
+        try {
+            List<MovementDto> listMovementDto = movementService.getLatestMovements(-3);
+            Assert.fail();
+        } catch  (MovementDuplicateException e) {
+            Assert.assertTrue(e != null);
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e != null);
+        } catch (Throwable e) {
             Assert.assertTrue(e != null);
         }
     }
