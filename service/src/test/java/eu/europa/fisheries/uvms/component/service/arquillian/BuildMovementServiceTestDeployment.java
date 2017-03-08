@@ -66,6 +66,7 @@ public abstract class BuildMovementServiceTestDeployment {
         archive.addClass(MovementEventServiceBean.class);
         archive.addClass(EventService.class);
         archive.addClass(MovementServiceException.class);
+        archive.addClass(MovementEventTestHelper.class);
 
         archive.addClass(MovementServiceBean.class)
                 .addClass(MovementService.class)
