@@ -1,10 +1,6 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.message.event.CreateMovementBatchEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.CreateMovementEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
@@ -21,7 +17,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
-import java.util.Calendar;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,8 +25,7 @@ import static org.mockito.Mockito.when;
  * Created by andreasw on 2017-03-07.
  */
 @RunWith(Arquillian.class)
-public class CreateMovementEventIntTest {
-
+public class CreateMovementEventIntTest extends TransactionalTests {
 
     @Inject
     @CreateMovementEvent
@@ -46,10 +40,10 @@ public class CreateMovementEventIntTest {
     public void triggerEvent() throws JMSException, ModelMarshallException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementBaseType movementBaseType = createMovementBaseType();
+        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
         String text = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "TEST");
 
-        TextMessage textMessage = createTextMessage(text);
+        TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
         try {
             createMovementEvent.fire(new EventMessage(textMessage));
         } catch (EJBException EX) {
@@ -61,10 +55,10 @@ public class CreateMovementEventIntTest {
     public void triggerEventWithBrokenJMS() throws JMSException, ModelMarshallException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
-        MovementBaseType movementBaseType = createMovementBaseType();
+        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
         String text = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "TEST");
 
-        TextMessage textMessage = createTextMessage(text);
+        TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
         try {
             createMovementEvent.fire(new EventMessage(textMessage));
             Assert.assertTrue("Should not reach me!", false);
@@ -73,6 +67,7 @@ public class CreateMovementEventIntTest {
     }
 
     //ToDo: Methods createMovementBaseType() and createTextMessage() could be extracted as they are used in more than one test class.
+    /*
     private MovementBaseType createMovementBaseType() {
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
@@ -110,10 +105,12 @@ public class CreateMovementEventIntTest {
         return movementBaseType;
     }
 
+
     private TextMessage createTextMessage(String text) throws JMSException {
         TextMessage textMessage = mock(TextMessage.class);
         when(textMessage.getText()).thenReturn(text);
         return  textMessage;
     }
+    */
     
 }

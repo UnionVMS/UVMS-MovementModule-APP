@@ -32,11 +32,11 @@ import static org.mockito.Mockito.when;
  * Created by roblar on 2017-03-07.
  */
 @RunWith(Arquillian.class)
-public class CreateBatchMovementEventIntTest {
+public class CreateBatchMovementEventIntTest extends TransactionalTests {
 
     @Inject
     @CreateMovementBatchEvent
-    Event<EventMessage> createMovementBatchEvent;
+    Event<EventMessage> createBatchMovementEvent;
 
     @Deployment
     public static Archive<?> createDeployment() {
@@ -48,15 +48,15 @@ public class CreateBatchMovementEventIntTest {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementBaseType movementBaseType = createMovementBaseType();
-        MovementBaseType movementBaseType2 = createMovementBaseType();
+        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
+        MovementBaseType movementBaseType2 = MovementEventTestHelper.createMovementBaseType();
         List<MovementBaseType> movementTypeList = Arrays.asList(movementBaseType, movementBaseType2);
 
         String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
-        TextMessage textMessage = createTextMessage(text);
+        TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
-            createMovementBatchEvent.fire(new EventMessage(textMessage));
+            createBatchMovementEvent.fire(new EventMessage(textMessage));
         } catch (EJBException ex) {
             Assert.assertTrue("Should not reach me!", false);
         }
@@ -68,19 +68,20 @@ public class CreateBatchMovementEventIntTest {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
-        MovementBaseType movementBaseType = createMovementBaseType();
-        MovementBaseType movementBaseType2 = createMovementBaseType();
+        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
+        MovementBaseType movementBaseType2 = MovementEventTestHelper.createMovementBaseType();
         List<MovementBaseType> movementTypeList = Arrays.asList(movementBaseType, movementBaseType2);
 
         String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
-        TextMessage textMessage = createTextMessage(text);
+        TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
-            createMovementBatchEvent.fire(new EventMessage(textMessage));
+            createBatchMovementEvent.fire(new EventMessage(textMessage));
             Assert.assertTrue("Should not reach me!", false);
         } catch (EJBException ignore) {}
     }
 
+    /*
     private MovementBaseType createMovementBaseType() {
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
@@ -123,4 +124,5 @@ public class CreateBatchMovementEventIntTest {
         when(textMessage.getText()).thenReturn(text);
         return  textMessage;
     }
+    */
 }
