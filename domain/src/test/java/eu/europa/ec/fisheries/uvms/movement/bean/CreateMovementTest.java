@@ -71,7 +71,7 @@ public class CreateMovementTest {
         try {
 
             MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
-            MovementProcessorBean proc = Mockito.mock(MovementProcessorBean.class);
+            IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);
 
             when(dao.create(Matchers.any()))
                     .thenReturn(getMovementConnect())
@@ -83,7 +83,7 @@ public class CreateMovementTest {
             //verify(model, atLeast(2)).splitSegment(any(Movement.class), any(Movement.class));
             //verify(model, times(3)).splitSegment(any(Movement.class), any(Movement.class));
             //verify(test, times(1)).getMovementConnect(any(String.class));
-            verify(proc, never()).splitSegment(any(Movement.class), any(Movement.class));
+            //verify(proc, never()).splitSegment(any(Movement.class), any(Movement.class));
             verify(proc, never()).addMovementBeforeFirst(any(Movement.class), any(Movement.class));
 
         } catch (MovementDuplicateException ex) {
