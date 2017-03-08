@@ -51,19 +51,20 @@ public class MovementServiceIntTest extends TransactionalTests {
     @EJB
     MovementService movementService;
 
-    /*
-update(Object data)
-getLatestMovementsByConnectIds(List<String> connectIds)
-getLatestMovements(Integer numberOfMovements)
-getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria)
-
-     */
 
 
     @Deployment
     public static Archive<?> createDeployment() {
         return BuildMovementServiceTestDeployment.createDeployment_FOR_MovementServiceIntTest();
     }
+
+
+    @Test
+    public void getLatestMovementsByConnectIds() {}
+
+    @Test
+    public void getMovementListByAreaAndTimeInterval() {}
+
 
 
 
@@ -326,6 +327,21 @@ getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteri
             Assert.assertTrue(e != null);
         }
     }
+
+    @Test
+    public void update() {
+
+        Object obj = new Object();
+        try {
+            movementService.update(obj);
+            Assert.fail();
+        } catch (MovementServiceException e) {
+            Assert.assertTrue(e != null);
+        } catch (MovementDuplicateException e) {
+            Assert.assertTrue(e != null);
+        }
+    }
+
 
     /******************************************************************************************************************
      *   HELPER FUNCTIONS
