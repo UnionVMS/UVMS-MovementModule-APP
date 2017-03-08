@@ -1,9 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelBean;
-import eu.europa.ec.fisheries.uvms.movement.bean.TempMovementDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.bean.*;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -38,7 +35,8 @@ public abstract class BuildMovementTestDeployment {
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement");
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.bean");
         testWar.addClass(MovementBatchModelBean.class).addClass(MovementDomainModelBean.class)
-                .addClass(MovementSearchGroupDomainModelBean.class).addClass(TempMovementDomainModelBean.class);
+                .addClass(MovementSearchGroupDomainModelBean.class).addClass(TempMovementDomainModelBean.class)
+                .addClass(SegmentBean.class).addClass(IncomingMovementBean.class);
 
         testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.model");
         testWar.addPackages(true, "eu.europa.ec.fisheries.schema");

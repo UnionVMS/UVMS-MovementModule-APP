@@ -31,7 +31,7 @@ import java.util.List;
 public class MovementProcessorBeanTest {
 
     @InjectMocks
-    MovementProcessorBean bean;
+    IncomingMovementBean bean;
 
     @Mock
     MovementDaoBean dao;
