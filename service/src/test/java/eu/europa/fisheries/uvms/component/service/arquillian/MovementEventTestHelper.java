@@ -3,10 +3,13 @@ package eu.europa.fisheries.uvms.component.service.arquillian;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+import java.math.BigInteger;
 import java.util.Calendar;
 
 import static org.mockito.Mockito.mock;
@@ -18,6 +21,7 @@ import static org.mockito.Mockito.when;
 class MovementEventTestHelper {
 
     static MovementBaseType createMovementBaseType() {
+
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
         activityType.setMessageId("TEST");
@@ -52,6 +56,20 @@ class MovementEventTestHelper {
         movementBaseType.setTripNumber(0d);
 
         return movementBaseType;
+    }
+
+    static MovementQuery createMovementQuery() {
+
+        MovementQuery movementQuery = new MovementQuery();
+
+        ListPagination listPagination = new ListPagination();
+        listPagination.setPage(BigInteger.ZERO);
+        listPagination.setListSize(BigInteger.TEN);
+
+        movementQuery.setExcludeFirstAndLastSegment(true);
+        movementQuery.setPagination(listPagination);
+
+        return movementQuery;
     }
 
     static TextMessage createTextMessage(String text) throws JMSException {
