@@ -1,8 +1,7 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.uvms.movement.message.event.GetMovementMapByQueryEvent;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.uvms.movement.message.event.CreateMovementBatchEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
@@ -19,18 +18,18 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
-
-import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Created by roblar on 2017-03-08.
+ * Created by roblar on 2017-03-07.
  */
 @RunWith(Arquillian.class)
-public class GetMovementMapByQueryIntTest extends TransactionalTests {
+public class Event_createBatchMovementIntTest extends TransactionalTests {
 
     @Inject
-    @GetMovementMapByQueryEvent
-    Event<EventMessage> getMovementMapByQueryEvent;
+    @CreateMovementBatchEvent
+    Event<EventMessage> createBatchMovementEvent;
 
     @Deployment
     public static Archive<?> createDeployment() {
@@ -38,34 +37,39 @@ public class GetMovementMapByQueryIntTest extends TransactionalTests {
     }
 
     @Test
-    public void testTriggerGetMovementMapByQuery() throws JMSException, ModelMarshallException {
+    public void triggerBatchEvent() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery();
+        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
+        MovementBaseType movementBaseType2 = MovementEventTestHelper.createMovementBaseType();
+        List<MovementBaseType> movementTypeList = Arrays.asList(movementBaseType, movementBaseType2);
 
-        String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
+        String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
-            getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
+            createBatchMovementEvent.fire(new EventMessage(textMessage));
         } catch (EJBException ex) {
             Assert.assertTrue("Should not reach me!", false);
         }
     }
 
+
     @Test
-    public void testTriggerGetMovementMapByQueryWithBrokenJMS() throws JMSException, ModelMarshallException {
+    public void triggerBatchEventWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery();
+        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
+        MovementBaseType movementBaseType2 = MovementEventTestHelper.createMovementBaseType();
+        List<MovementBaseType> movementTypeList = Arrays.asList(movementBaseType, movementBaseType2);
 
-        String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
+        String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
-            getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
+            createBatchMovementEvent.fire(new EventMessage(textMessage));
             Assert.assertTrue("Should not reach me!", false);
         } catch (EJBException ignore) {}
     }

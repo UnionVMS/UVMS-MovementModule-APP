@@ -19,7 +19,7 @@ import javax.jms.JMSException;
  */
 
 @RunWith(Arquillian.class)
-public class GetTripByIdEventIntTest extends TransactionalTests{
+public class Event_getTripByIdIntTest extends TransactionalTests{
 
 
 
