@@ -3,14 +3,16 @@ package eu.europa.fisheries.uvms.component.service.arquillian;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.search.v1.*;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -65,6 +67,30 @@ class MovementEventTestHelper {
         ListPagination listPagination = new ListPagination();
         listPagination.setPage(BigInteger.ZERO);
         listPagination.setListSize(BigInteger.TEN);
+
+        ListCriteria listCriteria1 = new ListCriteria();
+        listCriteria1.setKey(SearchKey.MOVEMENT_TYPE);
+        listCriteria1.setValue("testListCriteria1");
+
+        ListCriteria listCriteria2 = new ListCriteria();
+        listCriteria2.setKey(SearchKey.MOVEMENT_TYPE);
+        listCriteria2.setValue("testListCriteria2");
+
+        List<ListCriteria> listOfListCriterias = Arrays.asList(listCriteria1, listCriteria2);
+        movementQuery.getMovementSearchCriteria().addAll(listOfListCriterias);
+
+        RangeCriteria rangeCriteria1 = new RangeCriteria();
+        rangeCriteria1.setKey(RangeKeyType.MOVEMENT_SPEED);
+        rangeCriteria1.setFrom("testRangeCriteria1_from");
+        rangeCriteria1.setTo("testRangeCriteria1_to");
+
+        RangeCriteria rangeCriteria2 = new RangeCriteria();
+        rangeCriteria2.setKey(RangeKeyType.MOVEMENT_SPEED);
+        rangeCriteria2.setFrom("testRangeCriteria2_from");
+        rangeCriteria2.setTo("testRangeCriteria2_to");
+
+        List<RangeCriteria> listOfRangeCriteria = Arrays.asList(rangeCriteria1, rangeCriteria2);
+        movementQuery.getMovementRangeSearchCriteria().addAll(listOfRangeCriteria);
 
         movementQuery.setExcludeFirstAndLastSegment(true);
         movementQuery.setPagination(listPagination);
