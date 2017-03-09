@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
  * Created by andreasw on 2017-03-07.
  */
 @RunWith(Arquillian.class)
-public class CreateMovementEventIntTest extends TransactionalTests {
+public class Event_createMovementIntTest extends TransactionalTests {
 
     @Inject
     @CreateMovementEvent
