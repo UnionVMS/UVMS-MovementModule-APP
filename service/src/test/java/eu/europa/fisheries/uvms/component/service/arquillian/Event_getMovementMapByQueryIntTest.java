@@ -86,18 +86,11 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
-
             getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
-
-            Assert.fail("Negative test: Mapping by using the wrong movement event type should cause an exception when firing an event.");
-
-        } catch (EJBException | ClassCastException e) {
-
-            if (e instanceof ClassCastException) {
-                Assert.assertTrue(true);
-                //ToDo: Evaluate if logging should be more generic by using %s to allow for any logging framework to be used instead of only slf4j.
-                LOG.error(" [ Negative test: Mapping by using the wrong movement event type should cause an exception when firing an event. ] {}", e.getMessage());
-            }
+        } catch (RuntimeException e) {
+            Assert.assertTrue("Negative test: Mapping by using the wrong movement event type should cause an exception when firing an event.", true);
+            //ToDo: Evaluate if logging should be more generic by using %s to allow for any logging framework to be used instead of only slf4j.
+            LOG.error(" [ Negative test: Mapping by using the wrong movement event type should cause an exception when firing an event. ] {}", e.getMessage());
         }
     }
 }
