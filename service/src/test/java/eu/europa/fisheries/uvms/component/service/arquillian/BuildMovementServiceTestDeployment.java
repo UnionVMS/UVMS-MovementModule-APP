@@ -1,5 +1,6 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.uvms.movement.service.*;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -80,7 +81,6 @@ public abstract class BuildMovementServiceTestDeployment {
         return archive;
     }
 
-
     public static Archive<?> createTempMovementDeployment() {
         WebArchive archive = createBasicDeployment();
         archive.addClass(TempMovementServiceBean.class).addClass(TempMovementService.class);
@@ -88,8 +88,6 @@ public abstract class BuildMovementServiceTestDeployment {
 
         return archive;
     }
-
-
 
     public static Archive<?> createDeployment_FOR_MovementServiceIntTest() {
 
@@ -106,7 +104,6 @@ public abstract class BuildMovementServiceTestDeployment {
 
         return archive;
     }
-
 
     private static void printFiles(File[] files) {
 
@@ -129,4 +126,14 @@ public abstract class BuildMovementServiceTestDeployment {
         LOG.info("FROM POM - end");
     }
 
+    // ToDo: Read the todo in GetMovementListByAreaAndTimeIntervalEventIntTest.java to decide if this deployment method
+    // ToDo: should be kept or removed.
+    /*
+    public static Archive<?> createEventMovementListByAreaAndTimeIntervalDeployment() {
+        WebArchive archive = (WebArchive) createEventDeployment();
+
+        archive.addClass(MovementAreaAndTimeIntervalCriteria.class);
+        return archive;
+    }
+    */
 }
