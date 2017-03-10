@@ -25,11 +25,11 @@ import java.util.List;
  * Created by roblar on 2017-03-07.
  */
 @RunWith(Arquillian.class)
-public class Event_createBatchMovementIntTest extends TransactionalTests {
+public class Event_createMovementBatchIntTest extends TransactionalTests {
 
     @Inject
     @CreateMovementBatchEvent
-    Event<EventMessage> createBatchMovementEvent;
+    Event<EventMessage> createMovementBatchEvent;
 
     @Deployment
     public static Archive<?> createDeployment() {
@@ -49,7 +49,7 @@ public class Event_createBatchMovementIntTest extends TransactionalTests {
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
-            createBatchMovementEvent.fire(new EventMessage(textMessage));
+            createMovementBatchEvent.fire(new EventMessage(textMessage));
         } catch (EJBException ex) {
             Assert.assertTrue("Should not reach me!", false);
         }
@@ -69,7 +69,7 @@ public class Event_createBatchMovementIntTest extends TransactionalTests {
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
-            createBatchMovementEvent.fire(new EventMessage(textMessage));
+            createMovementBatchEvent.fire(new EventMessage(textMessage));
             Assert.assertTrue("Should not reach me!", false);
         } catch (EJBException ignore) {}
     }
