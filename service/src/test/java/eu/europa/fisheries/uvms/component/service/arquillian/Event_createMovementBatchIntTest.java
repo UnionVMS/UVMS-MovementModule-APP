@@ -48,7 +48,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
         Double latitude = rnd.nextDouble();
         List<MovementBaseType> movementTypeList = new ArrayList<>();
 
-        for(int i = 0 ; i < 250 ; i++){
+        for(int i = 0 ; i < 1000 ; i++){
             movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
             longitude = longitude  + 0.05;
             latitude = latitude +  0.05;
@@ -65,7 +65,33 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
     }
 
 
-    @Test
+   // @Test
+    public void triggerBatchEvent_Duplicates() throws JMSException, ModelMarshallException {
+
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
+        Double longitude = rnd.nextDouble();
+        Double latitude = rnd.nextDouble();
+        List<MovementBaseType> movementTypeList = new ArrayList<>();
+
+        for(int i = 0 ; i < 1 ; i++){
+            movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
+        }
+
+        String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
+        TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
+
+        try {
+            createMovementBatchEvent.fire(new EventMessage(textMessage));
+        } catch (EJBException ex) {
+            Assert.assertTrue("Should not reach me!", false);
+        }
+    }
+
+
+
+
+
+    //@Test
     public void triggerBatchEventWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
@@ -74,7 +100,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
         Double latitude = rnd.nextDouble();
         List<MovementBaseType> movementTypeList = new ArrayList<>();
 
-        for(int i = 0 ; i < 250 ; i++){
+        for(int i = 0 ; i < 1000 ; i++){
             movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
             longitude += 0.05;
             latitude += 0.05;

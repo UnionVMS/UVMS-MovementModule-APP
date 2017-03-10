@@ -53,7 +53,7 @@ public abstract class BuildMovementServiceTestDeployment {
         WebArchive archive = createBasicDeployment();
 
         archive.addClass(MovementSearchGroupServiceBean.class).addClass(MovementSearchGroupService.class);
-        archive.addClass(MovementConfigHelper.class);
+       // already there  archive.addClass(MovementConfigHelper.class);
         archive.addClass(MovementServiceException.class);
         archive.addClass(MovementGroupValidator.class);
 
