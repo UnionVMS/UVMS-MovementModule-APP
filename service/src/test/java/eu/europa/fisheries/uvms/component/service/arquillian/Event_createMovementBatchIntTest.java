@@ -18,14 +18,18 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by roblar on 2017-03-07.
  */
 @RunWith(Arquillian.class)
 public class Event_createMovementBatchIntTest extends TransactionalTests {
+
+    Random rnd = new Random();
 
     @Inject
     @CreateMovementBatchEvent
@@ -40,10 +44,15 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
     public void triggerBatchEvent() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
+        Double longitude = rnd.nextDouble();
+        Double latitude = rnd.nextDouble();
+        List<MovementBaseType> movementTypeList = new ArrayList<>();
 
-        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
-        MovementBaseType movementBaseType2 = MovementEventTestHelper.createMovementBaseType();
-        List<MovementBaseType> movementTypeList = Arrays.asList(movementBaseType, movementBaseType2);
+        for(int i = 0 ; i < 250 ; i++){
+            movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
+            longitude = longitude  + 0.05;
+            latitude = latitude +  0.05;
+        }
 
         String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -61,9 +70,15 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
-        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
-        MovementBaseType movementBaseType2 = MovementEventTestHelper.createMovementBaseType();
-        List<MovementBaseType> movementTypeList = Arrays.asList(movementBaseType, movementBaseType2);
+        Double longitude = rnd.nextDouble();
+        Double latitude = rnd.nextDouble();
+        List<MovementBaseType> movementTypeList = new ArrayList<>();
+
+        for(int i = 0 ; i < 250 ; i++){
+            movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
+            longitude += 0.05;
+            latitude += 0.05;
+        }
 
         String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);

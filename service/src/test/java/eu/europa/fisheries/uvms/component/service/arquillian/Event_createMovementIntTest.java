@@ -18,6 +18,8 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
+import java.util.Random;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +28,8 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(Arquillian.class)
 public class Event_createMovementIntTest extends TransactionalTests {
+
+    Random rnd = new Random();
 
     @Inject
     @CreateMovementEvent
@@ -40,7 +44,11 @@ public class Event_createMovementIntTest extends TransactionalTests {
     public void triggerEvent() throws JMSException, ModelMarshallException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
+        Double longitude = rnd.nextDouble();
+        Double latitude = rnd.nextDouble();
+
+
+        MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType(longitude, latitude);
         String text = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "TEST");
 
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -55,6 +63,8 @@ public class Event_createMovementIntTest extends TransactionalTests {
     @Test
     public void triggerEventWithBrokenJMS() throws JMSException, ModelMarshallException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
+        Double longitude = rnd.nextDouble();
+        Double latitude = rnd.nextDouble();
 
         MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
         String text = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "TEST");

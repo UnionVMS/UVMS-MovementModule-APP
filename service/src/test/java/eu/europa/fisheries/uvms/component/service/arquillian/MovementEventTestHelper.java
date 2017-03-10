@@ -23,6 +23,10 @@ import static org.mockito.Mockito.when;
 class MovementEventTestHelper {
 
     static MovementBaseType createMovementBaseType() {
+        return MovementEventTestHelper.createMovementBaseType(0D,0D);
+    }
+
+    static MovementBaseType createMovementBaseType(Double longitude , Double latitude) {
 
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
@@ -35,9 +39,9 @@ class MovementEventTestHelper {
         assetId.setValue("TEST");
 
         MovementPoint movementPoint = new MovementPoint();
-        movementPoint.setLongitude(0D);
-        movementPoint.setLatitude(0D);
-        movementPoint.setAltitude(0D);
+        movementPoint.setLongitude(longitude);
+        movementPoint.setLatitude(latitude);
+        movementPoint.setAltitude(2D);
 
 
 
