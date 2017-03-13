@@ -24,12 +24,12 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by roblar on 2017-03-07.
+ * Adopted by thofan on 2017-02-22.
  */
 @RunWith(Arquillian.class)
 public class Event_createMovementBatchIntTest extends TransactionalTests {
 
-    Random rnd = new Random();
+    static Random rnd = new Random();
 
     @Inject
     @CreateMovementBatchEvent
@@ -48,7 +48,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
         Double latitude = rnd.nextDouble();
         List<MovementBaseType> movementTypeList = new ArrayList<>();
 
-        for(int i = 0 ; i < 1000 ; i++){
+        for(int i = 0 ; i < 10 ; i++){
             movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
             longitude = longitude  + 0.05;
             latitude = latitude +  0.05;
@@ -65,7 +65,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
     }
 
 
-   // @Test
+   @Test
     public void triggerBatchEvent_Duplicates() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -91,7 +91,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
 
 
 
-    //@Test
+    @Test
     public void triggerBatchEventWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
@@ -100,7 +100,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
         Double latitude = rnd.nextDouble();
         List<MovementBaseType> movementTypeList = new ArrayList<>();
 
-        for(int i = 0 ; i < 1000 ; i++){
+        for(int i = 0 ; i < 10 ; i++){
             movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
             longitude += 0.05;
             latitude += 0.05;

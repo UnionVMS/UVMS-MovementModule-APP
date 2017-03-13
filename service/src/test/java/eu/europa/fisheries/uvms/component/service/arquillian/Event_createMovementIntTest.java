@@ -24,7 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by andreasw on 2017-03-07.
+ Adopted by thofan on 2017-02-22.
  */
 @RunWith(Arquillian.class)
 public class Event_createMovementIntTest extends TransactionalTests {
