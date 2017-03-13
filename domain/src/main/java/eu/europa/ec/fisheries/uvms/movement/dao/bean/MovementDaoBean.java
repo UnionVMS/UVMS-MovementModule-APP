@@ -105,6 +105,8 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
+    // TODO this method removes records in DB if it gets exception at a getOperation
+    // TODO this state should not occur in the first place
     public AreaType getAreaTypeByCode(String code) throws MovementDaoException {
         try {
             long start = System.currentTimeMillis();

@@ -102,9 +102,6 @@ public class Event_createMovementIntTest extends TransactionalTests {
         }
     }
 
-
-
-
     private MovementQuery createMovementQuery(boolean usePagination) {
         MovementQuery query = new MovementQuery();
         if (usePagination) {
