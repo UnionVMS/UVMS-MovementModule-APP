@@ -22,6 +22,9 @@ import static org.mockito.Mockito.when;
  */
 class MovementEventTestHelper {
 
+    public static final String ZERO_GUID = "00000000-0000-0000-0000-000000000000";
+
+
     static MovementBaseType createMovementBaseType() {
         return MovementEventTestHelper.createMovementBaseType(0D,0D);
     }
@@ -46,7 +49,7 @@ class MovementEventTestHelper {
 
 
         MovementBaseType movementBaseType = new MovementBaseType();
-        //movementBaseType.setGuid("");
+        movementBaseType.setGuid(ZERO_GUID);
         movementBaseType.setMovementType(MovementTypeType.POS);
         movementBaseType.setActivity(activityType);
         movementBaseType.setConnectId("TEST");
