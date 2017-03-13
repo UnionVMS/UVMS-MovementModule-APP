@@ -63,45 +63,30 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
         Double longitude = rnd.nextDouble();
         Double latitude = rnd.nextDouble();
         List<MovementBaseType> movementTypeList = new ArrayList<>();
-
         for(int i = 0 ; i < NumberOfMovements ; i++){
             movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
             longitude = longitude  + 0.05;
             latitude = latitude +  0.05;
         }
-
         String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
-
         try {
             createMovementBatchEvent.fire(new EventMessage(textMessage));
         } catch (EJBException ex) {
             Assert.assertTrue("Should not reach me!", true);
         }
-
-
-
-
-
+        // Verify that there are as least as many as we created
         MovementQuery query = createMovementQuery(true);
         try {
             GetMovementListByQueryResponse getMovementListByQueryResponse = movementService.getList(query);
             Assert.assertTrue(getMovementListByQueryResponse != null);
             Assert.assertTrue(getMovementListByQueryResponse.getMovement()!=  null);
             Assert.assertTrue(getMovementListByQueryResponse.getMovement().size() >= NumberOfMovements);
-
-
         } catch (MovementServiceException e) {
             Assert.fail();
         } catch (MovementDuplicateException e) {
             Assert.fail();
         }
-
-
-
-
-
-
     }
 
 
@@ -110,57 +95,44 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         List<MovementBaseType> movementTypeList = new ArrayList<>();
-
         for(int i = 0 ; i < NumberOfMovements ; i++){
             movementTypeList.add(MovementEventTestHelper.createMovementBaseType());
         }
-
         String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
-
         try {
             createMovementBatchEvent.fire(new EventMessage(textMessage));
         } catch (EJBException ex) {
             Assert.assertTrue("Should not reach me!", false);
         }
-
+       // Verify that there are as least as many as we created
        MovementQuery query = createMovementQuery(true);
        try {
            GetMovementListByQueryResponse getMovementListByQueryResponse = movementService.getList(query);
            Assert.assertTrue(getMovementListByQueryResponse != null);
            Assert.assertTrue(getMovementListByQueryResponse.getMovement()!=  null);
            Assert.assertTrue(getMovementListByQueryResponse.getMovement().size() >= NumberOfMovements);
-
-
        } catch (MovementServiceException e) {
            Assert.fail();
        } catch (MovementDuplicateException e) {
            Assert.fail();
        }
-
-
     }
-
-
 
     @Test
     public void triggerBatchEventWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
-
         Double longitude = rnd.nextDouble();
         Double latitude = rnd.nextDouble();
         List<MovementBaseType> movementTypeList = new ArrayList<>();
-
         for(int i = 0 ; i < NumberOfMovements ; i++){
             movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
             longitude += 0.05;
             latitude += 0.05;
         }
-
         String text = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementTypeList);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
-
         try {
             createMovementBatchEvent.fire(new EventMessage(textMessage));
             Assert.fail();
@@ -171,7 +143,6 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
 
 
     private MovementQuery createMovementQuery(boolean usePagination) {
-
         MovementQuery query = new MovementQuery();
         if (usePagination) {
             BigInteger listSize = BigInteger.valueOf(100L);
