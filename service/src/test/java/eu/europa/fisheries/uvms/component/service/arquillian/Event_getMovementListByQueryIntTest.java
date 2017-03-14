@@ -1,6 +1,5 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.uvms.movement.message.event.GetMovementListByQueryEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
@@ -19,7 +18,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
-import java.math.BigInteger;
 
 /**
  * Created by roblar on 2017-03-08.
@@ -41,7 +39,7 @@ public class Event_getMovementListByQueryIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
 
         String text = MovementModuleRequestMapper.mapToGetMovementListByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -58,7 +56,7 @@ public class Event_getMovementListByQueryIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
 
         String text = MovementModuleRequestMapper.mapToGetMovementListByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);

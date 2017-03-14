@@ -508,8 +508,8 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     /*
-    private MovementQuery createMovementQuery() {
-        return createMovementQuery(false);
+    private MovementQuery createBasicMovementQuery() {
+        return createBasicMovementQuery(false);
     }
      */
 

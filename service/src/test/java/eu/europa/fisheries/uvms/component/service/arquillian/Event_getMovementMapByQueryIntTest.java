@@ -1,15 +1,18 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.message.event.GetMovementMapByQueryEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -20,6 +23,14 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * Created by roblar on 2017-03-08.
@@ -34,25 +45,39 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     @GetMovementMapByQueryEvent
     Event<EventMessage> getMovementMapByQueryEvent;
 
+    @Inject
+    MovementServiceBean movementServiceBean;
+
     @Deployment
     public static Archive<?> createDeployment() {
         return BuildMovementServiceTestDeployment.createEventDeployment();
     }
 
+    //To test event responses:
+    // Inject MovementService.java
+    // I try-blocket:
+    // XResponse response = movementservicebean.methodToInvokeForTest();
+
     @Test
-    public void testTriggerGetMovementMapByQuery() throws JMSException, ModelMarshallException {
+    public void testTriggerGetMovementMapByQuery() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
 
         String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
             getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
+            GetMovementMapByQueryResponse getMovementMapByQueryResponse = movementServiceBean.getMapByQuery(movementQuery);
+
+            assertNotNull(getMovementMapByQueryResponse);
+            LOG.info(" [ Firing a GetMovementMapByQuery event request successfully returns an event response that is not empty. ] ");
+            assertNotNull(getMovementMapByQueryResponse.getMovementMap());
+            LOG.info(" [ Firing a GetMovementMapByQuery event request successfully returns an event response that contains a list of movements with corresponding list(s) of segment(s) and list(s) of track(s). ] ");
         } catch (EJBException ex) {
-            Assert.assertTrue("Should not reach me!", false);
+            assertTrue("Should not reach me!", false);
         }
     }
 
@@ -61,15 +86,18 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
 
         String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
             getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
-            Assert.assertTrue("Should not reach me!", false);
-        } catch (EJBException ignore) {}
+            assertTrue("Should not reach me!", false);
+        } catch (EJBException e) {
+            assertTrue(true);
+            LOG.error(" [ Negative test: Firing a GetMovementMapByQuery event request using a non-functioning JMS queue fails. ] ");
+        }
     }
 
     @Test
@@ -77,20 +105,54 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
 
         // Introducing mapping error here by using the wrong mapper method causing MovementModuleMethod.MOVEMENT_LIST
         // to be used instead of MovementModuleMethod.MOVEMENT_MAP
         String text = MovementModuleRequestMapper.mapToGetMovementListByQueryRequest(movementQuery);
-
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
 
         try {
             getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
-        } catch (RuntimeException e) {
-            Assert.assertTrue("Negative test: Mapping by using the wrong movement event type should cause an exception when firing an event.", true);
+            assertTrue("Should not reach me!", false);
+        } catch (EJBException e) {
+            assertTrue(true);
             //ToDo: Evaluate if logging should be more generic by using %s to allow for any logging framework to be used instead of only slf4j.
-            LOG.error(" [ Negative test: Mapping by using the wrong movement event type should cause an exception when firing an event. ] {}", e.getMessage());
+            LOG.error(" [ Negative test: Mapping to the wrong movement event type throws an exception when firing a GetMovementMapByQuery event request. ] {}", e.getMessage());
         }
+    }
+
+    @Test
+    public void testTriggerGetMovementMapByQuery_settingPaginationOnAMovementQueryIsNotAllowed() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
+
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
+
+        MovementQuery movementQuery = MovementEventTestHelper.createErroneousMovementQuery("listPagination");
+
+        String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
+        TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
+
+        try {
+            getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
+            GetMovementMapByQueryResponse getMovementMapByQueryResponse = movementServiceBean.getMapByQuery(movementQuery);
+        } catch (MovementServiceException e) {
+            assertTrue(true);
+        //ToDo: Evaluate if logging should be more generic by using %s to allow for any logging framework to be used instead of only slf4j.
+            LOG.error(" [ Negative test: Setting pagination on a movement query is not allowed and causes an exception when firing a GetMovementMapByQuery event request. ] {}", e.getMessage());
+        }
+    }
+
+    @Test(expected = MovementServiceException.class)
+    public void testTriggerGetMovementMapByQuery_settingPaginationOnAMovementQueryThrowsMovementServiceException() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
+
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
+
+        MovementQuery movementQuery = MovementEventTestHelper.createErroneousMovementQuery("listPagination");
+
+        String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
+        TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
+
+        getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
+        GetMovementMapByQueryResponse getMovementMapByQueryResponse = movementServiceBean.getMapByQuery(movementQuery);
     }
 }
