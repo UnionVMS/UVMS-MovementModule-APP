@@ -13,6 +13,8 @@ import javax.transaction.UserTransaction;
 
 public class TransactionalTests {
 
+
+
     @Inject
     protected UserTransaction userTransaction;
 
