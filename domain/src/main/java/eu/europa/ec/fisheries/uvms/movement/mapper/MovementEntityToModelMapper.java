@@ -202,13 +202,13 @@ public class MovementEntityToModelMapper {
             model.getMetaData().getAreas().addAll(mapToMovementMetaDataAreaTypeList(movement.getMovementareaList()));
         }
 
-//        model.setProcessed(movement.getProcessed());
-//        if (movement.getDuplicate() != null) {
-//            model.setDuplicate(movement.getDuplicate());
-//        } else {
-//            model.setDuplicate(false);
-//        }
-//        model.setDuplicates(movement.getDuplicateId());
+        model.setProcessed(movement.getProcessed());
+        if (movement.getDuplicate() != null) {
+            model.setDuplicate(movement.getDuplicate());
+        } else {
+            model.setDuplicate(false);
+        }
+        model.setDuplicates(movement.getDuplicateId());
 
         return model;
     }
