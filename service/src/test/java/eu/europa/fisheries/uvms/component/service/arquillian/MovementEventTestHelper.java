@@ -3,13 +3,22 @@ package eu.europa.fisheries.uvms.component.service.arquillian;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.*;
-import eu.europa.ec.fisheries.schema.movement.v1.*;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
+import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -103,16 +112,15 @@ class MovementEventTestHelper {
                 movementQuery.getMovementSearchCriteria().addAll(listOfListCriterias);
                 break;
             case "rangeCriteria":
-                // Arbitrary string not allowed for RangeCriteria field called RangeKeyType. It can only match allowed enum values. Can be a negative test.
-
+                // Arbitrary string can be set in RangeCriteria fields setFrom() and setTo(). Can be a negative test.
                 RangeCriteria rangeCriteria1 = new RangeCriteria();
-                rangeCriteria1.setKey(RangeKeyType.MOVEMENT_SPEED); //Correct enum value.
-                rangeCriteria1.setFrom("testRangeCriteria1_from");
-                rangeCriteria1.setTo("testRangeCriteria1_to");
+                rangeCriteria1.setKey(RangeKeyType.SEGMENT_SPEED);
+                rangeCriteria1.setFrom(Long.toString(System.currentTimeMillis()));
+                rangeCriteria1.setTo(Long.toString(System.currentTimeMillis() + 1L));
 
                 RangeCriteria rangeCriteria2 = new RangeCriteria();
                 rangeCriteria2.setKey(RangeKeyType.MOVEMENT_SPEED);
-                rangeCriteria2.setFrom("testRangeCriteria2_from");
+                rangeCriteria2.setFrom("testRangeCriteria2_from"); //Setting arbitrary string value will fail in PSQL lookup.
                 rangeCriteria2.setTo("testRangeCriteria2_to");
 
                 List<RangeCriteria> listOfRangeCriteria = Arrays.asList(rangeCriteria1, rangeCriteria2);

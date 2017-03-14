@@ -96,6 +96,10 @@ public class MovementGroupMapper {
         return searchField;
     }
 
+    //ToDo: Setter in class ListCriteria called setValue() allows setting an arbitrary String when requiring the
+    //ToDo: following specific MovementTypeType enum values only: POS, ENT, EXI or MAN.
+    //ToDo: Method toListCriteria() is the only usage of this setter but toListCriteria() is itself never used.
+    //ToDo: Needs decision on if toListCriteria() method and the setter method ListCriteria.setValue() should be removed.
     private static ListCriteria toListCriteria(MovementFilter filter) {
         ListCriteria searchField = new ListCriteria();
         searchField.setKey(SearchKey.fromValue(filter.getField()));

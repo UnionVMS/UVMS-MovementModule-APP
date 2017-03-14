@@ -24,13 +24,8 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by roblar on 2017-03-08.
@@ -52,11 +47,6 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     public static Archive<?> createDeployment() {
         return BuildMovementServiceTestDeployment.createEventDeployment();
     }
-
-    //To test event responses:
-    // Inject MovementService.java
-    // I try-blocket:
-    // XResponse response = movementservicebean.methodToInvokeForTest();
 
     @Test
     public void testTriggerGetMovementMapByQuery() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
@@ -154,5 +144,46 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
 
         getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
         GetMovementMapByQueryResponse getMovementMapByQueryResponse = movementServiceBean.getMapByQuery(movementQuery);
+    }
+
+    @Test
+    public void testTriggerGetMovementMapByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
+
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
+
+        MovementQuery movementQuery = MovementEventTestHelper.createErroneousMovementQuery("listCriteria");
+
+        String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
+        TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
+
+        try {
+            getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
+            GetMovementMapByQueryResponse getMovementMapByQueryResponse = movementServiceBean.getMapByQuery(movementQuery);
+        } catch (EJBException e) {
+            assertTrue(e.getMessage().contains("No enum constant eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType"));
+
+            //ToDo: Evaluate if logging should be more generic by using %s to allow for any logging framework to be used instead of only slf4j.
+            LOG.error(" [ Negative test: Setting the value of the SearchKey type called MOVEMENT_TYPE must be an enum with value POS, ENT, EXI or MAN. ] {}", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testTriggerGetMovementMapByQuery_settingField_setFrom_inRangeCriteriaToArbitraryStringValueWillCausePSQLException() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
+
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
+
+        MovementQuery movementQuery = MovementEventTestHelper.createErroneousMovementQuery("rangeCriteria");
+
+        String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
+        TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
+
+        try {
+            getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
+        } catch (EJBException e) {
+            assertTrue(e.getMessage().contains("PSQLException: ERROR: column \"testrangecriteria2_from\" does not exist"));
+
+            //ToDo: Evaluate if logging should be more generic by using %s to allow for any logging framework to be used instead of only slf4j.
+            LOG.error(" [ Negative test: Setting the range criteria setFrom and setTo to an arbitrary String will cause a PSQL exception. ] {}", e.getMessage());
+        }
     }
 }
