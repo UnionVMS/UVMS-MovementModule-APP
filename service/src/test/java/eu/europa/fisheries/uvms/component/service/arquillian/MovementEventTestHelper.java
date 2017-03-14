@@ -64,41 +64,58 @@ class MovementEventTestHelper {
         return movementBaseType;
     }
 
-    static MovementQuery createMovementQuery() {
+    static MovementQuery createBasicMovementQuery() {
 
         MovementQuery movementQuery = new MovementQuery();
-
-        ListPagination listPagination = new ListPagination();
-        listPagination.setPage(BigInteger.ZERO);
-        listPagination.setListSize(BigInteger.TEN);
-
-        ListCriteria listCriteria1 = new ListCriteria();
-        listCriteria1.setKey(SearchKey.MOVEMENT_TYPE);
-        listCriteria1.setValue("testListCriteria1");
-
-        ListCriteria listCriteria2 = new ListCriteria();
-        listCriteria2.setKey(SearchKey.MOVEMENT_TYPE);
-        listCriteria2.setValue("testListCriteria2");
-
-        List<ListCriteria> listOfListCriterias = Arrays.asList(listCriteria1, listCriteria2);
-        movementQuery.getMovementSearchCriteria().addAll(listOfListCriterias);
-
-        RangeCriteria rangeCriteria1 = new RangeCriteria();
-        rangeCriteria1.setKey(RangeKeyType.MOVEMENT_SPEED);
-        rangeCriteria1.setFrom("testRangeCriteria1_from");
-        rangeCriteria1.setTo("testRangeCriteria1_to");
-
-        RangeCriteria rangeCriteria2 = new RangeCriteria();
-        rangeCriteria2.setKey(RangeKeyType.MOVEMENT_SPEED);
-        rangeCriteria2.setFrom("testRangeCriteria2_from");
-        rangeCriteria2.setTo("testRangeCriteria2_to");
-
-        List<RangeCriteria> listOfRangeCriteria = Arrays.asList(rangeCriteria1, rangeCriteria2);
-        movementQuery.getMovementRangeSearchCriteria().addAll(listOfRangeCriteria);
-
         movementQuery.setExcludeFirstAndLastSegment(true);
-        movementQuery.setPagination(listPagination);
 
+        return movementQuery;
+    }
+
+    static MovementQuery createErroneousMovementQuery(String fieldSelection) {
+
+        MovementQuery movementQuery = createBasicMovementQuery();
+
+        switch(fieldSelection) {
+            case "listPagination":
+                // Setting list pagination is not allowed. Can be a negative test.
+                ListPagination listPagination = new ListPagination();
+                listPagination.setPage(BigInteger.ZERO);
+                listPagination.setListSize(BigInteger.TEN);
+                movementQuery.setPagination(listPagination);
+                break;
+            case "listCriteria":
+                // Arbitrary string not allowed for ListCriteria field called value. It must match allowed enum values for MOVEMENT_TYPE. This enum is mapped by SearchField.java towards MovementTypeType.java. Can be a negative test.
+                ListCriteria listCriteria1 = new ListCriteria();
+                listCriteria1.setKey(SearchKey.MOVEMENT_TYPE);
+                listCriteria1.setValue("testListCriteria1");
+                //listCriteria1.setValue("POS"); //Correct enum value.
+
+                ListCriteria listCriteria2 = new ListCriteria();
+                listCriteria2.setKey(SearchKey.MOVEMENT_TYPE);
+                listCriteria2.setValue("testListCriteria2");
+                //listCriteria2.setValue("POS"); //Correct enum value.
+
+                List<ListCriteria> listOfListCriterias = Arrays.asList(listCriteria1, listCriteria2);
+                movementQuery.getMovementSearchCriteria().addAll(listOfListCriterias);
+                break;
+            case "rangeCriteria":
+                // Arbitrary string not allowed for RangeCriteria field called RangeKeyType. It can only match allowed enum values. Can be a negative test.
+
+                RangeCriteria rangeCriteria1 = new RangeCriteria();
+                rangeCriteria1.setKey(RangeKeyType.MOVEMENT_SPEED); //Correct enum value.
+                rangeCriteria1.setFrom("testRangeCriteria1_from");
+                rangeCriteria1.setTo("testRangeCriteria1_to");
+
+                RangeCriteria rangeCriteria2 = new RangeCriteria();
+                rangeCriteria2.setKey(RangeKeyType.MOVEMENT_SPEED);
+                rangeCriteria2.setFrom("testRangeCriteria2_from");
+                rangeCriteria2.setTo("testRangeCriteria2_to");
+
+                List<RangeCriteria> listOfRangeCriteria = Arrays.asList(rangeCriteria1, rangeCriteria2);
+                movementQuery.getMovementRangeSearchCriteria().addAll(listOfRangeCriteria);
+                break;
+        }
         return movementQuery;
     }
 

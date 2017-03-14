@@ -14,7 +14,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +28,14 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 
 /**
  *
@@ -100,10 +107,10 @@ public class AreaDaoIntTest {
             Area createdArea = areaDao.createMovementArea(area);
             areaDao.flushMovementAreas();
 
-            Assert.assertNotNull(createdArea);
+            assertNotNull(createdArea);
 
         } catch (AreaDaoException e) {
-            Assert.fail("AreaDaoIntTests.testCreateArea(): Failed to create an area.");
+            fail("AreaDaoIntTests.testCreateArea(): Failed to create an area.");
             LOG.error(" [ AreaDaoIntTests.testCreateArea(): Failed to create an area. ] {}", e.getMessage());
         }
     }
@@ -124,8 +131,8 @@ public class AreaDaoIntTest {
 
         Area readAreaFromDatabase = areaDao.readMovementAreaById(area.getAreaId());
 
-        Assert.assertNotNull(readAreaFromDatabase);
-        Assert.assertEquals(readAreaFromDatabase.getAreaId(), area.getAreaId());
+        assertNotNull(readAreaFromDatabase);
+        assertEquals(readAreaFromDatabase.getAreaId(), area.getAreaId());
     }
 
     @Test
@@ -150,11 +157,11 @@ public class AreaDaoIntTest {
 
             readAllAreasFromDatabase = areaDao.getAreas();
 
-            Assert.assertNotNull(readAllAreasFromDatabase);
-            Assert.assertNotEquals(0, readAllAreasFromDatabase.size());
+            assertNotNull(readAllAreasFromDatabase);
+            assertNotEquals(0, readAllAreasFromDatabase.size());
 
         } catch (AreaDaoException e) {
-            Assert.fail("AreaDaoIntTests.testGetAllAreas(): Failed to get a list of all entries in the database table movement.areas.");
+            fail("AreaDaoIntTests.testGetAllAreas(): Failed to get a list of all entries in the database table movement.areas.");
             LOG.error(" [ AreaDaoIntTests.testGetAllAreas(): Failed to get a list of all entries in the database table movement.areas. ] {}", e.getMessage());
         }
     }
@@ -168,10 +175,10 @@ public class AreaDaoIntTest {
             em.persist(failingArea);
             em.flush();
 
-            Assert.fail("Negative test: Field size constraint violation for column remoteId in table movement.area. Setting a string larger than 60 characters is expected to fail.");
+            fail("Negative test: Field size constraint violation for column remoteId in table movement.area. Setting a string larger than 60 characters is expected to fail.");
 
         } catch (RuntimeException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
             LOG.error(" [ Negative test: Field size constraint violation for column remoteId in table movement.area. Setting a string larger than 60 characters is expected to fail. ] {}", e.getMessage());
         }
     }
@@ -191,10 +198,10 @@ public class AreaDaoIntTest {
             em.persist(conflictingAreaType);
             em.flush();
 
-            Assert.fail("Negative test: Unique name constraint violation for column areatype_name in table movement.areatype. Attempting to set an already existing name is expected to fail.");
+            fail("Negative test: Unique name constraint violation for column areatype_name in table movement.areatype. Attempting to set an already existing name is expected to fail.");
 
         } catch (RuntimeException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
             LOG.error(" [ Negative test: Unique name constraint violation for column areatype_name in table movement.areatype. Attempting to set an already existing name is expected to fail. ] {}", e.getMessage());
         }
     }
@@ -226,10 +233,10 @@ public class AreaDaoIntTest {
             em.persist(conflictingArea);
             em.flush();
 
-            Assert.fail("Negative test: Unique name constraint violation for column area_code in table movement.area. Attempting to set an already existing name is expected to fail.");
+            fail("Negative test: Unique name constraint violation for column area_code in table movement.area. Attempting to set an already existing name is expected to fail.");
 
         } catch (RuntimeException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
             LOG.error(" [ Negative test: Unique name constraint violation for column area_code in table movement.area. Attempting to set an already existing name is expected to fail. ] {}", e.getMessage());
         }
     }
@@ -253,10 +260,10 @@ public class AreaDaoIntTest {
             em.persist(area);
             em.flush();
 
-            Assert.fail("Negative test: Not null constraint violation for column area_updattim in table movement.area. Setting a null value is expected to fail.");
+            fail("Negative test: Not null constraint violation for column area_updattim in table movement.area. Setting a null value is expected to fail.");
 
         } catch (RuntimeException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
             LOG.error(" [ Negative test: Not null constraint violation for column area_updattim in table movement.area. Setting a null value is expected to fail. ] {}", e.getMessage());
         }
     }
@@ -282,10 +289,10 @@ public class AreaDaoIntTest {
             em.persist(area);
             em.flush();
 
-            Assert.fail("Negative test: Not null constraint violation for column area_upuser in table movement.area. Setting a null value is expected to fail.");
+            fail("Negative test: Not null constraint violation for column area_upuser in table movement.area. Setting a null value is expected to fail.");
 
         } catch (RuntimeException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
             LOG.error(" [ Negative test: Not null constraint violation for column area_upuser in table movement.area. Setting a null value is expected to fail. ] {}", e.getMessage());
         }
     }
@@ -304,10 +311,10 @@ public class AreaDaoIntTest {
             em.persist(failingArea);
             em.flush();
 
-            Assert.fail("Negative test: Field size constraint violation for column area_upuser in table movement.area. Setting a string larger than 60 characters is expected to fail.");
+            fail("Negative test: Field size constraint violation for column area_upuser in table movement.area. Setting a string larger than 60 characters is expected to fail.");
 
         } catch (RuntimeException e) {
-            Assert.assertTrue(true);
+            assertTrue(true);
             LOG.error(" [ Negative test: Field size constraint violation for column area_upuser in table movement.area. Setting a string larger than 60 characters is expected to fail. ] {}", e.getMessage());
         }
     }
@@ -316,7 +323,7 @@ public class AreaDaoIntTest {
     public void failGetArea() throws AreaDaoException {
 
         Area failingAreaRead = areaDao.readMovementAreaById(-42L);
-        Assert.assertNull(failingAreaRead);
+        assertNull(failingAreaRead);
     }
 
     private Area createAreaHelper() {

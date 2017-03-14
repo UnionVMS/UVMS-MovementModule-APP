@@ -39,7 +39,7 @@ public class Event_pingIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
 
         String text = MovementModuleRequestMapper.mapToPingRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -56,7 +56,7 @@ public class Event_pingIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
 
         String text = MovementModuleRequestMapper.mapToPingRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
