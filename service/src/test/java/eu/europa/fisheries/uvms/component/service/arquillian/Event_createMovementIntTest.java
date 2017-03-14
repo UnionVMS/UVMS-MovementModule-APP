@@ -32,9 +32,6 @@ import java.util.Random;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- Adopted by thofan on 2017-02-22.
- */
 @RunWith(Arquillian.class)
 public class Event_createMovementIntTest extends TransactionalTests {
 
@@ -88,8 +85,6 @@ public class Event_createMovementIntTest extends TransactionalTests {
     @Test
     public void triggerEventWithBrokenJMS() throws JMSException, ModelMarshallException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
-        Double longitude = rnd.nextDouble();
-        Double latitude = rnd.nextDouble();
 
         MovementBaseType movementBaseType = MovementEventTestHelper.createMovementBaseType();
         String text = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "TEST");

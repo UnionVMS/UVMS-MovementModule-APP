@@ -31,9 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Adopted by thofan on 2017-02-22.
- */
+
 @RunWith(Arquillian.class)
 public class Event_createMovementBatchIntTest extends TransactionalTests {
 
