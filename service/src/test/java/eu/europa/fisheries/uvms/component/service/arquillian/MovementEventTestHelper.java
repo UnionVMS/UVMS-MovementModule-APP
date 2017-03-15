@@ -76,58 +76,67 @@ class MovementEventTestHelper {
         return movementBaseType;
     }
 
-    static MovementQuery createBasicMovementQuery() {
+    static MovementQuery createMovementQuery(boolean useListPagination, boolean useListCriteria, boolean useRangeCriteria) {
 
         MovementQuery movementQuery = new MovementQuery();
         movementQuery.setExcludeFirstAndLastSegment(true);
 
+        if(useListPagination) {
+            ListPagination listPagination = createListPagination();
+            movementQuery.setPagination(listPagination);
+        }
+
+        if(useListCriteria) {
+            List<ListCriteria> listOfListCriteria = createListOfListCriteria();
+            movementQuery.getMovementSearchCriteria().addAll(listOfListCriteria);
+        }
+
+        if(useRangeCriteria) {
+            List<RangeCriteria> listOfRangeCriteria = createListOfRangeCriteria();
+            movementQuery.getMovementRangeSearchCriteria().addAll(listOfRangeCriteria);
+        }
+
         return movementQuery;
     }
 
-    static MovementQuery createErroneousMovementQuery(String fieldSelection) {
+    static ListPagination createListPagination() {
 
-        MovementQuery movementQuery = createBasicMovementQuery();
+        //Pagination required for list query.
+        ListPagination listPagination = new ListPagination();
+        listPagination.setPage(BigInteger.ZERO);
+        listPagination.setListSize(BigInteger.TEN);
 
-        switch(fieldSelection) {
-            case "listPagination":
-                // Setting list pagination is not allowed. Can be a negative test.
-                ListPagination listPagination = new ListPagination();
-                listPagination.setPage(BigInteger.ZERO);
-                listPagination.setListSize(BigInteger.TEN);
-                movementQuery.setPagination(listPagination);
-                break;
-            case "listCriteria":
-                // Arbitrary string not allowed for ListCriteria field called value. It must match allowed enum values for MOVEMENT_TYPE. This enum is mapped by SearchField.java towards MovementTypeType.java. Can be a negative test.
-                ListCriteria listCriteria1 = new ListCriteria();
-                listCriteria1.setKey(SearchKey.MOVEMENT_TYPE);
-                listCriteria1.setValue("testListCriteria1");
-                //listCriteria1.setValue("POS"); //Correct enum value.
+        return listPagination;
+    }
 
-                ListCriteria listCriteria2 = new ListCriteria();
-                listCriteria2.setKey(SearchKey.MOVEMENT_TYPE);
-                listCriteria2.setValue("testListCriteria2");
-                //listCriteria2.setValue("POS"); //Correct enum value.
+    static List<ListCriteria> createListOfListCriteria() {
 
-                List<ListCriteria> listOfListCriterias = Arrays.asList(listCriteria1, listCriteria2);
-                movementQuery.getMovementSearchCriteria().addAll(listOfListCriterias);
-                break;
-            case "rangeCriteria":
-                // Arbitrary string can be set in RangeCriteria fields setFrom() and setTo(). Can be a negative test.
-                RangeCriteria rangeCriteria1 = new RangeCriteria();
-                rangeCriteria1.setKey(RangeKeyType.SEGMENT_SPEED);
-                rangeCriteria1.setFrom(Long.toString(System.currentTimeMillis()));
-                rangeCriteria1.setTo(Long.toString(System.currentTimeMillis() + 1L));
+        ListCriteria listCriteria1 = new ListCriteria();
+        listCriteria1.setKey(SearchKey.MOVEMENT_TYPE);
+        listCriteria1.setValue("testListCriteria1");
+        //listCriteria1.setValue("POS"); //Correct enum value.
 
-                RangeCriteria rangeCriteria2 = new RangeCriteria();
-                rangeCriteria2.setKey(RangeKeyType.MOVEMENT_SPEED);
-                rangeCriteria2.setFrom("testRangeCriteria2_from"); //Setting arbitrary string value will fail in PSQL lookup.
-                rangeCriteria2.setTo("testRangeCriteria2_to");
+        ListCriteria listCriteria2 = new ListCriteria();
+        listCriteria2.setKey(SearchKey.MOVEMENT_TYPE);
+        listCriteria2.setValue("testListCriteria2");
+        //listCriteria2.setValue("POS"); //Correct enum value.
 
-                List<RangeCriteria> listOfRangeCriteria = Arrays.asList(rangeCriteria1, rangeCriteria2);
-                movementQuery.getMovementRangeSearchCriteria().addAll(listOfRangeCriteria);
-                break;
-        }
-        return movementQuery;
+        return Arrays.asList(listCriteria1, listCriteria2);
+    }
+
+    static List<RangeCriteria> createListOfRangeCriteria() {
+
+        RangeCriteria rangeCriteria1 = new RangeCriteria();
+        rangeCriteria1.setKey(RangeKeyType.SEGMENT_SPEED);
+        rangeCriteria1.setFrom(Long.toString(System.currentTimeMillis()));
+        rangeCriteria1.setTo(Long.toString(System.currentTimeMillis() + 1L));
+
+        RangeCriteria rangeCriteria2 = new RangeCriteria();
+        rangeCriteria2.setKey(RangeKeyType.MOVEMENT_SPEED);
+        rangeCriteria2.setFrom("testRangeCriteria2_from"); //Setting arbitrary string value will fail in SQL lookup.
+        rangeCriteria2.setTo("testRangeCriteria2_to");
+
+        return Arrays.asList(rangeCriteria1, rangeCriteria2);
     }
 
     static TextMessage createTextMessage(String text) throws JMSException {

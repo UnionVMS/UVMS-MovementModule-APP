@@ -53,7 +53,7 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(false, false, false);
 
         String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -76,7 +76,7 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(false, false, false);
 
         String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -95,7 +95,7 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createBasicMovementQuery();
+        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(false, false, false);
 
         // Introducing mapping error here by using the wrong mapper method causing MovementModuleMethod.MOVEMENT_LIST
         // to be used instead of MovementModuleMethod.MOVEMENT_MAP
@@ -113,11 +113,11 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     }
 
     @Test
-    public void testTriggerGetMovementMapByQuery_settingPaginationOnAMovementQueryIsNotAllowed() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
+    public void testTriggerGetMovementMapByQuery_settingPaginationOnAMovementMapQueryIsNotAllowed() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createErroneousMovementQuery("listPagination");
+        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(true, false, false);
 
         String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -128,16 +128,16 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
         } catch (MovementServiceException e) {
             assertTrue(true);
         //ToDo: Evaluate if logging should be more generic by using %s to allow for any logging framework to be used instead of only slf4j.
-            LOG.error(" [ Negative test: Setting pagination on a movement query is not allowed and causes an exception when firing a GetMovementMapByQuery event request. ] {}", e.getMessage());
+            LOG.error(" [ Negative test: Setting pagination on a movement map query is not allowed and causes an exception when firing a GetMovementMapByQuery event request. ] {}", e.getMessage());
         }
     }
 
     @Test(expected = MovementServiceException.class)
-    public void testTriggerGetMovementMapByQuery_settingPaginationOnAMovementQueryThrowsMovementServiceException() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
+    public void testTriggerGetMovementMapByQuery_settingPaginationOnAMovementMapQueryThrowsMovementServiceException() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createErroneousMovementQuery("listPagination");
+        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(true, false, false);
 
         String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -146,12 +146,14 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
         GetMovementMapByQueryResponse getMovementMapByQueryResponse = movementServiceBean.getMapByQuery(movementQuery);
     }
 
+    //ToDo: An arbitrary string value should not be allowed to be set for the ListCriteria field called 'value' by using a setter as the value *must* match only allowed enum values for the enum SearchKey.
+    //ToDo: This enum is mapped by the SearchField enum toward the MovementTypeType enum. One solution could be to remove the setValue() method in the ListCriteria class.
     @Test
     public void testTriggerGetMovementMapByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createErroneousMovementQuery("listCriteria");
+        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(false, true, false);
 
         String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -163,16 +165,19 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
             assertTrue(e.getMessage().contains("No enum constant eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType"));
 
             //ToDo: Evaluate if logging should be more generic by using %s to allow for any logging framework to be used instead of only slf4j.
-            LOG.error(" [ Negative test: Setting the value of the SearchKey type called MOVEMENT_TYPE must be an enum with value POS, ENT, EXI or MAN. ] {}", e.getMessage());
+            LOG.error(" [ Negative test: GetMovementMapByQuery - Setting the value of the SearchKey type called MOVEMENT_TYPE must be an enum with value POS, ENT, EXI or MAN. ] {}", e.getMessage());
         }
     }
 
+    //ToDo: An arbitrary string value can be set in RangeCriteria fields setFrom() and setTo(). Evaluate if:
+    //ToDo: 1. Using Date instead of String here.
+    //ToDo: 2. Remove the option to set an arbitrary string value altogether by deleting these setters.
     @Test
     public void testTriggerGetMovementMapByQuery_settingField_setFrom_inRangeCriteriaToArbitraryStringValueWillCausePSQLException() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createErroneousMovementQuery("rangeCriteria");
+        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(false, false, true);
 
         String text = MovementModuleRequestMapper.mapToGetMovementMapByQueryRequest(movementQuery);
         TextMessage textMessage = MovementEventTestHelper.createTextMessage(text);
@@ -180,10 +185,9 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
         try {
             getMovementMapByQueryEvent.fire(new EventMessage(textMessage));
         } catch (EJBException e) {
-            assertTrue(e.getMessage().contains("PSQLException: ERROR: column \"testrangecriteria2_from\" does not exist"));
-
+            assertTrue(e.getMessage().contains("SQLGrammarException: could not extract ResultSet"));
             //ToDo: Evaluate if logging should be more generic by using %s to allow for any logging framework to be used instead of only slf4j.
-            LOG.error(" [ Negative test: Setting the range criteria setFrom and setTo to an arbitrary String will cause a PSQL exception. ] {}", e.getMessage());
+            LOG.error(" [ Negative test: GetMovementMapByQuery - Setting the range criteria setFrom and/or setTo to an arbitrary String will cause a SQL exception. ] {}", e.getMessage());
         }
     }
 }

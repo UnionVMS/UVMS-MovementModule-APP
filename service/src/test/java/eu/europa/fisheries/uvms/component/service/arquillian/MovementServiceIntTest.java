@@ -507,12 +507,6 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
 
-    /*
-    private MovementQuery createBasicMovementQuery() {
-        return createBasicMovementQuery(false);
-    }
-     */
-
     private MovementQuery createMovementQuery(boolean usePagination) {
 
         MovementQuery query = new MovementQuery();
