@@ -96,7 +96,7 @@ public class TestTester {
 
         // TODO this is mostly nonsense but it makes the test run so  we will look into it . . .
         return ShrinkWrap
-                .create(WebArchive.class)
+                .create(WebArchive.class, "movement.war")
               //  .addPackages(true, "eu.europa.ec.fisheries.uvms.movement", "rest.arquillian")
                 .addAsResource("persistence-integration.xml", "META-INF/persistence.xml")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
@@ -129,13 +129,28 @@ public class TestTester {
     @RunAsClient
     public void testGET_alternativ2() {
 
-
         Response response = target.request(MediaType.APPLICATION_JSON).get();
         String rs = response.readEntity(String.class);
-
         System.out.println(rs);
 
     }
+
+
+    @Test
+    @RunAsClient
+    public void testFOREVER() {
+
+
+        while(true){
+
+            try {
+                Thread.sleep(10000);
+            }catch(InterruptedException e){
+
+            }
+        }
+    }
+
 
    // @Test
     public void testPOST() {
