@@ -34,12 +34,15 @@ public class TestTester {
     WebTarget target = null;
     Invocation.Builder invocation = null;
 
+    // normally you only test one baseroot at a time
+    public static final String ENDPOINT_ROOT = "http://fanto.se";
+
 
     @Before
     public void before() {
 
         client = ClientBuilder.newClient();
-        target = client.target("http://fanto.se");
+        target = client.target(ENDPOINT_ROOT);
 
     }
 
@@ -75,7 +78,7 @@ public class TestTester {
 
     @Test
     @RunAsClient
-    public void testGETT_alternativ1() {
+    public void testGET_alternativ1() {
 
         invocation = target.request(MediaType.APPLICATION_JSON);
 
@@ -90,7 +93,6 @@ public class TestTester {
     @RunAsClient
     public void testGET_alternativ2() {
 
-        invocation = target.request(MediaType.APPLICATION_JSON);
 
         Response response = target.request(MediaType.APPLICATION_JSON).get();
         String rs = response.readEntity(String.class);
@@ -105,8 +107,12 @@ public class TestTester {
         Form form = new Form();
         form.param("x", "foo");
         form.param("y", "bar");
-        String bean = target.request(MediaType.APPLICATION_JSON_TYPE)
+        String str = target.request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+
+
+        System.out.println(str);
+
     }
 
 
