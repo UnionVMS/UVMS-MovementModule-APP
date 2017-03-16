@@ -87,7 +87,7 @@ public class TestTester {
     public static WebArchive createDeployment() {
 
 
-        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
+        File[] files = Maven.resolver().loadPomFromFile("../pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
         printFiles(files);
@@ -137,7 +137,7 @@ public class TestTester {
 
     }
 
-    @Test
+   // @Test
     public void testPOST() {
 
         Form form = new Form();
