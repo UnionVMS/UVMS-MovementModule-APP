@@ -13,18 +13,27 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by thofan on 2017-03-15.
  */
 @RunWith(Arquillian.class)
 public class TestTester {
+
+    final static Logger LOG = LoggerFactory.getLogger(TestTester.class);
+
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -52,11 +61,38 @@ public class TestTester {
         }
     }
 
+    private static void printFiles(File[] files) {
 
+        List<File> filesSorted = new ArrayList<>();
+        for(File f : files){
+            filesSorted.add(f);
+        }
+
+        Collections.sort(filesSorted, new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        LOG.info("FROM POM - begin");
+        for(File f : filesSorted){
+            LOG.info("       --->>>   "   +   f.getName());
+        }
+        LOG.info("FROM POM - end");
+    }
 
 
     @Deployment
     public static WebArchive createDeployment() {
+
+
+        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
+                .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
+
+        printFiles(files);
+
+
 
         // TODO this is mostly nonsense but it makes the test run so  we will look into it . . .
         return ShrinkWrap
@@ -64,7 +100,9 @@ public class TestTester {
               //  .addPackages(true, "eu.europa.ec.fisheries.uvms.movement", "rest.arquillian")
                 .addAsResource("persistence-integration.xml", "META-INF/persistence.xml")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-                .setWebXML(new File("src/test/resources/web.xml"));
+                .setWebXML(new File("src/test/resources/web.xml"))
+                 .addAsLibraries(files);
+
                 /*.addAsLibraries(
                         Maven.resolver().resolve("com.google.code.gson:gson:2.3.1", "org.mockito:mockito-core:1.9.5")
                                 .withTransitivity().asFile());
