@@ -26,8 +26,6 @@ import java.io.File;
 @RunWith(Arquillian.class)
 public class TestTester {
 
-
-
     ObjectMapper mapper = new ObjectMapper();
 
     Client client = null;
@@ -63,7 +61,7 @@ public class TestTester {
         // TODO this is mostly nonsense but it makes the test run so  we will look into it . . .
         return ShrinkWrap
                 .create(WebArchive.class)
-                .addPackages(true, "com.library.app")
+                .addPackages(true, "eu.europa.ec.fisheries.uvms.movement", "rest.arquillian")
                 .addAsResource("persistence-integration.xml", "META-INF/persistence.xml")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .setWebXML(new File("src/test/resources/web.xml"));
