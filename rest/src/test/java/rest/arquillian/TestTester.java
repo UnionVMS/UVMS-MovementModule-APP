@@ -1,6 +1,8 @@
 package rest.arquillian;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper;
+import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -90,6 +92,10 @@ public class TestTester {
         File[] files = Maven.resolver().loadPomFromFile("../pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
+
+        files = Maven.resolver().loadPomFromFile("../pom.xml")
+                .importCompileAndRuntimeDependencies().importTestDependencies().resolve().withTransitivity().asFile();
+
         printFiles(files);
 
 
@@ -102,7 +108,10 @@ public class TestTester {
                 .addAsResource("persistence-integration.xml", "META-INF/persistence.xml")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                 .setWebXML(new File("src/test/resources/web.xml"))
-                 .addAsLibraries(files);
+                 .addAsLibraries(files)
+               // .addClass(ConfigHelper.class)
+               // .addClass(NotificationMessage.class)
+                ;
 
                 /*.addAsLibraries(
                         Maven.resolver().resolve("com.google.code.gson:gson:2.3.1", "org.mockito:mockito-core:1.9.5")
@@ -137,8 +146,8 @@ public class TestTester {
     }
 
 
-    @Test
-    @RunAsClient
+    //@Test
+    //@RunAsClient
     public void testFOREVER() {
 
 
