@@ -29,8 +29,7 @@ public class TestLogin {
     WebTarget loginTarget = null;
     Invocation.Builder invocation = null;
 
-//    public static final String ENDPOINT_ROOT = "https://unionvmstest.havochvatten.se";
-    public static final String ENDPOINT_ROOT = "http://192.168.105.96:8080/";
+    public static final String ENDPOINT_ROOT = "https://unionvmstest.havochvatten.se";
 
 
     @Before
