@@ -2,6 +2,7 @@ package rest.arquillian;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -29,6 +30,8 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
     public static final String ENDPOINT_ROOT = "http://localhost:28080";
 
+    ResponseDto x;
+
 
 
     @Deployment
@@ -43,32 +46,16 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
     @Test
     @RunAsClient
-    public void testPOST() {
+    public void areas() {
 
-        // TODO here we shall NOT have a login. we will mock that filter
 
-        webLoginTarget = client.target(ENDPOINT_ROOT).path("usm-authentication").path("rest").path("authenticate");
+        webLoginTarget = client.target(ENDPOINT_ROOT).path("usm-movement").path("rest").path("areas");
 
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest("vms_admin_com", "password");
-        String json = null;
-        try {
-            json = mapper.writeValueAsString(authenticationRequest);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        LOG.info(json);
         Response response = webLoginTarget
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.entity(json, MediaType.APPLICATION_JSON));
-        String content = response.readEntity(String.class);
-        try {
-            JsonNode tree = mapper.readTree(content);
+                .get();
 
-            String value = tree.get("authenticated").asText();
-            Assert.assertTrue(value.equals("true"));
-        } catch (IOException e) {
-            Assert.fail();
-        }
+        ResponseDto content = response.readEntity(ResponseDto.class);
     }
 
 
