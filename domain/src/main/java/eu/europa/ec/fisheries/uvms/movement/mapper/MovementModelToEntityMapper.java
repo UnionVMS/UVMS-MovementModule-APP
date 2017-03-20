@@ -46,6 +46,8 @@ import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.GeometryUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.SegmentCalculationUtil;
 
+//TODO: AW: Rewrite this, This class is NOT ModelToEntity Mapper, contains a lot of business logic and handles mostly
+// entities..
 public class MovementModelToEntityMapper {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementModelToEntityMapper.class);
