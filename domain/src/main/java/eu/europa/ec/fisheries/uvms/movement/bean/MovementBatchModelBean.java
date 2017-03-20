@@ -117,6 +117,12 @@ public class MovementBatchModelBean implements MovementBatchModel {
 
             LOG.debug("CREATING MOVEMENT FOR CONNECTID: " + movement.getConnectId() + " MOVEMENT ID: " + currentMovement.getId());
             dao.create(currentMovement);
+            // TODO: Make sure that relation is correct
+            if(moveConnect.getMovementList() == null) {
+                moveConnect.setMovementList(new ArrayList<Movement>());
+            }
+            moveConnect.getMovementList().add(currentMovement);
+            dao.persist(moveConnect);
 
             MovementType movementType = mapToMovementType(currentMovement);
             long diff = System.currentTimeMillis() - start;

@@ -14,6 +14,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import static org.junit.Assert.assertTrue;
  * Created by roblar on 2017-03-08.
  */
 @RunWith(Arquillian.class)
+@Ignore
 public class Event_getMovementListByQueryIntTest extends TransactionalTests {
 
     final static Logger LOG = LoggerFactory.getLogger(Event_getMovementListByQueryIntTest.class);

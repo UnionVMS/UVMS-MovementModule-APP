@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
+import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
 import eu.europa.ec.fisheries.uvms.movement.bean.*;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -30,6 +31,7 @@ public abstract class BuildMovementTestDeployment {
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.model.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.util");
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dto");
         // No no, starts threaded job...
         // Need to exclude job first...
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement");
@@ -41,6 +43,7 @@ public abstract class BuildMovementTestDeployment {
         testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.model");
         testWar.addPackages(true, "eu.europa.ec.fisheries.schema");
         testWar.addClass(TransactionalTests.class);
+        testWar.addClass(TestUtil.class);
 
 
 
