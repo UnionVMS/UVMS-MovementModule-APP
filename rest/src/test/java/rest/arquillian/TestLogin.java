@@ -2,6 +2,7 @@ package rest.arquillian;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 /**
  * Created by thofan on 2017-03-17.
@@ -46,6 +48,8 @@ public class TestLogin {
         if (client != null) {
             client.close();
         }
+
+
     }
 
 
@@ -58,27 +62,41 @@ public class TestLogin {
             String json = mapper.writeValueAsString(authenticationRequest);
             LOG.info(json);
 
-            Response r = loginTarget.request()
-                    .post(Entity.entity(authenticationRequest,  MediaType.TEXT_PLAIN ),Response.class);
-
-            String msg = r.readEntity(String.class);
+            String content = loginTarget.request()
+                    .post(Entity.json(authenticationRequest ),String.class);
 
 
-            LOG.info(msg);
+            try {
+                JsonNode tree =  mapper.readTree(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
 
         } catch (JsonProcessingException e) {
+           // e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    public void testLogin2() {
+
+
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest("vms_admin_com","password");
+
+
+
+        Invocation.Builder invocationBuilder = loginTarget.request(MediaType.APPLICATION_JSON);
+        String content = invocationBuilder.post(Entity.json(authenticationRequest ),String.class);
+        try {
+            JsonNode tree =  mapper.readTree(content);
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
 
-
-
-
-
     }
-
-
 
 
 }
