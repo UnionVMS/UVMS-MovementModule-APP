@@ -1,30 +1,57 @@
 package rest.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.service.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.After;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public  class BuildMovementServiceTestDeployment {
-    private BuildMovementServiceTestDeployment(){}
+public  class BuildMovementRestTestDeployment {
 
-    final static Logger LOG = LoggerFactory.getLogger(BuildMovementServiceTestDeployment.class);
+    final static Logger LOG = LoggerFactory.getLogger(BuildMovementRestTestDeployment.class);
+
+    public Client client = null;
+    public WebTarget webLoginTarget = null;
+    public  Invocation.Builder invocation = null;
 
 
-    private static WebArchive createBasic_REST_Deployment() {
+    public  ObjectMapper mapper = new ObjectMapper();
+
+
+
+    @Before
+    public void before() {
+        client = ClientBuilder.newClient();
+    }
+
+    @After
+    public void after() {
+        if (client != null) {
+            client.close();
+        }
+    }
+
+
+
+
+
+    private  WebArchive createBasic_REST_Deployment() {
 
         File[] files = Maven.resolver().loadPomFromFile("pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
@@ -44,7 +71,7 @@ public  class BuildMovementServiceTestDeployment {
         return testWar;
     }
 
-    public static Archive<?> create_REST_Deployment() {
+    public  Archive<?> create_REST_Deployment() {
         WebArchive archive = createBasic_REST_Deployment();
 
 
@@ -56,7 +83,7 @@ public  class BuildMovementServiceTestDeployment {
 
 
 
-    private static void printFiles(File[] files) {
+    private  void printFiles(File[] files) {
 
         List<File> filesSorted = new ArrayList<>();
         for(File f : files){
