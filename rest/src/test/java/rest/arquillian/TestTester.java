@@ -44,6 +44,9 @@ public class TestTester  extends BuildMovementRestTestDeployment {
     @Test
     @RunAsClient
     public void testPOST() {
+
+        // TODO here we shall NOT have a login. we will mock that filter
+
         webLoginTarget = client.target(ENDPOINT_ROOT).path("usm-authentication").path("rest").path("authenticate");
 
         AuthenticationRequest authenticationRequest = new AuthenticationRequest("vms_admin_com", "password");
