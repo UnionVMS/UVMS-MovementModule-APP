@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -19,7 +20,6 @@ import java.io.IOException;
  * Created by thofan on 2017-03-17.
  */
 public class TestLogin {
-
 
 
     final static Logger LOG = LoggerFactory.getLogger(TestLogin.class);
@@ -39,25 +39,20 @@ public class TestLogin {
 
         client = ClientBuilder.newClient();
         webLoginTarget = client.target(ENDPOINT_ROOT).path("usm-authentication").path("rest").path("authenticate");
-
     }
 
     @After
     public void after() {
-
         if (client != null) {
             client.close();
         }
-
-
     }
 
 
     @Test
     public void testLogin() {
 
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest("vms_admin_com","password");
-
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest("vms_admin_com", "password");
         String json = null;
         try {
             json = mapper.writeValueAsString(authenticationRequest);
@@ -65,27 +60,19 @@ public class TestLogin {
             e.printStackTrace();
         }
         LOG.info(json);
-
-
         Response response = webLoginTarget
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(json, MediaType.APPLICATION_JSON));
-
-
         String content = response.readEntity(String.class);
-
         try {
-                JsonNode tree =  mapper.readTree(content);
+            JsonNode tree = mapper.readTree(content);
 
-
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            String value = tree.get("authenticated").asText();
+            Assert.assertTrue(value.equals("true"));
+        } catch (IOException e) {
+            Assert.fail();
+        }
     }
-
-
 
 
 }
