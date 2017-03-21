@@ -64,13 +64,7 @@ public  class BuildMovementRestTestDeployment {
         Set<File> unique = new HashSet<>();
         unique.addAll(Arrays.asList(files1));
         unique.addAll(Arrays.asList(files2));
-
-        File[] files = new File[unique.size()];
-        int i = 0;
-        for(File f : unique){
-            files[i] = f;
-            i++;
-        }
+        File[] files = unique.toArray(new File[unique.size()]);
         printFiles(files);
 
 
