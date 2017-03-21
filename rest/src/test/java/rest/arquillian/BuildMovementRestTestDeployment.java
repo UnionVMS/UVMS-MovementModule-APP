@@ -1,4 +1,4 @@
-package eu.europa.fisheries.uvms.component.service.arquillian;
+package rest.arquillian;
 
 import eu.europa.ec.fisheries.uvms.movement.service.*;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
