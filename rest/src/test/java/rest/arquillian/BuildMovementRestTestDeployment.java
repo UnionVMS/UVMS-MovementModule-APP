@@ -51,7 +51,12 @@ public  class BuildMovementRestTestDeployment {
         }
     }
 
-    private static WebArchive createBasic_REST_Deployment() {
+
+    private  static WebArchive createBasic_REST_Deployment() {
+
+        File[] files0 = Maven.resolver().loadPomFromFile("pom.xml")
+                .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
+        printFiles(files0);
 
         File[] files1 = Maven.resolver().loadPomFromFile("../pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
@@ -64,15 +69,10 @@ public  class BuildMovementRestTestDeployment {
         printFiles(files2);
 
         Set<File> unique = new HashSet<>();
+        unique.addAll(Arrays.asList(files0));
         unique.addAll(Arrays.asList(files1));
         unique.addAll(Arrays.asList(files2));
-
-        File[] files = new File[unique.size()];
-        int i = 0;
-        for(File f : unique){
-            files[i] = f;
-            i++;
-        }
+        File[] files = unique.toArray(new File[unique.size()]);
         printFiles(files);
 
 
@@ -171,7 +171,7 @@ public  class BuildMovementRestTestDeployment {
         for(File f : filesSorted){
             LOG.info("       --->>>   "   +   f.getName());
         }
-        LOG.info("FROM POM - end");
+        LOG.info("FROM POM - end " + filesSorted.size());
     }
 
 
