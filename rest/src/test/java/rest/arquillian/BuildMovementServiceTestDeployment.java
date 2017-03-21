@@ -11,8 +11,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rest.arquillian.TestUtil;
-import rest.arquillian.TransactionalTests;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -26,7 +24,7 @@ import java.io.File;
 public abstract class BuildMovementServiceTestDeployment {
 
 
-    final static Logger LOG = LoggerFactory.getLogger(BuildMovementRestTestDeployment.class);
+    final static Logger LOG = LoggerFactory.getLogger(BuildMovementServiceTestDeployment.class);
 
     public Client client = null;
     public WebTarget webTarget = null;
@@ -50,6 +48,13 @@ public abstract class BuildMovementServiceTestDeployment {
     // ShrinkWrap.create(WebArchive.class)
     //        .addPackages(true, Filters.exclude(".*Test.*"), getCorePackages());
     //
+    // Set<File> unique = new HashSet<>();
+    //    unique.addAll(Arrays.asList(files0));
+    //    unique.addAll(Arrays.asList(files1));
+    //    unique.addAll(Arrays.asList(files2));
+    //File[] files = unique.toArray(new File[unique.size()]);
+
+
     public static Archive<?> createDeployment() {
 
         // Import Maven runtime dependencies

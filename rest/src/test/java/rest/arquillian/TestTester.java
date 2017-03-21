@@ -32,7 +32,7 @@ public class TestTester  extends BuildMovementServiceTestDeployment {
 
     public static final String ENDPOINT_ROOT = "http://localhost:28080";
 
-  
+
 
 
     @Deployment
