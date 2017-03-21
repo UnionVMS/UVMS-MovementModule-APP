@@ -47,9 +47,7 @@ public abstract class BuildMovementRestTestDeployment {
 
     @Before
     public void before() {
-
         client = ClientBuilder.newClient();
-        webTarget = client.target(ENDPOINT_ROOT).path("usm-authentication").path("rest").path("authenticate");
     }
 
     @After
