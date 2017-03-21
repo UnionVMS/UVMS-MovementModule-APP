@@ -28,7 +28,7 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
 
 
-    @Deployment
+    @Deployment(testable=false)
     public static Archive<?> createDeployment() {
         return BuildMovementRestTestDeployment.createBasicDeployment();
     }
@@ -38,7 +38,6 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
 
     @Test
-    @RunAsClient
     public void areas() {
 
 
@@ -48,7 +47,7 @@ public class TestTester  extends BuildMovementRestTestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 
-        ResponseDto content = response.readEntity(ResponseDto.class);
+        //ResponseDto content = response.readEntity(ResponseDto.class);
 
     }
 }

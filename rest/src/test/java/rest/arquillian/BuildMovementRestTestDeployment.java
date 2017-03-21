@@ -1,15 +1,14 @@
 package rest.arquillian;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.*;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
+import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
-//import eu.europa.fisheries.uvms.component.service.SpatialServiceMockedBean;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -24,7 +23,12 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+//import eu.europa.fisheries.uvms.component.service.SpatialServiceMockedBean;
 
 /**
  * Created by andreasw on 2017-02-13.
@@ -61,7 +65,7 @@ public abstract class BuildMovementRestTestDeployment {
 
     public static WebArchive createBasicDeployment() {
 
-        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
+        File[] files = Maven.resolver().loadPomFromFile("../pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
         printFiles(files);
@@ -69,9 +73,12 @@ public abstract class BuildMovementRestTestDeployment {
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
-
+        testWar.addPackages(true, Filters.exclude(".*TestTester.*"), "com.europa.ec");
+        /*
         testWar.addClass(MovementConfigHelper.class);
         testWar.addClass(TransactionalTests.class);
+        testWar.addClass(ConfigMessageProducer.class);
+        */
 
         // Empty beans for EE6 CDI
         testWar.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
