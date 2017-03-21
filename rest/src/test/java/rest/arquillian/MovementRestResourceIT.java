@@ -35,20 +35,21 @@ import static org.junit.Assert.assertThat;
  * Created by roblar on 2017-03-17.
  */
 @RunWith(Arquillian.class)
-public class MovementRestResourceIT {
+public class MovementRestResourceIT extends BuildMovementRestTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementRestResourceIT.class);
 
-    public static final String ENDPOINT_ROOT = "http://localhost:8080";
+    public static final String ENDPOINT_ROOT = "http://localhost:28080";
     //public static final String LOGIN_ENDPOINT = "usm-administration/rest/authenticate";
     //http://localhost:8080/usm-administration/rest/authenticate
 
+    /*
     Client client = null;
     WebTarget target = null;
     ObjectMapper mapper = new ObjectMapper();
+    */
 
-
-    @Deployment
+    @Deployment(testable = false)
     public static Archive<?> createDeployment() {
         return BuildMovementRestTestDeployment.createBasicDeployment();
     }
@@ -58,6 +59,7 @@ public class MovementRestResourceIT {
     AuthenticationServiceBean authenticationServiceBean;
     */
 
+    /*
     @Before
     public void before() {
 
@@ -72,9 +74,10 @@ public class MovementRestResourceIT {
             client.close();
         }
     }
+    */
 
     @Test
-    @RunAsClient
+    //@RunAsClient
     public void test_REST_GetListByQuery() {
 
         /*
@@ -85,15 +88,25 @@ public class MovementRestResourceIT {
 
         //try {
 
-            target = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("list");
+        /*
+        webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
+        Response response = webTarget
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+        */
 
-            Response response = target
+
+        //webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("list");
+        /*
+        webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
+
+            Response response = webTarget
                     .request(MediaType.APPLICATION_JSON)
                     .get();
+         */
+            //ResponseDto content = response.readEntity(ResponseDto.class);
 
-            ResponseDto content = response.readEntity(ResponseDto.class);
-
-            assertNotNull(content);
+            //assertNotNull(content);
             //String json = mapper.writeValueAsString(authenticationRequest);
             //LOG.info(json);
 
@@ -123,6 +136,7 @@ public class MovementRestResourceIT {
             //MessageBodyWriter messageBodyWriter = JSONObjectProvider.
             //response.
 
+            /*
             LOG.info("Headers: " + response.getHeaders().toString());
             LOG.info("Allowed methods: " + response.getAllowedMethods().toString());
             LOG.info("Status info: " + response.getStatusInfo().toString());
@@ -133,7 +147,7 @@ public class MovementRestResourceIT {
 
             //assertEquals(response.getMediaType().toString(), "application/json");
             assertEquals(response.getMediaType().toString(), "text/html");
-
+            */
         /*} catch (JsonProcessingException e) {
             e.printStackTrace();
         }*/

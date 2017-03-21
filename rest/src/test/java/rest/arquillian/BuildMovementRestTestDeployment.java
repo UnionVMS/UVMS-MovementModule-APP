@@ -35,10 +35,7 @@ import java.util.List;
  */
 public abstract class BuildMovementRestTestDeployment {
 
-
-
     final static Logger LOG = LoggerFactory.getLogger(TestLogin.class);
-
 
     public ObjectMapper mapper = new ObjectMapper();
 
@@ -74,6 +71,7 @@ public abstract class BuildMovementRestTestDeployment {
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
         testWar.addPackages(true, Filters.exclude(".*TestTester.*"), "com.europa.ec");
+
         /*
         testWar.addClass(MovementConfigHelper.class);
         testWar.addClass(TransactionalTests.class);
