@@ -16,6 +16,10 @@ import java.io.File;
  */
 public abstract class BuildMovementServiceTestDeployment {
 
+    // cool - how ro exclude
+    // ShrinkWrap.create(WebArchive.class)
+    //        .addPackages(true, Filters.exclude(".*Test.*"), getCorePackages());
+    //
     public static Archive<?> createDeployment() {
 
         // Import Maven runtime dependencies
