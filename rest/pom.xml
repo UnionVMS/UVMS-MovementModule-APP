@@ -13,6 +13,7 @@
     </parent>
 
     <properties>
+        <hibernate.dialect>org.hibernate.spatial.dialect.postgis.PostgisDialect</hibernate.dialect>
         <version.arquillian_core>1.1.5.Final</version.arquillian_core>
         <version.arquillian.wildfly>8.1.0.Final</version.arquillian.wildfly>
     </properties>

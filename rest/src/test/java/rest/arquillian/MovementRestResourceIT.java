@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 //import eu.europa.ec.mare.usm.authentication.domain.AuthenticationRequest;
 //import eu.europa.ec.mare.usm.authentication.service.impl.AuthenticationServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.fisheries.uvms.component.service.arquillian.BuildMovementRestTestDeployment;
+//import eu.europa.fisheries.uvms.component.service.arquillian.BuildMovementRestTestDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
