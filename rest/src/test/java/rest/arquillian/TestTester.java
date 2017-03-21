@@ -6,6 +6,7 @@ import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -25,19 +26,18 @@ import java.io.IOException;
  * Created by thofan on 2017-03-15.
  */
 @RunWith(Arquillian.class)
-public class TestTester  extends BuildMovementRestTestDeployment {
+public class TestTester  extends BuildMovementServiceTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(TestTester.class);
 
     public static final String ENDPOINT_ROOT = "http://localhost:28080";
 
-    ResponseDto x;
-
+  
 
 
     @Deployment
-    public static WebArchive createDeployment() {
-        return create_REST_Deployment();
+    public static Archive<?> createDeployment() {
+        return BuildMovementServiceTestDeployment.createDeployment();
     }
 
 
@@ -49,9 +49,9 @@ public class TestTester  extends BuildMovementRestTestDeployment {
     public void areas() {
 
 
-        webLoginTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
+        webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
 
-        Response response = webLoginTarget
+        Response response = webTarget
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 

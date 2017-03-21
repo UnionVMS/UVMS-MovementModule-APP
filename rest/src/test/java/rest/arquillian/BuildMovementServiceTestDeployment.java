@@ -1,20 +1,50 @@
 package rest.arquillian;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.uvms.movement.bean.*;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.After;
+import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rest.arquillian.TestUtil;
 import rest.arquillian.TransactionalTests;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import java.io.File;
 
 /**
  * Created by andreasw on 2017-02-13.
  */
 public abstract class BuildMovementServiceTestDeployment {
+
+
+    final static Logger LOG = LoggerFactory.getLogger(BuildMovementRestTestDeployment.class);
+
+    public Client client = null;
+    public WebTarget webTarget = null;
+    public  Invocation.Builder invocation = null;
+
+    public ObjectMapper mapper = new ObjectMapper();
+
+    @Before
+    public void before() {
+        client = ClientBuilder.newClient();
+    }
+
+    @After
+    public void after() {
+        if (client != null) {
+            client.close();
+        }
+    }
 
     // cool - how ro exclude
     // ShrinkWrap.create(WebArchive.class)
@@ -24,7 +54,7 @@ public abstract class BuildMovementServiceTestDeployment {
 
         // Import Maven runtime dependencies
         File[] files = Maven.resolver().loadPomFromFile("pom.xml")
-                .importRuntimeDependencies().resolve().withTransitivity().asFile();
+                .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
