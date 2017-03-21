@@ -47,7 +47,10 @@ public class TestTester  extends BuildMovementRestTestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 
-        //ResponseDto content = response.readEntity(ResponseDto.class);
+        String content = response.readEntity(String.class);
+
+
+        System.out.println(content);
 
     }
 }
