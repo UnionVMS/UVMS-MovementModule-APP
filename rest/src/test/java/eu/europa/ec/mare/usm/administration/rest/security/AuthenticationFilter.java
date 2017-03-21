@@ -61,7 +61,7 @@ public class AuthenticationFilter implements Filter {
             throws IOException, ServletException
     {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        //HttpServletResponse httpResponse = (HttpServletResponse) response;
         LOGGER.info("doFilter(" + httpRequest.getMethod() + ", " +
                 httpRequest.getPathInfo() + ") - (ENTER)");
 

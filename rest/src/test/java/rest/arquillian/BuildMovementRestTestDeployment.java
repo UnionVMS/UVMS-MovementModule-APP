@@ -1,7 +1,18 @@
 package rest.arquillian;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
+import eu.europa.ec.fisheries.uvms.audit.model.exception.ModelMapperException;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
+import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.rest.service.MovementRestResource;
+import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
+import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -26,10 +37,7 @@ public  class BuildMovementRestTestDeployment {
     public WebTarget webLoginTarget = null;
     public  Invocation.Builder invocation = null;
 
-
     public  ObjectMapper mapper = new ObjectMapper();
-
-
 
     @Before
     public void before() {
@@ -43,13 +51,7 @@ public  class BuildMovementRestTestDeployment {
         }
     }
 
-
-
-
-
-    private  static WebArchive createBasic_REST_Deployment() {
-
-
+    private static WebArchive createBasic_REST_Deployment() {
 
         File[] files1 = Maven.resolver().loadPomFromFile("../pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
@@ -77,8 +79,9 @@ public  class BuildMovementRestTestDeployment {
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
+        //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.rest");
 
-        testWar.addClass(MovementConfigHelper.class);
+        //testWar.addClass(MovementConfigHelper.class);
 
         // Empty beans for EE6 CDI
         testWar.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -93,8 +96,54 @@ public  class BuildMovementRestTestDeployment {
     }
 
     public static  WebArchive  create_REST_Deployment() {
+
         WebArchive archive = createBasic_REST_Deployment();
 
+        return archive;
+    }
+
+    public static Archive<?> create_MovementRestResource_Deployment() {
+        WebArchive archive = createBasic_REST_Deployment();
+
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.rest.service.MovementRestResource.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.service.MovementService.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean.class);
+
+
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDbException.class);
+
+        archive.addClass(eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType.class);
+
+        archive.addClass(UserServiceBean.class);
+        archive.addClass(TempMovementService.class);
+        //archive.addClass(eu.europa.ec.fisheries.uvms.movement.rest.service.TempMovementResource.class);
+        archive.addClass(TempMovementServiceBean.class);
+        archive.addClass(MessageConsumer.class);
+        archive.addClass(MessageProducer.class);
+        archive.addClass(MovementSearchGroupService.class);
+        archive.addClass(AuditModelMarshallException.class);
+        archive.addClass(ModelMapperException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.service.SpatialService.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode.class);
+
+        archive.addClass(eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException.class);
+        archive.addClass(eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMapperException.class);
+
+
+
+
+
+        archive.addClass(MovementRestResource.class);
 
 
         return archive;
@@ -104,7 +153,7 @@ public  class BuildMovementRestTestDeployment {
 
 
 
-    private static  void printFiles(File[] files) {
+    private static void printFiles(File[] files) {
 
         List<File> filesSorted = new ArrayList<>();
         for(File f : files){
