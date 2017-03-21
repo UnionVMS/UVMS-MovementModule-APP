@@ -73,9 +73,7 @@ public class AuthenticationFilter implements Filter {
     public void init(FilterConfig fc)
             throws ServletException
     {
-        if (tokenHandler == null) {
-            throw new ServletException("JwtTokenHandler is undefined");
-        }
+       
     }
 
     @Override
