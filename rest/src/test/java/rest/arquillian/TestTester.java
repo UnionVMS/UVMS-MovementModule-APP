@@ -1,27 +1,19 @@
 package rest.arquillian;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-//import eu.europa.fisheries.uvms.component.service.arquillian.BuildMovementRestTestDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
+
+//import eu.europa.fisheries.uvms.component.service.arquillian.BuildMovementRestTestDeployment;
 
 /**
  * Created by thofan on 2017-03-15.
@@ -49,7 +41,7 @@ public class TestTester  extends BuildMovementRestTestDeployment {
     @RunAsClient
     public void areas() {
 
-        /*
+
         webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
 
         Response response = webTarget
@@ -57,6 +49,6 @@ public class TestTester  extends BuildMovementRestTestDeployment {
                 .get();
 
         ResponseDto content = response.readEntity(ResponseDto.class);
-        */
+
     }
 }

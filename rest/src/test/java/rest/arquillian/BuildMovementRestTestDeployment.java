@@ -1,5 +1,6 @@
 package rest.arquillian;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.*;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -13,9 +14,15 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.After;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import java.io.File;
 import java.util.*;
 
@@ -24,7 +31,34 @@ import java.util.*;
  */
 public abstract class BuildMovementRestTestDeployment {
 
-    final static Logger LOG = LoggerFactory.getLogger(BuildMovementRestTestDeployment.class);
+
+
+    final static Logger LOG = LoggerFactory.getLogger(TestLogin.class);
+
+
+    public ObjectMapper mapper = new ObjectMapper();
+
+    public Client client = null;
+    public WebTarget webTarget = null;
+    public Invocation.Builder invocation = null;
+
+    public static final String ENDPOINT_ROOT = "http://localhost:28080";
+
+
+    @Before
+    public void before() {
+
+        client = ClientBuilder.newClient();
+        webTarget = client.target(ENDPOINT_ROOT).path("usm-authentication").path("rest").path("authenticate");
+    }
+
+    @After
+    public void after() {
+        if (client != null) {
+            client.close();
+        }
+    }
+
 
 
     public static WebArchive createBasicDeployment() {
@@ -39,7 +73,7 @@ public abstract class BuildMovementRestTestDeployment {
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
 
         testWar.addClass(MovementConfigHelper.class);
-        //testWar.addClass(TransactionalTests.class);
+        testWar.addClass(TransactionalTests.class);
 
         // Empty beans for EE6 CDI
         testWar.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
@@ -52,7 +86,7 @@ public abstract class BuildMovementRestTestDeployment {
         WebArchive archive = createBasicDeployment();
 
         archive.addClass(MovementSearchGroupServiceBean.class).addClass(MovementSearchGroupService.class);
-       // already there  archive.addClass(MovementConfigHelper.class);
+        // already there  archive.addClass(MovementConfigHelper.class);
         archive.addClass(MovementServiceException.class);
         archive.addClass(MovementGroupValidator.class);
 
@@ -60,49 +94,6 @@ public abstract class BuildMovementRestTestDeployment {
         return archive;
     }
 
-    public static Archive<?> createEventDeployment() {
-        WebArchive archive = createBasicDeployment();
-
-        archive.addClass(MovementEventServiceBean.class);
-        archive.addClass(EventService.class);
-        archive.addClass(MovementServiceException.class);
-        //archive.addClass(MovementEventTestHelper.class);
-
-        archive.addClass(MovementServiceBean.class)
-                .addClass(MovementService.class)
-                .addClass(SpatialService.class)
-                //.addClass(SpatialServiceMockedBean.class)
-                .addClass(MovementListResponseDto.class)
-                .addClass(MovementDto.class);
-        archive.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
-
-
-        return archive;
-    }
-
-    public static Archive<?> createTempMovementDeployment() {
-        WebArchive archive = createBasicDeployment();
-        archive.addClass(TempMovementServiceBean.class).addClass(TempMovementService.class);
-        archive.addClass(MovementServiceException.class);
-
-        return archive;
-    }
-
-    public static Archive<?> createDeployment_FOR_MovementServiceIntTest() {
-
-        WebArchive archive = createBasicDeployment();
-
-        archive.addClass(MovementServiceBean.class)
-                .addClass(MovementService.class)
-                .addClass(SpatialService.class)
-                //.addClass(SpatialServiceMockedBean.class)
-                .addClass(MovementListResponseDto.class)
-                .addClass(MovementDto.class)
-                .addClass(MovementMapper.class);
-        archive.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
-
-        return archive;
-    }
 
     private static void printFiles(File[] files) {
 
@@ -122,17 +113,10 @@ public abstract class BuildMovementRestTestDeployment {
         for(File f : filesSorted){
             LOG.info("       --->>>   "   +   f.getName());
         }
-        LOG.info("FROM POM - end");
+        LOG.info("FROM POM - end " + filesSorted.size() );
     }
 
-    // ToDo: Read the todo in GetMovementListByAreaAndTimeIntervalEventIntTest.java to decide if this deployment method
-    // ToDo: should be kept or removed.
-    /*
-    public static Archive<?> createEventMovementListByAreaAndTimeIntervalDeployment() {
-        WebArchive archive = (WebArchive) createEventDeployment();
 
-        archive.addClass(MovementAreaAndTimeIntervalCriteria.class);
-        return archive;
-    }
-    */
+
+
 }
