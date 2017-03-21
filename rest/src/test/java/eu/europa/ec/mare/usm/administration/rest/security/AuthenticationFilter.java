@@ -73,7 +73,7 @@ public class AuthenticationFilter implements Filter {
     public void init(FilterConfig fc)
             throws ServletException
     {
-       
+
     }
 
     @Override

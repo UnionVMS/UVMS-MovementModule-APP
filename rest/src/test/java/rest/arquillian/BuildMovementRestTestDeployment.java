@@ -2,7 +2,6 @@ package rest.arquillian;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
-import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -17,10 +16,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public  class BuildMovementRestTestDeployment {
 
@@ -51,12 +47,32 @@ public  class BuildMovementRestTestDeployment {
 
 
 
-    private  WebArchive createBasic_REST_Deployment() {
+    private  static WebArchive createBasic_REST_Deployment() {
 
-        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
+
+
+        File[] files1 = Maven.resolver().loadPomFromFile("../pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
+        printFiles(files1);
+
+        File[] files2 = Maven.resolver().loadPomFromFile("../../UVMS-MovementModule-MODEL/pom.xml")
+                .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
+
+        printFiles(files2);
+
+        Set<File> unique = new HashSet<>();
+        unique.addAll(Arrays.asList(files1));
+        unique.addAll(Arrays.asList(files2));
+
+        File[] files = new File[unique.size()];
+        int i = 0;
+        for(File f : unique){
+            files[i] = f;
+            i++;
+        }
         printFiles(files);
+
 
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
@@ -66,12 +82,17 @@ public  class BuildMovementRestTestDeployment {
 
         // Empty beans for EE6 CDI
         testWar.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        testWar.addAsLibraries(files);
+  //
+              testWar.addAsLibraries(files);
+
+
+      // testWar.addClass(eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper);
+        testWar.addClass(MovementConfigHelper.class);
 
         return testWar;
     }
 
-    public  Archive<?> create_REST_Deployment() {
+    public static  WebArchive  create_REST_Deployment() {
         WebArchive archive = createBasic_REST_Deployment();
 
 
@@ -83,7 +104,7 @@ public  class BuildMovementRestTestDeployment {
 
 
 
-    private  void printFiles(File[] files) {
+    private static  void printFiles(File[] files) {
 
         List<File> filesSorted = new ArrayList<>();
         for(File f : files){

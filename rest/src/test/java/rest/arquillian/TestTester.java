@@ -9,6 +9,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,9 +36,8 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
 
     @Deployment
-    public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    public static WebArchive createDeployment() {
+        return create_REST_Deployment();
     }
 
 
@@ -49,7 +49,7 @@ public class TestTester  extends BuildMovementRestTestDeployment {
     public void areas() {
 
 
-        webLoginTarget = client.target(ENDPOINT_ROOT).path("usm-movement").path("rest").path("areas");
+        webLoginTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
 
         Response response = webLoginTarget
                 .request(MediaType.APPLICATION_JSON)

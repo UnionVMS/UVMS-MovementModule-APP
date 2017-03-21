@@ -59,7 +59,12 @@
             <scope>test</scope>
         </dependency>
 
-
+        <dependency>
+        <groupId>eu.europa.ec.fisheries.uvms</groupId>
+        <artifactId>uvms-config</artifactId>
+        <version>3.0.4</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
