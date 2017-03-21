@@ -3,6 +3,7 @@ package rest.arquillian;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
+import eu.europa.fisheries.uvms.component.service.arquillian.BuildMovementRestTestDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -26,7 +27,7 @@ import java.io.IOException;
  * Created by thofan on 2017-03-15.
  */
 @RunWith(Arquillian.class)
-public class TestTester  extends BuildMovementServiceTestDeployment {
+public class TestTester  extends BuildMovementRestTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(TestTester.class);
 
@@ -37,7 +38,7 @@ public class TestTester  extends BuildMovementServiceTestDeployment {
 
     @Deployment
     public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createDeployment();
+        return BuildMovementRestTestDeployment.createBasicDeployment();
     }
 
 
@@ -48,7 +49,7 @@ public class TestTester  extends BuildMovementServiceTestDeployment {
     @RunAsClient
     public void areas() {
 
-
+        /*
         webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
 
         Response response = webTarget
@@ -56,12 +57,6 @@ public class TestTester  extends BuildMovementServiceTestDeployment {
                 .get();
 
         ResponseDto content = response.readEntity(ResponseDto.class);
+        */
     }
-
-
-
-
-
-
-
 }
