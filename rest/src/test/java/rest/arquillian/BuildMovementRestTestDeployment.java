@@ -32,10 +32,6 @@ import java.util.*;
  */
 public abstract class BuildMovementRestTestDeployment {
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ef6a356ef36e06b022430acf2e3fbd6a42295e1f
     final static Logger LOG = LoggerFactory.getLogger(TestLogin.class);
 
     public ObjectMapper mapper = new ObjectMapper();
