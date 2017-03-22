@@ -47,7 +47,7 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
     }
 
-    @Test
+    //@Test
     public void test_REST_GetListByQuery() {
 
         webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("list");

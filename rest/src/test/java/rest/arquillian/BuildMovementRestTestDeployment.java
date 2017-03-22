@@ -1,8 +1,19 @@
 package rest.arquillian;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper;
+import eu.europa.ec.fisheries.uvms.config.service.UVMSConfigService;
+import eu.europa.ec.fisheries.uvms.config.service.UVMSConfigServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
+import eu.europa.ec.fisheries.uvms.movement.rest.service.MovementRestResource;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
+import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.UserServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
 import org.jboss.shrinkwrap.api.Archive;
@@ -62,7 +73,7 @@ public abstract class BuildMovementRestTestDeployment {
 
     public static WebArchive createBasicDeployment() {
 
-        File[] files = Maven.resolver().loadPomFromFile("../pom.xml")
+        File[] files = Maven.resolver().loadPomFromFile("../service/pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
         files = ensureUniqueness(files);
@@ -72,7 +83,22 @@ public abstract class BuildMovementRestTestDeployment {
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
-        testWar.addPackages(true, Filters.exclude("AuthenticationFilter"), "com.europa.ec");
+        //testWar.addPackages(true, Filters.exclude("AuthenticationFilter"), "com.europa.ec");
+        testWar.addClass(MovementRestResource.class);
+
+
+        testWar.addClass(MovementServiceException.class);
+        testWar.addClass(RestResponseCode.class);
+        testWar.addClass(MovementService.class);
+        testWar.addClass(MovementServiceBean.class);
+        testWar.addClass(UserServiceBean.class);
+        testWar.addClass(ResponseDto.class);
+        testWar.addClass(SpatialService.class);
+        testWar.addClass(MovementListResponseDto.class);
+        testWar.addClass(UVMSConfigService.class);
+        testWar.addClass(ConfigHelper.class);
+
+
 
         /*
         testWar.addClass(MovementConfigHelper.class);
