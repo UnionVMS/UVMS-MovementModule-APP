@@ -23,10 +23,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 //import eu.europa.fisheries.uvms.component.service.SpatialServiceMockedBean;
 
@@ -34,7 +31,6 @@ import java.util.List;
  * Created by andreasw on 2017-02-13.
  */
 public abstract class BuildMovementRestTestDeployment {
-
 
 
     final static Logger LOG = LoggerFactory.getLogger(TestLogin.class);
@@ -62,18 +58,20 @@ public abstract class BuildMovementRestTestDeployment {
     }
 
 
-
     public static WebArchive createBasicDeployment() {
 
         File[] files = Maven.resolver().loadPomFromFile("../pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
+        files = ensureUniqueness(files);
         printFiles(files);
+
 
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
-        testWar.addPackages(true, Filters.exclude(".*TestTester.*"), "com.europa.ec");
+//        testWar.addPackages(true, Filters.exclude(".*TestTester.*"), "com.europa.ec");
+        testWar.addPackages(true, Filters.exclude("AuthenticationFilter"), "com.europa.ec");
         /*
         testWar.addClass(MovementConfigHelper.class);
         testWar.addClass(TransactionalTests.class);
@@ -100,10 +98,27 @@ public abstract class BuildMovementRestTestDeployment {
     }
 
 
+    /**
+     * if more than 1 pom is scanned , this is a way of ensuring uniqueness
+     *
+     * @param files
+     * @return
+     */
+    private static File[] ensureUniqueness(File[]... files) {
+
+        Set<File> unique = new HashSet<>();
+        int n = files.length;
+        for (int i = 0; i < n; i++) {
+            File[] file = files[i];
+            unique.addAll(Arrays.asList(file));
+        }
+        return unique.toArray(new File[unique.size()]);
+    }
+
     private static void printFiles(File[] files) {
 
         List<File> filesSorted = new ArrayList<>();
-        for(File f : files){
+        for (File f : files) {
             filesSorted.add(f);
         }
 
@@ -115,13 +130,11 @@ public abstract class BuildMovementRestTestDeployment {
         });
 
         LOG.info("FROM POM - begin");
-        for(File f : filesSorted){
-            LOG.info("       --->>>   "   +   f.getName());
+        for (File f : filesSorted) {
+            LOG.info("       --->>>   " + f.getName());
         }
-        LOG.info("FROM POM - end " + filesSorted.size() );
+        LOG.info("FROM POM - end.  files :  " + filesSorted.size());
     }
-
-
 
 
 }
