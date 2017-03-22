@@ -1,9 +1,7 @@
 package rest.arquillian;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
@@ -23,7 +21,13 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 //import eu.europa.fisheries.uvms.component.service.SpatialServiceMockedBean;
 
@@ -32,7 +36,7 @@ import java.util.*;
  */
 public abstract class BuildMovementRestTestDeployment {
 
-    final static Logger LOG = LoggerFactory.getLogger(TestLogin.class);
+    final static Logger LOG = LoggerFactory.getLogger(BuildMovementRestTestDeployment.class);
 
     public ObjectMapper mapper = new ObjectMapper();
 
@@ -69,7 +73,6 @@ public abstract class BuildMovementRestTestDeployment {
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
         testWar.addPackages(true, Filters.exclude("AuthenticationFilter"), "com.europa.ec");
-
 
         /*
         testWar.addClass(MovementConfigHelper.class);

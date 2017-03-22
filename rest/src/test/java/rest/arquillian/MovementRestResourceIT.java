@@ -39,14 +39,11 @@ public class MovementRestResourceIT  extends BuildMovementRestTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementRestResourceIT.class);
 
-    public static final String ENDPOINT_ROOT = "http://localhost:8080";
+    //public static final String ENDPOINT_ROOT = "http://localhost:8080";
     //public static final String LOGIN_ENDPOINT = "usm-administration/rest/authenticate";
     //http://localhost:8080/usm-administration/rest/authenticate
 
-
-
-
-    @Deployment
+    @Deployment(testable=false)
     public static Archive<?> createDeployment() {
         return BuildMovementRestTestDeployment.createBasicDeployment();
     }
@@ -56,37 +53,36 @@ public class MovementRestResourceIT  extends BuildMovementRestTestDeployment {
     AuthenticationServiceBean authenticationServiceBean;
     */
 
-
-
-
-
     @Test
-    @RunAsClient
+    // Note: Method is called getListByQuery but it is actually a post request. See MovementRestResource.
     public void test_REST_GetListByQuery() {
-
 
 
         webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("list");
 
-            Response response = webTarget
-                    .request(MediaType.APPLICATION_JSON)
-                    .get();
+        String testString = "testString";
 
-            ResponseDto content = response.readEntity(ResponseDto.class);
+        Response response = webTarget
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.entity(testString, MediaType.APPLICATION_JSON));
+        String content = response.readEntity(String.class);
 
-            assertNotNull(content);
+        LOG.info("Response object content: " + content);
 
+        //ResponseDto payload = response.readEntity(ResponseDto.class);
 
-            LOG.info("Headers: " + response.getHeaders().toString());
-            LOG.info("Allowed methods: " + response.getAllowedMethods().toString());
-            LOG.info("Status info: " + response.getStatusInfo().toString());
-            LOG.info("Cookies: " + response.getCookies().toString());
-            LOG.info("MediaType: "  + response.getMediaType().toString());
+        //assertNotNull(payload);
 
-            assertThat(response.getStatus(), is(200));
+        LOG.info("Headers: " + response.getHeaders().toString());
+        LOG.info("Allowed methods: " + response.getAllowedMethods().toString());
+        LOG.info("Status info: " + response.getStatusInfo().toString());
+        LOG.info("Cookies: " + response.getCookies().toString());
+        LOG.info("MediaType: "  + response.getMediaType().toString());
 
-            //assertEquals(response.getMediaType().toString(), "application/json");
-            assertEquals(response.getMediaType().toString(), "text/html");
+        assertThat(response.getStatus(), is(200));
+
+        //assertEquals(response.getMediaType().toString(), "application/json");
+        assertEquals(response.getMediaType().toString(), "text/html");
 
         /*} catch (JsonProcessingException e) {
             e.printStackTrace();
