@@ -104,7 +104,7 @@ public class IncomingMovementBean {
                     segmentBean.createSegmentOnFirstMovement(movement, firstMovement);
                 } else {
                     LOG.debug("PREVIOUS MOVEMENT NOT FOUND BUT FIRST MOVEMENT FOUND ID: " + firstMovement.getId() + " [ ADDING NEW MOVEMENT BEFORE FIRST ]");
-                    addMovementBeforeFirst(firstMovement, movement);
+                    segmentBean.addMovementBeforeFirst(firstMovement, movement);
                 }
             } else {
                 segmentBean.splitSegment(previousMovement, movement);
@@ -198,29 +198,6 @@ public class IncomingMovementBean {
         long diff = System.currentTimeMillis() - start;
         LOG.debug("populateTransitions: " + " ---- TIME ---- " + diff + "ms" );
         return currentTransitions;
-    }
-
-    /**
-     *
-     * @param firstMovement
-     * @param currentMovement
-     * @throws MovementDaoMappingException
-     * @throws MovementModelException
-     * @throws MovementDaoException
-     * @throws GeometryUtilException
-     */
-    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementDaoMappingException, MovementModelException, MovementDaoException, GeometryUtilException {
-        Segment segment = firstMovement.getFromSegment();
-        if (segment == null) {
-            segment = MovementModelToEntityMapper.createSegment(currentMovement, firstMovement);
-        } else {
-            segment.setFromMovement(currentMovement);
-        }
-        Track track = segmentBean.upsertTrack(firstMovement.getTrack(), segment, currentMovement);
-        if (firstMovement.getTrack() == null) {
-            firstMovement.setTrack(track);
-            dao.persist(firstMovement);
-        }
     }
 
     private Areatransition mapToAreaTransition(Areatransition previousArea, Movement currentMovement) {

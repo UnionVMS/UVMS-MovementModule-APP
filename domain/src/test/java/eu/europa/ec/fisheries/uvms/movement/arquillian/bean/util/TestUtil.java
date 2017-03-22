@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 public class TestUtil {
 
-    public MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType) {
+    public MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId) {
 
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
@@ -42,7 +42,7 @@ public class TestUtil {
 
         movementType.setMovementType(MovementTypeType.POS);
         movementType.setActivity(activityType);
-        movementType.setConnectId(UUID.randomUUID().toString());
+        movementType.setConnectId(connectId);
         movementType.setAssetId(assetId);
         movementType.setDuplicates("false");
         movementType.setInternalReferenceNumber("TEST");

@@ -115,6 +115,15 @@ public class SegmentBean {
         return newTrack;
     }
 
+    public Track createNewTrack(Segment segment) throws MovementDaoMappingException, MovementDaoException {
+        LOG.debug("CREATING NEW TRACK ");
+        Track newTrack = MovementModelToEntityMapper.createTrack(segment);
+        segment.setTrack(newTrack);
+        dao.create(newTrack);
+        dao.persist(segment);
+        return newTrack;
+    }
+
     /**
      * @param previousMovement
      * @param currentMovement
@@ -156,5 +165,28 @@ public class SegmentBean {
         upsertTrack(theSegmentToBeBroken.getTrack(), segment, currentMovement);
     }
 
+
+    /**
+     *
+     * @param firstMovement
+     * @param currentMovement
+     * @throws MovementDaoMappingException
+     * @throws MovementModelException
+     * @throws MovementDaoException
+     * @throws GeometryUtilException
+     */
+    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementDaoMappingException, MovementModelException, MovementDaoException, GeometryUtilException {
+        Segment segment = firstMovement.getFromSegment();
+        if (segment == null) {
+            segment = MovementModelToEntityMapper.createSegment(currentMovement, firstMovement);
+        } else {
+            segment.setFromMovement(currentMovement);
+        }
+        Track track = upsertTrack(firstMovement.getTrack(), segment, currentMovement);
+        if (firstMovement.getTrack() == null) {
+            firstMovement.setTrack(track);
+            dao.persist(firstMovement);
+        }
+    }
 
 }
