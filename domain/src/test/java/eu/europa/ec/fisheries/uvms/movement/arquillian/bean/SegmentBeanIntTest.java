@@ -110,10 +110,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
         List<Movement> movementList = movementConnect.getMovementList();
         Assert.assertNotNull(movementList);
-        //Assert.assertTrue(movementList.size() == 1);
-        int size = movementList.size();
-        Long id = movementList.get(size-1).getId();
-        return movementDao.getMovementById(id);
+        return movementList.get(movementList.size() -1);
     }
 
 
