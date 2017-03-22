@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by andreasw on 2017-03-09.
@@ -52,7 +53,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests{
 
     @Test
     public void create() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException, MovementDuplicateException {
-        MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT);
+        String uuid = UUID.randomUUID().toString();
+
+        MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
         movementType = movementBatchModelBean.createMovement(movementType, "TEST");
         Assert.assertNotNull(movementType.getGuid());
         em.flush();

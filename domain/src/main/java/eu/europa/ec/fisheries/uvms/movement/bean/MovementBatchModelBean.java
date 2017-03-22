@@ -100,7 +100,7 @@ public class MovementBatchModelBean implements MovementBatchModel {
      * @throws
      * EntityDuplicateException
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    //TODO: We need to look over calling methods on this, see batch behaviour
     public MovementType createMovement(MovementType movement, String username) throws MovementModelException, MovementDuplicateException {
         long start = System.currentTimeMillis();
         try {

@@ -176,6 +176,14 @@ public class MovementModelToEntityMapper {
             track.setUpdated(DateUtil.nowUTC());
             track.setLocation(segment.getLocation());
             track.setUpdatedBy("UVMS");
+            // TODO: AW Fixed association when creating track.
+            track.setMovementList(new ArrayList<Movement>());
+            track.getMovementList().add(segment.getFromMovement());
+            track.getMovementList().add(segment.getToMovement());
+            // TODO: AW Fixed association for segments
+            track.setSegmentList(new ArrayList<Segment>());
+            track.getSegmentList().add(segment);
+
             return track;
         } catch (Exception e) {
             LOG.error("[ ERROR when mapping to Activity entity: < createTrack > ]");
@@ -192,6 +200,7 @@ public class MovementModelToEntityMapper {
         track.getMovementList().add(currentPosition);
         segment.setTrack(track);
         currentPosition.setTrack(track);
+        track.getSegmentList().add(segment);
 
         double calculatedDistance = track.getDistance() + segment.getDistance();
         track.setDistance(calculatedDistance);
