@@ -25,17 +25,10 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
     public static final String ENDPOINT_ROOT = "http://localhost:28080";
 
-
-
-
     @Deployment(testable=false)
     public static Archive<?> createDeployment() {
         return BuildMovementRestTestDeployment.createBasicDeployment();
     }
-
-
-
-
 
     @Test
     public void areas() {
@@ -53,4 +46,14 @@ public class TestTester  extends BuildMovementRestTestDeployment {
         System.out.println(content);
 
     }
+
+    @Test
+    public void test_REST_GetListByQuery() {
+
+        webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("list");
+        Response response = webTarget
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+    }
+
 }
