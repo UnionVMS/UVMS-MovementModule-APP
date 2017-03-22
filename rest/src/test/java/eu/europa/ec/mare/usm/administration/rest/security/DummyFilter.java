@@ -8,7 +8,6 @@ import javax.ejb.EJB;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
@@ -21,8 +20,8 @@ import java.io.IOException;
  */
 @WebFilter(filterName = "AuthenticationFilter",
         urlPatterns = {"/rest/*"})
-public class AuthenticationFilter implements Filter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationFilter.class);
+public class DummyFilter implements Filter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DummyFilter.class);
     private static final String AUTHORIZATION = "Authorization";
     private static final String CHALLENGEAUTH = "/challengeauth";
     private static final String AUTHENTICATE = "/authenticate";
@@ -37,7 +36,7 @@ public class AuthenticationFilter implements Filter {
     /**
      * Creates a new instance
      */
-    public AuthenticationFilter() {
+    public DummyFilter() {
     }
 
     /**
