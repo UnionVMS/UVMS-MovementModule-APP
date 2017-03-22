@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
  * Created by roblar on 2017-03-17.
  */
 @RunWith(Arquillian.class)
-public class MovementRestResourceIT {
+public class MovementRestResourceIT  extends BuildMovementRestTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementRestResourceIT.class);
 
@@ -43,9 +43,7 @@ public class MovementRestResourceIT {
     //public static final String LOGIN_ENDPOINT = "usm-administration/rest/authenticate";
     //http://localhost:8080/usm-administration/rest/authenticate
 
-    Client client = null;
-    WebTarget target = null;
-    ObjectMapper mapper = new ObjectMapper();
+
 
 
     @Deployment
@@ -58,70 +56,26 @@ public class MovementRestResourceIT {
     AuthenticationServiceBean authenticationServiceBean;
     */
 
-    @Before
-    public void before() {
 
-        client = ClientBuilder.newClient();
-        target = client.target(ENDPOINT_ROOT);
-    }
 
-    @After
-    public void after() {
 
-        if (client != null) {
-            client.close();
-        }
-    }
 
     @Test
     @RunAsClient
     public void test_REST_GetListByQuery() {
 
-        /*
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest(); //("vms_admin_com","password");
-        authenticationRequest.setUserName("vms_admin_com");
-        authenticationRequest.setPassword("password");
-        */
 
-        //try {
 
-            target = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("list");
+        webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("list");
 
-            Response response = target
+            Response response = webTarget
                     .request(MediaType.APPLICATION_JSON)
                     .get();
 
             ResponseDto content = response.readEntity(ResponseDto.class);
 
             assertNotNull(content);
-            //String json = mapper.writeValueAsString(authenticationRequest);
-            //LOG.info(json);
 
-            //String r
-            /*
-            Response response = target.request()
-                    .post(Entity.entity(authenticationRequest, MediaType.TEXT_PLAIN), Response.class);
-            */
-
-            //Response response = target.request()
-            //        .post(Entity.entity(jsonData, MediaType.APPLICATION_JSON));
-
-            //String jsonResponse = mapper.writeValueAsString(response);
-            //LOG.info("jsonResponse: " + jsonResponse);
-
-            /*
-            @Override
-                public boolean isWriteable(Class aClass, Type type, Annotation[] annotations, MediaType mediaType) {
-                    return false;
-                }
-             */
-
-
-            //JSONObjectProvider jsonObjectProvider = new JSONObjectProvider();
-
-            //jsonObjectProvider.isWriteable(response);
-            //MessageBodyWriter messageBodyWriter = JSONObjectProvider.
-            //response.
 
             LOG.info("Headers: " + response.getHeaders().toString());
             LOG.info("Allowed methods: " + response.getAllowedMethods().toString());
