@@ -34,7 +34,7 @@ public class TestTester  extends BuildMovementRestTestDeployment {
     @RunAsClient
     public void areas() {
 
-        webTarget = client.target(ENDPOINT_ROOT).path("test").path("rest").path("areas");
+        webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
 
         Response response = webTarget
                 .request(MediaType.APPLICATION_JSON)

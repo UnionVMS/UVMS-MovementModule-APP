@@ -48,9 +48,8 @@
         </dependency>
         <!--dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>movement-dbaccess-domain</artifactId>
+            <artifactId>movement-message-mock</artifactId>
             <version>${project.parent.version}</version>
-            <scope>provided</scope>
         </dependency-->
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>

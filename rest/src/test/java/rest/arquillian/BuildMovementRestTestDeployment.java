@@ -85,7 +85,7 @@ public abstract class BuildMovementRestTestDeployment {
 
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
-        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
+        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "movement.war");
         testWar.addPackages(true, Filters.exclude("AuthenticationFilter"), "com.europa.ec");
         testWar.addClass(MovementRestResource.class);
 

@@ -61,6 +61,12 @@ public class DummyFilter implements Filter {
         LOGGER.info("doFilter(" + httpRequest.getMethod() + ", " +
                 httpRequest.getPathInfo() + ") - (ENTER)");
 
+        ServletContext servletContext = httpRequest.getServletContext();
+
+        String contextPath = httpRequest.getContextPath();
+
+        LOGGER.info("-------------                                ----------------- > " + contextPath);
+
 
         chain.doFilter(httpRequest, response);
     }
