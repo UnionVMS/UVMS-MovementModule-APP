@@ -4,22 +4,21 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	version="3.1">
 
-	<servlet-mapping>
+	<!--servlet-mapping>
 		<servlet-name>javax.ws.rs.core.Application</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping-->
 
-	<!--
+
 	<filter>
 		<filter-name>AuthenticationFilter</filter-name>
-		<!-- <display-name>AuthenticationFilter</display-name>
-		<filter-class>eu.europa.ec.mare.usm.administration.rest.security.AuthenticationFilter</filter-class>
+		<filter-class>eu.europa.ec.mare.usm.administration.rest.security.DummyFilter</filter-class>
 	</filter>
 	
 	<filter-mapping>
 		<filter-name>AuthenticationFilter</filter-name>
 		<url-pattern>/rest/*</url-pattern>
 	</filter-mapping>
-	-->
+
 
 </web-app>

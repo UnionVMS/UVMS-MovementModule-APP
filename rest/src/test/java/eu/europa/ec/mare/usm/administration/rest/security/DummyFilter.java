@@ -1,6 +1,5 @@
 package eu.europa.ec.mare.usm.administration.rest.security;
 
-import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +27,6 @@ public class DummyFilter implements Filter {
     private static final String RESETPWD = "/users/resetUserPassword";
     private static final String PING = "/ping";
 
-    @EJB(name="secureJwtHandler")
-    JwtTokenHandler tokenHandler;
 
 
 

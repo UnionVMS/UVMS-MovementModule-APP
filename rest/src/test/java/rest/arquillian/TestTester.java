@@ -25,16 +25,16 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
     public static final String ENDPOINT_ROOT = "http://localhost:28080";
 
-    @Deployment(testable=false)
+    @Deployment()
     public static Archive<?> createDeployment() {
         return BuildMovementRestTestDeployment.createBasicDeployment();
     }
 
     @Test
+    @RunAsClient
     public void areas() {
 
-
-        webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
+        webTarget = client.target(ENDPOINT_ROOT).path("test").path("rest").path("areas");
 
         Response response = webTarget
                 .request(MediaType.APPLICATION_JSON)
