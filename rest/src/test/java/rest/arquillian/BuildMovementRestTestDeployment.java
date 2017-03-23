@@ -10,9 +10,11 @@ import eu.europa.ec.fisheries.uvms.movement.rest.service.MovementRestResource;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.UserServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
@@ -94,9 +96,13 @@ public abstract class BuildMovementRestTestDeployment {
         testWar.addClass(UserServiceBean.class);
         testWar.addClass(ResponseDto.class);
         testWar.addClass(SpatialService.class);
+        testWar.addClass(SpatialServiceMockedBean.class);
         testWar.addClass(MovementListResponseDto.class);
         testWar.addClass(UVMSConfigService.class);
         testWar.addClass(ConfigHelper.class);
+        testWar.addClass(MovementConfigHelper.class);
+        testWar.addClass(MovementDto.class);
+
 
 
 
