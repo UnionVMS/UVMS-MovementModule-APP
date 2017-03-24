@@ -14,7 +14,11 @@ package eu.europa.ec.fisheries.uvms.movement.util;
 import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
+
 import java.util.Comparator;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  **/
@@ -23,21 +27,44 @@ public class MovementComparator {
     public static Comparator<Movement> MOVEMENT = new Comparator<Movement>() {
         @Override
         public int compare(Movement m1, Movement m2) {
-            return m1.getTimestamp().compareTo(m2.getTimestamp());
+        	if (m1 == null || m2 ==null) {
+        		return ObjectUtils.compare(m1, m2);
+        	} else {
+        		return ObjectUtils.compare(m1.getTimestamp(),m2.getTimestamp());
+        	}
+        }
+    };
+
+    public static Comparator<MovementConnect> MOVEMENT_CONNECT = new Comparator<MovementConnect>() {
+        @Override
+        public int compare(MovementConnect m1, MovementConnect m2) {
+        	if (m1 == null || m2 ==null) {
+        		return ObjectUtils.compare(m1, m2);
+        	} else {
+        		return ObjectUtils.compare(m1.getId(),m2.getId());
+        	}
         }
     };
 
     public static Comparator<LatestMovement> LATEST_MOVEMENT = new Comparator<LatestMovement>() {
         @Override
         public int compare(LatestMovement m1, LatestMovement m2) {
-            return m1.getMovementConnect().getId().compareTo(m2.getMovementConnect().getId());
+        	if (m1 == null || m2 ==null) {
+        		return ObjectUtils.compare(m1, m2);
+        	} else {
+        		return MOVEMENT_CONNECT.compare(m1.getMovementConnect(), m2.getMovementConnect());
+        	}
         }
     };
 
     public static Comparator<MinimalMovement> MINIMAL_MOVEMENT = new Comparator<MinimalMovement>() {
         @Override
         public int compare(MinimalMovement m1, MinimalMovement m2) {
-            return m1.getMovementConnect().getId().compareTo(m2.getMovementConnect().getId());
+        	if (m1 == null || m2 ==null) {
+        		return ObjectUtils.compare(m1, m2);
+        	} else {
+        		return MOVEMENT_CONNECT.compare(m1.getMovementConnect(), m2.getMovementConnect());
+        	}
         }
     };
 }
