@@ -3,7 +3,6 @@ package rest.arquillian;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper;
 import eu.europa.ec.fisheries.uvms.config.service.UVMSConfigService;
-import eu.europa.ec.fisheries.uvms.config.service.UVMSConfigServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.service.MovementRestResource;
@@ -14,15 +13,16 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.UserServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
+import eu.europa.ec.mare.usm.administration.rest.security.DummyFilter;
 import rest.service.SpatialServiceMockedBean;
 
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -45,7 +45,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-//import eu.europa.fisheries.uvms.component.service.SpatialServiceMockedBean;
 
 /**
  * Created by andreasw on 2017-02-13.
@@ -109,9 +108,6 @@ public abstract class BuildMovementRestTestDeployment {
         testWar.addClass(DummyFilter.class);
 
 
-        testWar.addClass(BuildMovementRestTestDeployment.class);
-        testWar.addClass(TestTester.class);
-        
         testWar.addPackages(true, "rest.arquillian");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.dto");
 
