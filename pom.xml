@@ -31,7 +31,7 @@
         <!--Arquillian test Properties-->
         <version.org.jboss.arquillian>1.1.12.Final</version.org.jboss.arquillian>
         <version.arquillian.suite.extension>1.1.2</version.arquillian.suite.extension>
-        <version.jacoco>0.7.8</version.jacoco>
+        <version.jacoco>0.7.9</version.jacoco>
    		<version.arquillian_jacoco>1.0.0.Alpha9</version.arquillian_jacoco>        
    		       
         <version.org.wildfly>8.2.0.Final</version.org.wildfly>
