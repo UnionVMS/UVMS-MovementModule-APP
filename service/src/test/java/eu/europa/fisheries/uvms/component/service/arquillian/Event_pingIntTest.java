@@ -29,7 +29,7 @@ public class Event_pingIntTest extends TransactionalTests {
     Event<EventMessage> pingEvent;
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void testTriggerPing() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -47,7 +47,7 @@ public class Event_pingIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void testTriggerPingWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");

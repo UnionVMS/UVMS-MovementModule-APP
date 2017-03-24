@@ -38,7 +38,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
 
     @Test
-    @OperateOnDeployment("movementtemp")
+    @OperateOnDeployment("movementservice")
     public void create() throws MovementServiceException, MovementDuplicateException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
@@ -47,7 +47,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementtemp")
+    @OperateOnDeployment("movementservice")
     public void createWithBrokenJMS() throws MovementDuplicateException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
         TempMovementType tempMovementType = createTempMovement();
@@ -61,7 +61,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementtemp")
+    @OperateOnDeployment("movementservice")
     public void createWithGivenId() throws MovementDuplicateException {
         String id = UUID.randomUUID().toString();
         TempMovementType tempMovementType = createTempMovement();
@@ -77,7 +77,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementtemp")
+    @OperateOnDeployment("movementservice")
     public void getTempMovement() throws MovementServiceException, MovementDuplicateException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
@@ -90,7 +90,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementtemp")
+    @OperateOnDeployment("movementservice")
     public void getTempMovementWithBogusId() {
         TempMovementType tt = null;
         try {
@@ -104,7 +104,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementtemp")
+    @OperateOnDeployment("movementservice")
     public void updateTempMovement() throws MovementServiceException, MovementDuplicateException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
@@ -128,7 +128,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementtemp")
+    @OperateOnDeployment("movementservice")
     public void archiveTempMovement() throws MovementServiceException, MovementDuplicateException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
@@ -145,7 +145,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementtemp")
+    @OperateOnDeployment("movementservice")
     public void archiveTempMovementWithBogusId() throws MovementDuplicateException {
         String id = "BOGUS";
 

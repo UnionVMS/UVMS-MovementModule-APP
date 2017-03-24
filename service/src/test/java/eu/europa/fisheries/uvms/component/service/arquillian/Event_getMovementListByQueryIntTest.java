@@ -45,7 +45,7 @@ public class Event_getMovementListByQueryIntTest extends TransactionalTests {
     MovementServiceBean movementServiceBean;
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void testTriggerGetMovementListByQuery() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -71,7 +71,7 @@ public class Event_getMovementListByQueryIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void testTriggerGetMovementListByQueryWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
@@ -91,7 +91,7 @@ public class Event_getMovementListByQueryIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void testTriggerGetMovementListByQuery_mappingToWrongMovementEventType() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -114,7 +114,7 @@ public class Event_getMovementListByQueryIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void testTriggerGetMovementListByQuery_notSettingPaginationOnAMovementListQueryFails() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -135,7 +135,7 @@ public class Event_getMovementListByQueryIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void testTriggerGetMovementListByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -156,7 +156,7 @@ public class Event_getMovementListByQueryIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void testTriggerGetMovementListByQuery_settingField_setFrom_inRangeCriteriaToArbitraryStringValueWillCausePSQLException() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");

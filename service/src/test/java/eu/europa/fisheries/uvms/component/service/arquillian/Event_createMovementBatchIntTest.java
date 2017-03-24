@@ -48,7 +48,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
 
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void triggerBatchEvent() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -83,7 +83,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
 
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void triggerBatchEvent_Duplicates() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -113,7 +113,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void triggerBatchEventWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");

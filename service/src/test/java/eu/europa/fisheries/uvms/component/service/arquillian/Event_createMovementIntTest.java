@@ -42,7 +42,7 @@ public class Event_createMovementIntTest extends TransactionalTests {
     MovementService movementService;
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void triggerEvent() throws JMSException, ModelMarshallException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         Double longitude = rnd.nextDouble();
@@ -75,7 +75,7 @@ public class Event_createMovementIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("movementevent")
+    @OperateOnDeployment("movementservice")
     public void triggerEventWithBrokenJMS() throws JMSException, ModelMarshallException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
