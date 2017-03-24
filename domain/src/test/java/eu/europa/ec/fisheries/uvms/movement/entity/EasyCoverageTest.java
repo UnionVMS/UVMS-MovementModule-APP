@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.tocea.easycoverage.framework.api.IInstanceProvider;
 import com.tocea.easycoverage.framework.checkers.ArrayIndexOutOfBoundExceptionChecker;
 import com.tocea.easycoverage.framework.checkers.BijectiveCompareToChecker;
 import com.tocea.easycoverage.framework.checkers.BijectiveEqualsChecker;
@@ -18,11 +19,9 @@ import com.tocea.easycoverage.framework.checkers.NullValueEqualsChecker;
 import com.tocea.easycoverage.framework.checkers.SetterChecker;
 import com.tocea.easycoverage.framework.checkers.ToStringNotNullChecker;
 import com.tocea.easycoverage.framework.junit.JUnitTestSuiteProvider;
-import com.tocea.easycoverage.framework.providers.CopyConstructorInstanceProvider;
 import com.tocea.easycoverage.framework.providers.DefaultInstanceProvider;
 import com.tocea.easycoverage.framework.providers.MultipleInstanceProvider;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -40,46 +39,67 @@ public class EasyCoverageTest extends Assert {
 	@Test
 	@Ignore
 	public static TestSuite suite() {
-		
-		
+
 		JUnitTestSuiteProvider testSuiteProvider = new JUnitTestSuiteProvider();
 		testSuiteProvider.setProvider(createInstanceProvider());
 
-		assertTrue(EXPECT_CLASSES_IN_PACKAGE,checkAllClassesInPackage(testSuiteProvider,"eu.europa.ec.fisheries.uvms.movement.entity"));
-		assertTrue(EXPECT_CLASSES_IN_PACKAGE,checkAllClassesInPackage(testSuiteProvider,"eu.europa.ec.fisheries.uvms.movement.entity.area"));
-		assertTrue(EXPECT_CLASSES_IN_PACKAGE,checkAllClassesInPackage(testSuiteProvider,"eu.europa.ec.fisheries.uvms.movement.entity.group"));
-		assertTrue(EXPECT_CLASSES_IN_PACKAGE,checkAllClassesInPackage(testSuiteProvider,"eu.europa.ec.fisheries.uvms.movement.entity.temp"));
-		assertTrue(EXPECT_CLASSES_IN_PACKAGE,checkAllClassesInPackage(testSuiteProvider,"eu.europa.ec.fisheries.uvms.movement.dto"));
-		
-		
+		assertTrue(EXPECT_CLASSES_IN_PACKAGE,
+				checkAllClassesInPackage(testSuiteProvider, "eu.europa.ec.fisheries.uvms.movement.entity"));
+		assertTrue(EXPECT_CLASSES_IN_PACKAGE,
+				checkAllClassesInPackage(testSuiteProvider, "eu.europa.ec.fisheries.uvms.movement.entity.area"));
+		assertTrue(EXPECT_CLASSES_IN_PACKAGE,
+				checkAllClassesInPackage(testSuiteProvider, "eu.europa.ec.fisheries.uvms.movement.entity.group"));
+		assertTrue(EXPECT_CLASSES_IN_PACKAGE,
+				checkAllClassesInPackage(testSuiteProvider, "eu.europa.ec.fisheries.uvms.movement.entity.temp"));
+		assertTrue(EXPECT_CLASSES_IN_PACKAGE,
+				checkAllClassesInPackage(testSuiteProvider, "eu.europa.ec.fisheries.uvms.movement.dto"));
+
 		testSuiteProvider.addClassChecker(BijectiveCompareToChecker.class);
 		testSuiteProvider.addClassChecker(ToStringNotNullChecker.class);
 		testSuiteProvider.addClassChecker(BijectiveEqualsChecker.class);
 		testSuiteProvider.addClassChecker(CloneChecker.class);
 		testSuiteProvider.addClassChecker(NPEConstructorChecker.class);
 		testSuiteProvider.addClassChecker(NullValueEqualsChecker.class);
-//		testSuiteProvider.addMethodChecker(NPEMethodChecker.class);
-//		testSuiteProvider.addMethodChecker(SetterChecker.class);
+		testSuiteProvider.addMethodChecker(NPEMethodChecker.class);
+		testSuiteProvider.addMethodChecker(SetterChecker.class);
 		testSuiteProvider.addMethodChecker(ArrayIndexOutOfBoundExceptionChecker.class);
 
-		return testSuiteProvider.getTestSuite();	
+		return testSuiteProvider.getTestSuite();
 	}
 
 	private static MultipleInstanceProvider createInstanceProvider() {
 		MultipleInstanceProvider multipleInstanceProvider = new MultipleInstanceProvider();
-		CopyConstructorInstanceProvider copyConstructorInstanceProvider = new CopyConstructorInstanceProvider();
-		copyConstructorInstanceProvider.setInstance(LineString.class, new LineString(new CoordinateArraySequence(new Coordinate[0]), new GeometryFactory() ));
-		copyConstructorInstanceProvider.setInstance(Point.class, new Point(new CoordinateArraySequence(new Coordinate[0]), new GeometryFactory() ));
-		copyConstructorInstanceProvider.setInstance(GeometryFactory.class, new GeometryFactory());
-		copyConstructorInstanceProvider.setInstance(CoordinateSequence.class,new CoordinateArraySequence(new Coordinate[0]));
-				
-		multipleInstanceProvider.addProvider(copyConstructorInstanceProvider);
+		multipleInstanceProvider.addProvider(new SimpleInstanceProvider(
+				new LineString(new CoordinateArraySequence(new Coordinate[0]), new GeometryFactory())));
+		multipleInstanceProvider.addProvider(new SimpleInstanceProvider(
+				new Point(new CoordinateArraySequence(new Coordinate[0]), new GeometryFactory())));
+		multipleInstanceProvider
+				.addProvider(new SimpleInstanceProvider(new CoordinateArraySequence(new Coordinate[0])));
+		multipleInstanceProvider.addProvider(new SimpleInstanceProvider(new GeometryFactory()));
 		multipleInstanceProvider.addProvider(new DefaultInstanceProvider());
-
-		
 		return multipleInstanceProvider;
 	}
-	
+
+	private static class SimpleInstanceProvider implements IInstanceProvider {
+		private final Object t;
+
+		public SimpleInstanceProvider(Object o) {
+			super();
+			this.t = o;
+		}
+
+		@Override
+		public <T> T getInstance(Class<T> paramClass) {
+			return (T) t;
+		}
+
+		@Override
+		public <T> boolean canProvide(Class<T> paramClass) {
+			return t.getClass().equals(paramClass);
+		}
+
+	}
+
 	/**
 	 * Check all classes in package.
 	 *
@@ -105,7 +125,8 @@ public class EasyCoverageTest extends Assert {
 	 */
 	private static List<Class<?>> getAllClasses(String pckgname) {
 		final List<Class<?>> classes = new ArrayList<>();
-		File directory = new File("target\\classes\\" + pckgname.replace(PACKAGE_SEPARATOR, CLASS_FILE_DIRECTORY_SEPARATOR));
+		File directory = new File(
+				"target\\classes\\" + pckgname.replace(PACKAGE_SEPARATOR, CLASS_FILE_DIRECTORY_SEPARATOR));
 		if (directory.exists()) {
 			String[] files = directory.list();
 			for (int i = 0; i < files.length; i++) {
