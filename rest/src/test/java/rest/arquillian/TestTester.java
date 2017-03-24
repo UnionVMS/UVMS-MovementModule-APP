@@ -39,13 +39,5 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
     }
 
-    //@Test
-    public void test_REST_GetListByQuery() {
-
-        webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("list");
-        Response response = webTarget
-                .request(MediaType.APPLICATION_JSON)
-                .get();
-    }
 
 }

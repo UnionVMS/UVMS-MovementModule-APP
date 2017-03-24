@@ -89,7 +89,7 @@ public abstract class BuildMovementRestTestDeployment {
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "movement.war");
-        //testWar.addPackages(true, Filters.exclude("AuthenticationFilter"), "com.europa.ec");
+        testWar.addPackages(true, Filters.exclude("AuthenticationFilter"), "com.europa.ec");
         testWar.addClass(MovementRestResource.class);
 
 
@@ -102,10 +102,15 @@ public abstract class BuildMovementRestTestDeployment {
         testWar.addClass(SpatialService.class);
         testWar.addClass(SpatialServiceMockedBean.class);
         testWar.addClass(MovementListResponseDto.class);
-        //testWar.addClass(UVMSConfigService.class);
+        testWar.addClass(UVMSConfigService.class);
         testWar.addClass(ConfigHelper.class);
-
         testWar.addClass(MovementConfigHelper.class);
+        testWar.addClass(MovementDto.class);
+        testWar.addClass(DummyFilter.class);
+
+
+        testWar.addClass(BuildMovementRestTestDeployment.class);
+        testWar.addClass(TestTester.class);
         
         testWar.addPackages(true, "rest.arquillian");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.dto");
