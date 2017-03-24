@@ -10,9 +10,8 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateExc
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -43,12 +42,8 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     @Inject
     MovementServiceBean movementServiceBean;
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createEventDeployment();
-    }
-
     @Test
+    @OperateOnDeployment("movementevent")
     public void testTriggerGetMovementMapByQuery() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -72,6 +67,7 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementevent")
     public void testTriggerGetMovementMapByQueryWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
@@ -91,6 +87,7 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementevent")
     public void testTriggerGetMovementMapByQuery_mappingToWrongMovementEventType() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -113,6 +110,7 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementevent")
     public void testTriggerGetMovementMapByQuery_settingPaginationOnAMovementMapQueryIsNotAllowed() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -133,6 +131,7 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     }
 
     @Test(expected = MovementServiceException.class)
+    @OperateOnDeployment("movementevent")
     public void testTriggerGetMovementMapByQuery_settingPaginationOnAMovementMapQueryThrowsMovementServiceException() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -149,6 +148,7 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     //ToDo: An arbitrary string value should not be allowed to be set for the ListCriteria field called 'value' by using a setter as the value *must* match only allowed enum values for the enum SearchKey.
     //ToDo: This enum is mapped by the SearchField enum toward the MovementTypeType enum. One solution could be to remove the setValue() method in the ListCriteria class.
     @Test
+    @OperateOnDeployment("movementevent")
     public void testTriggerGetMovementMapByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -173,6 +173,7 @@ public class Event_getMovementMapByQueryIntTest extends TransactionalTests {
     //ToDo: 1. Using Date instead of String here.
     //ToDo: 2. Remove the option to set an arbitrary string value altogether by deleting these setters.
     @Test
+    @OperateOnDeployment("movementevent")
     public void testTriggerGetMovementMapByQuery_settingField_setFrom_inRangeCriteriaToArbitraryStringValueWillCausePSQLException() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");

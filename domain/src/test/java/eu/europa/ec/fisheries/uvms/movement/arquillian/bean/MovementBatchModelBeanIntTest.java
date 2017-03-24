@@ -1,6 +1,31 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import eu.europa.ec.fisheries.schema.movement.v1.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
@@ -11,26 +36,13 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.transaction.*;
-import java.util.*;
 
 /**
  * Created by thofan on 2017-02-23.
  */
 
 @RunWith(Arquillian.class)
-public class MovementBatchModelBeanIntTest {
+public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
 
     Random rnd = new Random();
 
@@ -47,11 +59,6 @@ public class MovementBatchModelBeanIntTest {
      *   SETUP FUNCTIONS
      ******************************************************************************************************************/
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementTestDeployment.createDeployment();
-    }
-
     @Before
     public void before() throws SystemException, NotSupportedException {
         userTransaction.begin();
@@ -67,6 +74,7 @@ public class MovementBatchModelBeanIntTest {
      ******************************************************************************************************************/
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementConnect() {
 
         try {
@@ -82,6 +90,7 @@ public class MovementBatchModelBeanIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementConnect_ZEROISH_GUID() {
 
         String guid = "100000-0000-0000-0000-000000000000";
@@ -97,6 +106,7 @@ public class MovementBatchModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementConnect_NULL_GUID() {
 
         try {
@@ -110,6 +120,7 @@ public class MovementBatchModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void createMovement() {
 
         // TODO  denna skapar en post TROTS att vi har automatisk rollback  både i MovementConnect OCH Movement
@@ -135,6 +146,7 @@ public class MovementBatchModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void enrichAreasSameArea() {
 
         // this test is migrated from the old testsuite
@@ -155,6 +167,7 @@ public class MovementBatchModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void enrichAreasNotSameArea() {
 
         // this test is migrated from the old testsuite
@@ -176,6 +189,7 @@ public class MovementBatchModelBeanIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void mapToMovementMetaDataAreaType() {
 
         // TODO  maybe like this ?
@@ -193,6 +207,7 @@ public class MovementBatchModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getAreaType() {
 
         try {
@@ -208,6 +223,7 @@ public class MovementBatchModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getAreaType_AREATYPE_AS_NULL() {
 
         // TODO crashes on NULL input

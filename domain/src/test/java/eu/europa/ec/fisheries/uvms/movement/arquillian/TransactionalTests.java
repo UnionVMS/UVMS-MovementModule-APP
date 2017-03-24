@@ -10,7 +10,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-public class TransactionalTests {
+public class TransactionalTests extends BuildMovementTestDeployment {
 
     @Inject
     protected UserTransaction userTransaction;

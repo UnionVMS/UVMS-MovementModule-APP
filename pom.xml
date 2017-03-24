@@ -16,6 +16,8 @@
     <properties>
         <release.branch.name>uvms-3.0.5-C3PO</release.branch.name>
         <java.version>1.7</java.version>
+        <maven.version>3.2.0</maven.version>
+        
 
         <usm4uvms.version>3.0.4</usm4uvms.version>
         <uvms.common.version>2.0.17</uvms.common.version>
@@ -28,6 +30,8 @@
         <exchange.model.version>3.0.4</exchange.model.version>
         <!--Arquillian test Properties-->
         <version.org.jboss.arquillian>1.1.12.Final</version.org.jboss.arquillian>
+        <version.arquillian.suite.extension>1.1.2</version.arquillian.suite.extension>
+        
         <version.org.wildfly>8.2.0.Final</version.org.wildfly>
         <version.arquillian.postgres>9.4.1212.jre7</version.arquillian.postgres>
         <netbeans.hint.jdkPlatform>JDK-${java.version}</netbeans.hint.jdkPlatform>
@@ -119,6 +123,12 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+			<dependency>
+			    <groupId>org.eu.ingwar.tools</groupId>
+			    <artifactId>arquillian-suite-extension</artifactId>
+			    <version>${version.arquillian.suite.extension}</version>
+			    <scope>test</scope>
+			</dependency>
 
             <dependency>
                 <groupId>javax</groupId>
@@ -162,7 +172,7 @@
         <repository>
             <id>focus-repo</id>
             <name>Focus nexus repository</name>
-            <url>http://nexus.focus.fish/</url>
+            <url>http://nexus.focus.fish/nexus/repository/public/</url>
         </repository>
         <repository>
             <id>OSGEO GeoTools repo</id>
@@ -214,7 +224,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
-        </plugins>
+	   </plugins>
     </build>
 
     <profiles>
@@ -238,6 +248,37 @@
                 </dependency>
             </dependencies>
         </profile>
+    	<profile>
+    		<id>enforce-rules</id>
+    		<build>
+		    	<plugins>
+			        <plugin>
+			        <groupId>org.apache.maven.plugins</groupId>
+			        <artifactId>maven-enforcer-plugin</artifactId>
+			        <version>1.4.1</version>
+			        <executions>
+			          <execution>
+			            <id>enforce-versions</id>
+			            <goals>
+			              <goal>enforce</goal>
+			            </goals>
+			            <configuration>
+			              <rules>
+			                <requireMavenVersion>
+			                  <version>${maven.version}</version>
+			                </requireMavenVersion>
+			                <requireJavaVersion>
+			                  <version>[${java.version},${java.version}.999)</version>
+			                </requireJavaVersion>
+			                <dependencyConvergence/>
+			              </rules>
+			            </configuration>
+			          </execution>
+			        </executions>
+			      </plugin>    			
+    			</plugins>
+    		</build>
+    	</profile>    	
     </profiles>
 
     <modules>

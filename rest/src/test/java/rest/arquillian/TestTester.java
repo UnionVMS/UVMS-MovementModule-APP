@@ -1,10 +1,7 @@
 package rest.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -23,16 +20,11 @@ public class TestTester  extends BuildMovementRestTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(TestTester.class);
 
-    public static final String ENDPOINT_ROOT = "http://localhost:28080";
-
-    @Deployment(testable=false)
-    public static Archive<?> createDeployment() {
-        return BuildMovementRestTestDeployment.createBasicDeployment();
-    }
+    public static final String ENDPOINT_ROOT = "http://localhost:8080";
 
     @Test
+    @OperateOnDeployment("normal")
     public void areas() {
-
 
         webTarget = client.target(ENDPOINT_ROOT).path("movement").path("rest").path("areas");
 

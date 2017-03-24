@@ -14,6 +14,8 @@
 
     <!-- PROPERTIES USED FOR LOGBACK -->
     <properties>
+    	<dot.bin>dot.exe</dot.bin>
+    	<graphviz.home>C:\Program Files (x86)\Graphviz2.38/bin/</graphviz.home>
         <application.name>${project.parent.artifactId}</application.name>
         <hibernate.dialect>org.hibernate.spatial.dialect.postgis.PostgisDialect</hibernate.dialect>
         <application.version>${project.parent.version}</application.version>
@@ -23,7 +25,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-spatial</artifactId>
@@ -91,11 +92,62 @@
             <artifactId>arquillian-junit-container</artifactId>
             <scope>test</scope>
         </dependency>
+		<dependency>
+		    <groupId>org.eu.ingwar.tools</groupId>
+		    <artifactId>arquillian-suite-extension</artifactId>
+		    <scope>test</scope>
+		</dependency>
     </dependencies>
 
     <build>
         <finalName>${project.name}-${project.parent.version}</finalName>
         <plugins>
+        
+                 <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.4</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+            <inherited>true</inherited>
+            <configuration>
+              <includeDependencySources>false</includeDependencySources>
+              <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
+              <detectOfflineLinks>false</detectOfflineLinks>
+<!--               <dependencySourceIncludes>
+                <dependencySourceInclude>eu.europa.ec.fisheries.uvms.movement:*</dependencySourceInclude>
+              </dependencySourceIncludes>
+              <dependencySourceExcludes>
+                <dependencySourceExclude></dependencySourceExclude>
+              </dependencySourceExcludes>-->
+              <doclet>org.jboss.apiviz.APIviz</doclet>
+              <docletArtifacts>
+                <docletArtifact>
+                  <groupId>com.grahamedgecombe.apiviz</groupId>
+                  <artifactId>apiviz</artifactId>
+                  <version>1.3.3</version>
+                </docletArtifact>
+              </docletArtifacts>
+              <useStandardDocletOptions>true</useStandardDocletOptions>
+              <charset>UTF-8</charset>
+              <encoding>UTF-8</encoding>
+              <source>${jdk.src.version}</source>
+              <docencoding>UTF-8</docencoding>
+              <breakiterator>true</breakiterator>
+              <version>true</version>
+              <author>true</author>
+              <keywords>true</keywords>
+              <additionalparam>-sourceclasspath ${project.build.outputDirectory}</additionalparam>
+            </configuration>
+          </plugin>
+        
+        
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

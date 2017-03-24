@@ -5,9 +5,8 @@ import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,7 +30,7 @@ import java.util.List;
  */
 
 @RunWith(Arquillian.class)
-public class TempMovementDaoIntTest {
+public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(TempMovementDaoIntTest.class);
 
@@ -50,12 +49,6 @@ public class TempMovementDaoIntTest {
      *   SETUP FUNCTIONS
      ******************************************************************************************************************/
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementTestDeployment.createDeployment();
-    }
-
-
     @Before
     public void before() throws SystemException, NotSupportedException {
         userTransaction.begin();
@@ -72,6 +65,7 @@ public class TempMovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void createTempMovementEntity() {
 
         try {
@@ -91,6 +85,7 @@ public class TempMovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void createTempMovementEntity_NoState() {
 
         try {
@@ -113,6 +108,7 @@ public class TempMovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getTempMovementByGuid() {
         try {
             double longitude = 9.140626D;
@@ -140,6 +136,7 @@ public class TempMovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getTempMovementByGuid_ZeroGuid() {
         try {
 
@@ -153,6 +150,7 @@ public class TempMovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getTempMovementListPaginated() {
 
         try {
@@ -184,6 +182,7 @@ public class TempMovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getTempMovementListPaginated_Page2000() {
 
         try {
@@ -217,6 +216,7 @@ public class TempMovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getTempMovementListCount() {
 
         try {

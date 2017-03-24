@@ -4,14 +4,12 @@ import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
-import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,13 +37,8 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     private TempMovementService tempMovementService;
 
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createTempMovementDeployment();
-    }
-
-
     @Test
+    @OperateOnDeployment("movementtemp")
     public void create() throws MovementServiceException, MovementDuplicateException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
@@ -54,6 +47,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementtemp")
     public void createWithBrokenJMS() throws MovementDuplicateException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
         TempMovementType tempMovementType = createTempMovement();
@@ -67,6 +61,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementtemp")
     public void createWithGivenId() throws MovementDuplicateException {
         String id = UUID.randomUUID().toString();
         TempMovementType tempMovementType = createTempMovement();
@@ -82,6 +77,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementtemp")
     public void getTempMovement() throws MovementServiceException, MovementDuplicateException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
@@ -94,6 +90,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementtemp")
     public void getTempMovementWithBogusId() {
         TempMovementType tt = null;
         try {
@@ -107,6 +104,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementtemp")
     public void updateTempMovement() throws MovementServiceException, MovementDuplicateException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
@@ -130,6 +128,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementtemp")
     public void archiveTempMovement() throws MovementServiceException, MovementDuplicateException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
@@ -146,6 +145,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementtemp")
     public void archiveTempMovementWithBogusId() throws MovementDuplicateException {
         String id = "BOGUS";
 

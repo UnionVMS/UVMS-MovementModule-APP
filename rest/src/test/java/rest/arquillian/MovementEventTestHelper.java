@@ -1,4 +1,4 @@
-package eu.europa.fisheries.uvms.component.service.arquillian;
+package rest.arquillian;
 
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;

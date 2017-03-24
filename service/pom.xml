@@ -67,6 +67,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+		    <groupId>org.eu.ingwar.tools</groupId>
+		    <artifactId>arquillian-suite-extension</artifactId>
+		    <scope>test</scope>
+		</dependency>        
+        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-dbaccess-domain</artifactId>
             <version>3.0.6-SNAPSHOT</version>

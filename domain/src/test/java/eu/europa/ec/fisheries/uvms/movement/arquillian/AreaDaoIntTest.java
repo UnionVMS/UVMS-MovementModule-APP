@@ -10,9 +10,8 @@ import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +41,7 @@ import static org.junit.Assert.fail;
  * @author roblar
  */
 @RunWith(Arquillian.class)
-public class AreaDaoIntTest {
+public class AreaDaoIntTest extends BuildMovementTestDeployment {
 
     // ToDo: Look at if:
     // ToDo: 1. The AreaDao interface should include a method to create/persist an AreaType entity.
@@ -59,11 +58,6 @@ public class AreaDaoIntTest {
 
     @EJB
     private AreaDao areaDao;
-
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementTestDeployment.createDeployment();
-    }
 
     @Before
     public void before() {
@@ -91,6 +85,7 @@ public class AreaDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void testCreateArea() throws AreaDaoException {
 
         try {
@@ -116,6 +111,7 @@ public class AreaDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void testGetArea() throws AreaDaoException {
 
         AreaType areaType = createAreaTypeHelper();
@@ -136,6 +132,7 @@ public class AreaDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void testGetAllAreas() throws AreaDaoException {
 
         List<Area> readAllAreasFromDatabase = null;
@@ -167,6 +164,7 @@ public class AreaDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void failCreateArea_remoteId_erroneousFieldSize() throws AreaDaoException {
 
         try {
@@ -207,6 +205,7 @@ public class AreaDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void failCreateArea_areaCode_uniqueNameConstraint() {
 
         try {
@@ -242,6 +241,7 @@ public class AreaDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void failCreateArea_areaUpdattim_setToNull() throws AreaDaoException {
 
         try {
@@ -269,6 +269,7 @@ public class AreaDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void failCreateArea_areaUpuser_setToNull() {
 
         try {
@@ -298,6 +299,7 @@ public class AreaDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void failCreateArea_areaUpuser_erroneousFieldSize() {
 
         try {
@@ -320,6 +322,7 @@ public class AreaDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void failGetArea() throws AreaDaoException {
 
         Area failingAreaRead = areaDao.readMovementAreaById(-42L);

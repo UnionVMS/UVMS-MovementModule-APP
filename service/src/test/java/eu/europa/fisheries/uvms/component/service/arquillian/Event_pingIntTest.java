@@ -6,9 +6,8 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,12 +28,8 @@ public class Event_pingIntTest extends TransactionalTests {
     @PingEvent
     Event<EventMessage> pingEvent;
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createEventDeployment();
-    }
-
     @Test
+    @OperateOnDeployment("movementevent")
     public void testTriggerPing() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -52,6 +47,7 @@ public class Event_pingIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementevent")
     public void testTriggerPingWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");

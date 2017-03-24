@@ -1,6 +1,5 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.uvms.movement.service.*;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -9,6 +8,9 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
 import eu.europa.fisheries.uvms.component.service.SpatialServiceMockedBean;
+
+import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -23,21 +25,25 @@ import java.util.*;
 /**
  * Created by andreasw on 2017-02-13.
  */
+@ArquillianSuiteDeployment
 public abstract class BuildMovementServiceTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(BuildMovementServiceTestDeployment.class);
 
+//    @Deployment(name = "basic", order = 1)
+//    private static WebArchive createBasicDeployment() {
+//        return createArchive("test");
+//    }
 
-    private static WebArchive createBasicDeployment() {
-
-        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
+	private static WebArchive createArchive(final String name) {
+		File[] files = Maven.resolver().loadPomFromFile("pom.xml")
                 .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
 
         printFiles(files);
 
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
-        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
+        WebArchive testWar = ShrinkWrap.create(WebArchive.class, name + ".war");
 
         testWar.addClass(MovementConfigHelper.class);
         testWar.addClass(TransactionalTests.class);
@@ -45,12 +51,14 @@ public abstract class BuildMovementServiceTestDeployment {
         // Empty beans for EE6 CDI
         testWar.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         testWar.addAsLibraries(files);
+        
+        testWar.addPackages(true, "eu.europa.fisheries.uvms.component.service.arquillian");
+		return testWar;
+	}
 
-        return testWar;
-    }
-
+    @Deployment(name = "movementsearch", order = 1)
     public static Archive<?> createMovementSearchDeployment() {
-        WebArchive archive = createBasicDeployment();
+        WebArchive archive = createArchive("movementsearch");
 
         archive.addClass(MovementSearchGroupServiceBean.class).addClass(MovementSearchGroupService.class);
        // already there  archive.addClass(MovementConfigHelper.class);
@@ -61,8 +69,9 @@ public abstract class BuildMovementServiceTestDeployment {
         return archive;
     }
 
+    @Deployment(name = "movementevent", order = 1)
     public static Archive<?> createEventDeployment() {
-        WebArchive archive = createBasicDeployment();
+        WebArchive archive = createArchive("movementevent");
 
         archive.addClass(MovementEventServiceBean.class);
         archive.addClass(EventService.class);
@@ -77,21 +86,26 @@ public abstract class BuildMovementServiceTestDeployment {
                 .addClass(MovementDto.class);
         archive.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
 
+        
+        
+
 
         return archive;
     }
 
+    @Deployment(name = "movementtemp", order = 1)
     public static Archive<?> createTempMovementDeployment() {
-        WebArchive archive = createBasicDeployment();
+        WebArchive archive = createArchive("movementtemp");
         archive.addClass(TempMovementServiceBean.class).addClass(TempMovementService.class);
         archive.addClass(MovementServiceException.class);
 
         return archive;
     }
 
+    @Deployment(name = "movementIntTest", order = 1)
     public static Archive<?> createDeployment_FOR_MovementServiceIntTest() {
 
-        WebArchive archive = createBasicDeployment();
+        WebArchive archive = createArchive("movementIntTest");
 
         archive.addClass(MovementServiceBean.class)
                 .addClass(MovementService.class)

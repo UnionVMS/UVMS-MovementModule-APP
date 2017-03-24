@@ -3,9 +3,8 @@ package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +23,7 @@ import java.util.UUID;
  */
 
 @RunWith(Arquillian.class)
-public class MovementConnectIntTest {
+public class MovementConnectIntTest extends BuildMovementTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementConnectIntTest.class);
 
@@ -35,11 +34,6 @@ public class MovementConnectIntTest {
     @Inject
     UserTransaction userTransaction;
 
-
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementTestDeployment.createDeployment();
-    }
 
     @Before
     public void before() {
@@ -52,6 +46,7 @@ public class MovementConnectIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void createMovementConnect() {
 
         try {

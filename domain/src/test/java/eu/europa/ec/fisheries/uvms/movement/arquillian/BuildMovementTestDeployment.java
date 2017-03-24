@@ -2,6 +2,9 @@ package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
 import eu.europa.ec.fisheries.uvms.movement.bean.*;
+
+import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
@@ -13,8 +16,10 @@ import java.io.File;
 /**
  * Created by andreasw on 2017-02-13.
  */
+@ArquillianSuiteDeployment
 public abstract class BuildMovementTestDeployment {
 
+    @Deployment(name = "normal", order = 1)
     public static Archive<?> createDeployment() {
 
         // Import Maven runtime dependencies
@@ -41,6 +46,10 @@ public abstract class BuildMovementTestDeployment {
                 .addClass(SegmentBean.class).addClass(IncomingMovementBean.class);
 
         testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.model");
+        
+        testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.arquillian");
+        testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.arquillian.bean");
+        
         testWar.addPackages(true, "eu.europa.ec.fisheries.schema");
         testWar.addClass(TransactionalTests.class);
         testWar.addClass(TestUtil.class);

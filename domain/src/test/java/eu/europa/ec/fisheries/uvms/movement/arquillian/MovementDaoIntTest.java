@@ -11,9 +11,8 @@ import eu.europa.ec.fisheries.uvms.movement.exception.SearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
@@ -35,7 +34,7 @@ import javax.transaction.*;
  * Created by thofan on 2017-01-30.
  */
 @RunWith(Arquillian.class)
-public class MovementDaoIntTest {
+public class MovementDaoIntTest extends BuildMovementTestDeployment {
 
 
     private Random rnd = new Random();
@@ -65,12 +64,6 @@ public class MovementDaoIntTest {
      *   SETUP FUNCTIONS
      ******************************************************************************************************************/
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementTestDeployment.createDeployment();
-    }
-
-
     @Before
     public void before() throws SystemException, NotSupportedException {
         userTransaction.begin();
@@ -86,6 +79,7 @@ public class MovementDaoIntTest {
      ******************************************************************************************************************/
 
     @Test
+    @OperateOnDeployment("normal")
     public void create() {
         try {
 
@@ -117,6 +111,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void flush() {
         try {
             movementDao.flush();
@@ -127,6 +122,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getFirstMovement() {
 
         /*
@@ -163,6 +159,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getLatestMovement_tryLatestTable_FALSE() {
         Date timeStamp = DateUtil.nowUTC();
         try {
@@ -198,6 +195,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getLatestMovement_tryLatestTable_TRUE() {
 
         Date timeStamp = DateUtil.nowUTC();
@@ -233,6 +231,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getLatestMovements() {
         try {
             List<LatestMovement> all = movementDao.getLatestMovements(10);
@@ -244,6 +243,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getListAll() {
         try {
 
@@ -270,6 +270,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getListAll_NO_PositionalDups() {
         try {
 
@@ -307,6 +308,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMinimalMovementListPaginated() {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
@@ -326,6 +328,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMinimalMovementListPaginated_NegativeSpeed() {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
@@ -345,6 +348,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementById() {
         try {
 
@@ -373,6 +377,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementById_NULL_AS_SearchCriteria() {
 
         try {
@@ -387,6 +392,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementById_NonExisting_AS_SearchCriteria() {
 
         try {
@@ -401,6 +407,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementConnectByConnectId() {
 
         try {
@@ -434,6 +441,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_nonpaginated_NullcheckResultsetAtUnlogicQuery() {
 
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
@@ -451,6 +459,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_nonpaginated_noSearchValues() {
 
         List<SearchValue> searchValues = new ArrayList<>();
@@ -466,6 +475,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_nonpaginated_withSearchValues() {
 
         // this is not covered in the code BUT it forces that codepath to execute
@@ -484,6 +494,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_nonpaginated_shouldCrash() {
 
         SearchValue searchValue = new SearchValue(SearchField.AREA, "HEPP");
@@ -504,6 +515,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_NumberOfReports_0_noSearchValue() {
 
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
@@ -543,6 +555,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_NumberOfReports_5_noSearchValue() {
 
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
@@ -563,6 +576,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_NumberOfReports_0_withSearchValue() {
 
         // TODO this test is maybe to optimistic since the queryparameters are given in the test OR they are manufactured in the Service-layer
@@ -583,6 +597,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_NumberOfReports_1_withSearchValue() {
 
         // TODO this test is maybe to optimistic since the queryparameters are given in the test OR they are manufactured in the Service-layer
@@ -603,6 +618,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_NumberOfReports_1_withSearchValue_Noresult() {
 
         // TODO this test is maybe to optimistic since the queryparameters are given in the test OR they are manufactured in the Service-layer
@@ -624,6 +640,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementList_NumberOfReports_5_withSearchValue() {
 
         // TODO this test is maybe to optimistic since the queryparameters are given in the test OR they are manufactured in the Service-layer
@@ -646,6 +663,7 @@ public class MovementDaoIntTest {
 
     // TODO the value of this test is very limited
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementListByAreaAndTimeIntervall() {
 
         // TODO  this one cannot be instantiated using new (probably a soap thing)
@@ -667,6 +685,7 @@ public class MovementDaoIntTest {
 
     // dont want to use JodaTime in tests . . .
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementListPaginated() {
 
         List<SearchValue> searchValues = new ArrayList<>();
@@ -698,6 +717,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementListSearchCount() {
         try {
             List<SearchValue> searchValues = new ArrayList<>();
@@ -715,7 +735,9 @@ public class MovementDaoIntTest {
             Assert.fail(e.toString());
         }
     }
+    
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementListSearchCount_searchValueNull() {
 
         // TODO setTypedQueryMovementParams crashes on null as input
@@ -738,6 +760,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getUnprocessedMovementIds() {
 
         try {
@@ -749,6 +772,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getUnprocessedMovements() {
 
         try {
@@ -761,6 +785,7 @@ public class MovementDaoIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void merge() {
 
         try {
@@ -772,6 +797,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void persist() {
         try {
             movementDao.persist(null);
@@ -783,6 +809,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void upsertLatestMovementOnExisting() {
 
 
@@ -825,6 +852,7 @@ public class MovementDaoIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void upsertLatestMovementOnNonExisting() {
 
 

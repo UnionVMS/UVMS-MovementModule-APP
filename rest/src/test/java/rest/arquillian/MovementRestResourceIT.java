@@ -1,34 +1,21 @@
 package rest.arquillian;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 //import eu.europa.ec.mare.usm.authentication.domain.AuthenticationRequest;
 //import eu.europa.ec.mare.usm.authentication.service.impl.AuthenticationServiceBean;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
 //import eu.europa.fisheries.uvms.component.service.arquillian.BuildMovementRestTestDeployment;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -43,11 +30,6 @@ public class MovementRestResourceIT  extends BuildMovementRestTestDeployment {
     //public static final String LOGIN_ENDPOINT = "usm-administration/rest/authenticate";
     //http://localhost:8080/usm-administration/rest/authenticate
 
-    @Deployment(testable=false)
-    public static Archive<?> createDeployment() {
-        return BuildMovementRestTestDeployment.createBasicDeployment();
-    }
-
     /*
     @Inject
     AuthenticationServiceBean authenticationServiceBean;
@@ -55,6 +37,7 @@ public class MovementRestResourceIT  extends BuildMovementRestTestDeployment {
 
     @Test
     // Note: Method is called getListByQuery but it is actually a post request. See MovementRestResource.
+    @OperateOnDeployment("normal")
     public void test_REST_GetListByQuery() {
 
 

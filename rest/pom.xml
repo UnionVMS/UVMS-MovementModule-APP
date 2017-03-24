@@ -14,8 +14,8 @@
 
     <properties>
         <hibernate.dialect>org.hibernate.spatial.dialect.postgis.PostgisDialect</hibernate.dialect>
-        <version.arquillian_core>1.1.5.Final</version.arquillian_core>
-        <version.arquillian.wildfly>8.1.0.Final</version.arquillian.wildfly>
+        <version.arquillian_core>1.1.12.Final</version.arquillian_core>
+        <version.arquillian.wildfly>8.2.0.Final</version.arquillian.wildfly>
     </properties>
 
     <dependencyManagement>
@@ -93,6 +93,11 @@
             <artifactId>arquillian-junit-container</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+		    <groupId>org.eu.ingwar.tools</groupId>
+		    <artifactId>arquillian-suite-extension</artifactId>
+		    <scope>test</scope>
+		</dependency>        
         <dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-impl-maven</artifactId>

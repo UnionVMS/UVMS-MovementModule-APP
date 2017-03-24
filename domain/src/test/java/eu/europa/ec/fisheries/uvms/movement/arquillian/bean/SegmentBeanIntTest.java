@@ -1,7 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
@@ -17,9 +16,8 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,13 +40,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     private TestUtil testUtil = new TestUtil();
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementTestDeployment.createDeployment();
-    }
-
-
     @Test
+    @OperateOnDeployment("normal")
     public void createSegmentOnFirstMovement() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
         String uuid = UUID.randomUUID().toString();
 
@@ -62,6 +55,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void splitSegment() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
         String uuid = UUID.randomUUID().toString();
 
@@ -84,6 +78,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void createNewTrack() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
 
         String uuid = UUID.randomUUID().toString();

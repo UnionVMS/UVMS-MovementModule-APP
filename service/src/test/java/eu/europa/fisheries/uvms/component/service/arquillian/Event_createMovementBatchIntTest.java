@@ -12,9 +12,8 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateExc
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +26,6 @@ import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -49,12 +47,8 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
     MovementService movementService;
 
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createEventDeployment();
-    }
-
     @Test
+    @OperateOnDeployment("movementevent")
     public void triggerBatchEvent() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -88,7 +82,8 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
     }
 
 
-   @Test
+    @Test
+    @OperateOnDeployment("movementevent")
     public void triggerBatchEvent_Duplicates() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
@@ -118,6 +113,7 @@ public class Event_createMovementBatchIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementevent")
     public void triggerBatchEventWithBrokenJMS() throws JMSException, ModelMarshallException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");

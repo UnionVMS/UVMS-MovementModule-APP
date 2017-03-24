@@ -22,9 +22,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,13 +51,8 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createDeployment_FOR_MovementServiceIntTest();
-    }
-
-
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getMovementListByAreaAndTimeInterval_EmptyCriteria() {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
         try {
@@ -73,6 +67,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getMovementListByAreaAndTimeInterval_NoResult_But_RunsTheCode() {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
 
@@ -102,6 +97,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getMovementListByAreaAndTimeInterval_NoArea_ButDateAdded_NoResult_But_RunsTheCode() {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
 
@@ -132,6 +128,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void createMovement() {
 
         Date now = DateUtil.nowUTC();
@@ -152,6 +149,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getLatestMovementsByConnectIds_EmptyList() {
 
         List<String> connectionIds = new ArrayList<>();
@@ -167,6 +165,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getList() {
 
         MovementQuery query = createMovementQuery(true);
@@ -183,6 +182,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getMinimalList() {
 
         MovementQuery query = createMovementQuery(true);
@@ -198,6 +198,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getListAsRestDto() {
 
         MovementQuery query = createMovementQuery(true);
@@ -215,6 +216,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getMapByQuery() {
 
         MovementQuery query = createMovementQuery(false);
@@ -229,6 +231,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getMapByQuery_LATEST() {
 
         MovementQuery query = createMovementQuery(false);
@@ -249,6 +252,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getMapByQuery_LATEST_with_pagination() {
 
         MovementQuery query = createMovementQuery(true);
@@ -270,6 +274,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void createMovementBatch() {
 
         List<MovementBaseType> query = createBaseTypeList();
@@ -286,6 +291,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getAreas() {
 
         try {
@@ -300,6 +306,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getById() {
 
         try {
@@ -334,6 +341,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getById_Null_ID() {
 
         String connectId = null;
@@ -349,6 +357,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getLatestMovements() {
 
         try {
@@ -363,6 +372,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getLatestMovements_NumberNULL() {
 
         try {
@@ -378,6 +388,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getLatestMovements_NegativeNumber() {
 
         try {
@@ -393,6 +404,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void getById_emptyGUID() {
 
         String connectId = "";
@@ -405,6 +417,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementIntTest")
     public void update() {
 
         Object obj = new Object();

@@ -10,12 +10,17 @@ import eu.europa.ec.fisheries.uvms.movement.rest.service.MovementRestResource;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.UserServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
+import rest.service.SpatialServiceMockedBean;
+
+import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -45,6 +50,7 @@ import java.util.Set;
 /**
  * Created by andreasw on 2017-02-13.
  */
+@ArquillianSuiteDeployment
 public abstract class BuildMovementRestTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(BuildMovementRestTestDeployment.class);
@@ -70,7 +76,7 @@ public abstract class BuildMovementRestTestDeployment {
         }
     }
 
-
+    @Deployment(name = "normal", order = 1)
     public static WebArchive createBasicDeployment() {
 
         File[] files = Maven.resolver().loadPomFromFile("../service/pom.xml")
@@ -82,7 +88,7 @@ public abstract class BuildMovementRestTestDeployment {
 
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
-        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
+        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "movement.war");
         //testWar.addPackages(true, Filters.exclude("AuthenticationFilter"), "com.europa.ec");
         testWar.addClass(MovementRestResource.class);
 
@@ -94,11 +100,15 @@ public abstract class BuildMovementRestTestDeployment {
         testWar.addClass(UserServiceBean.class);
         testWar.addClass(ResponseDto.class);
         testWar.addClass(SpatialService.class);
+        testWar.addClass(SpatialServiceMockedBean.class);
         testWar.addClass(MovementListResponseDto.class);
-        testWar.addClass(UVMSConfigService.class);
+        //testWar.addClass(UVMSConfigService.class);
         testWar.addClass(ConfigHelper.class);
 
-
+        testWar.addClass(MovementConfigHelper.class);
+        
+        testWar.addPackages(true, "rest.arquillian");
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.dto");
 
         /*
         testWar.addClass(MovementConfigHelper.class);

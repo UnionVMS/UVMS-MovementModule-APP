@@ -1,39 +1,34 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchMapperException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import org.jboss.arquillian.container.test.api.Deployment;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.persistence.PersistenceException;
+
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ejb.EJB;
-import javax.persistence.PersistenceException;
-import java.util.List;
+import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
+import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 @RunWith(Arquillian.class)
-public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
+public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
 
     private final static String TEST_USER_NAME = "MovementSearchGroupDomainModelIntTestsUser";
-
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementTestDeployment.createDeployment();
-    }
 
     @EJB
     private MovementSearchGroupDomainModelBean movementSearchGroupDomainModelBean;
 
     @Test
+    @OperateOnDeployment("normal")
     public void createMovementSearchGroup() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = createSearchGroup();
         MovementSearchGroup movementSearchGroupAfterPersist = movementSearchGroupDomainModelBean.createMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
@@ -44,6 +39,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void failCreateMovementSearchGroupNoUserName() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = createSearchGroup();
         try {
@@ -56,6 +52,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void failCreateMovementSearchGroupNoName() {
         MovementSearchGroup movementSearchGroup = createSearchGroup();
         try {
@@ -69,6 +66,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementSearchGroup() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
@@ -82,6 +80,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getMovementSearchGroupsByUser() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
@@ -98,6 +97,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void deleteMovementSearchGroup() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
@@ -117,6 +117,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void updateMovementSearchGroup() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
@@ -136,6 +137,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void updateMovementSearchGroupWithExtraCriteria() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
@@ -156,6 +158,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void updateMovementSearchGroupRemoveCriterias() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
@@ -172,6 +175,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests{
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void updateMovementSearchGroupRemoveCriteriasAddOne() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();

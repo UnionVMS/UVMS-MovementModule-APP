@@ -1,41 +1,40 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
-import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
+import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 /**
  * Created by thofan on 2017-02-25.
  */
 
 @RunWith(Arquillian.class)
-public class MovementDomainModelBeanIntTest {
+public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment {
 
     Random rnd = new Random();
 
@@ -51,11 +50,6 @@ public class MovementDomainModelBeanIntTest {
     /******************************************************************************************************************
      *   SETUP FUNCTIONS
      ******************************************************************************************************************/
-
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementTestDeployment.createDeployment();
-    }
 
     @Before
     public void before() throws SystemException, NotSupportedException {
@@ -73,6 +67,7 @@ public class MovementDomainModelBeanIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void filterSegments() {
         try {
 
@@ -99,6 +94,7 @@ public class MovementDomainModelBeanIntTest {
 
 
     @Test
+    @OperateOnDeployment("normal")
     public void getAreas() {
         try {
             List<AreaType> areas = movementDomainModelBean.getAreas();
@@ -109,6 +105,7 @@ public class MovementDomainModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getLatestMovements_0() {
         try {
             List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(0);
@@ -119,6 +116,7 @@ public class MovementDomainModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getLatestMovements_5() {
         try {
             List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5);
@@ -129,6 +127,7 @@ public class MovementDomainModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getLatestMovements_5000000() {
         try {
             List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5000000);
@@ -139,6 +138,7 @@ public class MovementDomainModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getLatestMovements_NULL() {
         try {
             List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(null);
@@ -149,6 +149,7 @@ public class MovementDomainModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getLatestMovements_neg5() {
         try {
             List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(-5);
@@ -159,6 +160,7 @@ public class MovementDomainModelBeanIntTest {
     }
 
     @Test
+    @OperateOnDeployment("normal")
     public void getLatestMovementsByConnectIds_crashOnEmpty() {
         try {
             List<String> connectIds = new ArrayList<>();

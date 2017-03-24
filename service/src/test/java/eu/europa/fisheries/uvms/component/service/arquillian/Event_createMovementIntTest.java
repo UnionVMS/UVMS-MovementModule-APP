@@ -12,9 +12,8 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateExc
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,9 +28,6 @@ import javax.jms.TextMessage;
 import java.math.BigInteger;
 import java.util.Random;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 @RunWith(Arquillian.class)
 public class Event_createMovementIntTest extends TransactionalTests {
 
@@ -45,12 +41,8 @@ public class Event_createMovementIntTest extends TransactionalTests {
     @EJB
     MovementService movementService;
 
-    @Deployment
-    public static Archive<?> createDeployment() {
-        return BuildMovementServiceTestDeployment.createEventDeployment();
-    }
-
     @Test
+    @OperateOnDeployment("movementevent")
     public void triggerEvent() throws JMSException, ModelMarshallException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         Double longitude = rnd.nextDouble();
@@ -83,6 +75,7 @@ public class Event_createMovementIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementevent")
     public void triggerEventWithBrokenJMS() throws JMSException, ModelMarshallException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
 
