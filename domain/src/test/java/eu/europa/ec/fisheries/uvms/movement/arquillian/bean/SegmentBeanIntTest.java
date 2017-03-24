@@ -45,8 +45,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void createSegmentOnFirstMovement() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
         String uuid = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d,0d,0d, SegmentCategoryType.EXIT_PORT, uuid);
-        Movement toMovement = createMovement(1d,1d,0d, SegmentCategoryType.GAP, uuid);
+        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
+        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, uuid);
         segmentBean.createSegmentOnFirstMovement(fromMovement, toMovement);
         em.flush();
         Assert.assertNotNull(toMovement.getTrack());
@@ -59,14 +59,14 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void splitSegment() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
         String uuid = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d,0d,0d, SegmentCategoryType.EXIT_PORT, uuid);
+        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
         movementDao.upsertLatestMovement(fromMovement, fromMovement.getMovementConnect());
-        Movement toMovement = createMovement(1d,1d,0d, SegmentCategoryType.GAP, uuid);
+        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, uuid);
         movementDao.upsertLatestMovement(toMovement, toMovement.getMovementConnect());
 
         segmentBean.createSegmentOnFirstMovement(fromMovement, toMovement);
 
-        Movement newMovement = createMovement(.5d,.5d,0d, SegmentCategoryType.GAP, uuid);
+        Movement newMovement = createMovement(.5d, .5d, 0d, SegmentCategoryType.GAP, uuid);
         movementDao.upsertLatestMovement(toMovement, toMovement.getMovementConnect());
         segmentBean.splitSegment(toMovement, newMovement);
         em.flush();
@@ -83,8 +83,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String uuid = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d,0d,0d, SegmentCategoryType.EXIT_PORT, uuid);
-        Movement toMovement = createMovement(1d,1d,0d, SegmentCategoryType.GAP, uuid);
+        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
+        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, uuid);
 
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
 
@@ -95,17 +95,134 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertEquals(2, track.getMovementList().size());
     }
 
+    /*
+    @Test
+    @OperateOnDeployment("normal")
+    public void createNewTrack_onSegmentMovement() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
+
+        String connectId = UUID.randomUUID().toString();
+
+        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId);
+        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId);
+
+        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Track track = segmentBean.createNewTrack(segment);
+        em.flush();
 
 
+        // assume this is the firstmovement since current api does not have anything else
+        segmentBean.createSegmentOnFirstMovement(fromMovement, toMovement);
+
+
+        Movement newMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId);
+
+
+        Track track = segmentBean.createNewTrack(segment, newMovement);
+
+        em.flush();
+        Assert.assertNotNull(track);
+        Assert.assertEquals(1, track.getSegmentList().size());
+        Assert.assertEquals(2, track.getMovementList().size());
+
+
+    }
+    */
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void upsertTrack_forceNew() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
+
+        // TODO  this creates 2 records in track   only difference is the updatetime timestamp
+        // TODO  it   creates 1 record  in segment
+        // TODO  it   creates 3 records in movement
+
+        String connectId = UUID.randomUUID().toString();
+
+        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId);
+        Movement toMovement = createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId);
+        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Track track = segmentBean.createNewTrack(segment);
+        em.flush();
+        Assert.assertNotNull(track);
+
+        Movement newMovement = createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId);
+
+        // null forces new
+        Track createdTrack = segmentBean.upsertTrack(null, segment, newMovement);
+        Assert.assertNotNull(createdTrack);
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void updateTrack()  throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
+
+        // TODO update seems not to update . After running this method segment point from 1 to 2 movement   nr 3 ???
+
+
+        String connectId = UUID.randomUUID().toString();
+
+        Movement fromMovement = createMovement(0d, 0d, 1d, SegmentCategoryType.EXIT_PORT, connectId, "user1");
+        Movement toMovement = createMovement(5d, 5d, 2d, SegmentCategoryType.GAP, connectId, "user2");
+        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Track track = segmentBean.createNewTrack(segment);
+        em.flush();
+        Assert.assertNotNull(track);
+
+        Movement newMovement = createMovement(10d, 10d, 3d, SegmentCategoryType.GAP, connectId, "user3");
+        segmentBean.updateTrack(track,  newMovement, segment);
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void addMovementBeforeFirst() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
+
+
+        String connectId = UUID.randomUUID().toString();
+
+        Movement firstMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE");
+        Movement secondMovement = createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "TWO");
+        segmentBean.createSegmentOnFirstMovement(firstMovement, secondMovement);
+        em.flush();
+
+        Assert.assertNotNull(secondMovement.getTrack());
+        Assert.assertEquals(1, secondMovement.getTrack().getSegmentList().size());
+        Assert.assertEquals(2, secondMovement.getTrack().getMovementList().size());
+
+
+
+        Movement beforeFirstMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "BEFOREONE");
+
+
+        segmentBean.addMovementBeforeFirst(firstMovement, beforeFirstMovement);
+
+
+
+
+
+
+
+    }
+
+
+    /*****************************************************************************************************************************************************
+     *  helpers
+     *****************************************************************************************************************************************************/
+
+    // old version
     private Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId) throws MovementModelException, MovementDuplicateException, MovementDaoException {
+        return createMovement(longitude, latitude, altitude, segmentCategoryType, connectId, "TEST");
+    }
+
+    // added possibility to specify user for easier debug
+    private Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName) throws MovementModelException, MovementDuplicateException, MovementDaoException {
         MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId);
-        movementType = movementBatchModelBean.createMovement(movementType, "TEST");
+        movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
         Assert.assertNotNull(movementType.getConnectId());
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
         List<Movement> movementList = movementConnect.getMovementList();
         Assert.assertNotNull(movementList);
-        return movementList.get(movementList.size() -1);
+        return movementList.get(movementList.size() - 1);
     }
 
 
