@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.tocea.easycoverage.framework.api.IInstanceProvider;
@@ -37,7 +36,6 @@ public class EasyCoverageTest extends Assert {
 	private static final String CLASS_SUFFIX = ".class";
 
 	@Test
-	@Ignore
 	public static TestSuite suite() {
 
 		JUnitTestSuiteProvider testSuiteProvider = new JUnitTestSuiteProvider();
@@ -60,7 +58,6 @@ public class EasyCoverageTest extends Assert {
 		testSuiteProvider.addClassChecker(CloneChecker.class);
 		testSuiteProvider.addClassChecker(NPEConstructorChecker.class);
 		testSuiteProvider.addClassChecker(NullValueEqualsChecker.class);
-		testSuiteProvider.addMethodChecker(NPEMethodChecker.class);
 		testSuiteProvider.addMethodChecker(SetterChecker.class);
 		testSuiteProvider.addMethodChecker(ArrayIndexOutOfBoundExceptionChecker.class);
 
