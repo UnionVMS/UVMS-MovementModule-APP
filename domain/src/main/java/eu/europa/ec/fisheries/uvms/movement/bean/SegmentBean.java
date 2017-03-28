@@ -38,6 +38,8 @@ public class SegmentBean {
      * @throws MovementDaoMappingException
      */
     public void createSegmentOnFirstMovement(Movement fromMovement, Movement toMovement) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException {
+        // TODO this method should return a segment
+        // TODO this method should also be
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
         Track track = upsertTrack(fromMovement.getTrack(), segment, toMovement);
         fromMovement.setTrack(track);

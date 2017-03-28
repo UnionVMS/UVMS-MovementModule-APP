@@ -64,6 +64,27 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
+    public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
+        String connectId = UUID.randomUUID().toString();
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(1920,06,06);
+        Date date1 = cal.getTime();
+
+        Movement movement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        segmentBean.createSegmentOnFirstMovement(movement, movement);
+        em.flush();
+        Assert.assertNotNull(movement.getTrack());
+        //Assert.assertEquals(1, toMovement.getTrack().getSegmentList().size());
+        //Assert.assertEquals(2, toMovement.getTrack().getMovementList().size());
+    }
+
+
+
+
+
+    @Test
+    @OperateOnDeployment("normal")
     public void splitSegment() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
         String connectId = UUID.randomUUID().toString();
 
