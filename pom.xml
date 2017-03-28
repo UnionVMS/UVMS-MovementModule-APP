@@ -174,19 +174,6 @@
 				</exclusions>
 				<scope>test</scope>
 			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.12</version>
-				<scope>test</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>org.hamcrest</groupId>
-						<artifactId>hamcrest-core</artifactId>
-					</exclusion>
-				</exclusions>				
-			</dependency>
-
             <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
@@ -217,19 +204,6 @@
                 <groupId>org.jvnet.jaxb2_commons</groupId>
                 <artifactId>jaxb2-basics</artifactId>
                 <version>${jaxb2.basics.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>${mockito.version}</version>
-                <exclusions>
-                	<exclusion>
-                		<groupId>org.hamcrest</groupId>
-                		<artifactId>hamcrest-core</artifactId>
-                	</exclusion>
-                </exclusions>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -347,9 +321,9 @@
 			                <requireMavenVersion>
 			                  <version>${maven.version}</version>
 			                </requireMavenVersion>
-			                <requireJavaVersion>
+			                <!-- <requireJavaVersion>
 			                  <version>[${java.version},${java.version}.999)</version>
-			                </requireJavaVersion>
+			                </requireJavaVersion>-->
 			                <banDuplicateClasses>
 			                  <findAllDuplicates>true</findAllDuplicates>
 			                  <ignoreClasses>
@@ -357,7 +331,8 @@
 			                    <ignoreClass>javax.transaction.*</ignoreClass>
 			                    <ignoreClass>javax.xml.bind.*</ignoreClass>
 			                    <ignoreClass>javax.xml.namespace.*</ignoreClass>			                    
-			                    <ignoreClass>org.w3._2001.*</ignoreClass>			                        
+			                    <ignoreClass>org.w3._2001.*</ignoreClass>
+			                    <ignoreClass>org.hamcrest.*</ignoreClass>			                    			                        
 			                  </ignoreClasses>
 			                </banDuplicateClasses>
 			                <dependencyConvergence/>			                
