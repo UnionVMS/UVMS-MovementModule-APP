@@ -171,6 +171,16 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Movement toMovement = createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
+
+
+        fromMovement.setTrack(track);
+        movementDao.persist(fromMovement);
+        toMovement.setTrack(track);
+        movementDao.persist(toMovement);
+
+
+
+
         em.flush();
         Assert.assertNotNull(track);
 
@@ -179,6 +189,9 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
         Assert.assertNotNull(createdTrack);
+
+
+
     }
 
     @Test
