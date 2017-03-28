@@ -37,6 +37,9 @@ public abstract class BuildMovementTestDeployment {
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.model.exception");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.util");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dto");
+        testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dto");
+        testWar.addPackages(true, "com.tocea.easycoverage.framework.api");
+        
         // No no, starts threaded job...
         // Need to exclude job first...
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement");

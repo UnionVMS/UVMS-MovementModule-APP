@@ -33,17 +33,43 @@
             <artifactId>${project.parent.artifactId}-model</artifactId>
             <version>${movement.model.version}</version>
             <classifier>date</classifier>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.apache.commons</groupId>
+		      		<artifactId>commons-lang3</artifactId>            		
+            	</exclusion>
+            	<exclusion>
+            		<groupId>joda-time</groupId>
+      				<artifactId>joda-time</artifactId>            		
+            	</exclusion>
+            </exclusions>                                                
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.spatial</groupId>
             <artifactId>spatial-model</artifactId>
             <version>${spatial.model.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.apache.commons</groupId>
+		      		<artifactId>commons-lang3</artifactId>            		
+            	</exclusion>
+            	<exclusion>
+        			<artifactId>jaxb2-basics-runtime</artifactId>
+					<groupId>org.jvnet.jaxb2_commons</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
             <classifier>date</classifier>
+            <exclusions>
+                <exclusion>
+            		<groupId>joda-time</groupId>
+      				<artifactId>joda-time</artifactId>            		
+            	</exclusion>            
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
@@ -54,6 +80,16 @@
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
             <version>${dozer.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>commons-beanutils</groupId>
+            		<artifactId>commons-beanutils</artifactId>
+            	</exclusion>
+            	<exclusion>
+            		<groupId>org.apache.commons</groupId>
+		      		<artifactId>commons-lang3</artifactId>            		            	
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.user</groupId>
@@ -70,18 +106,46 @@
 		    <groupId>org.eu.ingwar.tools</groupId>
 		    <artifactId>arquillian-suite-extension</artifactId>
 		    <scope>test</scope>
+		    <exclusions>
+		    	<exclusion>
+		    		<groupId>commons-io</groupId>
+		    		<artifactId>commons-io</artifactId>
+		    	</exclusion>
+		    </exclusions>		    
 		</dependency>        
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-dbaccess-domain</artifactId>
             <version>3.0.6-SNAPSHOT</version>
-            <scope>test</scope>
+            <!-- <scope>test</scope>-->
+            <exclusions>
+            	<exclusion>
+            		<groupId>joda-time</groupId>
+      				<artifactId>joda-time</artifactId>            		            		
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>movement-message</artifactId>
             <version>${project.parent.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.javassist</groupId>
+            		<artifactId>javassist</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
+        <dependency>
+		      <groupId>org.apache.commons</groupId>
+		      <artifactId>commons-lang3</artifactId>
+		      <version>3.5</version>
+		</dependency>                    
+        <dependency>
+      		<groupId>joda-time</groupId>
+      		<artifactId>joda-time</artifactId>
+      		<version>2.8.2</version>
+     	</dependency>   
 
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -106,8 +170,24 @@
 
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-annotations</artifactId>
-            <version>${hibernate.annotation.version}</version>
+            <artifactId>hibernate-core</artifactId>
+            <exclusions>
+            	<exclusion>
+				  <groupId>org.hibernate.javax.persistence</groupId>
+				  <artifactId>hibernate-jpa-2.1-api</artifactId>
+              	</exclusion>
+            </exclusions>
+            <scope>test</scope>                           
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <exclusions>
+            	<exclusion>
+				  <groupId>org.hibernate.javax.persistence</groupId>
+				  <artifactId>hibernate-jpa-2.1-api</artifactId>
+              	</exclusion>
+            </exclusions>
             <scope>test</scope>
         </dependency>
 
@@ -160,7 +240,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
+                <version>1.0.0</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>
