@@ -72,7 +72,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
         movementDao.upsertLatestMovement(fromMovement, fromMovement.getMovementConnect());
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        Movement toMovement = createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
         movementDao.upsertLatestMovement(toMovement, toMovement.getMovementConnect());
 
         segmentBean.createSegmentOnFirstMovement(fromMovement, toMovement);
