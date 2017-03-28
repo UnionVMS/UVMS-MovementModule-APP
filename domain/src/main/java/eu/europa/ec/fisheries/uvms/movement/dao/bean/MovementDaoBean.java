@@ -245,6 +245,8 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     public void upsertLatestMovement(Movement movement, MovementConnect movementConnect) throws MovementDaoException {
+        // TODO db update in catchblock ?
+        // TODO no nullcheck on latestMovement ???
         LatestMovement latestMovement = null;
         try {
             latestMovement = getLatestMovement(movementConnect.getValue());
