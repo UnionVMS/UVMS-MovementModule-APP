@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.tocea.easycoverage.framework.api.IInstanceProvider;
@@ -14,7 +13,6 @@ import com.tocea.easycoverage.framework.checkers.BijectiveCompareToChecker;
 import com.tocea.easycoverage.framework.checkers.BijectiveEqualsChecker;
 import com.tocea.easycoverage.framework.checkers.CloneChecker;
 import com.tocea.easycoverage.framework.checkers.NPEConstructorChecker;
-import com.tocea.easycoverage.framework.checkers.NPEMethodChecker;
 import com.tocea.easycoverage.framework.checkers.NullValueEqualsChecker;
 import com.tocea.easycoverage.framework.checkers.SetterChecker;
 import com.tocea.easycoverage.framework.checkers.ToStringNotNullChecker;
@@ -33,11 +31,10 @@ public class EasyCoverageTest extends Assert {
 
 	private static final String EXPECT_CLASSES_IN_PACKAGE = "Expect classes in package";
 	private static final char PACKAGE_SEPARATOR = '.';
-	private static final char CLASS_FILE_DIRECTORY_SEPARATOR = '\\';
+	private static final char CLASS_FILE_DIRECTORY_SEPARATOR = File.separatorChar;
 	private static final String CLASS_SUFFIX = ".class";
 
 	@Test
-	@Ignore
 	public static TestSuite suite() {
 
 		JUnitTestSuiteProvider testSuiteProvider = new JUnitTestSuiteProvider();
@@ -60,7 +57,6 @@ public class EasyCoverageTest extends Assert {
 		testSuiteProvider.addClassChecker(CloneChecker.class);
 		testSuiteProvider.addClassChecker(NPEConstructorChecker.class);
 		testSuiteProvider.addClassChecker(NullValueEqualsChecker.class);
-		testSuiteProvider.addMethodChecker(NPEMethodChecker.class);
 		testSuiteProvider.addMethodChecker(SetterChecker.class);
 		testSuiteProvider.addMethodChecker(ArrayIndexOutOfBoundExceptionChecker.class);
 
@@ -126,7 +122,7 @@ public class EasyCoverageTest extends Assert {
 	private static List<Class<?>> getAllClasses(String pckgname) {
 		final List<Class<?>> classes = new ArrayList<>();
 		File directory = new File(
-				"target\\classes\\" + pckgname.replace(PACKAGE_SEPARATOR, CLASS_FILE_DIRECTORY_SEPARATOR));
+				"target" + File.separatorChar + "classes" + File.separatorChar + pckgname.replace(PACKAGE_SEPARATOR, CLASS_FILE_DIRECTORY_SEPARATOR));
 		if (directory.exists()) {
 			String[] files = directory.list();
 			for (int i = 0; i < files.length; i++) {
