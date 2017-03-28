@@ -47,8 +47,14 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void createSegmentOnFirstMovement() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE");
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO");
+        Calendar cal = Calendar.getInstance();
+        cal.set(1920,06,06);
+        Date date1 = cal.getTime();
+        cal.set(1930,06,06);
+        Date date2 = cal.getTime();
+
+        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
         segmentBean.createSegmentOnFirstMovement(fromMovement, toMovement);
         em.flush();
         Assert.assertNotNull(toMovement.getTrack());
@@ -94,8 +100,14 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId);
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId);
+        Calendar cal = Calendar.getInstance();
+        cal.set(1920,06,06);
+        Date date1 = cal.getTime();
+        cal.set(1930,06,06);
+        Date date2 = cal.getTime();
+
+        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
+        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
 
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
 
@@ -141,27 +153,91 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void upsertTrack_forceNew() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
+    public void upsertTrack() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
-        // TODO  this creates 2 records in track   only difference is the updatetime timestamp
-        // TODO  it   creates 1 record  in segment
-        // TODO  it   creates 3 records in movement
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(1920,06,06);
+        Date date1 = cal.getTime();
+        cal.set(1930,06,06);
+        Date date2 = cal.getTime();
+        cal.set(1935,06,06);
+        Date date3 = cal.getTime();
+
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId);
-        Movement toMovement = createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId);
+        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId,"one", date1);
+        Movement toMovement = createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         em.flush();
         Assert.assertNotNull(track);
 
-        Movement newMovement = createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId);
+        Movement newMovement = createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId, "three", date3);
+        segment = MovementModelToEntityMapper.createSegment(toMovement, newMovement);
 
-        // null forces new
-        Track createdTrack = segmentBean.upsertTrack(null, segment, newMovement);
+        Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
         Assert.assertNotNull(createdTrack);
     }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void upsertTrack5() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
+
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(1920,06,06);
+        Date date1 = cal.getTime();
+        cal.set(1925,06,06);
+        Date date2 = cal.getTime();
+        cal.set(1930,06,06);
+        Date date3 = cal.getTime();
+        cal.set(1935,06,06);
+        Date date4 = cal.getTime();
+        cal.set(1940,06,06);
+        Date date5 = cal.getTime();
+        cal.set(1945,06,06);
+        Date date6 = cal.getTime();
+
+
+        String connectId = UUID.randomUUID().toString();
+
+        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId,"one", date1);
+        Movement toMovement = createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
+        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Track track = segmentBean.createNewTrack(segment);
+        em.flush();
+        Assert.assertNotNull(track);
+
+        Movement newMovement = createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId, "three", date3);
+        segment = MovementModelToEntityMapper.createSegment(toMovement, newMovement);
+        Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
+
+        Movement oldMovement = newMovement;
+        newMovement = createMovement(20d, 20d, 0d, SegmentCategoryType.GAP, connectId, "four", date4);
+        segment = MovementModelToEntityMapper.createSegment(oldMovement, newMovement);
+        segmentBean.upsertTrack(track, segment, newMovement);
+
+
+        oldMovement = newMovement;
+        newMovement = createMovement(30d, 30d, 0d, SegmentCategoryType.GAP, connectId, "five", date5);
+        segment = MovementModelToEntityMapper.createSegment(oldMovement, newMovement);
+        segmentBean.upsertTrack(track, segment, newMovement);
+
+        oldMovement = newMovement;
+        newMovement = createMovement(40d, 40d, 0d, SegmentCategoryType.GAP, connectId, "six", date6);
+        segment = MovementModelToEntityMapper.createSegment(oldMovement, newMovement);
+        segmentBean.upsertTrack(track, segment, newMovement);
+
+
+
+
+
+        Assert.assertNotNull(createdTrack);
+    }
+
+
 
     @Test
     @OperateOnDeployment("normal")

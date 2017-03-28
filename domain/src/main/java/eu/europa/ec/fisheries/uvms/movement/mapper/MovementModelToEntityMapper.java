@@ -229,6 +229,7 @@ public class MovementModelToEntityMapper {
     public static Segment createSegment(Movement fromMovement, Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
         Segment segment = new Segment();
 
+        // TODO should not this be OR !!!
         if (toMovement == null && fromMovement == null) {
             LOG.error("[ ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null <createSegment> ]");
             throw new MovementDaoMappingException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null");

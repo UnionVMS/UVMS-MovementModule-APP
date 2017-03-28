@@ -55,6 +55,7 @@ public class CalculationUtil {
     }
 
     public static SegmentCalculations getPositionCalculations(Movement previousPosition, Movement currentPosition) throws GeometryUtilException {
+        // TODO no nullchecks on incoming
 
         SegmentCalculations calculations = new SegmentCalculations();
 
