@@ -193,14 +193,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
 
-
         fromMovement.setTrack(track);
-        movementDao.persist(fromMovement);
         toMovement.setTrack(track);
-        movementDao.persist(toMovement);
-
-
-
 
         em.flush();
         Assert.assertNotNull(track);
@@ -210,9 +204,6 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
         Assert.assertNotNull(createdTrack);
-
-
-
     }
 
     @Test
@@ -242,9 +233,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
-        movementDao.persist(fromMovement);
         toMovement.setTrack(track);
-        movementDao.persist(toMovement);
         em.flush();
         Assert.assertNotNull(track);
 
@@ -281,26 +270,33 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void updateTrack()  throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
-        // TODO update seems not to update . After running this method segment point from 1 to 2 movement   nr 3 ???
 
+        Calendar cal = Calendar.getInstance();
+        cal.set(1920,06,06);
+        Date date1 = cal.getTime();
+        cal.set(1925,06,06);
+        Date date2 = cal.getTime();
+        cal.set(1930,06,06);
+        Date date3 = cal.getTime();
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d, 0d, 1d, SegmentCategoryType.EXIT_PORT, connectId, "user1");
-        Movement toMovement = createMovement(5d, 5d, 2d, SegmentCategoryType.GAP, connectId, "user2");
+        Movement fromMovement = createMovement(0d, 0d, 1d, SegmentCategoryType.EXIT_PORT, connectId, "user1", date1);
+        Movement toMovement = createMovement(5d, 5d, 2d, SegmentCategoryType.GAP, connectId, "user2", date2);
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
-        em.flush();
+        fromMovement.setTrack(track);
+        toMovement.setTrack(track);
         Assert.assertNotNull(track);
 
-        Movement newMovement = createMovement(10d, 10d, 3d, SegmentCategoryType.GAP, connectId, "user3");
+        Movement newMovement = createMovement(10d, 10d, 3d, SegmentCategoryType.GAP, connectId, "user3", date3);
+        segment = MovementModelToEntityMapper.createSegment( toMovement, newMovement);
         segmentBean.updateTrack(track,  newMovement, segment);
     }
 
     @Test
     @OperateOnDeployment("normal")
     public void addMovementBeforeFirst() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
-
 
         String connectId = UUID.randomUUID().toString();
 
@@ -313,18 +309,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertEquals(1, secondMovement.getTrack().getSegmentList().size());
         Assert.assertEquals(2, secondMovement.getTrack().getMovementList().size());
 
-
-
         Movement beforeFirstMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "BEFOREONE");
-
-
         segmentBean.addMovementBeforeFirst(firstMovement, beforeFirstMovement);
-
-
-
-
-
-
 
     }
 
