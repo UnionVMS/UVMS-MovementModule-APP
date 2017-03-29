@@ -49,6 +49,9 @@ public class IncomingMovementBean {
             Date timeStamp = movement.getTimestamp();
 
             long before = System.currentTimeMillis();
+            //ToDo: Timestamp will be null in the database if not set actively to a boolean value. This means duplicate timestamp Movements will not be detected by the processMovement method
+            //ToDo: since the isDateAlreadyInserted method does not handle the null case (by e.g. setting a default value to false instead of null). Look at class MovementDaoBean and check if
+            //ToDo: a null check is needed there or not.
             List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
             if (!duplicateMovements.isEmpty() && duplicateMovements.size() == 1) {
                 if (!movement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {

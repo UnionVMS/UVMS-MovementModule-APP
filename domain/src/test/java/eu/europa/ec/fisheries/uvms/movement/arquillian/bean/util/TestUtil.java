@@ -16,6 +16,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
@@ -93,11 +94,12 @@ public class TestUtil {
     }
     */
 
-    /*
+
     public Movement createMovement() {
 
       Movement movement = new Movement();
-        movement.setAltitude(0);
+        //final Movement currentMovement = MovementModelToEntityMapper.mapNewMovementEntity(movement, username);
+      //movement.setAltitude(0);
 
 //      movement.setLocation(point);
 
@@ -126,10 +128,11 @@ public class TestUtil {
     movement.setTripNumber();
     movement.setUpdated();
     movement.setUpdatedBy();
-    movement.set
+    //movement.set
     */
 
-    //}
+    return movement;
+    }
 
 
 

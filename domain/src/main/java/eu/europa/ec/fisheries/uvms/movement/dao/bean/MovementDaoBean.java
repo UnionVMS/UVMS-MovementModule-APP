@@ -168,6 +168,8 @@ public class MovementDaoBean extends Dao implements MovementDao {
     public List<Movement> isDateAlreadyInserted(String id, Date date) {
         try {
             long start = System.currentTimeMillis();
+            //ToDo: The named query findExistingDate in the Movement class assumes that the duplicate field is false.
+            //ToDo: Need to check if a null check is needed here since e.g. postgres defaults to null if no value is actively set.
             TypedQuery<Movement> query = em.createNamedQuery("Movement.findExistingDate", Movement.class);
             query.setParameter("date", date);
             query.setParameter("id", id);
