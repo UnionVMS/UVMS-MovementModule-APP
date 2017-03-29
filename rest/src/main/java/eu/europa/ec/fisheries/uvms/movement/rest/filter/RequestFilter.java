@@ -12,6 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.rest.filter;
 
 import java.io.IOException;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eu.europa.ec.fisheries.uvms.movement.rest.constants.RestConstants;
+import org.slf4j.MDC;
 
 /**
  **/
@@ -41,6 +44,17 @@ public class RequestFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+
+        // TODO MDC is prototyping TEST
+        try {
+            String val = MDC.get("REQ_ID");
+            if(val == null || val.trim().length()< 1){
+                MDC.put("REQ_ID", UUID.randomUUID().toString());
+            }
+        }catch(IllegalArgumentException e){
+            LOG.error(e.toString(), e);
+        }
+
         HttpServletResponse response = (HttpServletResponse) res;
         response.setHeader(RestConstants.ACCESS_CONTROL_ALLOW_ORIGIN, RestConstants.ACCESS_CONTROL_ALLOW_METHODS_ALL);
         response.setHeader(RestConstants.ACCESS_CONTROL_ALLOW_METHODS, RestConstants.ACCESS_CONTROL_ALLOWED_METHODS);

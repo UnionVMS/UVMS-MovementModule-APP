@@ -79,10 +79,6 @@ public class SegmentBeanIntTest extends TransactionalTests {
         //Assert.assertEquals(2, toMovement.getTrack().getMovementList().size());
     }
 
-
-
-
-
     @Test
     @OperateOnDeployment("normal")
     public void splitSegment() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
