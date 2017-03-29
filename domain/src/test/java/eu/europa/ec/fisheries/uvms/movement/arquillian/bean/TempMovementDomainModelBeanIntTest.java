@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
+import java.math.BigInteger;
 import java.util.UUID;
 
 import javax.ejb.EJB;
@@ -13,11 +14,14 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.model.TempMovementDomainModel;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
@@ -169,6 +173,17 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
+    public void updateTempMovementNovalidGuidForTempMovementCheckFailureTest() throws MovementModelException {
+    	thrown.expect(InputArgumentException.class);
+        thrown.expectMessage("Non valid id of temp movement to update");
+        
+        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
+        TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+		tempMovementDomainModel.updateTempMovement(tempMovementType, username);
+    }
+    
+    @Test
+    @OperateOnDeployment("normal")
     public void updateTempMovementSuccessTest() throws MovementModelException {
         String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
         
@@ -216,7 +231,44 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
 		tempMovementDomainModel.getTempMovement(null);
     }
 
+    @Test
+    @OperateOnDeployment("normal")
+    public void getTempMovementGuidDoNotExistCheckFailureTest() throws MovementModelException {
+    	thrown.expect(MovementModelException.class);
+        thrown.expectMessage("Could not get temp movement by GUID.");
+		tempMovementDomainModel.getTempMovement(UUID.randomUUID().toString());
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void getTempMovementListNullCheckFailureTest() throws MovementModelException {
+    	thrown.expect(InputArgumentException.class);
+        thrown.expectMessage("No valid query");
+		tempMovementDomainModel.getTempMovementList(null);
+    }
     
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void getTempMovementListSuccessTest() throws MovementModelException {
+        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
+        
+		TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+		TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType,username);
+        em.flush();
+        
+		MovementQuery query = new MovementQuery();
+		ListPagination listPagination = new ListPagination();
+		listPagination.setPage(BigInteger.valueOf(1));
+		listPagination.setListSize(BigInteger.valueOf(1));
+		query.setPagination(listPagination);
+		TempMovementsListResponseDto tempMovementList = tempMovementDomainModel.getTempMovementList(query);
+		Assert.assertNotNull(tempMovementList);
+		Assert.assertEquals(1,tempMovementList.getTempMovementList().size());
+		Assert.assertEquals(BigInteger.valueOf(1),tempMovementList.getTotalNumberOfPages());
+		Assert.assertEquals(BigInteger.valueOf(1),tempMovementList.getCurrentPage());
+    }
+
     
 	private TempMovementType createTestTempMovementType(double longitude, double latitude, double altitude) {
 		TempMovementType tempMovementType = new TempMovementType();

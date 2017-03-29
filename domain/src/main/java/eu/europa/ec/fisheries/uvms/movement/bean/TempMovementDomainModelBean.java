@@ -107,6 +107,11 @@ public class TempMovementDomainModelBean implements TempMovementDomainModel {
     public TempMovementsListResponseDto getTempMovementList(MovementQuery query) throws MovementModelException {
 
         try {
+            if (query == null || query.getPagination() == null || query.getPagination().getPage() == null) {
+                throw new InputArgumentException("No valid query");
+            }
+
+        	
             TempMovementsListResponseDto response = new TempMovementsListResponseDto();
             List<TempMovementType> tempMovementList = new ArrayList<>();
 
