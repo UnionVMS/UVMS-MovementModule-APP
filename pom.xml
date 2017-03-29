@@ -480,9 +480,9 @@
 	              <doclet>org.jboss.apiviz.APIviz</doclet>
 	              <docletArtifacts>
 	                <docletArtifact>
-	                  <groupId>com.grahamedgecombe.apiviz</groupId>
-	                  <artifactId>apiviz</artifactId>
-	                  <version>1.3.4</version>
+					    <groupId>org.jboss.apiviz</groupId>
+					    <artifactId>apiviz</artifactId>
+					    <version>1.3.2.GA</version>
 	                </docletArtifact>
 	              </docletArtifacts>
 	              <useStandardDocletOptions>true</useStandardDocletOptions>
