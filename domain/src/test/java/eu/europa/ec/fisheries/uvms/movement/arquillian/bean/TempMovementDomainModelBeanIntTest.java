@@ -174,11 +174,13 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void updateTempMovementNovalidGuidForTempMovementCheckFailureTest() throws MovementModelException {
-    	thrown.expect(InputArgumentException.class);
-        thrown.expectMessage("Non valid id of temp movement to update");
+    	thrown.expect(MovementModelException.class);
+        thrown.expectMessage("Could not update temp movement.");
         
         String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+        em.flush();
+        tempMovementType.setGuid(UUID.randomUUID().toString());
 		tempMovementDomainModel.updateTempMovement(tempMovementType, username);
     }
     
