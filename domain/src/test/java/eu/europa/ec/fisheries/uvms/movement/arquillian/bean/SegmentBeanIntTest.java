@@ -75,8 +75,13 @@ public class SegmentBeanIntTest extends TransactionalTests {
         segmentBean.createSegmentOnFirstMovement(movement, movement);
         em.flush();
         Assert.assertNotNull(movement.getTrack());
-        //Assert.assertEquals(1, toMovement.getTrack().getSegmentList().size());
-        //Assert.assertEquals(2, toMovement.getTrack().getMovementList().size());
+
+        Track track = movement.getTrack();
+        List<Segment> segmentList = track.getSegmentList();
+        List<Movement> movementList = track.getMovementList();
+
+        Assert.assertEquals(1, movement.getTrack().getSegmentList().size());
+        Assert.assertEquals(2, movement.getTrack().getMovementList().size());
     }
 
     @Test
@@ -135,10 +140,12 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertEquals(2, track.getMovementList().size());
     }
 
-    /*
+
     @Test
     @OperateOnDeployment("normal")
     public void createNewTrack_onSegmentMovement() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
+
+        // TODO verify this
 
         String connectId = UUID.randomUUID().toString();
 
@@ -147,26 +154,25 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
+
+        fromMovement.setTrack(track);
+        toMovement.setTrack(track);
+
         em.flush();
-
-
-        // assume this is the firstmovement since current api does not have anything else
-        segmentBean.createSegmentOnFirstMovement(fromMovement, toMovement);
-
 
         Movement newMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId);
 
 
-        Track track = segmentBean.createNewTrack(segment, newMovement);
+        Track theNewTrack = segmentBean.createNewTrack(segment, newMovement);
 
         em.flush();
-        Assert.assertNotNull(track);
+        Assert.assertNotNull(theNewTrack);
         Assert.assertEquals(1, track.getSegmentList().size());
         Assert.assertEquals(2, track.getMovementList().size());
 
 
     }
-    */
+
 
     @Test
     @OperateOnDeployment("normal")
@@ -294,6 +300,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void addMovementBeforeFirst() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
+        // TODO better evaluation of results
 
         Calendar cal = Calendar.getInstance();
         cal.set(1920,06,06);
