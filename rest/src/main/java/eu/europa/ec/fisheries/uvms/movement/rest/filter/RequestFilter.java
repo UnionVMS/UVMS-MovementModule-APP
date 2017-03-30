@@ -47,9 +47,9 @@ public class RequestFilter implements Filter {
 
         // TODO MDC is prototyping TEST
         try {
-            String val = MDC.get("REQ_ID");
+            String val = MDC.get("requestId");
             if(val == null || val.trim().length()< 1){
-                MDC.put("REQ_ID", UUID.randomUUID().toString());
+                MDC.put("requestId", UUID.randomUUID().toString());
             }
         }catch(IllegalArgumentException e){
             LOG.error(e.toString(), e);
