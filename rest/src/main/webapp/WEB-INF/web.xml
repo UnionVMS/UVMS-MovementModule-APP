@@ -10,7 +10,29 @@
         <param-name>usmApplication</param-name>
         <param-value>Audit</param-value>
     </context-param>
-
+    
+	<filter>
+		<filter-name>javamelody</filter-name>
+		<filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+		<async-supported>true</async-supported>
+		<init-param>
+			<param-name>displayed-counters</param-name>
+			<param-value>http,sql,error,log</param-value>
+		</init-param>
+		<init-param>
+			<param-name>system-actions-enabled</param-name>
+			<param-value>true</param-value>
+		</init-param>		
+	</filter>
+	<filter-mapping>
+		<filter-name>javamelody</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>ASYNC</dispatcher>
+	</filter-mapping>
+	<listener>
+		<listener-class>net.bull.javamelody.SessionListener</listener-class>
+	</listener>
 	<filter>
 		<filter-name>AuthenticationFilter</filter-name>
 		<filter-class>eu.europa.ec.fisheries.uvms.rest.security.AuthenticationFilter</filter-class>
