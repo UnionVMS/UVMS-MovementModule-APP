@@ -35,11 +35,11 @@ public class MockData {
         Area area = new Area();
         area.setAreaCode(areaCode);
         area.setAreaName(areaCode);
-        area.setAreaType(getAraType(areaCode));
+        area.setAreaType(getAreaType(areaCode));
         return area;
     }
 
-    public static AreaType getAraType(String name) {
+    public static AreaType getAreaType(String name) {
         AreaType areaType = new AreaType();
         areaType.setName(name);
         return areaType;
@@ -85,12 +85,12 @@ public class MockData {
 
     public static Movement getPreviousMovement(int areaId, MovementTypeType movementType) {
         Movement previousMovement = new Movement();
-        Areatransition privoisTransition = new Areatransition();
+        Areatransition priviousTransition = new Areatransition();
         Area previousArea = new Area();
         previousArea.setAreaId(Long.valueOf(areaId));
-        privoisTransition.setAreatranAreaId(previousArea);
-        privoisTransition.setMovementType(movementType);
-        List<Areatransition> previousMoveAreaList = Arrays.asList(privoisTransition);
+        priviousTransition.setAreatranAreaId(previousArea);
+        priviousTransition.setMovementType(movementType);
+        List<Areatransition> previousMoveAreaList = Arrays.asList(priviousTransition);
         previousMovement.setAreatransitionList(previousMoveAreaList);
         return previousMovement;
     }

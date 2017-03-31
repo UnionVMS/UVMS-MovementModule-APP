@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -55,7 +56,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     MovementDao movementDao;
 
     private TestUtil testUtil = new TestUtil();
-
 
     @Test
     @OperateOnDeployment("normal")
@@ -135,7 +135,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         LOG.info(" [ testProcessingMovement_NoDuplicateMovement: Successful check that there are no duplicate movement entities in the database. ] ");
     }
 
-    /*** Under construction ****/
     @Test
     @OperateOnDeployment("normal")
     public void testDuplicateMovementsInProcessingMovementMethod_sameTimeStamp_duplicationFlagSetToFalse_sameMovementType() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException, MovementDuplicateException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
@@ -176,48 +175,102 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         LOG.info(" [ Duplication id successfully set when a duplicate movement was found in the database. ] ");
     }
 
-    /*** Still to do. ****/
-    //@Test
-    //@Ignore
-    //@OperateOnDeployment("normal")
-    public void testPopulateTransitions() {
+    /**
+     * Same area exists in previous movement and is set as an Entry. This should
+     * be a simple Position
+     */
+    @Test
+    @OperateOnDeployment("normal")
+    public void testPopulateTransitions_SAME_ENT() {
 
-        Movement currentMovement = new Movement();
-        Movement previousMovement = new Movement();
+        Movement current = testUtil.getCurrentMovement(1);
+        Movement previous = testUtil.getPreviousMovement(1, MovementTypeType.ENT);
 
-        List<Areatransition> areatransitionList = incomingMovementBean.populateTransitions(currentMovement, previousMovement);
+        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
-        assertNotNull(areatransitionList);
+        assertNotNull(transitions);
+        assertEquals(1, transitions.size());
+        assertEquals(MovementTypeType.POS, transitions.get(0).getMovementType());
     }
 
-    /*** Still to do. ****/
-    //@Test
-    //@Ignore
-    public void testCreateAreaTransition() {
+    /**
+     * Same area exists in previous movement and is set as an Position. This
+     * should be a simple Position
+     */
+    @Test
+    @OperateOnDeployment("normal")
+    public void testPopulateTransitions_SAME_POS() {
 
+        Movement current = testUtil.getCurrentMovement(1);
+        Movement previous = testUtil.getPreviousMovement(1, MovementTypeType.POS);
+
+        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+
+        assertNotNull(transitions);
+        assertEquals(1, transitions.size());
+        assertEquals(MovementTypeType.POS, transitions.get(0).getMovementType());
     }
 
-    /*** Still to do. ****/
-    //@Test
-    //@Ignore
-    public void testCreateListOfAreaTransitions() {
+    /**
+     * new Area does not exist in the previous movments areatransitions. Previos
+     * area should be added as an exit in the current areatransitions
+     */
+    @Test
+    @OperateOnDeployment("normal")
+    public void testPopulateTransitions_NOT_SAME_ENT() {
 
+        Movement current = testUtil.getCurrentMovement(1);
+        Movement previous = testUtil.getPreviousMovement(2, MovementTypeType.ENT);
+
+        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+
+        assertNotNull(transitions);
+        assertEquals(2, transitions.size());
+
+        assertEquals(MovementTypeType.ENT, transitions.get(0).getMovementType());
+
+        assertEquals(MovementTypeType.EXI, transitions.get(1).getMovementType());
+        assertTrue(transitions.get(1).getAreatranAreaId().getAreaId() == 2);
     }
 
-    /**** Helper. May or may not be relevant/useful. ****/
-    private Movement createMovementHelper() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException, MovementDuplicateException {
+    /**
+     * new Area does not exist in the previous movments areatransitions. Previos
+     * area should be added as an exit in the current areatransitions
+     */
+    @Test
+    @OperateOnDeployment("normal")
+    public void testPopulateTransitions_NOT_SAME_POS() {
 
-        String uuid = UUID.randomUUID().toString();
+        Movement current = testUtil.getCurrentMovement(1);
+        Movement previous = testUtil.getPreviousMovement(2, MovementTypeType.POS);
 
-        MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
-        movementType = movementBatchModelBean.createMovement(movementType, "TEST");
-        em.flush();
+        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
-        Long id = movementList.get(0).getId();
-        incomingMovementBean.processMovement(id);
+        assertNotNull(transitions);
+        assertEquals(2, transitions.size());
 
-        return movementDao.getMovementById(id);
+        assertEquals(MovementTypeType.ENT, transitions.get(0).getMovementType());
+
+        assertEquals(MovementTypeType.EXI, transitions.get(1).getMovementType());
+        assertTrue(transitions.get(1).getAreatranAreaId().getAreaId() == 2);
+    }
+
+    /**
+     * If there are no previois transitions all areaTransitions shall be created
+     * as new entitites and set to TransitionType ENT
+     */
+    @Test
+    @OperateOnDeployment("normal")
+    public void testPopulateTransitionsNoPrevMovement() {
+
+        Movement current = testUtil.getCurrentMovement(1);
+
+        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, null);
+
+        assertNotNull(transitions);
+        assertEquals(1, transitions.size());
+
+        assertEquals(MovementTypeType.ENT, transitions.get(0).getMovementType());
+        assertTrue(transitions.get(0).getAreatranAreaId().getAreaId() == 1);
     }
 }
