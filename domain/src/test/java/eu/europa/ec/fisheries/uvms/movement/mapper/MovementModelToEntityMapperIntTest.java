@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
@@ -8,6 +9,7 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapNewMovementEntity;
+import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapToMovementMetaData;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -49,12 +52,12 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Then
         assertNull(movement.getSpeed());
-        LOG.info(" [ MovementModelToEntityMapperIntTest.testMapNewMovementEntity: MovementType with reported speed not set maps to Movement with speed not set. ] ");
+        LOG.info(" [ testMapNewMovementEntity: MovementType with reported speed not set maps to Movement with speed not set. ] ");
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void testMapNewMovementEntity_reportedCourseIsNull() throws MovementDaoException, MovementDaoMappingException  {
+    public void testMapNewMovementEntity_reportedCourseIsNull() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -67,12 +70,12 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Then
         assertNull(movement.getHeading());
-        LOG.info(" [ MovementModelToEntityMapperIntTest.testMapNewMovementEntity: MovementType with reported course not set maps to Movement with heading not set. ] ");
+        LOG.info(" [ testMapNewMovementEntity: MovementType with reported course not set maps to Movement with heading not set. ] ");
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void testMapNewMovementEntity_positionIsNull() throws MovementDaoException, MovementDaoMappingException  {
+    public void testMapNewMovementEntity_positionIsNull() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -85,12 +88,12 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Then
         assertNull(movement.getLocation());
-        LOG.info(" [ MovementModelToEntityMapperIntTest.testMapNewMovementEntity: MovementType with position not set maps to Movement with location not set. ] ");
+        LOG.info(" [ testMapNewMovementEntity: MovementType with position not set maps to Movement with location not set. ] ");
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void testMapNewMovementEntity_ifSourceIsNullThenMovementSourceTypeIs_INMARSATC() throws MovementDaoException, MovementDaoMappingException  {
+    public void testMapNewMovementEntity_ifSourceIsNullThenMovementSourceTypeIs_INMARSATC() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -103,12 +106,12 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Then
         assertThat(movement.getMovementSource(), is(MovementSourceType.INMARSAT_C));
-        LOG.info(" [ MovementModelToEntityMapperIntTest.testMapNewMovementEntity: MovementType with source not set maps to Movement with MovementSourceType set to INMARSAT_C. ] ");
+        LOG.info(" [ testMapNewMovementEntity: MovementType with source not set maps to Movement with MovementSourceType set to INMARSAT_C. ] ");
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void testMapNewMovementEntity_ifMovementTypeIsNullThenMovementTypeTypeIs_POS() throws MovementDaoException, MovementDaoMappingException  {
+    public void testMapNewMovementEntity_ifMovementTypeIsNullThenMovementTypeTypeIs_POS() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -121,12 +124,12 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Then
         assertThat(movement.getMovementType(), is(MovementTypeType.POS));
-        LOG.info(" [ MovementModelToEntityMapperIntTest.testMapNewMovementEntity: MovementType with MovementTypeType not set maps to Movement with MovementTypeType set to POS. ] ");
+        LOG.info(" [ testMapNewMovementEntity: MovementType with MovementTypeType not set maps to Movement with MovementTypeType set to POS. ] ");
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void testMapNewMovementEntity_ifPositionTimeIsNullThenTimeStampIsSet() throws MovementDaoException, MovementDaoMappingException  {
+    public void testMapNewMovementEntity_ifPositionTimeIsNullThenTimeStampIsSet() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -139,12 +142,12 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Then
         assertNotNull(movement.getTimestamp());
-        LOG.info(" [ MovementModelToEntityMapperIntTest.testMapNewMovementEntity: MovementType with position time not set maps to Movement with timestamp set to current time. ] ");
+        LOG.info(" [ testMapNewMovementEntity: MovementType with position time not set maps to Movement with timestamp set to current time. ] ");
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void testMapNewMovementEntity_activityIsNull() throws MovementDaoException, MovementDaoMappingException  {
+    public void testMapNewMovementEntity_activityIsNull() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -157,7 +160,7 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Then
         assertNull(movement.getActivity());
-        LOG.info(" [ MovementModelToEntityMapperIntTest.testMapNewMovementEntity: MovementType with MovementActivityType not set maps to Movement with Activity not set. ] ");
+        LOG.info(" [ testMapNewMovementEntity: MovementType with MovementActivityType not set maps to Movement with Activity not set. ] ");
     }
 
     @Test
@@ -175,6 +178,56 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Then
         assertNull(movement.getMetadata());
-        LOG.info(" [ MovementModelToEntityMapperIntTest.testMapNewMovementEntity: MovementType with MovementMetaData not set maps to Movement with Movementmetadata (spelled correct) not set. ] ");
+        LOG.info(" [ testMapNewMovementEntity: MovementType with MovementMetaData not set maps to Movement with Movementmetadata (spelled correct) not set. ] ");
     }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void testMapToMovementMetaData_ifClosestPortIsNullThenClosestPortCodeAndDistanceAndRemoteIdAndNameAreNull() throws MovementDaoException, MovementDaoMappingException {
+
+        //Given
+        String uuid = UUID.randomUUID().toString();
+
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
+
+        movementMetaDataToBeMapped.setClosestPort(null);
+
+        //When
+        Movementmetadata mappedMovementMetaData = mapToMovementMetaData(movementMetaDataToBeMapped);
+
+        //Then
+        assertNull(mappedMovementMetaData.getClosestPortCode());
+        assertNull(mappedMovementMetaData.getClosestPortDistance());
+        assertNull(mappedMovementMetaData.getClosestPortRemoteId());
+        assertNull(mappedMovementMetaData.getClosestPortName());
+
+        LOG.info(" [ testMapToMovementMetaData: MovementMetaData with closest port not set maps to Movementmetadata (spelled correct) with closest port code, -distance, -remoteId, -and name not set. ] ");
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void testMapToMovementMetaData_ifClosestCountryIsNullThenClosestCountryCodeAndDistanceAndRemoteIdAndNameAreNull() throws MovementDaoException, MovementDaoMappingException {
+
+        //Given
+        String uuid = UUID.randomUUID().toString();
+
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
+
+        movementMetaDataToBeMapped.setClosestCountry(null);
+
+        //When
+        Movementmetadata mappedMovementMetaData = mapToMovementMetaData(movementMetaDataToBeMapped);
+
+        //Then
+        assertNull(mappedMovementMetaData.getClosestCountryCode());
+        assertNull(mappedMovementMetaData.getClosestCountryDistance());
+        assertNull(mappedMovementMetaData.getClosestCountryRemoteId());
+        assertNull(mappedMovementMetaData.getClosestCountryName());
+
+        LOG.info(" [ testMapToMovementMetaData: MovementMetaData with closest country not set maps to Movementmetadata (spelled correct) with closest country code, -distance, -remoteId, -and name not set. ] ");
+    }
+
+
 }
