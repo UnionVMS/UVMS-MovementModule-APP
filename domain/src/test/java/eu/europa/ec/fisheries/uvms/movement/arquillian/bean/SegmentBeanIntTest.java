@@ -63,12 +63,15 @@ public class SegmentBeanIntTest extends TransactionalTests {
         TypedQuery<Movement> queryMovement =
                 em.createQuery("select m from Movement m where m.id = :id", Movement.class);
 
+        // get first movement from db
         queryMovement.setParameter("id", fromMovement.getId());
         Movement fetchedFromMovement = queryMovement.getSingleResult();
 
+        // get second movement from db
         queryMovement.setParameter("id", toMovement.getId());
         Movement fetchedToMovement = queryMovement.getSingleResult();
 
+        // get the segment from the db
         TypedQuery<Segment> querySegment =
                 em.createQuery("select s from Segment s where s.fromMovement = :fromMovement and s.toMovement= :toMovement", Segment.class);
 
@@ -77,6 +80,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Segment fetchedSegment = querySegment.getSingleResult();
         Movement movement1FromList = fetchedSegment.getTrack().getMovementList().get(0);
         Movement movement2FromList = fetchedSegment.getTrack().getMovementList().get(1);
+
+        // verify that the id:s are different
         Assert.assertFalse(movement1FromList.getId().equals(movement2FromList.getId()));
 
     }
@@ -94,15 +99,23 @@ public class SegmentBeanIntTest extends TransactionalTests {
         segmentBean.createSegmentOnFirstMovement(movement, movement);
         em.flush();
 
+        // get movement from db
         TypedQuery<Movement> queryMovement =
                 em.createQuery("select m from Movement m where m.id = :id", Movement.class);
 
+
+        // get frommovement from db
+        // obs they should be the same
         queryMovement.setParameter("id", movement.getId());
         Movement fetchedFromMovement = queryMovement.getSingleResult();
 
+        // get tpmovement from db
+        // obs they should be the same
         queryMovement.setParameter("id", movement.getId());
         Movement fetchedToMovement = queryMovement.getSingleResult();
 
+
+        // get the segment
         TypedQuery<Segment> querySegment =
                 em.createQuery("select s from Segment s where s.fromMovement = :fromMovement and s.toMovement= :toMovement", Segment.class);
 
@@ -111,6 +124,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Segment fetchedSegment = querySegment.getSingleResult();
         Movement movement1FromList = fetchedSegment.getTrack().getMovementList().get(0);
         Movement movement2FromList = fetchedSegment.getTrack().getMovementList().get(1);
+
+        // verify that the id:s are same
         Assert.assertTrue(movement1FromList.getId().equals(movement2FromList.getId()));
 
 
