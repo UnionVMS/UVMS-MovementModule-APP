@@ -41,6 +41,10 @@ public class ResponseDto<T> {
         return code.getCode();
     }
 
+    public String getRequestId() {
+        return requestId ;
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;

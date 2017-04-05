@@ -52,7 +52,7 @@ public class RequestFilter implements Filter {
                 MDC.put("requestId", UUID.randomUUID().toString());
             }
         }catch(IllegalArgumentException e){
-            LOG.error(e.toString(), e);
+            LOG.error("MDC init error. App works but tracing will be unpredictible", e);
         }
 
         HttpServletResponse response = (HttpServletResponse) res;
