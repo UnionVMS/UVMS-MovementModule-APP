@@ -11,6 +11,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.dto;
 
+import org.slf4j.MDC;
+
 import java.util.Objects;
 
 /**
@@ -20,6 +22,7 @@ public class ResponseDto<T> {
 
     private T data;
     private final RestResponseCode code;
+    private String requestId = MDC.get("requestId");
 
     public ResponseDto(T data, RestResponseCode code) {
         this.data = data;
