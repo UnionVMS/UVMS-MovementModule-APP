@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
@@ -8,6 +9,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
+import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
+import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.createActivity;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapNewMovementEntity;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapToMovementMetaData;
 import static org.hamcrest.core.Is.is;
@@ -229,5 +232,20 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
         LOG.info(" [ testMapToMovementMetaData: MovementMetaData with closest country not set maps to Movementmetadata (spelled correct) with closest country code, -distance, -remoteId, -and name not set. ] ");
     }
 
+    @Test
+    @OperateOnDeployment("normal")
+    public void testCreateActivity() throws MovementDaoException, MovementDaoMappingException {
 
+        //Given
+        String uuid = UUID.randomUUID().toString();
+        MovementBaseType movementBaseType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+
+        //When
+        Activity activity = createActivity(movementBaseType);
+
+        //Then
+        assertNotNull(activity);
+
+        LOG.info(" [ testCreateActivity: Mapping from MovementBaseType to Activity was successful. ] ");
+    }
 }

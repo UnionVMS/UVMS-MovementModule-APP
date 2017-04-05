@@ -140,6 +140,8 @@ public class MovementModelToEntityMapper {
         return meta;
     }
 
+    //ToDo: This method does not actually map anything. It only creates a MovementConnect object.
+    //ToDo: Should be removed or made to actually map something to something else.
     public static MovementConnect mapToMovementConnenct(String value, AssetIdType idType) throws MovementDaoMappingException {
         try {
             MovementConnect connect = new MovementConnect();
