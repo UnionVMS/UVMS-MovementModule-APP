@@ -17,7 +17,7 @@
 		<async-supported>true</async-supported>
 		<init-param>
 			<param-name>displayed-counters</param-name>
-			<param-value>http,sql,error,log</param-value>
+			<param-value>http,sql,ejb,error,log</param-value>
 		</init-param>
 		<init-param>
 			<param-name>system-actions-enabled</param-name>

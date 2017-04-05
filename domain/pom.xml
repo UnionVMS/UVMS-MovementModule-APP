@@ -43,6 +43,12 @@
             </exclusions>
         </dependency>
         <dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-ehcache</artifactId>
+		    <version>4.3.11.Final</version>
+		</dependency>
+        
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <exclusions>
@@ -83,6 +89,11 @@
             <artifactId>jts</artifactId>
             <version>${jts.version}</version>
         </dependency>
+		<dependency>
+		    <groupId>net.bull.javamelody</groupId>
+		    <artifactId>javamelody-core</artifactId>
+		    <scope>provided</scope>
+		</dependency>        
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
