@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="davijo" id="movefiltgrp-01">
+        
+        <createTable tableName="movementfiltergroup" remarks="Movement filtergroup.">
+            <column name="movefiltgrp_id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="movefiltgrp_pk"/>
+            </column>
+            <column name="movefiltgrp_name" type="varchar(80)" remarks="Movement Filtergroup Name.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_active" type="varchar(10)" remarks="Active true/false.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_global" type="varchar(10)" remarks="Is the global true/false.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_user_id" type="varchar(80)" remarks="FK user."/>
+            <column name="movefiltgrp_updattim" type="timestamp" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_upuser" type="varchar(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_dynamic" type="varchar(10)" remarks="Dynamic true/false.">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <rollback>
+            <dropTable tableName="movementfiltergroup"/>
+        </rollback>
+        
+    </changeSet>
+    
+</databaseChangeLog>

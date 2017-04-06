@@ -13,8 +13,8 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+
+import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
@@ -27,6 +27,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.MovementBatchModel;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
+import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.LookupConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,13 +53,13 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 
+@LocalBean
 @Stateless
 public class MovementServiceBean implements MovementService {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementServiceBean.class);
+
 
     @EJB
     MessageConsumer consumer;
@@ -67,12 +68,14 @@ public class MovementServiceBean implements MovementService {
     MessageProducer producer;
 
     @EJB
-    SpatialServiceBean spatial;
+    SpatialService spatial;
 
-    @EJB(lookup = LookupConstant.BATCH_MODEL_BEAN)
+    //@EJB(lookup = LookupConstant.BATCH_MODEL_BEAN)
+    @EJB
     MovementBatchModel movementBatch;
 
-    @EJB(lookup = LookupConstant.DOMAIN_MODEL_BEAN)
+    //@EJB(lookup = LookupConstant.DOMAIN_MODEL_BEAN)
+    @EJB
     MovementDomainModel model;
 
     @Inject
@@ -283,12 +286,14 @@ public class MovementServiceBean implements MovementService {
                 }
             }
 
+
             try {
                 String auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(createdMovement.name(), "UVMS batch movement");
                 producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
             } catch (AuditModelMarshallException e) {
                 LOG.error("Failed to send audit log message! Movement batch {} was created with outcome: ", createdMovement.name());
             }
+
 
             return createdMovement;
         } catch (MovementMessageException ex) {

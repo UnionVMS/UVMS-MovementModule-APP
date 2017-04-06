@@ -44,7 +44,7 @@ import org.mockito.MockitoAnnotations;
 /**
  **/
 public class MessageConsumerBeanTest {
-
+/*
     @Mock
     Event<EventMessage> createMovementEvent;
 
@@ -222,5 +222,5 @@ public class MessageConsumerBeanTest {
         request.setMovement(baseType);
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
-
+*/
 }

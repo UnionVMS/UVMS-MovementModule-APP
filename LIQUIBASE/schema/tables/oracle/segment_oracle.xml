@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <!-- IF changes are made here.... DO NOT FORGET TO MAKE THE SAME CHANGES IN /oracle/segment_postgres.xml -->
+    <changeSet author="davijo" id="seg-01">
+        
+        <createTable tableName="segment" remarks="Segment table.">
+            
+            <column name="seg_id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="seg_pk"/>
+            </column>
+            
+            <column name="seg_geom" type="SDO_GEOMETRY">
+                <constraints nullable="false"/>
+            </column>
+            
+            <column name="seg_frommove_id" type="bigint" remarks="FK to movement. Points to first posistion in segment.">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            
+            <column name="seg_tomove_id" type="bigint" remarks="FK to movement. Points to second posistion in segment.">
+                <constraints unique="true"/>
+            </column>
+            <column name="seg_distance" type="double precision" remarks="Distans between both positions in a segment."/>
+            <column name="seg_duration" type="double precision" remarks="Duration of segment."/>
+            <column name="seg_sog" type="double precision" remarks="Speed over ground (SOG) calculated."/>
+            <column name="seg_cog" type="integer" remarks="Course over Ground (COG) calulated."/>
+            
+            <column name="seg_trac_id" type="bigint" remarks="FK to track.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seg_segcat_id" type="bigint" remarks="FK to segmentcategory.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seg_updattim" type="timestamp" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seg_upuser" type="varchar(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+            
+        </createTable>
+        
+        <addForeignKeyConstraint constraintName="seg_frommove_fk" referencedTableName="movement" referencedColumnNames="move_id" baseColumnNames="seg_frommove_id" baseTableName="segment"/>
+        <addForeignKeyConstraint constraintName="seg_tomove_fk" referencedTableName="movement" referencedColumnNames="move_id" baseColumnNames="seg_tomove_id" baseTableName="segment"/>
+        <addForeignKeyConstraint constraintName="seg_trac_fk" referencedTableName="track" baseColumnNames="seg_trac_id" baseTableName="segment" referencedColumnNames="trac_id"/>
+        <addForeignKeyConstraint constraintName="seg_segcat_fk" referencedTableName="segmentcategory" baseColumnNames="seg_segcat_id" baseTableName="segment" referencedColumnNames="segcat_id"/>
+
+        <rollback>
+            <dropTable tableName="segment"/>
+        </rollback>
+                
+    </changeSet>
+    
+</databaseChangeLog>

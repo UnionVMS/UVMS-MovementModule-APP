@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+	
+    <changeSet id="movetyp-init01" author="jojoha">	
+        	
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="0"/>
+            <column name="acttyp_name" value="COE"/>
+            <column name="acttyp_desc" value="Message type, COE as Catch on Entry report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="1"/>
+            <column name="acttyp_name" value="COX"/>
+            <column name="acttyp_desc" value="Message type, COX as Catch on Exit report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="2"/>
+            <column name="acttyp_name" value="TRA"/>
+            <column name="acttyp_desc" value="Message type, TRA as Transhipment report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="3"/>
+            <column name="acttyp_name" value="POR"/>
+            <column name="acttyp_desc" value="Message type, POR as Port of Landing report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="4"/>
+            <column name="acttyp_name" value="CAN"/>
+            <column name="acttyp_desc" value="Message type, CAN as cancel report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="5"/>
+            <column name="acttyp_name" value="NOT"/>
+            <column name="acttyp_desc" value="Message type, NOT as Notification of vessels that may conduct fishing activities in NAFO RA."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="6"/>
+            <column name="acttyp_name" value="AUT"/>
+            <column name="acttyp_desc" value="Message type, AUT as Authorization of vessels to conduct fishing activities in the NAFO RA."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="7"/>
+            <column name="acttyp_name" value="SUS"/>
+            <column name="acttyp_desc" value="Message type, SUS as Suspension of authorized vessels."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="8"/>
+            <column name="acttyp_name" value="COB"/>
+            <column name="acttyp_desc" value="Message type, COB Catch report prior to crossing boundary to 3L."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="9"/>
+            <column name="acttyp_name" value="CAT"/>
+            <column name="acttyp_desc" value="Message type, CAT Catch report daily, for all species by Division."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="10"/>
+            <column name="acttyp_name" value="RET"/>
+            <column name="acttyp_desc" value="Message type, RET Automatic electronic message pursuant to reception of records."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="11"/>
+            <column name="acttyp_name" value="OBR"/>
+            <column name="acttyp_desc" value="Message type, OBR Daily Observer report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="12"/>
+            <column name="acttyp_name" value="ANC"/>
+            <column name="acttyp_desc" value="Message type, ANC Anchoring report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="13"/>
+            <column name="acttyp_name" value="DRI"/>
+            <column name="acttyp_desc" value="Message type, DRI Drifting report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="14"/>
+            <column name="acttyp_name" value="FIS"/>
+            <column name="acttyp_desc" value="Message type, FIS Fishing report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="15"/>
+            <column name="acttyp_name" value="HAU"/>
+            <column name="acttyp_desc" value="Message type, HAU Hauling report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="16"/>
+            <column name="acttyp_name" value="PRO"/>
+            <column name="acttyp_desc" value="Message type, PRO Processing report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="17"/>
+            <column name="acttyp_name" value="STE"/>
+            <column name="acttyp_desc" value="Message type, STE Steaming report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="18"/>
+            <column name="acttyp_name" value="TRX"/>
+            <column name="acttyp_desc" value="Message type, TRX Trans-shipping on or off loading report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <insert tableName="activitytype">
+            <column name="acttyp_id" value="19"/>
+            <column name="acttyp_name" value="OTH"/>
+            <column name="acttyp_desc" value="Message type, OTH Others - to be Specified report."/>
+            <column name="acttyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="acttyp_upuser" value="UVMS"/>			
+        </insert>
+        <rollback>
+            <delete tableName="activitytype">
+                <where>
+                    acttyp_name in ('COE','COX','TRA','POR','CAN','NOT','AUT','SUS','COB','CAT','RET','OBR','ANC','DRI','FIS','HAU','PRO','STE','TRX','OTH')
+                </where>
+            </delete>
+        </rollback>
+		
+    </changeSet>
+</databaseChangeLog>

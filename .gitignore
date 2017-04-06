@@ -2,3 +2,4 @@ target
 webapp
 *.iml
 logging.properties
+.idea

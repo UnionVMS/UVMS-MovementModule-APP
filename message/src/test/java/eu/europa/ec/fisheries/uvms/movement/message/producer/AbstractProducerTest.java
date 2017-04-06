@@ -126,7 +126,9 @@ public class AbstractProducerTest {
         fail("The test case is a prototype.");*/
     }
 
+    /*
     public class AbstractProducerImpl extends AbstractProducer {
     }
+    */
     
 }
