@@ -242,8 +242,6 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void createNewTrack_onSegmentMovement() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
-        // TODO verify this
-
         String connectId = UUID.randomUUID().toString();
 
         Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId);
@@ -260,14 +258,13 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Movement newMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId);
 
 
+
+
         Track theNewTrack = segmentBean.createNewTrack(segment, newMovement);
 
         em.flush();
-        Assert.assertNotNull(theNewTrack);
-        Assert.assertEquals(1, track.getSegmentList().size());
-        Assert.assertEquals(2, track.getMovementList().size());
 
-
+        Assert.assertFalse(track.getId().equals(theNewTrack.getId()));
     }
 
 
