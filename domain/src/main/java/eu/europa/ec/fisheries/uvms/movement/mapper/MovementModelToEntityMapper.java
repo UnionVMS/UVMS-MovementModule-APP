@@ -193,6 +193,8 @@ public class MovementModelToEntityMapper {
         }
     }
 
+    //ToDo: This method does not perform mapping. It updates a Segment and a Track and uses a Movement.
+    //ToDo: It could be a good idea to extract this method from the mapper class.
     public static void updateTrack(Track track, Movement currentPosition, Segment segment) throws GeometryUtilException {
 
         if (track.getMovementList() == null) {
@@ -261,6 +263,8 @@ public class MovementModelToEntityMapper {
         return segment;
     }
 
+    //ToDo: This method does not perform any mapping but rather updates an existing Segment.
+    //ToDo: It should be extracted out from the mapper class.
     public static void updateSegment(Segment segment, Movement fromMovement, Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
 
         if (toMovement == null && fromMovement == null) {
