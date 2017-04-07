@@ -3,7 +3,6 @@
 	version = "3.1"
 	xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation = "http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
-	
 	<interceptors>
 		<interceptor>
 			<interceptor-class>net.bull.javamelody.MonitoringInterceptor</interceptor-class>
@@ -24,5 +23,4 @@
 			<interceptor-class>net.bull.javamelody.MonitoringInterceptor</interceptor-class>
 		</interceptor-binding>		
 	</assembly-descriptor>
-	
 </ejb-jar>

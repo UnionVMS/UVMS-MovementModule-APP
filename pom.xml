@@ -613,5 +613,6 @@
         <module>message-impl</module>
         <module>message-mock</module>
         <module>module</module>
+        <module>module-integration-test</module>       
     </modules>
 </project>
