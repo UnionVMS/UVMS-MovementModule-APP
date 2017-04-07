@@ -468,7 +468,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertTrue(id1.equals(beforeFirstMovement.getId()));
         Assert.assertTrue(id2.equals(firstMovement.getId()));
         Assert.assertTrue(id3.equals(firstMovement.getId()));
-        Assert.assertTrue(id4.equals(secondMovement.getId()));
+        Assert.assertTrue(id4.equals(secondMovement.getId())); ///
     }
 
 
