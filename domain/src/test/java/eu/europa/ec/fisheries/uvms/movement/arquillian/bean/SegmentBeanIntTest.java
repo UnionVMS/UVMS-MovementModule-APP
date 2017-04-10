@@ -392,6 +392,19 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Movement newMovement = createMovement(10d, 10d, 3d, SegmentCategoryType.GAP, connectId, "user3", date3);
         segment = MovementModelToEntityMapper.createSegment(toMovement, newMovement);
         segmentBean.updateTrack(track, newMovement, segment);
+
+        // get movement from db
+        TypedQuery<Segment> qry =
+                em.createQuery("select s from Segment s where s.track = :track", Segment.class);
+
+        qry.setParameter("track", track);
+        List<Segment> rs = qry.getResultList();
+
+        Assert.assertTrue(rs != null);
+        Assert.assertTrue(rs.size() == 2);
+
+
+
     }
 
     @Test
@@ -405,14 +418,14 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Date date1 = cal.getTime();
         cal.set(1925, 06, 06);
         Date date2 = cal.getTime();
-        cal.set(1930, 06, 06);
-        Date date3 = cal.getTime();
+        cal.set(1910, 06, 06);
+        Date date_before = cal.getTime();
 
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement firstMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE");
-        Movement secondMovement = createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "TWO");
+        Movement firstMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        Movement secondMovement = createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
         Segment segment = MovementModelToEntityMapper.createSegment(firstMovement, secondMovement);
         Track track = segmentBean.createNewTrack(segment);
         firstMovement.setTrack(track);
@@ -427,10 +440,35 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertEquals(1, secondMovement.getTrack().getSegmentList().size());
         Assert.assertEquals(2, secondMovement.getTrack().getMovementList().size());
 
-        Movement beforeFirstMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "BEFORE_ONE");
+        Movement beforeFirstMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "BEFORE_ONE", date_before);
 
         segmentBean.addMovementBeforeFirst(firstMovement, beforeFirstMovement);
 
+        em.flush();
+
+        // get movement from db
+        TypedQuery<Segment> qry =
+                em.createQuery("select s from Segment s where s.track = :track order by s.updated desc", Segment.class);
+
+        qry.setParameter("track", track);
+        List<Segment> rs = qry.getResultList();
+
+        Assert.assertTrue(rs != null);
+        Assert.assertTrue(rs.size() == 2);
+
+        Segment  rsSegment1 = rs.get(0);
+        Segment  rsSegment2 = rs.get(1);
+        Long id1 = rsSegment1.getFromMovement().getId();
+        Long id2 = rsSegment1.getToMovement().getId();
+        Long id3 = rsSegment2.getFromMovement().getId();
+        Long id4 = rsSegment2.getToMovement().getId();
+
+
+
+        Assert.assertTrue(id1.equals(beforeFirstMovement.getId()));
+        Assert.assertTrue(id2.equals(firstMovement.getId()));
+        Assert.assertTrue(id3.equals(firstMovement.getId()));
+        Assert.assertTrue(id4.equals(secondMovement.getId())); ///
     }
 
 
