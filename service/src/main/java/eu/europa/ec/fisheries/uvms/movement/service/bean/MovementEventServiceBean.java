@@ -116,30 +116,6 @@ public class MovementEventServiceBean implements EventService {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void getMovementListByQuery(@Observes @GetMovementListByQueryEvent EventMessage message) {
-        LOG.info("Get Movement By Query Received.. processing request in MovementEventServiceBean");
-        try {
-
-            MovementBaseRequest baseRequest = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), MovementBaseRequest.class);
-
-            if (baseRequest.getMethod() != MovementModuleMethod.MOVEMENT_LIST) {
-                message.setErrorMessage(" [ Error, Get Movement By Query invoked but it is not the intended method, caller is trying: " + baseRequest.getMethod().name() + " ]");
-                errorEvent.fire(message);
-            }
-
-            GetMovementListByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), GetMovementListByQueryRequest.class);
-            GetMovementListByQueryResponse movementList = movementService.getList(request.getQuery());
-            String responseString = MovementModuleResponseMapper.mapTogetMovementListByQueryResponse(movementList.getMovement());
-            messageProducer.sendMessageBackToRecipient(message.getJmsMessage(), responseString);
-
-        } catch (MovementDuplicateException | ModelMarshallException | MovementMessageException | MovementServiceException ex) {
-            LOG.error("[ Error when creating movement ] ", ex);
-            errorEvent.fire(message);
-        }
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void ping(@Observes @PingEvent EventMessage message) {
         try {
             PingResponse pingResponse = new PingResponse();

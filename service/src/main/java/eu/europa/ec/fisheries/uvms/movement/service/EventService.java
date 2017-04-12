@@ -24,8 +24,6 @@ public interface EventService {
 
     public void getMovementMapByQuery(@Observes @GetMovementMapByQueryEvent EventMessage message);
 
-    public void getMovementListByQuery(@Observes @GetMovementListByQueryEvent EventMessage message);
-
     public void createMovementBatch(@Observes @CreateMovementBatchEvent EventMessage message);
 
     public void ping(@Observes @PingEvent EventMessage message);

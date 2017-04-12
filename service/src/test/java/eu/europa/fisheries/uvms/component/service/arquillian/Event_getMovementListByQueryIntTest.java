@@ -2,7 +2,6 @@ package eu.europa.fisheries.uvms.component.service.arquillian;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.uvms.movement.message.event.GetMovementListByQueryEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
@@ -38,7 +37,6 @@ public class Event_getMovementListByQueryIntTest extends TransactionalTests {
     final static Logger LOG = LoggerFactory.getLogger(Event_getMovementListByQueryIntTest.class);
 
     @Inject
-    @GetMovementListByQueryEvent
     Event<EventMessage> getMovementListByQueryEvent;
 
     @Inject
