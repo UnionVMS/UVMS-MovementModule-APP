@@ -22,8 +22,6 @@ import javax.enterprise.event.Observes;
 @Local
 public interface EventService {
 
-    public void createMovement(@Observes @CreateMovementEvent EventMessage message);
-
     public void getMovementMapByQuery(@Observes @GetMovementMapByQueryEvent EventMessage message);
 
     public void getMovementListByQuery(@Observes @GetMovementListByQueryEvent EventMessage message);

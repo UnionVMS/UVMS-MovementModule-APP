@@ -11,17 +11,24 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.message.event.*;
+import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +51,6 @@ public class MessageConsumerBean implements MessageListener {
     final static Logger LOG = LoggerFactory.getLogger(MessageConsumerBean.class);
 
     @Inject
-    @CreateMovementEvent
-    Event<EventMessage> createMovementEvent;
-
-    @Inject
     @CreateMovementBatchEvent
     Event<EventMessage> createMovementBatchEvent;
 
@@ -64,15 +67,20 @@ public class MessageConsumerBean implements MessageListener {
     Event<EventMessage> pingEvent;
 
     @Inject
-    @ErrorEvent
-    Event<EventMessage> errorEvent;
-
-    @Inject
     @GetMovementListByAreaAndTimeIntervalEvent
     Event<EventMessage> getMovementListByAreaAndTimeIntervalEvent;
 
+    @EJB
+    private MovementService movementService;
+
+    @EJB
+    MessageProducer messageProducer;
+
+    @Inject
+    @ErrorEvent
+    Event<EventMessage> errorEvent;
+
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message message) {
 
         TextMessage textMessage = null;
@@ -96,7 +104,7 @@ public class MessageConsumerBean implements MessageListener {
                     getMovementListByQueryEvent.fire(new EventMessage(textMessage));
                     break;
                 case CREATE:
-                    createMovementEvent.fire(new EventMessage(textMessage));
+                    createMovement(textMessage);
                     break;
                 case CREATE_BATCH:
                     createMovementBatchEvent.fire(new EventMessage(textMessage));
@@ -121,6 +129,28 @@ public class MessageConsumerBean implements MessageListener {
         } catch (ModelMapperException | NullPointerException | ClassCastException e) {
             LOG.error("[ Error when receiving message in movement: ] {}", e);
             errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: " + e.getMessage()));
+        }
+    }
+
+    private void createMovement(TextMessage textMessage) throws ModelMarshallException {
+        CreateMovementRequest createMovementRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, CreateMovementRequest.class);
+        try {
+            MovementType createdMovement = movementService.createMovement(createMovementRequest.getMovement(), createMovementRequest.getUsername());
+            String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(createdMovement);
+            messageProducer.sendMessageBackToRecipient(textMessage, responseString);
+
+        } catch (MovementDuplicateException ex) {
+            LOG.error("[ Error when creating movement ] ", ex);
+            //409 is used in
+            EventMessage eventMessage = new EventMessage(textMessage, "409");
+            errorEvent.fire(eventMessage);
+            // Rollback local tx (but still send error message to client), retries of JMS will NOT GIVE CORRECT FEEDBACK TO CLIENT AT THIS POINT
+            throw new EJBException(ex);
+        } catch (MovementServiceException | MovementMessageException ex) {
+            LOG.error("[ Error when creating movement ] ", ex);
+            EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
+            errorEvent.fire(eventMessage);
+            throw new EJBException(ex);
         }
     }
 

@@ -101,7 +101,7 @@ public class MovementBatchModelBean implements MovementBatchModel {
      * EntityDuplicateException
      */
     //TODO: We need to look over calling methods on this, see batch behaviour
-    public MovementType createMovement(MovementType movement, String username) throws MovementModelException, MovementDuplicateException {
+    public MovementType createMovement(MovementType movement, String username) {
         long start = System.currentTimeMillis();
         try {
             long before = System.currentTimeMillis();
@@ -129,11 +129,8 @@ public class MovementBatchModelBean implements MovementBatchModel {
             LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
             return movementType;
         } catch (MovementDaoMappingException | MovementModelException | MovementDaoException e) {
-            LOG.error("[ Error when creating movement. ] {}", e.getMessage());
-            throw new MovementModelException("Could not create movement.", e);
-        } catch (Exception e) {
-            LOG.error("[ Error when creating movement. ] {}", e.getMessage());
-            throw new MovementModelException("Could not create movement.", e);
+            LOG.error("[ Error when creating movement. ] {}", e);
+            throw new EJBException("Could not create movement.", e);
         }
     }
 

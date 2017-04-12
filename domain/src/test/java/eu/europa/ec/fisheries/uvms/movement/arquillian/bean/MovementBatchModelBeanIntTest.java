@@ -136,10 +136,6 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
             movementBatchModelBean.createMovement(movementType, TEST_USER_NAME);
             movementBatchModelBean.flush();
             Assert.assertTrue(true);
-        } catch (MovementModelException e) {
-            Assert.fail(e.toString());
-        } catch (MovementDuplicateException e) {
-            Assert.fail(e.toString());
         } catch (MovementDaoException e) {
             Assert.fail(e.toString());
         }
