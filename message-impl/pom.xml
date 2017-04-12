@@ -20,6 +20,11 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
+            <artifactId>movement-service</artifactId>
+            <version>3.0.6-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-model</artifactId>
             <version>${movement.model.version}</version>
             <classifier>date</classifier>

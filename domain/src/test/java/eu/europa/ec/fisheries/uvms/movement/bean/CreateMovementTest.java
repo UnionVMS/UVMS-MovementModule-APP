@@ -86,10 +86,6 @@ public class CreateMovementTest {
             //verify(proc, never()).splitSegment(any(Movement.class), any(Movement.class));
             //verify(proc, never()).addMovementBeforeFirst(any(Movement.class), any(Movement.class));
 
-        } catch (MovementDuplicateException ex) {
-            Assert.fail("MovementDuplicateException Exception thrown");
-        } catch (MovementModelException ex) {
-            Assert.fail("MovementModelException Exception thrown");
         } catch (MovementDaoException ex) {
             Assert.fail("MovementDaoException Exception thrown");
         }/*

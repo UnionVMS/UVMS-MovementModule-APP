@@ -94,7 +94,6 @@ public class MovementServiceBean implements MovementService {
      * @throws MovementServiceException
      */
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public MovementType createMovement(MovementBaseType data, String username) throws MovementServiceException, MovementDuplicateException {
         LOG.info("Create invoked in service layer");
         try {

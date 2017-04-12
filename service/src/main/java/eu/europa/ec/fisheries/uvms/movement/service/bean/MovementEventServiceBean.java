@@ -68,31 +68,6 @@ public class MovementEventServiceBean implements EventService {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void createMovement(@Observes @CreateMovementEvent EventMessage message) {
-        LOG.info("CreateMovementEvent Received.. processing request in MovementEventServiceBean");
-        try {
-            MovementBaseRequest baseRequest = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), MovementBaseRequest.class);
-
-            if (baseRequest.getMethod() != MovementModuleMethod.CREATE) {
-                message.setErrorMessage(" [ Error, Create movement invoked but it is not the intended method, caller is trying: " + baseRequest.getMethod().name() + " ]");
-                errorEvent.fire(message);
-            }
-            CreateMovementRequest request = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), CreateMovementRequest.class);
-            MovementType createdMovement = movementService.createMovement(request.getMovement(), baseRequest.getUsername());
-            String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(createdMovement);
-            messageProducer.sendMessageBackToRecipient(message.getJmsMessage(), responseString);
-        } catch (ModelMarshallException | MovementMessageException | MovementServiceException ex) {
-            LOG.error("[ Error when creating movement ] ", ex);
-            EventMessage eventMessage = new EventMessage(message.getJmsMessage(), ex.getMessage());
-            errorEvent.fire(eventMessage);
-        } catch (MovementDuplicateException e) {
-            EventMessage eventMessage = new EventMessage(message.getJmsMessage(), "409");
-            errorEvent.fire(eventMessage);
-        }
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void createMovementBatch(@Observes @CreateMovementBatchEvent EventMessage message) {
         LOG.info("CreateMovementEvent Received.. processing request in MovementEventServiceBean");
         try {
