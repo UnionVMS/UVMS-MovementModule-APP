@@ -11,7 +11,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.ArchiveAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.slf4j.Logger;
@@ -26,32 +25,25 @@ public abstract class BuildMovementModuleTestDeployment {
 	public static Archive<?> createMovementModuleDeployment() throws IOException {
 		final EnterpriseArchive ear = ShrinkWrap.createFromZipFile(EnterpriseArchive.class,
 				new File("target/movement-module.ear"));
-		
-		modifyWarWithTestPackages(ear);		
+
+		modifyWarWithTestPackages(ear);
 		return ear;
 	}
 
 	private static void modifyWarWithTestPackages(final EnterpriseArchive ear) {
-		Node node = ear.get(getWarContext(ear));
-		System.out.println(node.getPath().toString());
-		
-		if (node.getAsset() instanceof ArchiveAsset) {
-			ArchiveAsset archiveAsset = (ArchiveAsset) node.getAsset();
-			if (archiveAsset.getArchive() instanceof WebArchive) {
-				WebArchive webArchive = (WebArchive) archiveAsset.getArchive();
-				webArchive.addPackages(true,"eu.europa.fisheries.uvms.movement.module.arquillian");
-			}
-		}
+		WebArchive war = ear.getAsType(WebArchive.class, getWarContext(ear).get());
+		war.addPackages(true, "eu.europa.fisheries.uvms.movement.module.arquillian");
 	}
 
-	private static String getWarContext(final EnterpriseArchive ear) {
+	private static ArchivePath getWarContext(final EnterpriseArchive ear) {
 		Map<ArchivePath, Node> content = ear.getContent();
-		
+
 		Set<ArchivePath> paths = content.keySet();
 		for (ArchivePath archivePath : paths) {
 			if (archivePath.get().contains(".war")) {
-				return archivePath.get();
+				return archivePath;
 			}
+
 		}
 		return null;
 	}

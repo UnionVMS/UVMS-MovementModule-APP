@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.mapper;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
@@ -17,6 +18,8 @@ import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
@@ -40,7 +43,9 @@ import java.util.UUID;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.createActivity;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.createSegment;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapNewMovementEntity;
+import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapToAreaType;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapToMovementMetaData;
+import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.maptoArea;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.updateSegment;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.updateTrack;
 import static org.hamcrest.core.Is.is;
@@ -446,6 +451,33 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Then
         assertNotEquals(segmentBeforeUpdate, segmentAfterUpdate);
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void testMapToAreaType() {
+
+        MovementMetaDataAreaType movementMetaDataAreaType = new MovementMetaDataAreaType();
+
+        AreaType areaType = mapToAreaType(movementMetaDataAreaType);
+
+        assertNotNull(areaType);
+        assertThat(areaType.getUpdatedUser(), is("UVMS"));
+        assertNotNull(areaType.getUpdatedTime());
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void testMapToArea() {
+
+        MovementMetaDataAreaType movementMetaDataAreaType = new MovementMetaDataAreaType();
+        AreaType areaType = mapToAreaType(movementMetaDataAreaType);
+
+        Area area = maptoArea(movementMetaDataAreaType, areaType);
+
+        assertNotNull(area);
+        assertThat(area.getAreaUpuser(), is("UVMS"));
+        assertNotNull(area.getAreaUpdattim());
     }
 
     private Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {

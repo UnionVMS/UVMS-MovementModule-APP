@@ -444,6 +444,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertTrue(rs.size() == 2);
 
 
+
     }
 
     @Test
@@ -495,12 +496,16 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertTrue(rs != null);
         Assert.assertTrue(rs.size() == 2);
 
-        Segment rsSegment1 = rs.get(0);
-        Segment rsSegment2 = rs.get(1);
+
+
+        Segment  rsSegment1 = rs.get(0);
+        Segment  rsSegment2 = rs.get(1);
+
         Long id1 = rsSegment1.getFromMovement().getId();
         Long id2 = rsSegment1.getToMovement().getId();
         Long id3 = rsSegment2.getFromMovement().getId();
         Long id4 = rsSegment2.getToMovement().getId();
+
 
 
         Assert.assertTrue(id1.equals(beforeFirstMovement.getId()));
