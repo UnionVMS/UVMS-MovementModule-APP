@@ -154,7 +154,7 @@ public class MessageConsumerBean implements MessageListener {
 
         } catch (MovementDuplicateException ex) {
             LOG.error("[ Error when creating movement ] ", ex);
-            //409 is used in
+            //409 is used to create a duplicate exception later in call chain.
             EventMessage eventMessage = new EventMessage(textMessage, "409");
             errorEvent.fire(eventMessage);
             // TODO: Rollback local tx (but still send error message to client), retries of JMS will NOT GIVE CORRECT FEEDBACK TO CLIENT AT THIS POINT
