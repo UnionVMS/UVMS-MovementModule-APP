@@ -143,7 +143,6 @@ public class MovementServiceBean implements MovementService {
      * @throws MovementServiceException
      */
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public GetMovementListByQueryResponse getList(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
             LOG.info("Get list invoked in service layer");

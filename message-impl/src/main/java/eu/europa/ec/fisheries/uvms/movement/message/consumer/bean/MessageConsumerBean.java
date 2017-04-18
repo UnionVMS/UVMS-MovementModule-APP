@@ -19,7 +19,8 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
+import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.message.event.*;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
@@ -57,10 +58,6 @@ public class MessageConsumerBean implements MessageListener {
     @Inject
     @GetMovementMapByQueryEvent
     Event<EventMessage> getMovementByQueryEvent;
-
-    @Inject
-    @GetMovementListByQueryEvent
-    Event<EventMessage> getMovementListByQueryEvent;
 
     @Inject
     @PingEvent
@@ -101,7 +98,7 @@ public class MessageConsumerBean implements MessageListener {
 
             switch (request.getMethod()) {
                 case MOVEMENT_LIST:
-                    getMovementListByQueryEvent.fire(new EventMessage(textMessage));
+                    getMovementListByQuery(textMessage);
                     break;
                 case CREATE:
                     createMovement(textMessage);
@@ -132,6 +129,22 @@ public class MessageConsumerBean implements MessageListener {
         }
     }
 
+    private void getMovementListByQuery(TextMessage textMessage) {
+        try {
+            GetMovementListByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, GetMovementListByQueryRequest.class);
+            GetMovementListByQueryResponse movementList = movementService.getList(request.getQuery());
+            String responseString = MovementModuleResponseMapper.mapTogetMovementListByQueryResponse(movementList.getMovement());
+            messageProducer.sendMessageBackToRecipient(textMessage, responseString);
+
+        } catch (MovementDuplicateException | ModelMarshallException | MovementMessageException | MovementServiceException ex) {
+            LOG.error("[ Error when creating movement ] ", ex);
+            EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
+            errorEvent.fire(eventMessage);
+            // TODO: Rollback local tx (but still send error message to client), retries of JMS will NOT GIVE CORRECT FEEDBACK TO CLIENT AT THIS POINT
+            throw new EJBException(ex);
+        }
+    }
+
     private void createMovement(TextMessage textMessage) throws ModelMarshallException {
         CreateMovementRequest createMovementRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, CreateMovementRequest.class);
         try {
@@ -141,10 +154,10 @@ public class MessageConsumerBean implements MessageListener {
 
         } catch (MovementDuplicateException ex) {
             LOG.error("[ Error when creating movement ] ", ex);
-            //409 is used in
+            //409 is used to create a duplicate exception later in call chain.
             EventMessage eventMessage = new EventMessage(textMessage, "409");
             errorEvent.fire(eventMessage);
-            // Rollback local tx (but still send error message to client), retries of JMS will NOT GIVE CORRECT FEEDBACK TO CLIENT AT THIS POINT
+            // TODO: Rollback local tx (but still send error message to client), retries of JMS will NOT GIVE CORRECT FEEDBACK TO CLIENT AT THIS POINT
             throw new EJBException(ex);
         } catch (MovementServiceException | MovementMessageException ex) {
             LOG.error("[ Error when creating movement ] ", ex);

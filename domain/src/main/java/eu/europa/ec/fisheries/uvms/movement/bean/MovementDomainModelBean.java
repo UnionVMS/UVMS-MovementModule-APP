@@ -109,10 +109,10 @@ public class MovementDomainModelBean implements MovementDomainModel {
             return response;
             //} catch (com.vividsolutions.jts.io.ParseException | MovementDaoMappingException | MovementDaoException | ParseException ex) {
         } catch (MovementDaoMappingException | MovementDaoException | ParseException ex) {
-            LOG.error("[ Error when getting movement by query ] {} ", ex.getMessage());
+            LOG.error("[ Error when getting movement by query ] {} ", ex);
             throw new MovementModelException(ex.getMessage(), ex);
         } catch (com.vividsolutions.jts.io.ParseException e) {
-            LOG.error("[ Error when getting movement by query, parse esxception ] {} ", e.getMessage());
+            LOG.error("[ Error when getting movement by query, parse exception ] {} ", e);
             throw new MovementModelException(e.getMessage(), e);
         }
     }
