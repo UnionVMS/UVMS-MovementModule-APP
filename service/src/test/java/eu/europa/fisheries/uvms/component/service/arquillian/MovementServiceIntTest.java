@@ -16,6 +16,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -29,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.jms.JMSException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -42,7 +45,7 @@ import java.util.*;
 public class MovementServiceIntTest extends TransactionalTests {
 
     Random rnd = new Random();
-
+    private static int NumberOfMovements = 3;
 
     private final static String TEST_USER_NAME = "MovementServiceIntTestTestUser";
 
@@ -278,16 +281,48 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void createMovementBatch() {
 
         List<MovementBaseType> query = createBaseTypeList();
-        try {
-            SimpleResponse response = movementService.createMovementBatch(query);
-            Assert.assertTrue(response != null);
-            Assert.assertTrue(response == SimpleResponse.OK);
-        } catch (MovementServiceException e) {
-            Assert.fail();
-        } catch (MovementDuplicateException e) {
-            Assert.fail();
-        }
+        SimpleResponse response = movementService.createMovementBatch(query);
+        Assert.assertTrue(response != null);
+        Assert.assertTrue(response == SimpleResponse.OK);
     }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createBatch() throws JMSException, ModelMarshallException {
+
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
+        Double longitude = rnd.nextDouble();
+        Double latitude = rnd.nextDouble();
+        List<MovementBaseType> movementTypeList = new ArrayList<>();
+        for(int i = 0 ; i < NumberOfMovements ; i++){
+            movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
+            longitude = longitude  + 0.05;
+            latitude = latitude +  0.05;
+        }
+
+        SimpleResponse simpleResponse = movementService.createMovementBatch(movementTypeList);
+        Assert.assertNotNull(simpleResponse);
+        Assert.assertEquals(SimpleResponse.OK, simpleResponse);
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void triggerBatchEventWithBrokenJMS() throws JMSException, ModelMarshallException {
+
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
+        Double longitude = rnd.nextDouble();
+        Double latitude = rnd.nextDouble();
+        List<MovementBaseType> movementTypeList = new ArrayList<>();
+        for(int i = 0 ; i < NumberOfMovements ; i++){
+            movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
+            longitude += 0.05;
+            latitude += 0.05;
+        }
+        SimpleResponse simpleResponse = movementService.createMovementBatch(movementTypeList);
+        Assert.assertNotNull(simpleResponse);
+        Assert.assertEquals(SimpleResponse.NOK, simpleResponse);
+    }
+
 
 
     @Test

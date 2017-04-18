@@ -17,7 +17,6 @@ import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import javax.ejb.*;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.jms.JMSException;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
@@ -28,7 +27,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.MovementDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
-import eu.europa.ec.fisheries.uvms.movement.service.constant.LookupConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +38,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
@@ -60,10 +57,6 @@ public class MovementServiceBean implements MovementService {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementServiceBean.class);
 
-
-    @EJB
-    MessageConsumer consumer;
-
     @EJB
     MessageProducer producer;
 
@@ -82,11 +75,6 @@ public class MovementServiceBean implements MovementService {
     @CreatedMovement
     Event<NotificationMessage> createdMovementEvent;
 
-    //TODO SET AS PARAMETER
-    private static final Long CREATE_MOVEMENT_TIMEOUT = 30000L;
-    private static final Long GET_MOVEMENT_MAP_TIMEOUT = 2000000L;
-    private static final Long CREATE_MOVEMENT_BATCH_TIMEOUT = 1200000L;
-
     /**
      * {@inheritDoc}
      *
@@ -94,7 +82,7 @@ public class MovementServiceBean implements MovementService {
      * @throws MovementServiceException
      */
     @Override
-    public MovementType createMovement(MovementBaseType data, String username) throws MovementServiceException, MovementDuplicateException {
+    public MovementType createMovement(MovementBaseType data, String username) {
         LOG.info("Create invoked in service layer");
         try {
 
@@ -114,8 +102,8 @@ public class MovementServiceBean implements MovementService {
                 LOG.error("Failed to send audit log message! Movement with guid {} was created ", createdMovement.getGuid());
             }
             return createdMovement;
-        } catch (MovementModelException | MovementMessageException ex) {
-            throw new MovementServiceException(ex.getMessage(), ex);
+        } catch (MovementServiceException | MovementMessageException  ex) {
+            throw new EJBException(ex);
         }
     }
 
@@ -258,9 +246,8 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public SimpleResponse createMovementBatch(List<MovementBaseType> query) throws MovementServiceException, MovementDuplicateException {
-        LOG.info("Create invoked in service layer");
+    public SimpleResponse createMovementBatch(List<MovementBaseType> query) {
+        LOG.debug("Create invoked in service layer");
         try {
 
             LOG.debug("ENRICHING MOVEMENTS WITH SPATIAL DATA");
@@ -274,28 +261,15 @@ public class MovementServiceBean implements MovementService {
 
             SimpleResponse createdMovement = SimpleResponse.OK;
             for (MovementType movement : enrichedMovements) {
-                try {
-                    movementBatch.createMovement(movement, "Batch movement");
-                } catch (MovementDuplicateException ex) {
-                    LOG.error("[ Error when creating movement. ] {}", ex.getMessage());
-                } catch (MovementModelException ex) {
-                    LOG.error("[ Error when creating movement. ] {}", ex);
-                    createdMovement = SimpleResponse.NOK;
-                }
+                movementBatch.createMovement(movement, "Batch movement");
             }
 
-
-            try {
-                String auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(createdMovement.name(), "UVMS batch movement");
-                producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
-            } catch (AuditModelMarshallException e) {
-                LOG.error("Failed to send audit log message! Movement batch {} was created with outcome: ", createdMovement.name());
-            }
-
+            String auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(createdMovement.name(), "UVMS batch movement");
+            producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
 
             return createdMovement;
-        } catch (MovementMessageException ex) {
-            throw new MovementServiceException(ex.getMessage(), ex);
+        } catch (MovementServiceException | AuditModelMarshallException | MovementMessageException ex) {
+            throw new EJBException("createMovementBatch failed", ex);
         }
     }
 
@@ -334,10 +308,7 @@ public class MovementServiceBean implements MovementService {
                 throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
             }
             return MovementDataSourceResponseMapper.mapMovementListAreaAndTimeIntervalResponse(movementListByAreaAndTimeInterval);
-        } catch (MovementDaoException ex) {
-            LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
-        } catch (ModelMapperException ex) {
+        } catch (MovementDaoException | ModelMarshallException ex) {
             LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
             throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
         }

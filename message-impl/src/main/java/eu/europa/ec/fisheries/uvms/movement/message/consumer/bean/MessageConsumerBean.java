@@ -18,8 +18,8 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
+import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
+import eu.europa.ec.fisheries.schema.movement.module.v1.*;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.message.event.*;
@@ -33,27 +33,22 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 
 @MessageDriven(mappedName = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE, activationConfig = {
-    @ActivationConfigProperty(propertyName = "messagingType", propertyValue = MessageConstants.CONNECTION_TYPE),
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = MessageConstants.DESTINATION_TYPE_QUEUE),
-    @ActivationConfigProperty(propertyName = "destination", propertyValue = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE_NAME),
-    @ActivationConfigProperty(propertyName = "destinationJndiName", propertyValue = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE),
-    @ActivationConfigProperty(propertyName = "connectionFactoryJndiName", propertyValue = MessageConstants.CONNECTION_FACTORY)
+        @ActivationConfigProperty(propertyName = "messagingType", propertyValue = MessageConstants.CONNECTION_TYPE),
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = MessageConstants.DESTINATION_TYPE_QUEUE),
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE_NAME),
+        @ActivationConfigProperty(propertyName = "destinationJndiName", propertyValue = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE),
+        @ActivationConfigProperty(propertyName = "connectionFactoryJndiName", propertyValue = MessageConstants.CONNECTION_FACTORY)
 
 })
 public class MessageConsumerBean implements MessageListener {
 
     final static Logger LOG = LoggerFactory.getLogger(MessageConsumerBean.class);
-
-    @Inject
-    @CreateMovementBatchEvent
-    Event<EventMessage> createMovementBatchEvent;
 
     @Inject
     @GetMovementMapByQueryEvent
@@ -104,7 +99,7 @@ public class MessageConsumerBean implements MessageListener {
                     createMovement(textMessage);
                     break;
                 case CREATE_BATCH:
-                    createMovementBatchEvent.fire(new EventMessage(textMessage));
+                    createMovementBatch(textMessage);
                     break;
                 case MOVEMENT_MAP:
                     getMovementByQueryEvent.fire(new EventMessage(textMessage));
@@ -129,6 +124,22 @@ public class MessageConsumerBean implements MessageListener {
         }
     }
 
+    private void createMovementBatch(TextMessage textMessage) {
+        LOG.info("CreateMovementEvent Received.. processing request in MovementEventServiceBean");
+        try {
+
+            CreateMovementBatchRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, CreateMovementRequest.class);
+            SimpleResponse createdMovement = movementService.createMovementBatch(request.getMovement());
+            String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createdMovement);
+            messageProducer.sendMessageBackToRecipient(textMessage, responseString);
+
+        } catch (EJBException | ModelMarshallException | MovementMessageException ex) {
+            LOG.error("[ Error when creating movement batch ] ", ex);
+            errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: " + ex.getMessage()));
+            throw new EJBException(ex);
+        }
+    }
+
     private void getMovementListByQuery(TextMessage textMessage) {
         try {
             GetMovementListByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, GetMovementListByQueryRequest.class);
@@ -145,21 +156,13 @@ public class MessageConsumerBean implements MessageListener {
         }
     }
 
-    private void createMovement(TextMessage textMessage) throws ModelMarshallException {
-        CreateMovementRequest createMovementRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, CreateMovementRequest.class);
+    private void createMovement(TextMessage textMessage) {
         try {
+            CreateMovementRequest createMovementRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, CreateMovementRequest.class);
             MovementType createdMovement = movementService.createMovement(createMovementRequest.getMovement(), createMovementRequest.getUsername());
             String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(createdMovement);
             messageProducer.sendMessageBackToRecipient(textMessage, responseString);
-
-        } catch (MovementDuplicateException ex) {
-            LOG.error("[ Error when creating movement ] ", ex);
-            //409 is used to create a duplicate exception later in call chain.
-            EventMessage eventMessage = new EventMessage(textMessage, "409");
-            errorEvent.fire(eventMessage);
-            // TODO: Rollback local tx (but still send error message to client), retries of JMS will NOT GIVE CORRECT FEEDBACK TO CLIENT AT THIS POINT
-            throw new EJBException(ex);
-        } catch (MovementServiceException | MovementMessageException ex) {
+        } catch (EJBException | MovementMessageException | ModelMarshallException ex) {
             LOG.error("[ Error when creating movement ] ", ex);
             EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
             errorEvent.fire(eventMessage);
