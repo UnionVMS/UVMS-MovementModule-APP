@@ -2,8 +2,11 @@ package eu.europa.fisheries.uvms.component.service.arquillian;
 
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MessageConsumerBean;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
+import org.apache.activemq.command.ActiveMQTextMessage;
+import org.apache.activemq.util.ByteSequence;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -50,9 +53,7 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
      * messages is how movements looks when coming into the system
      * first mapper creates SetReportMovementType
      * second mapper creates a string that is the format that is posted to ActiveMQ
-     * <p>
-     * the ideal thing would be to make this a textMessage so we dont need the Activie mq at all for the test
-     * otherwise post it to the queue
+     * make this a textMessage so we dont need the Activie mq at all for the test
      *
      * @throws Exception
      */
@@ -67,7 +68,13 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
         SetReportMovementType mapped = NafMessageResponseMapper.mapToMovementType(a_NAF_Message, "NAF");
         String movementReportRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(mapped, "TEST");
 
-        sendToQueue(movementReportRequest);
+
+        TextMessage activeMQTextMessage = new ActiveMQTextMessage();
+        activeMQTextMessage.setText(movementReportRequest);
+
+
+        MessageConsumerBean mcb = new MessageConsumerBean();
+        mcb.onMessage(activeMQTextMessage);
 
 
     }
@@ -77,31 +84,4 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
      *
      ******************************************************************************************************************************/
 
-
-    // close but no cigar
-    public void sendToQueue(String msg) {
-
-
-        /*
-        Connection connection = null;
-        try {
-            ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
-            connection = connectionFactory.createConnection();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Queue queue = session.createQueue("customerQueue");
-            MessageProducer producer = session.createProducer(queue);
-            String payload = "Hi, I am text message";
-            Message msg = session.createTextMessage(payload);
-            System.out.println("Sending text '" + payload + "'");
-            producer.send(msg);
-            session.close();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
-        }
-        */
-
-
-    }
 }
