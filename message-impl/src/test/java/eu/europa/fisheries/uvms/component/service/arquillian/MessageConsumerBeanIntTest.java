@@ -3,16 +3,17 @@ package eu.europa.fisheries.uvms.component.service.arquillian;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MessageConsumerBean;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import org.apache.activemq.command.ActiveMQTextMessage;
-import org.apache.activemq.util.ByteSequence;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.jms.*;
+import javax.ejb.EJB;
+import javax.jms.TextMessage;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by thofan on 2017-04-19.
@@ -20,6 +21,10 @@ import javax.jms.*;
 
 @RunWith(Arquillian.class)
 public class MessageConsumerBeanIntTest extends TransactionalTests {
+
+
+    @EJB
+    MessageConsumerBean mcb;
 
 
     String movements[] = {
@@ -62,20 +67,17 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void messageConsumerBeanTestCreateMovement() throws Exception {
 
-        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        String a_NAF_Message = movements[0];
-        SetReportMovementType mapped = NafMessageResponseMapper.mapToMovementType(a_NAF_Message, "NAF");
-        String movementReportRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(mapped, "TEST");
-
-
-        TextMessage activeMQTextMessage = new ActiveMQTextMessage();
-        activeMQTextMessage.setText(movementReportRequest);
+        String nafMovement= movements[0];
+        SetReportMovementType mappedNafMovement = NafMessageResponseMapper.mapToMovementType(nafMovement, "NAF");
+        String nafMovementStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(mappedNafMovement, "TEST");
 
 
-        MessageConsumerBean mcb = new MessageConsumerBean();
-        mcb.onMessage(activeMQTextMessage);
+//        TextMessage activeMQTextMessage = new ActiveMQTextMessage();
+        TextMessage textMessage = mock(TextMessage.class);
+        when(textMessage.getText()).thenReturn(nafMovementStr);
 
+        mcb.onMessage(textMessage);
 
     }
 
