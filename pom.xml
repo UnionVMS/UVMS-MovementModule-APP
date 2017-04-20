@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms</groupId>
         <artifactId>uvms-app-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2</version>
     </parent>
 
     <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
@@ -24,7 +24,7 @@
         <longpolling.version>2.0.13</longpolling.version>
         <user.model.version>2.0.0</user.model.version>
         <spatial.model.version>0.5.2</spatial.model.version>
-        <movement.model.version>3.0.5-SNAPSHOT</movement.model.version>
+        <movement.model.version>3.0.5</movement.model.version>
         <audit.model.version>3.0.4</audit.model.version>
         <exchange.model.version>3.0.4</exchange.model.version>
         <!--Arquillian test Properties-->
