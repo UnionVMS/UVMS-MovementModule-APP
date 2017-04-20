@@ -11,7 +11,11 @@
         <artifactId>movement</artifactId>
         <version>3.0.6-SNAPSHOT</version>
     </parent>
-    
+
+    <properties>
+    <hibernate.dialect>org.hibernate.spatial.dialect.postgis.PostgisDialect</hibernate.dialect>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
