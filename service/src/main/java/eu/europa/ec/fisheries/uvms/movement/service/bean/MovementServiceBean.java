@@ -264,6 +264,7 @@ public class MovementServiceBean implements MovementService {
                 movementBatch.createMovement(movement, "Batch movement");
             }
 
+            // TODO  One Audit for the entire batch ??????? and always OK ???????
             String auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(createdMovement.name(), "UVMS batch movement");
             producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
 
