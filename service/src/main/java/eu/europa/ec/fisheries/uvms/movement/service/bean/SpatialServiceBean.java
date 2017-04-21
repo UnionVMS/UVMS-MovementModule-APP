@@ -60,11 +60,10 @@ public class SpatialServiceBean implements SpatialService{
     //TODO FIX AS PARAMETER
     private static final Long TIMEOUT = 60000L;
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public MovementType enrichMovementWithSpatialData(MovementBaseType movement) throws MovementServiceException {
 
         try {
-            LOG.info("Enrich movement with spatial data envoked in SpatialServiceBean");
+            LOG.debug("Enrich movement with spatial data envoked in SpatialServiceBean");
             PointType point = new PointType();
             point.setCrs(4326);
             point.setLatitude(movement.getPosition().getLatitude());
@@ -77,7 +76,7 @@ public class SpatialServiceBean implements SpatialService{
             String spatialMessageId = producer.sendModuleMessage(spatialRequest, ModuleQueue.SPATIAL);
             TextMessage spatialResponse = consumer.getMessage(spatialMessageId, TextMessage.class, TIMEOUT);
 
-            LOG.info("Got response from Spatial " + spatialResponse.getText());
+            LOG.debug("Got response from Spatial " + spatialResponse.getText());
 
             SpatialEnrichmentRS enrichment = SpatialModuleResponseMapper.mapToSpatialEnrichmentRSFromResponse(spatialResponse, spatialMessageId);
 
