@@ -1,5 +1,11 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.CreateMovementBean;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MessageConsumerBean;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.AbstractProducer;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.service.*;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -58,30 +64,17 @@ public abstract class BuildMovementServiceTestDeployment {
 		return testWar;
 	}
 
-    @Deployment(name = "movementservice", order = 1)
+    @Deployment(name = "movementmessage", order = 1)
     public static Archive<?> createMovementSearchDeployment() {
         WebArchive archive = createArchive("movementmessage");
 
-//        archive.addClass(MovementSearchGroupServiceBean.class);
-        archive.addClass(MovementSearchGroupService.class);
+        archive.addClass(MessageConsumerBean.class);
+        archive.addClass(MovementMessageConsumerBean.class);
+        archive.addClass(MessageProducerBean.class);
+        archive.addClass(AbstractProducer.class);
+        archive.addClass(JMSConnectorBean.class);
+        archive.addClass(CreateMovementBean.class);
 
-        archive.addClass(MovementServiceException.class);
-        archive.addClass(MovementGroupValidator.class);
-        
-     //   archive.addClass(MovementEventServiceBean.class);
-        archive.addClass(EventService.class);
-        archive.addClass(MovementEventTestHelper.class);
-        
-        archive
-                //.addClass(MovementServiceBean.class)
-        .addClass(MovementService.class)
-        .addClass(SpatialService.class)
-        .addClass(SpatialServiceMockedBean.class)
-        .addClass(MovementListResponseDto.class)
-        .addClass(MovementDto.class).addClass(MovementMapper.class);
-        //archive.addClass(TempMovementServiceBean.class);
-                archive.addClass(TempMovementService.class);
-        archive.addClass(MovementServiceException.class);
 
         archive.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
 

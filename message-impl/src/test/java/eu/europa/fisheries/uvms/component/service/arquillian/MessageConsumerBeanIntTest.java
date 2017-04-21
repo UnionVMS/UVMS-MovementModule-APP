@@ -1,16 +1,23 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
-import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MessageConsumerBean;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
+import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
+import eu.europa.ec.fisheries.uvms.message.JMSUtils;
+import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.CreateMovementBean;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.jms.Queue;
 import javax.jms.TextMessage;
+import javax.naming.InitialContext;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,12 +26,19 @@ import static org.mockito.Mockito.when;
  * Created by thofan on 2017-04-19.
  */
 
+/**  OBS These tests are postponed to a later stage, since mix of interfacelayer and businesslayer makes it not testabale at this time
+ *
+ *
+ *
+ *
+ */
+
 @RunWith(Arquillian.class)
 public class MessageConsumerBeanIntTest extends TransactionalTests {
 
 
     @EJB
-    MessageConsumerBean mcb;
+    CreateMovementBean createMovementBean;
 
 
     String movements[] = {
@@ -63,23 +77,42 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
      * @throws Exception
      */
 
-    @Test
-    @OperateOnDeployment("movementservice")
+  /*  @Test
+    @OperateOnDeployment("movementmessage")
     public void messageConsumerBeanTestCreateMovement() throws Exception {
 
+        eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType movementBaseType = new eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType();
+        CreateMovementRequest createMovementRequest = new CreateMovementRequest();
+        createMovementRequest.setMethod(MovementModuleMethod.CREATE);
+        createMovementRequest.setMovement(movementBaseType);
+
+        Queue test = JMSUtils.lookupQueue(new InitialContext(), MessageConstants.AUDIT_MODULE_QUEUE);
 
         String nafMovement= movements[0];
         SetReportMovementType mappedNafMovement = NafMessageResponseMapper.mapToMovementType(nafMovement, "NAF");
-        String nafMovementStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(mappedNafMovement, "TEST");
+
+
+
+        String met = JAXBMarshaller.marshallJaxBObjectToString(mappedNafMovement.getMovement());
+
+        TextMessage textMessage = mock(TextMessage.class);
+        when(textMessage.getText()).thenReturn(met);
+
+
+        eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType movementBaseType = JAXBMarshaller.unmarshallTextMessage(textMessage, eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType.class);
+
+        String requestStr = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType,"TEST");
+        //String nafMovementStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(mappedNafMovement, "TEST");
 
 
 //        TextMessage activeMQTextMessage = new ActiveMQTextMessage();
-        TextMessage textMessage = mock(TextMessage.class);
-        when(textMessage.getText()).thenReturn(nafMovementStr);
+        when(textMessage.getText()).thenReturn(requestStr);
+        when(textMessage.getJMSReplyTo()).thenReturn(test);
+        when(textMessage.getJMSMessageID()).thenReturn("TESTER1234");
 
-        mcb.onMessage(textMessage);
+        createMovementBean.createMovement(textMessage);
 
-    }
+    }*/
 
 
     /******************************************************************************************************************************
