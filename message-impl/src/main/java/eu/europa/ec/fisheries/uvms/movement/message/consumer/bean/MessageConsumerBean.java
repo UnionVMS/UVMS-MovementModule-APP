@@ -15,13 +15,10 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.GetMovementListByAreaAndTimeIntervalEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.GetMovementMapByQueryEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.PingEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,22 +44,12 @@ public class MessageConsumerBean implements MessageListener {
     final static Logger LOG = LoggerFactory.getLogger(MessageConsumerBean.class);
 
     @Inject
-    @GetMovementMapByQueryEvent
-    Event<EventMessage> getMovementByQueryEvent;
-
-    @Inject
     @PingEvent
     Event<EventMessage> pingEvent;
 
     @Inject
     @GetMovementListByAreaAndTimeIntervalEvent
     Event<EventMessage> getMovementListByAreaAndTimeIntervalEvent;
-
-    @EJB
-    private MovementService movementService;
-
-    @EJB
-    MessageProducer messageProducer;
 
     @EJB
     private CreateMovementBean createMovementBean;
@@ -73,6 +60,8 @@ public class MessageConsumerBean implements MessageListener {
     @EJB
     private CreateMovementBatchBean createMovementBatchBean;
 
+    @EJB
+    private GetMovementMapByQueryBean getMovementMapByQueryBean;
 
     @Inject
     @ErrorEvent
@@ -108,7 +97,7 @@ public class MessageConsumerBean implements MessageListener {
                     createMovementBatchBean.createMovementBatch(textMessage);
                     break;
                 case MOVEMENT_MAP:
-                    getMovementByQueryEvent.fire(new EventMessage(textMessage));
+                    getMovementMapByQueryBean.getMovementMapByQuery(textMessage);
                     break;
                 case PING:
                     pingEvent.fire(new EventMessage(textMessage));
