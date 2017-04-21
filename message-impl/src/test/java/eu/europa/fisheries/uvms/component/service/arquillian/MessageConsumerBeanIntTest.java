@@ -11,6 +11,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.when;
  */
 
 @RunWith(Arquillian.class)
+@Ignore
 public class MessageConsumerBeanIntTest extends TransactionalTests {
 
 
@@ -77,7 +79,7 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
      * @throws Exception
      */
 
-  /*  @Test
+    @Test
     @OperateOnDeployment("movementmessage")
     public void messageConsumerBeanTestCreateMovement() throws Exception {
 
@@ -99,7 +101,7 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
         when(textMessage.getText()).thenReturn(met);
 
 
-        eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType movementBaseType = JAXBMarshaller.unmarshallTextMessage(textMessage, eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType.class);
+        //eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType movementBaseType = JAXBMarshaller.unmarshallTextMessage(textMessage, eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType.class);
 
         String requestStr = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType,"TEST");
         //String nafMovementStr = ExchangeModuleRequestMapper.createSetMovementReportRequest(mappedNafMovement, "TEST");
@@ -112,7 +114,7 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
 
         createMovementBean.createMovement(textMessage);
 
-    }*/
+    }
 
 
     /******************************************************************************************************************************

@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.jms.JMSException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -318,9 +319,10 @@ public class MovementServiceIntTest extends TransactionalTests {
             longitude += 0.05;
             latitude += 0.05;
         }
-        SimpleResponse simpleResponse = movementService.createMovementBatch(movementTypeList);
-        Assert.assertNotNull(simpleResponse);
-        Assert.assertEquals(SimpleResponse.NOK, simpleResponse);
+        try {
+            movementService.createMovementBatch(movementTypeList);
+            Assert.fail("This should produce an EJBException and trigger rollback");
+        } catch (EJBException ignore) {}
     }
 
 
