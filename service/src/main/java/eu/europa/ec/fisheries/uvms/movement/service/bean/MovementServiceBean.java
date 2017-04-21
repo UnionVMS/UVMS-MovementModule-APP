@@ -108,7 +108,6 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
             LOG.info("Get map invoked in service layer");

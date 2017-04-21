@@ -11,9 +11,6 @@ import static org.hamcrest.core.Is.is;
 
 import java.util.UUID;
 
-import org.databene.contiperf.PerfTest;
-import org.databene.contiperf.Required;
-import org.databene.contiperf.junit.ContiPerfRule;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -41,13 +38,8 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException
 /**
  * Created by roblar on 2017-03-31.
  */
-@PerfTest(threads = 4, duration = 2000, warmUp = 1000)
-@Required(max = 75,average = 10,percentile95=10,throughput=4000)
 public class MovementModelToEntityMapperTest extends Assert {
 
-	@Rule
-	public ContiPerfRule i = new ContiPerfRule();
-	
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
