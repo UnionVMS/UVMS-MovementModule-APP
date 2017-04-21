@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="davijo" id="segcat-01">
+        
+        <createTable tableName="segmentcategory" remarks="Segmentcategory table.">
+            <column name="segcat_id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="segcat_pk"/>
+            </column>
+            <column name="segcat_name" type="varchar(60)" remarks="Name of segmentcategory.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="segcat_desc" type="varchar(200)" remarks="Description of segmentcategory.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="segcat_updattim" type="timestamp" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="segcat_upuser" type="varchar(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="segmentcategory"/>
+        </rollback>
+        
+    </changeSet>
+
+</databaseChangeLog>

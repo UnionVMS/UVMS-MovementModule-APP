@@ -28,7 +28,7 @@ import org.mockito.MockitoAnnotations;
 /**
  **/
 public class MessageProducerBeanTest {
-
+/*
     @Mock
     Queue localDbQueue;
 
@@ -55,6 +55,7 @@ public class MessageProducerBeanTest {
 
     @Mock
     Session session;
+
 
     @InjectMocks
     MessageProducerBean theBeanToTest;
@@ -125,7 +126,7 @@ public class MessageProducerBeanTest {
      */
     /*  @Test
      public void testSendModuleMessage() throws Exception {
-     System.out.println("sendModuleMessage");
+     //System.out.println("sendModuleMessage");
      String text = "";
      ModuleQueue queue = null;
      EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
@@ -144,7 +145,7 @@ public class MessageProducerBeanTest {
      */
     /* @Test
      public void testSendErrorMessageBackToRecipient() throws Exception {
-     System.out.println("sendErrorMessageBackToRecipient");
+     //System.out.println("sendErrorMessageBackToRecipient");
      EventMessage message = null;
      EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
      MessageProducer instance = (MessageProducer) container.getContext().lookup("java:global/classes/MessageProducerBean");
@@ -159,7 +160,7 @@ public class MessageProducerBeanTest {
      */
     /* @Test
      public void testSendMessageBackToRecipient() throws Exception {
-     System.out.println("sendMessageBackToRecipient");
+     //System.out.println("sendMessageBackToRecipient");
      TextMessage requestMessage = null;
      String returnMessage = "";
      EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
@@ -175,7 +176,7 @@ public class MessageProducerBeanTest {
      */
     /*  @Test
      public void testSendConfigMessage() throws Exception {
-     System.out.println("sendConfigMessage");
+     //System.out.println("sendConfigMessage");
      String text = "";
      EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
      ConfigMessageProducer instance = (ConfigMessageProducer) container.getContext().lookup("java:global/classes/MessageProducerBean");

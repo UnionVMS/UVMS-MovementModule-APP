@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <include file="changelog\v0.1\db-changelog-createSequence_0.1.xml" />
+    <include file="changelog\v0.1\db-changelog-createTables_oracle_0.1.xml" />
+    <include file="changelog\v0.1\db-changelog-insertStaticValues_0.1.xml" />
+        
+    <!-- set DB specific properties, like sysdate vs now() 
+    <include file="changelog\properties.xml"/>
+    
+    -->
+
+</databaseChangeLog>

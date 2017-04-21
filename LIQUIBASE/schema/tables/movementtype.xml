@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="davijo" id="movetyp-01">
+
+        <createTable tableName="movementtype" remarks="Movementtype table.">
+
+            <column name="movetyp_id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="movetyp_pk"/>
+            </column>
+            <column name="movetyp_name" type="varchar(60)" remarks="Name of Movement type.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movetyp_desc" type="varchar(200)" remarks="Description of movementtype.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movetyp_updattim" type="timestamp" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movetyp_upuser" type="varchar(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+        
+        <rollback>
+            <dropTable tableName="movementtype"/>
+        </rollback>
+
+    </changeSet>
+    
+</databaseChangeLog>

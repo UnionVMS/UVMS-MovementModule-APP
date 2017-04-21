@@ -49,7 +49,7 @@ public class AbstractProducerTest {
      */
     @Test
     public void testSendMessage_5args() throws Exception {
-        /*System.out.println("sendMessage");
+        /*//System.out.println("sendMessage");
         Destination toQueue = null;
         String textMessag = "";
         int deliveryMode = 0;
@@ -68,7 +68,7 @@ public class AbstractProducerTest {
      */
     @Test
     public void testSendMessage_3args_1() throws Exception {
-        /*System.out.println("sendMessage");
+        /*//System.out.println("sendMessage");
         Destination responseQueue = null;
         String textMessage = "";
         String correlationId = "";
@@ -85,7 +85,7 @@ public class AbstractProducerTest {
      */
     @Test
     public void testSendMessage_3args_2() throws Exception {
-        /*System.out.println("sendMessage");
+        /*//System.out.println("sendMessage");
         Destination toQueue = null;
         Destination replyQueue = null;
         String textMessage = "";
@@ -102,7 +102,7 @@ public class AbstractProducerTest {
      */
     @Test
     public void testGetSession() throws Exception {
-        /*System.out.println("getSession");
+        /*//System.out.println("getSession");
         Connection connection = null;
         AbstractProducer instance = new AbstractProducerImpl();
         Session expResult = null;
@@ -117,7 +117,7 @@ public class AbstractProducerTest {
      */
     @Test
     public void testCreateConnection() throws Exception {
-        /*System.out.println("createConnection");
+        /*//System.out.println("createConnection");
         AbstractProducer instance = new AbstractProducerImpl();
         Connection expResult = null;
         Connection result = instance.createConnection();
@@ -126,7 +126,9 @@ public class AbstractProducerTest {
         fail("The test case is a prototype.");*/
     }
 
+    /*
     public class AbstractProducerImpl extends AbstractProducer {
     }
+    */
     
 }

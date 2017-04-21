@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet id="tmpmove-01" author="davijo">
+        
+        <createTable tableName="tempmovement" remarks="Temporary movements table holdning manual movement before sent.">
+            
+            <column name="tmpmove_id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tmpmove_pk"/>
+            </column>
+            <column name="tmpmove_guid" type="varchar(36)" remarks="Field to get row with GUID."/>
+            <column name="tmpmove_flag" type="varchar(3)" remarks="Flag state."/>
+            <column name="tmpmove_ircs" type="varchar(70)" remarks="IRCS/CALL-SIGN."/>
+            <column name="tmpmove_cfr" type="varchar(12)" remarks="CFR."/>
+            <column name="tmpmove_extmark" type="varchar(14)" remarks="External-marking."/>
+            <column name="tmpmove_name" type="varchar(30)" remarks="Name."/>
+            <column name="tmpmove_status" type="varchar(60)" remarks="Status."/>
+            <column name="tmpmove_timestamp" type="timestamp" remarks="Date/Time."/>
+            <column name="tmpmove_archive" type="boolean" remarks="Archived 1, Not Archived 0."/>
+            <column name="tmpmove_lat" type="double precision" remarks="Latitud."/>
+            <column name="tmpmove_lon" type="double precision" remarks="Latitud."/>
+            <column name="tmpmove_speed" type="double precision" remarks="Speed."/>
+            <column name="tmpmove_course" type="double precision" remarks="Course."/>
+            <column name="tmpmove_updattim" type="timestamp" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tmpmove_upuser" remarks="Last update userid." type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="tempmovement"/>
+        </rollback>
+    </changeSet>
+	
+    <changeSet author="nhily" id="tmpmove-02">
+        <dropColumn tableName="tempmovement" columnName="tmpmove_archive" />
+    </changeSet>
+	
+    <changeSet author="nhily" id="tmpmove-03">
+        <addColumn tableName="tempmovement">
+            <column name="tmpmove_state" type="varchar(12)" remarks="String enum for the state of temp movement, DRAFT, SENT, DELETED"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="tempmovement" columnName="tmpmove_state" />
+        </rollback>
+
+    </changeSet>
+    
+</databaseChangeLog>
