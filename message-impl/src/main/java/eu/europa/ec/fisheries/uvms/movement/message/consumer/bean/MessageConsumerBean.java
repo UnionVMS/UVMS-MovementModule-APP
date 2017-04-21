@@ -73,6 +73,9 @@ public class MessageConsumerBean implements MessageListener {
     @EJB
     private CreateMovementBatchBean createMovementBatchBean;
 
+    @EJB
+    private PingBean pingBean;
+
 
     @Inject
     @ErrorEvent
@@ -111,7 +114,7 @@ public class MessageConsumerBean implements MessageListener {
                     getMovementByQueryEvent.fire(new EventMessage(textMessage));
                     break;
                 case PING:
-                    pingEvent.fire(new EventMessage(textMessage));
+                   pingBean.ping(textMessage);
                     break;
                 case MOVEMENT_LIST_BY_AREA_TIME_INTERVAL:
                     getMovementListByAreaAndTimeIntervalEvent.fire(new EventMessage(textMessage));
