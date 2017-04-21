@@ -42,7 +42,8 @@ public class MessageConsumerBean implements MessageListener {
     public void onMessage(Message message) {
         TextMessage textMessage = (TextMessage) message;
         try {
-            LOG.info(textMessage.getText());
+            String txt = textMessage.getText();
+            LOG.info(txt);
         } catch (JMSException e) {
             LOG.error("onMessage: ", e);
         }
