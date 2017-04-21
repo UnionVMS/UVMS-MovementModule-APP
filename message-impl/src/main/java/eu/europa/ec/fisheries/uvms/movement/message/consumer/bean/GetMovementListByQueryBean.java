@@ -58,7 +58,7 @@ public class GetMovementListByQueryBean {
             messageProducer.sendMessageBackToRecipient(textMessage, responseString);
 
         } catch (MovementDuplicateException | ModelMarshallException | MovementMessageException | MovementServiceException ex) {
-            LOG.error("[ Error when creating movement ] ", ex);
+            LOG.error("[ Error on getMovmementListByQuery ] ", ex);
             EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
             errorEvent.fire(eventMessage);
             throw new EJBException(ex);
