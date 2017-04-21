@@ -26,7 +26,7 @@ public class TransactionalTests extends BuildMovementServiceTestDeployment {
 
     @After
     public void after() throws SystemException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
-        userTransaction.commit();
+        userTransaction.rollback();
     }
 
 }
