@@ -62,7 +62,10 @@ public class MessageConsumerBean implements MessageListener {
 
     @EJB
     private GetMovementMapByQueryBean getMovementMapByQueryBean;
-    
+
+    @EJB
+    private GetMovementListByAreaAndTimeIntervalBean getMovementListByAreaAndTimeIntervalBean;
+
     @EJB
     private PingBean pingBean;
 
@@ -106,9 +109,8 @@ public class MessageConsumerBean implements MessageListener {
                    pingBean.ping(textMessage);
                     break;
                 case MOVEMENT_LIST_BY_AREA_TIME_INTERVAL:
-                    getMovementListByAreaAndTimeIntervalEvent.fire(new EventMessage(textMessage));
+                    getMovementListByAreaAndTimeIntervalBean.getMovementListByAreaAndTimeInterval(textMessage);
                     break;
-
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:
                 default:
