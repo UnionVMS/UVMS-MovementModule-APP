@@ -22,6 +22,7 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeInter
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementBatchModel;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
@@ -69,7 +70,7 @@ public class MovementServiceBean implements MovementService {
 
     //@EJB(lookup = LookupConstant.DOMAIN_MODEL_BEAN)
     @EJB
-    MovementDomainModel model;
+    MovementDomainModelBean model;
 
     @Inject
     @CreatedMovement
@@ -132,7 +133,7 @@ public class MovementServiceBean implements MovementService {
     @Override
     public GetMovementListByQueryResponse getList(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
-            LOG.info("Get list invoked in service layer");
+            LOG.debug("Get list invoked in service layer");
             ListResponseDto response = model.getMovementListByQuery(query);
             if (response == null) {
                 LOG.error("[ Error when getting list, response from JMS Queue is null ]");
@@ -152,10 +153,9 @@ public class MovementServiceBean implements MovementService {
      * @throws MovementServiceException
      */
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
-            LOG.info("Get list invoked in service layer");
+            LOG.debug("Get list invoked in service layer");
             ListResponseDto response = model.getMinimalMovementListByQuery(query);
             if (response == null) {
                 LOG.error("[ Error when getting list, response from JMS Queue is null ]");
@@ -204,10 +204,9 @@ public class MovementServiceBean implements MovementService {
      * @throws MovementServiceException
      */
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public MovementType getById(String id) throws MovementServiceException {
         try {
-            LOG.info("Get list invoked in service layer");
+            LOG.debug("Get list invoked in service layer");
             MovementType response = model.getMovementByGUID(id);
 
             if (response == null) {
@@ -274,9 +273,8 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementServiceException, MovementDuplicateException {
-        LOG.info("GetLatestMovementsByConnectIds invoked in service layer");
+        LOG.debug("GetLatestMovementsByConnectIds invoked in service layer");
         try {
             List<MovementType> latestMovements = model.getLatestMovementsByConnectIds(connectIds);
             return MovementMapper.mapToMovementDtoList(latestMovements);
@@ -286,9 +284,8 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public List<MovementDto> getLatestMovements(Integer numberOfMovements) throws MovementServiceException, MovementDuplicateException {
-        LOG.info("getLatestMovements invoked in service layer");
+        LOG.debug("getLatestMovements invoked in service layer");
         try {
             List<MovementType> latestMovements = model.getLatestMovements(numberOfMovements);
             return MovementMapper.mapToMovementDtoList(latestMovements);
@@ -298,10 +295,9 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementServiceException, MovementDuplicateException {
         try {
-            LOG.info("Get list invoked in service layer");
+            LOG.debug("Get list invoked in service layer");
             List<MovementType> movementListByAreaAndTimeInterval = model.getMovementListByAreaAndTimeInterval(criteria);
             if (movementListByAreaAndTimeInterval == null) {
                 LOG.error("[ Error when getting list, response from JMS Queue is null ]");
