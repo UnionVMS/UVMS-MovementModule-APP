@@ -77,15 +77,11 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
     @OperateOnDeployment("normal")
     public void getMovementConnect() {
 
-        try {
-            // Note getMovementConnect CREATES one if it does not exists  (probably to force a batchimport to succeed)
-            String randomUUID = UUID.randomUUID().toString();
-            MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(randomUUID);
-            Assert.assertTrue(fetchedMovementConnect != null);
-            Assert.assertTrue(fetchedMovementConnect.getValue().equals(randomUUID));
-        } catch (MovementModelException e) {
-            Assert.fail(e.toString());
-        }
+        // Note getMovementConnect CREATES one if it does not exists  (probably to force a batchimport to succeed)
+        String randomUUID = UUID.randomUUID().toString();
+        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(randomUUID);
+        Assert.assertTrue(fetchedMovementConnect != null);
+        Assert.assertTrue(fetchedMovementConnect.getValue().equals(randomUUID));
     }
 
 
@@ -94,36 +90,22 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
     public void getMovementConnect_ZEROISH_GUID() {
 
         String guid = "100000-0000-0000-0000-000000000000";
-
-        try {
-            // Note getMovementConnect CREATES one if it does not exists  (probably to force a batchimport to succeed)
-            MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(guid);
-            Assert.assertTrue(fetchedMovementConnect != null);
-            Assert.assertTrue(fetchedMovementConnect.getValue().equals(guid));
-        } catch (MovementModelException e) {
-            Assert.fail(e.toString());
-        }
+        // Note getMovementConnect CREATES one if it does not exists  (probably to force a batchimport to succeed)
+        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(guid);
+        Assert.assertTrue(fetchedMovementConnect != null);
+        Assert.assertTrue(fetchedMovementConnect.getValue().equals(guid));
     }
 
     @Test
     @OperateOnDeployment("normal")
     public void getMovementConnect_NULL_GUID() {
-
-        try {
-            movementBatchModelBean.getMovementConnect(null);
-            Assert.fail("Should not reach this point");
-        } catch (MovementModelException e) {
-            String msg = e.toString().toUpperCase();
-            int i = msg.indexOf("MOVEMENT CONNECTID IS NULL");
-            Assert.assertTrue(i >= 0);
-        }
+        Assert.assertNull(movementBatchModelBean.getMovementConnect(null));
     }
 
     @Test
     @OperateOnDeployment("normal")
     public void createMovement() {
 
-        // TODO  denna skapar en post TROTS att vi har automatisk rollback  både i MovementConnect OCH Movement
         try {
             Date now = DateUtil.nowUTC();
             double longitude = rnd.nextDouble();

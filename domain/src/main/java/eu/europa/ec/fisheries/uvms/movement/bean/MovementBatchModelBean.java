@@ -63,11 +63,11 @@ public class MovementBatchModelBean implements MovementBatchModel {
      * @return
      * @throws MovementModelException
      */
-    public MovementConnect getMovementConnect(String connectId) throws MovementModelException {
+    public MovementConnect getMovementConnect(String connectId) {
         MovementConnect movementConnectByConnectId = null;
 
         if (connectId == null) {
-            throw new MovementModelException("MOVEMENT CONNECTID IS NULL!!");
+            return null;
         }
 
         try {
@@ -100,7 +100,6 @@ public class MovementBatchModelBean implements MovementBatchModel {
      * @throws
      * EntityDuplicateException
      */
-    //TODO: We need to look over calling methods on this, see batch behaviour
     public MovementType createMovement(MovementType movement, String username) {
         long start = System.currentTimeMillis();
         try {
@@ -128,7 +127,7 @@ public class MovementBatchModelBean implements MovementBatchModel {
             long diff = System.currentTimeMillis() - start;
             LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
             return movementType;
-        } catch (MovementDaoMappingException | MovementModelException | MovementDaoException e) {
+        } catch (MovementDaoMappingException | MovementDaoException e) {
             LOG.error("[ Error when creating movement. ] {}", e);
             throw new EJBException("Could not create movement.", e);
         }

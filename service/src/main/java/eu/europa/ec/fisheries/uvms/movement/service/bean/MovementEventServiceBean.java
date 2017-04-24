@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -22,22 +21,16 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import eu.europa.ec.fisheries.schema.movement.module.v1.*;
-import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByAreaAndTimeIntervalRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.*;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.message.event.*;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
@@ -65,54 +58,6 @@ public class MovementEventServiceBean implements EventService {
 
     @EJB
     MovementService movementService;
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void createMovementBatch(@Observes @CreateMovementBatchEvent EventMessage message) {
-        LOG.info("CreateMovementEvent Received.. processing request in MovementEventServiceBean");
-        try {
-
-            MovementBaseRequest baseRequest = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), MovementBaseRequest.class);
-
-            if (baseRequest.getMethod() != MovementModuleMethod.CREATE_BATCH) {
-                message.setErrorMessage(" [ Error, Create movement invoked but it is not the intended method, caller is trying: " + baseRequest.getMethod().name() + " ]");
-                errorEvent.fire(message);
-            }
-
-            CreateMovementBatchRequest request = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), CreateMovementRequest.class);
-            SimpleResponse createdMovement = movementService.createMovementBatch(request.getMovement());
-            String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createdMovement);
-            messageProducer.sendMessageBackToRecipient(message.getJmsMessage(), responseString);
-
-        } catch (MovementDuplicateException | ModelMarshallException | MovementMessageException | MovementServiceException ex) {
-            LOG.error("[ Error when creating movement ] ", ex);
-            errorEvent.fire(message);
-        }
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void getMovementMapByQuery(@Observes @GetMovementMapByQueryEvent EventMessage message) {
-        LOG.info("Get Movement By Query Received.. processing request in MovementEventServiceBean");
-        try {
-
-            MovementBaseRequest baseRequest = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), MovementBaseRequest.class);
-
-            if (baseRequest.getMethod() != MovementModuleMethod.MOVEMENT_MAP) {
-                message.setErrorMessage(" [ Error, Get Movement By Query invoked but it is not the intended method, caller is trying: " + baseRequest.getMethod().name() + " ]");
-                errorEvent.fire(message);
-            }
-
-            GetMovementMapByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(message.getJmsMessage(), GetMovementMapByQueryRequest.class);
-            GetMovementMapByQueryResponse movementList = movementService.getMapByQuery(request.getQuery());
-            String responseString = MovementModuleResponseMapper.mapToMovementMapResponse(movementList.getMovementMap());
-            messageProducer.sendMessageBackToRecipient(message.getJmsMessage(), responseString);
-
-        } catch (MovementDuplicateException | ModelMarshallException | MovementMessageException | MovementServiceException ex) {
-            LOG.error("[ Error when creating movement ] ", ex);
-            errorEvent.fire(message);
-        }
-    }
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
