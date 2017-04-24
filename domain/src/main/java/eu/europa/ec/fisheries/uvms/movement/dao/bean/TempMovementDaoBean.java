@@ -24,17 +24,12 @@ import java.util.List;
 @Stateless
 public class TempMovementDaoBean extends Dao implements TempMovementDao {
 
-    final static Logger LOG = LoggerFactory.getLogger(TempMovementDaoBean.class);
+    private final static Logger LOG = LoggerFactory.getLogger(TempMovementDaoBean.class);
 
     @Override
-    public TempMovement createTempMovementEntity(TempMovement tempMovement) throws MovementDaoException {
-        try {
-            em.persist(tempMovement);
-            return tempMovement;
-        } catch (Exception e) {
-            LOG.error("[ Error when creating temp movement. ] {}", e.getMessage());
-            throw new MovementDaoException(12, "[ Error when creating temp movement. ]", e);
-        }
+    public TempMovement createTempMovementEntity(TempMovement tempMovement) {
+        em.persist(tempMovement);
+        return tempMovement;
     }
 
     @Override

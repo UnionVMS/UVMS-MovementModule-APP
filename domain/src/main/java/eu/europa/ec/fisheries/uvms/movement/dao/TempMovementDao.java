@@ -24,9 +24,8 @@ public interface TempMovementDao {
     /**
      * @param tempMovement
      * @return
-     * @throws MovementDaoException
      */
-    public TempMovement createTempMovementEntity(TempMovement tempMovement) throws MovementDaoException;
+    TempMovement createTempMovementEntity(TempMovement tempMovement);
 
     /**
      * @param guid

@@ -67,12 +67,9 @@ public class TempMovementResource {
         LOG.info("Create temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.createTempMovement(data, request.getRemoteUser()), ResponseCode.OK);
-        } catch (MovementServiceException | NullPointerException ex) {
-            LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
-            LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+        } catch (Throwable throwable) {
+            LOG.error("[ Error when creating. ] {} ", throwable);
+            return new ResponseDto(throwable.getMessage(), ResponseCode.ERROR);
         }
     }
 

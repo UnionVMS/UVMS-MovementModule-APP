@@ -145,12 +145,7 @@ public class TempMovementMapper {
         }
     }
 
-    public static TempMovementType toTempMovement(TempMovement tempMovement) throws MovementDaoException {
-        if (tempMovement == null) {
-            LOG.warn("TempMovement is null, aborting mapping");
-            throw new MovementDaoException(14, "TempMovement is null, aborting mapping");
-        }
-
+    public static TempMovementType toTempMovement(TempMovement tempMovement)  {
         TempMovementType tempMovementType = new TempMovementType();
 
         VesselType vessleType = new VesselType();
