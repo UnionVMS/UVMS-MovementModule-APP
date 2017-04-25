@@ -35,9 +35,8 @@ public interface MovementService {
      *
      * @param data
      * @return
-     * @throws MovementServiceException
      */
-    MovementType createMovement(MovementBaseType data, String username) throws MovementServiceException, MovementDuplicateException;
+    MovementType createMovement(MovementBaseType data, String username);
 
     /**
      * Get a list with data
@@ -78,9 +77,8 @@ public interface MovementService {
      *
      * @param query
      * @return
-     * @throws MovementServiceException
      */
-    SimpleResponse createMovementBatch(List<MovementBaseType> query) throws MovementServiceException, MovementDuplicateException;
+    SimpleResponse createMovementBatch(List<MovementBaseType> query);
 
     /**
      * Get an object by id

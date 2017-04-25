@@ -22,10 +22,6 @@ import javax.enterprise.event.Observes;
 @Local
 public interface EventService {
 
-    public void getMovementMapByQuery(@Observes @GetMovementMapByQueryEvent EventMessage message);
-
-    public void createMovementBatch(@Observes @CreateMovementBatchEvent EventMessage message);
-
     public void ping(@Observes @PingEvent EventMessage message);
 
     public void getMovementListByAreaAndTimeInterval(@Observes @GetMovementListByAreaAndTimeIntervalEvent EventMessage message);

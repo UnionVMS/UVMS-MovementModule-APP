@@ -74,7 +74,7 @@ public class MovementRestResource {
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<MovementListResponseDto> getListByQuery(MovementQuery query) {
-        LOG.info("Get list invoked in rest layer");
+        LOG.debug("Get list invoked in rest layer");
         try {
             long start = System.currentTimeMillis();
             ResponseDto response = new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
@@ -105,12 +105,12 @@ public class MovementRestResource {
     @Path("/list/minimal")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<MovementListResponseDto> getMinimalListByQuery(MovementQuery query) {
-        LOG.info("Get list invoked in rest layer");
+        LOG.debug("Get list invoked in rest layer");
         try {
             long start = System.currentTimeMillis();
             ResponseDto response = new ResponseDto(serviceLayer.getMinimalList(query), ResponseCode.OK);
             long end = System.currentTimeMillis();
-            LOG.info("GET MINIMAL MOVEMENT: {} ms", (end - start));
+            LOG.debug("GET MINIMAL MOVEMENT: {} ms", (end - start));
             return response;
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
@@ -136,7 +136,7 @@ public class MovementRestResource {
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<List<MovementDto>> getLatestMovementsByConnectIds(List<String> connectIds) {
-        LOG.info("GetLatestMovementsByConnectIds invoked in rest layer");
+        LOG.debug("GetLatestMovementsByConnectIds invoked in rest layer");
         if (connectIds == null || connectIds.isEmpty()) {
             return new ResponseDto("ConnectIds cannot be empty" , ResponseCode.ERROR);
         }
@@ -166,14 +166,15 @@ public class MovementRestResource {
     @Path("/latest/{numberOfMovements}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<List<MovementDto>> getLatestMovements(@PathParam(value = "numberOfMovements") Integer numberOfMovements) {
-        LOG.info("getLatestMovements invoked in rest layer");
+        LOG.debug("getLatestMovements invoked in rest layer");
         long start = System.currentTimeMillis();
+        // TODO why not default to 1 ?
         if (numberOfMovements == null || numberOfMovements < 1) {
             return new ResponseDto("numberOfMovements cannot be null and must be greater than 0" , ResponseCode.ERROR);
         }
         try {
             List<MovementDto> response = serviceLayer.getLatestMovements(numberOfMovements);
-            LOG.info("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
+            LOG.debug("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
             return new ResponseDto(response, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
@@ -190,7 +191,7 @@ public class MovementRestResource {
     @Path("/{id}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto getById(@PathParam(value = "id") final String id) {
-        LOG.info("Get by id invoked in rest layer");
+        LOG.debug("Get by id invoked in rest layer");
         try {
             return new ResponseDto(serviceLayer.getById(id), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
@@ -208,9 +209,11 @@ public class MovementRestResource {
     @Path("/listByAreaAndTimeInterval")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<MovementListResponseDto> getListMovementByAreaAndTimeInterval (MovementAreaAndTimeIntervalCriteria criteria) {
-        LOG.info("Get list invoked in rest layer");
+        LOG.debug("Get list invoked in rest layer");
         try {
             if (criteria.getAreaCode() == null) {
+
+                // TODO CHECK USER SERVICE
                 criteria.setAreaCode(userService.getUserNationality(request.getRemoteUser()));
             }
 

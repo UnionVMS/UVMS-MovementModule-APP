@@ -15,24 +15,23 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeInter
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.NoEntityFoundException;
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
-import org.hibernate.*;
-import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.*;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,7 +73,8 @@ public class MovementDaoBean extends Dao implements MovementDao {
             }
             return resultList;
         } catch (javax.persistence.NoResultException e) {
-            LOG.debug("No result when retrieveing movements by GUID");
+            LOG.debug("No result when retrieving movements by GUID");
+            // TODO why return null for a empty resultset ????
             return null;
         } catch (Exception e) {
             LOG.error("[ Error when getting movement by GUID ] {} ", e.getMessage());
@@ -124,6 +124,8 @@ public class MovementDaoBean extends Dao implements MovementDao {
             TypedQuery<AreaType> query = em.createNamedQuery("AreaType.findByCode", AreaType.class);
             query.setParameter("code", code);
             List<AreaType> areaList = query.getResultList();
+            // TODO  a get method that changes state in DB ???
+            // TODO correct the error at correct place
             for (int i = 1; i < areaList.size(); i++) {
                 em.remove(areaList.get(i));
             }
@@ -192,6 +194,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             List<LatestMovement> rs = latestMovementQuery.getResultList();
             return rs;
         } catch (javax.persistence.NoResultException e) {
+            // TODO why exception at empty result
             LOG.debug("Could not get latest movements");
             return null;
         } catch (Exception e) {
@@ -362,9 +365,8 @@ public class MovementDaoBean extends Dao implements MovementDao {
     @Override
     public List<Movement> getListAll() throws MovementDaoException {
         try {
-            Session session = em.unwrap(Session.class);
-            Query query = session.getNamedQuery(UvmsConstants.MOVEMENT_FIND_ALL);
-            List resultList = query.list();
+            Query query = em.createNamedQuery(UvmsConstants.MOVEMENT_FIND_ALL);
+            List resultList = query.getResultList();
             return resultList;
         } catch (IllegalArgumentException e) {
             LOG.error("[ Error when updating entity ] {}", e.getMessage());
@@ -381,7 +383,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             Query query = getMovementQuery(sql, searchKeyValues);
             query.setFirstResult(listSize * (page - 1));
             query.setMaxResults(listSize);
-            List resultList = query.list();
+            List resultList = query.getResultList();
             return resultList;
         } catch (IllegalArgumentException e) {
             LOG.error("[ Error getting movement list paginated ] {}", e.getMessage());
@@ -398,7 +400,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             Query query = getMovementQuery(sql, searchKeyValues);
             query.setFirstResult(listSize * (page - 1));
             query.setMaxResults(listSize);
-            List resultList = query.list();
+            List resultList = query.getResultList();
             return resultList;
         } catch (IllegalArgumentException e) {
             LOG.error("[ Error getting movement list paginated ] {}", e.getMessage());
@@ -410,9 +412,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     private Query getMovementQuery(String sql, List<SearchValue> searchKeyValues) throws ParseException {
-        Session session = em.unwrap(Session.class);
-        Query query = session.createQuery(sql);
-        //Query query = em.createQuery(sql);
+        Query query = em.createQuery(sql);
         setTypedQueryMovementParams(searchKeyValues, query);
         return query;
     }
@@ -425,26 +425,8 @@ public class MovementDaoBean extends Dao implements MovementDao {
         return singleResult;
     }
 
-    private void setTypedQueryMovementParams(List<SearchValue> searchKeyValues, Query query) throws ParseException, IllegalArgumentException {
-        for (SearchValue searchValue : searchKeyValues) {
-            if (searchValue.isRange()) {
-                switch (searchValue.getField()) {
-                    case DATE:
-                        query.setParameter("fromDate", DateUtil.convertDateTimeInUTC(searchValue.getFromValue()));
-                        query.setParameter("toDate", DateUtil.convertDateTimeInUTC(searchValue.getToValue()));
-                        break;
-                }
-            } else {
-                switch (searchValue.getField()) {
-                    case AREA:
-                        query.setParameter("wkt", WKTUtil.getGeometryFromWKTSrring(searchValue.getValue()));
-                        break;
-                }
-            }
-        }
-    }
 
-    private void setTypedQueryMovementParams(List<SearchValue> searchKeyValues, javax.persistence.Query query) throws ParseException, IllegalArgumentException {
+    private void setTypedQueryMovementParams(List<SearchValue> searchKeyValues, Query query) throws ParseException, IllegalArgumentException {
         for (SearchValue searchValue : searchKeyValues) {
             if (searchValue.isRange()) {
                 switch (searchValue.getField()) {
@@ -471,7 +453,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
         try {
             LOG.debug("SQL QUERY IN LIST PAGINATED: " + sql);
             Query query = getMovementQuery(sql, searchKeyValues);
-            List resultList = query.list();
+            List resultList = query.getResultList();
             return resultList;
         } catch (IllegalArgumentException e) {
             LOG.error("[ Error getting movement list paginated ] {}", e.getMessage());
@@ -500,9 +482,9 @@ public class MovementDaoBean extends Dao implements MovementDao {
             } else {
                 LOG.debug("Searchvalues is NOT empty, getting latest reports for the query ( TOP( " + numberOfReports + " ) )");
                 Query query = getMovementQuery(sql, searchKeyValues);
-                query.setFetchSize(numberOfReports);
+//                query.setFetchSize(numberOfReports);
                 query.setMaxResults(numberOfReports);
-                movements = query.list();
+                movements = query.getResultList();
             }
             return movements;
         } catch (IllegalArgumentException e) {

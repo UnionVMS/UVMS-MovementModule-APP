@@ -64,15 +64,12 @@ public class TempMovementResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
     public ResponseDto create(final TempMovementType data) {
-        LOG.info("Create temp movement invoked in rest layer");
+        LOG.debug("Create temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.createTempMovement(data, request.getRemoteUser()), ResponseCode.OK);
-        } catch (MovementServiceException | NullPointerException ex) {
-            LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
-            LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+        } catch (Throwable throwable) {
+            LOG.error("[ Error when creating. ] {} ", throwable);
+            return new ResponseDto(throwable.getMessage(), ResponseCode.ERROR);
         }
     }
 
@@ -106,7 +103,7 @@ public class TempMovementResource {
     @Path("/remove/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
     public ResponseDto remove(@PathParam("guid") String guid) {
-        LOG.info("Archive temp movement invoked in rest layer");
+        LOG.debug("Archive(remove) temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.archiveTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
@@ -131,7 +128,7 @@ public class TempMovementResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
     public ResponseDto update(final TempMovementType data) {
-        LOG.info("Update temp movement invoked in rest layer");
+        LOG.debug("Update temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.updateTempMovement(data, request.getRemoteUser()), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
@@ -157,7 +154,7 @@ public class TempMovementResource {
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewManualMovements)
     public ResponseDto<TempMovementListResponseDto> getTempMovements(MovementQuery query) {
-        LOG.info("List all active temp movement invoked in rest layer");
+        LOG.debug("List all active temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.getTempMovements(query), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
@@ -183,7 +180,7 @@ public class TempMovementResource {
     @Path("/send/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
     public ResponseDto send(@PathParam("guid") String guid) {
-        LOG.info("Send temp movement invoked in rest layer");
+        LOG.debug("Send temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.sendTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
         } catch (MovementDuplicateException e) {

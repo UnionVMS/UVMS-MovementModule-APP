@@ -22,7 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 @Local
 public interface TempMovementService {
 
-    TempMovementType createTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException, MovementDuplicateException;
+    TempMovementType createTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException;
 
     TempMovementType getTempMovement(String guid) throws MovementServiceException, MovementDuplicateException;
 

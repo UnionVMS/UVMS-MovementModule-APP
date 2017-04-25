@@ -9,6 +9,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateExc
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.container.test.api.ShouldThrowException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.EJBTransactionRolledbackException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,17 +50,14 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @ShouldThrowException(EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void createWithBrokenJMS() throws MovementDuplicateException {
+    public void createWithBrokenJMS() throws MovementServiceException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
         TempMovementType tempMovementType = createTempMovement();
-        try {
-            TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
-            em.flush();
-            Assert.assertFalse("Should not reach this!", true);
-        } catch (MovementServiceException e) {
-            Assert.assertTrue(e.getMessage().contains("Error when creating temp movement"));
-        }
+        //This should still work because the only "dependency" that is broken is the AUDIT module.
+        TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
+        em.flush();
     }
 
     @Test

@@ -9,19 +9,23 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>3.0.6</version>
+        <version>3.0.7</version>
     </parent>
-    
+
+    <properties>
+    <hibernate.dialect>org.hibernate.spatial.dialect.postgis.PostgisDialect</hibernate.dialect>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-message</artifactId>
-            <version>3.0.6</version>
+            <version>3.0.7</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-service</artifactId>
-            <version>3.0.6</version>
+            <version>3.0.7</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
@@ -105,7 +109,27 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.5</version>
 		</dependency>
-		<dependency>
+        <!-- JUnit Container Implementation for the Arquillian Project -->
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eu.ingwar.tools</groupId>
+            <artifactId>arquillian-suite-extension</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+
+        <dependency>
 		    <groupId>net.bull.javamelody</groupId>
 		    <artifactId>javamelody-core</artifactId>
 		    <scope>provided</scope>
