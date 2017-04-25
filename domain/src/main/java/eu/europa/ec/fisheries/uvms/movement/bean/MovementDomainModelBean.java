@@ -63,7 +63,7 @@ public class MovementDomainModelBean implements MovementDomainModel {
 
     public ListResponseDto getMovementListByQuery(MovementQuery query) throws MovementModelException {
 
-        LOG.info("Get list of movement from query.");
+        LOG.debug("Get list of movement from query.");
 
         if (query == null) {
             throw new InputArgumentException("Movement list query is null");
@@ -119,7 +119,7 @@ public class MovementDomainModelBean implements MovementDomainModel {
 
     public ListResponseDto getMinimalMovementListByQuery(MovementQuery query) throws MovementModelException {
 
-        LOG.info("Get list of movement from query.");
+        LOG.debug("Get list of movement from query.");
 
         if (query == null) {
             throw new InputArgumentException("Movement list query is null");
@@ -333,7 +333,7 @@ public class MovementDomainModelBean implements MovementDomainModel {
 
     public List<MovementType> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementModelException {
         try {
-            LOG.info("Getting Latest Movements By ConnectIds.");
+            LOG.debug("Getting Latest Movements By ConnectIds.");
             List<Movement> movements = dao.getLatestMovementsByConnectIdList(connectIds);
 
             return MovementEntityToModelMapper.mapToMovementType(movements);
@@ -345,7 +345,7 @@ public class MovementDomainModelBean implements MovementDomainModel {
     @Override
     public List<MovementType> getLatestMovements(Integer numberOfMovements) throws MovementModelException {
         try {
-            LOG.info("Getting Latest Movements.");
+            LOG.debug("Getting Latest Movements.");
             List<LatestMovement> movements = dao.getLatestMovements(numberOfMovements);
 
             return MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
@@ -356,7 +356,7 @@ public class MovementDomainModelBean implements MovementDomainModel {
 
     public MovementType getMovementByGUID(String guid) throws MovementModelException {
         try {
-            LOG.info("Getting Latest Movements By ConnectId.");
+            LOG.debug("Getting Latest Movements By ConnectId.");
             Movement latestMovements = dao.getMovementsByGUID(guid);
             return MovementEntityToModelMapper.mapToMovementType(latestMovements);
         } catch (MovementDaoException e) {
