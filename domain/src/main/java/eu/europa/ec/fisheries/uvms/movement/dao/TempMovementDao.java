@@ -48,4 +48,5 @@ public interface TempMovementDao {
      */
     public Long getTempMovementListCount() throws MovementDaoException;
 
+
     }

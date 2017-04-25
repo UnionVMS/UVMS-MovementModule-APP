@@ -69,7 +69,7 @@ public class TempMovementServiceBean implements TempMovementService {
 
     @Override
     public TempMovementType createTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException {
-        LOG.info("Creating temp movement");
+        LOG.debug("Creating temp movement");
         checkUsernameProvided(username);
         validatePosition(tempMovementType.getPosition());
         try {
@@ -77,6 +77,7 @@ public class TempMovementServiceBean implements TempMovementService {
 
             fireMovementEvent(createdMovement);
 
+            // this should not roll back,  so we just log it
             try {
                 producer.sendModuleMessage(AuditModuleRequestMapper.mapAuditLogTempMovementCreated(createdMovement.getGuid(), username), ModuleQueue.AUDIT);
             } catch (AuditModelMarshallException | MovementMessageException ignore) {
@@ -127,14 +128,14 @@ public class TempMovementServiceBean implements TempMovementService {
     public TempMovementType sendTempMovement(String guid, String username) throws MovementServiceException {
         checkUsernameProvided(username);
         try {
-            LOG.info("Getting tempMovement from db");
+            LOG.debug("Getting tempMovement from db");
             TempMovementType movement = tempMovementModel.sendTempMovement(guid, username);
-            LOG.info("Sending temp movement to Exchange");
+            LOG.debug("Sending temp movement to Exchange");
 
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username);
             String exchangeMessageId = producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
-            TextMessage exchangeResponse = consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
+            consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
 
             return movement;
         }catch ( MovementModelException | MovementMessageException  e) {
