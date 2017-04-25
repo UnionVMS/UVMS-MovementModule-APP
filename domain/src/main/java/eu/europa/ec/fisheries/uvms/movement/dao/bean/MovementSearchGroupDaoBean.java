@@ -10,21 +10,17 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 
-import java.util.List;
-
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-
-import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
+import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementSearchGroupDao;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchGroupDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+import java.util.List;
 
 @Stateless
 public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGroupDao {
@@ -45,14 +41,14 @@ public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGro
 
     @Override
     public MovementFilterGroup getMovementFilterGroupById(Integer groupId) {
-        LOG.info("Get movement group by ID.");
+        LOG.debug("Get movement search group by ID.");
         return em.find(MovementFilterGroup.class, groupId.longValue());
     }
 
     @Override
     public List<MovementFilterGroup> getMovementFilterGroupsByUser(String user) throws MovementSearchGroupDaoException {
         try {
-            LOG.info("Get movement groups by user.");
+            LOG.debug("Get movement groups by user.");
             TypedQuery<MovementFilterGroup> query = em.createNamedQuery(UvmsConstants.GROUP_VESSEL_BY_USER, MovementFilterGroup.class);
             query.setParameter("user", user);
             List<MovementFilterGroup> resultList = query.getResultList();
@@ -66,8 +62,13 @@ public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGro
 
     public MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementSearchGroupDaoException {
         try {
-            em.merge(filterGroup);
-            em.flush();
+            //Sanity check on id to prevent create operation instead of update operation.
+            if(filterGroup.getId() != null && getMovementFilterGroupById((Integer) filterGroup.getId().intValue()) != null) {
+             em.merge(filterGroup);
+             em.flush();
+            } else {
+                throw new MovementSearchGroupDaoException("Missing id or filtergroup with matching id.");
+            }
             return filterGroup;
         } catch (Exception e) {
             LOG.error("[ Error when updating entity ] {}", e.getMessage());

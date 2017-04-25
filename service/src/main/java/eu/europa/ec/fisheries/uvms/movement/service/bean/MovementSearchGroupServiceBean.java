@@ -11,31 +11,28 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.math.BigInteger;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
-import eu.europa.ec.fisheries.uvms.movement.model.MovementSearchGroupDomainModel;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.math.BigInteger;
+import java.util.List;
 
 @Stateless
 public class MovementSearchGroupServiceBean implements MovementSearchGroupService {
 
     private final static Logger LOG = LoggerFactory.getLogger(MovementSearchGroupServiceBean.class);
 
-    //@EJB(lookup = LookupConstant.SEARCH_GROUP_MODEL)
     @EJB
-    MovementSearchGroupDomainModel groupModel;
+    MovementSearchGroupDomainModelBean movementSearchGroupDomainModelBean;
 
     //TODO SET AS PARAMETER
     private static final Long CREATE_MOVEMENT_TIMEOUT = 10000L;
@@ -52,7 +49,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
                 throw new MovementServiceException("Create MovementSearchGroup must have username set, cannot be null");
             }
             if (MovementGroupValidator.isMovementGroupOk(searchGroup)) {
-                return groupModel.createMovementSearchGroup(searchGroup, username);
+                return movementSearchGroupDomainModelBean.createMovementSearchGroup(searchGroup, username);
             } else {
                 throw new MovementServiceException("One or several movement types are misspelled or non existant. Allowed values are: [ " + MovementGroupValidator.ALLOWED_FIELD_VALUES + " ]");
             }
@@ -65,7 +62,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     @Override
     public MovementSearchGroup getMovementSearchGroup(Long id) throws MovementServiceException, MovementDuplicateException {
         try {
-            return groupModel.getMovementSearchGroup(BigInteger.valueOf(id));
+            return movementSearchGroupDomainModelBean.getMovementSearchGroup(BigInteger.valueOf(id));
         } catch (MovementModelException e) {
             LOG.error("[ Error when getting movement search group. ] {}", e.getMessage());
             throw new MovementServiceException("[ Error when getting movement search group. ]", e);
@@ -75,7 +72,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     @Override
     public List<MovementSearchGroup> getMovementSearchGroupsByUser(String user) throws MovementServiceException, MovementDuplicateException {
         try {
-            return groupModel.getMovementSearchGroupsByUser(user);
+            return movementSearchGroupDomainModelBean.getMovementSearchGroupsByUser(user);
         } catch (MovementModelException e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage());
             throw new MovementServiceException("[ Error when getting movement search groups by user. ]", e);
@@ -89,7 +86,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
             throw new MovementServiceException("Error when updating movement search group. MovementSearchGroup has no id set or the username is null");
         }
         try {
-            return groupModel.updateMovementSearchGroup(searchGroup, username);
+            return movementSearchGroupDomainModelBean.updateMovementSearchGroup(searchGroup, username);
         } catch (MovementModelException e) {
             LOG.error("[ Error when updating movement search group. ] {}", e.getMessage());
             throw new MovementServiceException("[ Error when updating movement search group. ] " + e.getMessage(), e);
@@ -99,7 +96,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     @Override
     public MovementSearchGroup deleteMovementSearchGroup(Long id) throws MovementServiceException, MovementDuplicateException {
         try {
-            return groupModel.deleteMovementSearchGroup(BigInteger.valueOf(id));
+            return movementSearchGroupDomainModelBean.deleteMovementSearchGroup(BigInteger.valueOf(id));
         } catch (MovementModelException e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage());
             throw new MovementServiceException("[ Error when deleting movement search group. ]", e);
