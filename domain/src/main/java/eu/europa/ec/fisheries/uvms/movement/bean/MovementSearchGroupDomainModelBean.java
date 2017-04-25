@@ -17,7 +17,6 @@ import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchGroupDao
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementGroupMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementSearchGroupDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,7 @@ import java.util.List;
 
 @Stateless
 @LocalBean
-public class MovementSearchGroupDomainModelBean implements MovementSearchGroupDomainModel {
+public class MovementSearchGroupDomainModelBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementSearchGroupDomainModelBean.class);
 
