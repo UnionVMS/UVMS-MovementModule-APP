@@ -28,6 +28,7 @@ import eu.europa.ec.fisheries.uvms.movement.exception.EntityDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
@@ -42,11 +43,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 /**
  **/
 @LocalBean
 @Stateless
-public class MovementBatchModelBean  {
+public class MovementBatchModelBean {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementBatchModelBean.class);
 

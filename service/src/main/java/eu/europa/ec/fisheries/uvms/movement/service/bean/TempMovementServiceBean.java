@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -59,7 +60,6 @@ public class TempMovementServiceBean implements TempMovementService {
     @CreatedManualMovement
     Event<NotificationMessage> createdManualMovement;
 
-    //@EJB(lookup = LookupConstant.TEMP_MOVEMENT_MODEL_BEAN)
     @EJB
     TempMovementDomainModelBean tempMovementModel;
 
@@ -69,7 +69,7 @@ public class TempMovementServiceBean implements TempMovementService {
 
     @Override
     public TempMovementType createTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException {
-        LOG.info("Creating temp movement");
+        LOG.debug("Creating temp movement");
         checkUsernameProvided(username);
         validatePosition(tempMovementType.getPosition());
         try {
@@ -77,16 +77,17 @@ public class TempMovementServiceBean implements TempMovementService {
 
             fireMovementEvent(createdMovement);
 
+            // this should not roll back,  so we just log it
             try {
                 producer.sendModuleMessage(AuditModuleRequestMapper.mapAuditLogTempMovementCreated(createdMovement.getGuid(), username), ModuleQueue.AUDIT);
-            } catch (AuditModelMarshallException e) {
+            } catch (AuditModelMarshallException | MovementMessageException ignore) {
                 LOG.error("Failed to send audit log message! Temp Movement with guid {} was created ", createdMovement.getGuid());
             }
 
             return createdMovement;
-        } catch (MovementModelException | MovementMessageException e) {
+        } catch (MovementModelException e) {
             LOG.error("[ Error when creating temp movement. ] {}", e.getMessage());
-            throw new MovementServiceException("Error when creating temp movement: " + e.getMessage(), e);
+            throw new EJBException("Error when creating temp movement: " + e.getMessage(), e);
         }
     }
 
@@ -127,14 +128,14 @@ public class TempMovementServiceBean implements TempMovementService {
     public TempMovementType sendTempMovement(String guid, String username) throws MovementServiceException {
         checkUsernameProvided(username);
         try {
-            LOG.info("Getting tempMovement from db");
+            LOG.debug("Getting tempMovement from db");
             TempMovementType movement = tempMovementModel.sendTempMovement(guid, username);
-            LOG.info("Sending temp movement to Exchange");
+            LOG.debug("Sending temp movement to Exchange");
 
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username);
             String exchangeMessageId = producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
-            TextMessage exchangeResponse = consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
+            consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
 
             return movement;
         }catch ( MovementModelException | MovementMessageException  e) {

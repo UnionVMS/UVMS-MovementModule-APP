@@ -1,5 +1,20 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
+
+import java.math.BigInteger;
+import java.util.UUID;
+
+import javax.ejb.EJB;
+
+import eu.europa.ec.fisheries.uvms.movement.bean.TempMovementDomainModelBean;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
@@ -27,12 +42,12 @@ import java.util.UUID;
 @RunWith(Arquillian.class)
 public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
 
-    @EJB
+
+	@EJB
     TempMovementDomainModelBean tempMovementDomainModel;
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
+	
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
     @Test
     @OperateOnDeployment("normal")

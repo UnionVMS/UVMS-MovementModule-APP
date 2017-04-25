@@ -68,20 +68,15 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
     @OperateOnDeployment("normal")
     public void createTempMovementEntity() {
 
-        try {
+        double longitude = 9.140626D;
+        double latitude = 57.683805D;
 
-            double longitude = 9.140626D;
-            double latitude = 57.683805D;
-
-            TempMovement tempMovement = createTempMovementEntityHelper(longitude,latitude);
-            Assert.assertTrue(tempMovement.getId() == null);
-            TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
-            em.flush();
-            Assert.assertTrue(createdTempMovement.getId() != null);
-            Assert.assertTrue(createdTempMovement.getGuid() != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        TempMovement tempMovement = createTempMovementEntityHelper(longitude,latitude);
+        Assert.assertTrue(tempMovement.getId() == null);
+        TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
+        em.flush();
+        Assert.assertTrue(createdTempMovement.getId() != null);
+        Assert.assertTrue(createdTempMovement.getGuid() != null);
     }
 
     @Test
@@ -99,8 +94,6 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
             TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
             em.flush();
             Assert.fail("This is a db constraint violation and should not occur");
-        } catch (MovementDaoException e) {
-            Assert.assertTrue(e != null);
         } catch (Exception e) {
             Assert.assertTrue(e != null);
         }
