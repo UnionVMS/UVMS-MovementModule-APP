@@ -22,8 +22,8 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeInter
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementBatchModel;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
@@ -66,7 +66,7 @@ public class MovementServiceBean implements MovementService {
 
     //@EJB(lookup = LookupConstant.BATCH_MODEL_BEAN)
     @EJB
-    MovementBatchModel movementBatch;
+    MovementBatchModelBean movementBatch;
 
     //@EJB(lookup = LookupConstant.DOMAIN_MODEL_BEAN)
     @EJB

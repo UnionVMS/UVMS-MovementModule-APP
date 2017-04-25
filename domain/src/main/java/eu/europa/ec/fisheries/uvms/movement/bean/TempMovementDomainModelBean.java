@@ -20,7 +20,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
-import eu.europa.ec.fisheries.uvms.movement.model.TempMovementDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
@@ -37,7 +36,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelExcepti
 
 @Stateless
 @LocalBean
-public class TempMovementDomainModelBean implements TempMovementDomainModel {
+public class TempMovementDomainModelBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(TempMovementDomainModelBean.class);
 
@@ -46,7 +45,7 @@ public class TempMovementDomainModelBean implements TempMovementDomainModel {
 
     public TempMovementType createTempMovement(TempMovementType tempMovementType, String username) throws MovementModelException {
         try {
-            LOG.info("Create temp movement.");
+            LOG.debug("Create temp movement.");
             TempMovement tempMovement = TempMovementMapper.toTempMovementEntity(tempMovementType, username);
             tempMovement = dao.createTempMovementEntity(tempMovement);
             return TempMovementMapper.toTempMovement(tempMovement);
@@ -57,18 +56,18 @@ public class TempMovementDomainModelBean implements TempMovementDomainModel {
     }
 
     public TempMovementType archiveTempMovement(String guid, String username) throws MovementModelException {
-        LOG.info("Archiving temp movement.");
+        LOG.debug("Archiving temp movement.");
         return setTempMovementState(guid, TempMovementStateEnum.DELETED, username);
     }
 
     public TempMovementType sendTempMovement(String guid, String username) throws MovementModelException {
-        LOG.info("Archiving temp movement.");
+        LOG.debug("Archiving temp movement.");
         return setTempMovementState(guid, TempMovementStateEnum.SENT, username);
     }
 
     public TempMovementType setTempMovementState(String guid, TempMovementStateEnum state, String username) throws MovementModelException {
         try {
-            LOG.info("Set temp movement state.");
+            LOG.debug("Set temp movement state.");
             if (guid == null) {
                 throw new InputArgumentException("Non valid id of temp movement to update");
             }
@@ -86,7 +85,7 @@ public class TempMovementDomainModelBean implements TempMovementDomainModel {
 
     public TempMovementType updateTempMovement(TempMovementType tempMovementType, String username) throws MovementModelException {
         try {
-            LOG.info("Update temp movement.");
+            LOG.debug("Update temp movement.");
 
             if (tempMovementType == null) {
                 throw new InputArgumentException("No temp movement to update");
@@ -142,7 +141,7 @@ public class TempMovementDomainModelBean implements TempMovementDomainModel {
     }
 
     public TempMovementType getTempMovement(String guid) throws MovementModelException {
-        LOG.info("Getting temp movement.");
+        LOG.debug("Getting temp movement.");
         if (guid == null) {
             throw new InputArgumentException("TempMovement GUID cannot be null.");
         }

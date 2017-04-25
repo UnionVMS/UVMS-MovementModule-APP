@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.ejb.EJB;
 
+import eu.europa.ec.fisheries.uvms.movement.bean.TempMovementDomainModelBean;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
@@ -20,7 +21,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.model.TempMovementDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
@@ -30,7 +30,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelExcepti
 public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
 
 	@EJB
-	TempMovementDomainModel tempMovementDomainModel;
+    TempMovementDomainModelBean tempMovementDomainModel;
 	
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
