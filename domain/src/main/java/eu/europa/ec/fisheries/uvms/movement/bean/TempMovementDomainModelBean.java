@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +29,28 @@ import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.TempMovementDao;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.mapper.TempMovementMapper;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Stateless
 @LocalBean
 public class TempMovementDomainModelBean {
+
 
     private static final Logger LOG = LoggerFactory.getLogger(TempMovementDomainModelBean.class);
 

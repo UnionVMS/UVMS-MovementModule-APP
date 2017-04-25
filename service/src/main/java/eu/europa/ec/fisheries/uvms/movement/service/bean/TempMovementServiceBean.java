@@ -35,15 +35,15 @@ import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.TextMessage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless
 public class TempMovementServiceBean implements TempMovementService {

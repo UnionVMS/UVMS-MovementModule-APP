@@ -13,13 +13,9 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
-
-import javax.ejb.*;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
+
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
@@ -32,23 +28,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementDomainModel;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.*;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
