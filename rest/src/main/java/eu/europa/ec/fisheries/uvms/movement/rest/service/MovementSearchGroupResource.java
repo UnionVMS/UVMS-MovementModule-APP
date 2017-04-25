@@ -111,7 +111,7 @@ public class MovementSearchGroupResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto updateMovementSeachGroup(MovementSearchGroup searchGroup) {
+    public ResponseDto updateMovementSearchGroup(MovementSearchGroup searchGroup) {
         try {
             MovementSearchGroup updatedSearchGroup = service.updateMovementSearchGroup(searchGroup, request.getRemoteUser());
             return new ResponseDto(updatedSearchGroup, ResponseCode.OK);

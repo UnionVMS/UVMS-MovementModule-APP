@@ -11,26 +11,23 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Local;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
-import eu.europa.ec.fisheries.uvms.movement.model.MovementSearchGroupDomainModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementSearchGroupDao;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchGroupDaoException;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementGroupMapper;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementSearchGroupDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Stateless
 @LocalBean
@@ -43,7 +40,7 @@ public class MovementSearchGroupDomainModelBean implements MovementSearchGroupDo
 
     public MovementSearchGroup createMovementSearchGroup(MovementSearchGroup movementGroup, String username) throws MovementModelException {
         try {
-            LOG.info("Create movement group.");
+            LOG.debug("Create movement group.");
             MovementFilterGroup filterGroup = MovementGroupMapper.toGroupEntity(movementGroup, username);
             filterGroup = dao.createMovementFilterGroup(filterGroup);
             return MovementGroupMapper.toMovementSearchGroup(filterGroup);
@@ -55,7 +52,7 @@ public class MovementSearchGroupDomainModelBean implements MovementSearchGroupDo
 
     public MovementSearchGroup getMovementSearchGroup(BigInteger id) throws MovementModelException {
         try {
-            LOG.info("Get movement search group by ID.");
+            LOG.debug("Get movement search group by ID.");
             MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(id.intValue());
             if(filterGroup == null){
                 LOG.error(" Error when getting movement search group by ID: {}", id.intValue());
@@ -70,7 +67,7 @@ public class MovementSearchGroupDomainModelBean implements MovementSearchGroupDo
 
     public List<MovementSearchGroup> getMovementSearchGroupsByUser(String user) throws MovementModelException {
         try {
-            LOG.info("Get movement search groups by user.");
+            LOG.debug("Get movement search groups by user.");
             List<MovementFilterGroup> filterGroups = dao.getMovementFilterGroupsByUser(user);
             List<MovementSearchGroup> searchGroups = new ArrayList<>();
             for (MovementFilterGroup filterGroup : filterGroups) {
@@ -92,8 +89,7 @@ public class MovementSearchGroupDomainModelBean implements MovementSearchGroupDo
                 throw new MovementModelException("Could not update movement search groups");
             }
 
-            // TODO sloppy programming. should use the returnvalue from the function
-            MovementGroupMapper.toGroupEntity(currentGroup, searchGroup, username);
+            currentGroup = MovementGroupMapper.toGroupEntity(currentGroup, searchGroup, username);
             MovementFilterGroup updatedGroup = dao.updateMovementFilterGroup(currentGroup);
             return MovementGroupMapper.toMovementSearchGroup(updatedGroup);
         } catch (MovementSearchGroupDaoException | MovementSearchMapperException e) {
@@ -104,7 +100,7 @@ public class MovementSearchGroupDomainModelBean implements MovementSearchGroupDo
 
     public MovementSearchGroup deleteMovementSearchGroup(BigInteger groupId) throws MovementModelException {
         try {
-            LOG.info("Delete movement search group.");
+            LOG.debug("Delete movement search group.");
             MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(groupId.intValue());
             filterGroup = dao.deleteMovementFilterGroup(filterGroup);
             return MovementGroupMapper.toMovementSearchGroup(filterGroup);

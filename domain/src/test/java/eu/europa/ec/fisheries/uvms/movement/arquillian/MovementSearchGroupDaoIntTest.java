@@ -7,7 +7,9 @@ import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
@@ -24,6 +26,9 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
 
     @EJB
     private MovementSearchGroupDao dao;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     @OperateOnDeployment("normal")
@@ -129,12 +134,13 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void updateMovementFilterGroup() throws MovementSearchGroupDaoException {
         MovementFilterGroup movementFilterGroup = newFilterGroup();
+        movementFilterGroup.setUpdatedBy("First Value");
         dao.createMovementFilterGroup(movementFilterGroup);
         Assert.assertNotNull(movementFilterGroup.getId());
         Long filterGroupId = movementFilterGroup.getId();
         em.flush();
 
-        movementFilterGroup.setUpdatedBy("Test Ghost");
+        movementFilterGroup.setUpdatedBy("Second Value");
         //TODO: Uses MERGE, fix this!!!
         dao.updateMovementFilterGroup(movementFilterGroup);
         em.flush();
@@ -142,9 +148,19 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
         MovementFilterGroup movementFilterGroup2 = dao.getMovementFilterGroupById(filterGroupId.intValue());
         Assert.assertNotNull(movementFilterGroup2);
         Assert.assertEquals(movementFilterGroup.getId(), movementFilterGroup2.getId());
+        Assert.assertEquals(movementFilterGroup.getUpdatedBy(), movementFilterGroup2.getUpdatedBy());
+        Assert.assertNotEquals("First Value", movementFilterGroup2.getUpdatedBy());
+
         Assert.assertNotEquals(TEST_USER_NAME, movementFilterGroup2.getUpdatedBy());
     }
 
+    @Test(expected = MovementSearchGroupDaoException.class)
+    @OperateOnDeployment("normal")
+    public void updateMovementFilterGroupFailedNoId() throws MovementSearchGroupDaoException {
+        MovementFilterGroup movementFilterGroup = newFilterGroup();
+        dao.updateMovementFilterGroup(movementFilterGroup);
+        em.flush();
+    }
 
     private MovementFilterGroup newFilterGroup() {
         MovementFilterGroup movementFilterGroup = new MovementFilterGroup();
