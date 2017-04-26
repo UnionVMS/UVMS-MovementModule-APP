@@ -14,8 +14,6 @@ package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.GetMovementListByAreaAndTimeIntervalEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.PingEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;

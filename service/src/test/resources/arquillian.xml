@@ -12,7 +12,7 @@
             <property name="managementAddress">localhost</property>
             <property name="managementPort">9990</property>
             <property name="username">admin</property>
-            <property name="password">wildfly4ever</property>
+            <property name="password">admin</property>
         </configuration>
     </container>
     
