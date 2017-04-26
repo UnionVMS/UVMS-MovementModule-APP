@@ -16,7 +16,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.uvms.movement.service.EventService;
+//import eu.europa.ec.fisheries.uvms.movement.service.EventService;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
@@ -75,7 +75,7 @@ public abstract class BuildMovementServiceTestDeployment {
         archive.addClass(MovementServiceException.class);
         archive.addClass(MovementGroupValidator.class);
         
-        archive.addClass(EventService.class);
+        //archive.addClass(EventService.class);
         archive.addClass(MovementEventTestHelper.class);
         
         archive.addClass(MovementServiceBean.class)
