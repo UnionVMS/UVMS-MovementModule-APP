@@ -201,22 +201,6 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     }
 
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getListAsRestDto() {
-
-        MovementQuery query = createMovementQuery(true);
-
-        try {
-            MovementListResponseDto movementListResponseDto = movementService.getListAsRestDto(query);
-            Assert.assertTrue(movementListResponseDto != null);
-        } catch (MovementServiceException e) {
-            Assert.fail();
-        } catch (MovementDuplicateException e) {
-            Assert.fail();
-        }
-
-    }
 
 
     @Test
@@ -449,21 +433,6 @@ public class MovementServiceIntTest extends TransactionalTests {
             MovementType createdMovementType = movementService.getById(connectId);
             Assert.fail();
         } catch (Exception e) {
-            Assert.assertTrue(e != null);
-        }
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void update() {
-
-        Object obj = new Object();
-        try {
-            movementService.update(obj);
-            Assert.fail();
-        } catch (MovementServiceException e) {
-            Assert.assertTrue(e != null);
-        } catch (MovementDuplicateException e) {
             Assert.assertTrue(e != null);
         }
     }

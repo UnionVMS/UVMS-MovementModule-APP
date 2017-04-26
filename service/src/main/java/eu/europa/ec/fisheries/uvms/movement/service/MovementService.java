@@ -65,13 +65,6 @@ public interface MovementService {
      */
     GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
 
-    /**
-     *
-     * @param query
-     * @return
-     * @throws MovementServiceException
-     */
-    MovementListResponseDto getListAsRestDto(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
 
     /**
      *
@@ -89,14 +82,6 @@ public interface MovementService {
      */
     MovementType getById(String id) throws MovementServiceException, MovementDuplicateException;
 
-    /**
-     * Update an object
-     *
-     * @param data
-     * @return
-     * @throws MovementServiceException
-     */
-    Object update(Object data) throws MovementServiceException, MovementDuplicateException;
 
     /**
      *

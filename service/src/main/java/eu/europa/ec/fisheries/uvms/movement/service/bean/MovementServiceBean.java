@@ -177,33 +177,6 @@ public class MovementServiceBean implements MovementService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return
-     * @throws MovementServiceException
-     */
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public MovementListResponseDto getListAsRestDto(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
-        try {
-            LOG.info("Get list invoked in service layer");
-            ListResponseDto response = model.getMovementListByQuery(query);
-            if (response == null) {
-                LOG.error("[ Error when getting list, response from JMS Queue is null ]");
-                throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
-            }
-            GetMovementListByQueryResponse mappedResponse = MovementDataSourceResponseMapper.createMovementListResponse(response);
-            return MovementMapper.mapToMovementListDto(mappedResponse);
-        } catch (MovementModelException ex) {
-            LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
-        } catch (ModelMapperException ex) {
-            LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
-        }
-
-    }
 
     /**
      * {@inheritDoc}
@@ -230,19 +203,6 @@ public class MovementServiceBean implements MovementService {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param data
-     * @return
-     * @throws MovementServiceException
-     */
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Object update(Object data) throws MovementServiceException {
-        LOG.info("Update invoked in service layer");
-        throw new MovementServiceException("Update not implemented in service layer");
-    }
 
     private void fireMovementEvent(MovementBaseType createdMovement) {
         try {

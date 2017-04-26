@@ -22,7 +22,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementEventServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementServiceBean;
@@ -76,7 +75,6 @@ public abstract class BuildMovementServiceTestDeployment {
         archive.addClass(MovementServiceException.class);
         archive.addClass(MovementGroupValidator.class);
         
-        archive.addClass(MovementEventServiceBean.class);
         archive.addClass(EventService.class);
         archive.addClass(MovementEventTestHelper.class);
         

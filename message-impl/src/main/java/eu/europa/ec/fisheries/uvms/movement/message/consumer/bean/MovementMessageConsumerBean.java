@@ -73,7 +73,6 @@ public class MovementMessageConsumerBean implements MessageConsumer, ConfigMessa
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <T> T getMessage(String correlationId, Class type, Long timeout) throws MovementMessageException {
         try {
 
@@ -100,7 +99,6 @@ public class MovementMessageConsumerBean implements MessageConsumer, ConfigMessa
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public <T> T getConfigMessage(String correlationId, Class type) throws ConfigMessageException {
         try {
             return getMessage(correlationId, type, TIMEOUT);

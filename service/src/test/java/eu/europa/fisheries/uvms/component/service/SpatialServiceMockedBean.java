@@ -11,7 +11,6 @@ import javax.ejb.*;
 @Stateless
 public class SpatialServiceMockedBean  implements SpatialService {
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public MovementType enrichMovementWithSpatialData(MovementBaseType movement) throws MovementServiceException {
       return  createSmalletPossibleMovementType(movement);
     }
