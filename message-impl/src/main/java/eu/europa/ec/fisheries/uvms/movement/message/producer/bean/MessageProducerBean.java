@@ -67,7 +67,6 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException {
         try {
             Session session = connector.getNewSession();
@@ -102,7 +101,6 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException {
         try {
             ExceptionType exception = new ExceptionType();
@@ -133,7 +131,6 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendConfigMessage(String text) throws ConfigMessageException {
         try {
             return sendModuleMessage(text, ModuleQueue.CONFIG);

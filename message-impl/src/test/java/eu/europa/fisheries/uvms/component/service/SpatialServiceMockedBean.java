@@ -14,13 +14,12 @@ import javax.ejb.TransactionAttributeType;
 @Stateless
 public class SpatialServiceMockedBean implements SpatialService {
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public MovementType enrichMovementWithSpatialData(MovementBaseType movement) throws MovementServiceException {
-      return  createSmalletPossibleMovementType(movement);
+      return  createSmallestPossibleMovementType(movement);
     }
 
 
-    private MovementType createSmalletPossibleMovementType(MovementBaseType movement){
+    private MovementType createSmallestPossibleMovementType(MovementBaseType movement){
 
         MovementType movementType  = new MovementType();
         movementType.setPositionTime(movement.getPositionTime());

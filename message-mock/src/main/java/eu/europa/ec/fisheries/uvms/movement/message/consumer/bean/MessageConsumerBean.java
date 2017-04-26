@@ -38,7 +38,6 @@ public class MessageConsumerBean implements MessageListener {
     final static Logger LOG = LoggerFactory.getLogger(MessageConsumerBean.class);
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message message) {
         TextMessage textMessage = (TextMessage) message;
         try {

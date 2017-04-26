@@ -41,27 +41,23 @@ public class MessageProducerBean implements MessageProducer, ConfigMessageProduc
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException {
         shouldIFail();
         LOG.info("sendModuleMessage (" + queue.name() + "): " + text);
         return UUID.randomUUID().toString();
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException {
         shouldIFail();
         LOG.info("sendErrorMessageBackToRecipient: " + message.getErrorMessage());
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) throws MovementMessageException {
         shouldIFail();
         LOG.info("sendMessageBackToRecipient: " + returnMessage);
     }
 
     @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendConfigMessage(String text) throws ConfigMessageException {
         LOG.info("sendConfigMessage: " + text);
         return text;

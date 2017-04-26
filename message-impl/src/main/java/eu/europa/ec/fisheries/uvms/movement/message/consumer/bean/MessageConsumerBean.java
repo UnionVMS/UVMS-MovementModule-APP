@@ -43,14 +43,6 @@ public class MessageConsumerBean implements MessageListener {
 
     final static Logger LOG = LoggerFactory.getLogger(MessageConsumerBean.class);
 
-    @Inject
-    @PingEvent
-    Event<EventMessage> pingEvent;
-
-    @Inject
-    @GetMovementListByAreaAndTimeIntervalEvent
-    Event<EventMessage> getMovementListByAreaAndTimeIntervalEvent;
-
     @EJB
     private CreateMovementBean createMovementBean;
 
