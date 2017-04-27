@@ -92,7 +92,7 @@
 		<dependency>
 		    <groupId>net.bull.javamelody</groupId>
 		    <artifactId>javamelody-core</artifactId>
-		    <scope>provided</scope>
+		    <scope>test</scope>		    
 		</dependency>        
         <dependency>
             <groupId>commons-lang</groupId>

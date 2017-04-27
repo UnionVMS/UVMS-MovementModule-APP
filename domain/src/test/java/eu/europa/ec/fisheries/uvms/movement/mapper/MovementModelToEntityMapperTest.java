@@ -270,7 +270,6 @@ public class MovementModelToEntityMapperTest extends Assert {
     }
 
     @Test
-    @OperateOnDeployment("normal")
     public void testCreateActivity_mapFromMovementBaseTypeToActivity() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
