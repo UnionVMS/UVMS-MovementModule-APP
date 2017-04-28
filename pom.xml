@@ -739,6 +739,22 @@
 				</plugins>
 			</build>	
 		</profile>
+		<profile>
+			<id>docker-start</id>
+			<properties>
+				<docker.dev.start.phase>validate</docker.dev.start.phase>
+        		<docker.dev.stop.phase>none</docker.dev.stop.phase>
+       			<docker.dev.prestop.phase>none</docker.dev.prestop.phase>        				
+			</properties>
+		</profile>
+		<profile>
+			<id>docker-stop</id>
+			<properties>
+				<docker.dev.start.phase>none</docker.dev.start.phase>
+        		<docker.dev.stop.phase>validate</docker.dev.stop.phase>
+       			<docker.dev.prestop.phase>validate</docker.dev.prestop.phase>        				
+			</properties>
+		</profile>		
     </profiles>
 
     <modules>
