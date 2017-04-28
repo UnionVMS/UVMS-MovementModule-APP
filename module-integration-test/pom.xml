@@ -10,6 +10,12 @@
 		<artifactId>movement</artifactId>
 		<version>3.0.8-SNAPSHOT</version>
 	</parent>
+	
+	<properties>
+        <docker.dev.stop.phase>verify</docker.dev.stop.phase>
+        <docker.dev.prestop.phase>install</docker.dev.prestop.phase>        
+		
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>

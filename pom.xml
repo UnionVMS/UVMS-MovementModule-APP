@@ -17,6 +17,11 @@
         <release.branch.name>uvms-3.0.5-C3PO</release.branch.name>
         <java.version>1.7</java.version>
         <maven.version>3.2.0</maven.version>
+        
+        <docker.dev.version>3.1.0-SNAPSHOT</docker.dev.version>
+        <docker.dev.start.phase>none</docker.dev.start.phase>
+        <docker.dev.stop.phase>none</docker.dev.stop.phase>
+        <docker.dev.prestop.phase>none</docker.dev.prestop.phase>        
 
         <usm4uvms.version>3.0.4</usm4uvms.version>
         <uvms.common.version>2.0.17</uvms.common.version>
@@ -602,7 +607,138 @@
           			</plugin>
 	    		</plugins>
 	    	</reporting>	    
-	    </profile>		        	  	
+	    </profile>
+		<profile>
+			<id>docker</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<version>0.20.1</version>
+						<executions>
+							<execution>
+								<id>verifyallstopped</id>
+								<phase>${docker.dev.prestop.phase}</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>start</id>
+								<phase>${docker.dev.start.phase}</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>stop</id>
+								<phase>${docker.dev.stop.phase}</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<images>
+								<image>
+									<alias>activemq</alias>
+									<name>uvms/activemq:${docker.dev.version}</name>
+									<run>
+										<net>bridge</net>
+										<namingStrategy>none</namingStrategy>
+										<ports>
+											<port>18161:8161</port>
+										</ports>
+										<wait>
+											<log>database system is ready to accept connections</log>
+											<tcp>
+												<host>127.0.0.1</host>
+												<ports>
+													<port>8161</port>
+												</ports>
+											</tcp>
+											<kill>15000</kill>
+											<shutdown>15000</shutdown>
+											<time>15000</time>
+										</wait>
+										<log>
+											<enabled>true</enabled>
+											<color>red</color>
+										</log>
+										<hostname>activemq</hostname>
+									</run>
+								</image>
+								<image>
+									<alias>postgres</alias>
+									<name>uvms/postgres-release:${docker.dev.version}</name>
+									<run>
+										<net>bridge</net>
+										<namingStrategy>none</namingStrategy>
+										<ports>
+											<port>15432:5432</port>
+										</ports>
+										<wait>
+											<log>All uvms databases created</log>
+											<time>240000</time>
+											<kill>10000</kill>
+											<shutdown>10000</shutdown>
+										</wait>
+										<dependsOn>
+											<container>activemq</container>
+										</dependsOn>
+										<links>
+											<link>activemq:activemq</link>
+										</links>
+										<log>
+											<enabled>true</enabled>
+											<color>green</color>
+										</log>
+										<hostname>postgres</hostname>
+									</run>
+								</image>
+								<image>
+									<alias>wildfly</alias>
+									<name>uvms/wildfly-base:${docker.dev.version}</name>
+									<run>
+										<net>bridge</net>
+										<namingStrategy>none</namingStrategy>
+										<links>
+											<link>postgres:postgres</link>
+											<link>activemq:activemq</link>
+										</links>
+										<ports>
+											<port>9990:9990</port>
+											<port>28787:8787</port>
+											<port>28080:8080</port>
+										</ports>
+										<wait>
+											<log>WildFly 8.2.0.Final "Tweek" started in</log>
+											<time>300000</time>
+											<kill>10000</kill>
+											<shutdown>10000</shutdown>
+										</wait>
+										<cmd>
+											<shell>/opt/jboss/wildfly/bin/standalone.sh -c
+												standalone-uvms.xml -b 0.0.0.0 -bmanagement 0.0.0.0</shell>
+										</cmd>
+										<dependsOn>
+											<container>postgres</container>
+											<container>activemq</container>
+										</dependsOn>
+										<log>
+											<enabled>true</enabled>
+											<color>blue</color>
+										</log>
+										<hostname>wildfly</hostname>
+									</run>
+								</image>
+							</images>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>	
+		</profile>
     </profiles>
 
     <modules>
