@@ -279,7 +279,64 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
+	        </profile>
+		<profile>
+			<id>docker-wildfly-deploy-dependencies</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>copy</id>
+								<phase>test-compile</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>eu.europa.ec.fisheries.uvms.user</groupId>
+									<artifactId>user-module</artifactId>
+									<type>ear</type>
+									<version>1.6.1</version>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}/</outputDirectory>
+									<destFileName>user-module.ear</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.wildfly.plugins</groupId>
+						<artifactId>wildfly-maven-plugin</artifactId>
+						<version>1.0.2.Final</version>
+						<executions>
+							<execution>
+								<id>deploy-dependencies</id>
+								<phase>test-compile</phase>
+								<goals>
+									<goal>deploy</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<filename>user-module.ear</filename>
+							<targetDir>${project.build.directory}</targetDir>
+							<hostname>localhost</hostname>
+							<port>9990</port>
+							<username>admin</username>
+							<password>admin</password>
+							<force>true</force>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
         <profile>
             <id>copy-ear</id>
             <build>
