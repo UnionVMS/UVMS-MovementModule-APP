@@ -33,16 +33,6 @@
             <version>${movement.model.version}</version>
             <classifier>date</classifier>
             <scope>provided</scope>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.apache.commons</groupId>
-		      		<artifactId>commons-lang3</artifactId>            		
-            	</exclusion>
-            	<exclusion>
-            		<groupId>joda-time</groupId>
-            		<artifactId>joda-time</artifactId>
-            	</exclusion>            	
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.audit</groupId>
@@ -95,45 +85,16 @@
             </exclusions>            
         </dependency>
         <dependency>
-		      <groupId>org.apache.commons</groupId>
-		      <artifactId>commons-lang3</artifactId>
-		      <version>3.5</version>
-		</dependency>                    
-        <dependency>
-      		<groupId>joda-time</groupId>
-      		<artifactId>joda-time</artifactId>
-      		<version>2.8.2</version>
-     	</dependency>   
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-monitoring-deps</artifactId>
+			<type>pom</type>
 		</dependency>
-        <!-- JUnit Container Implementation for the Arquillian Project -->
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eu.ingwar.tools</groupId>
-            <artifactId>arquillian-suite-extension</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-io</groupId>
-                    <artifactId>commons-io</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
-
-        <dependency>
-		    <groupId>net.bull.javamelody</groupId>
-		    <artifactId>javamelody-core</artifactId>
-		    <scope>provided</scope>
-		</dependency>		
+		<dependency>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-arquillian-deps</artifactId>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>				        
     </dependencies>
 
     <build>
@@ -141,17 +102,7 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ejb-plugin</artifactId>
-                <version>2.3</version>
                 <configuration>
                     <ejbVersion>3.1</ejbVersion>
                 </configuration>

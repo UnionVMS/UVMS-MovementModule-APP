@@ -1,613 +1,137 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>eu.europa.ec.fisheries.uvms</groupId>
-        <artifactId>uvms-app-parent</artifactId>
-        <version>1.0.2</version>
-    </parent>
+	<parent>
+		<groupId>fish.focus.uvms.maven</groupId>
+		<artifactId>uvms-pom</artifactId>
+		<version>2.1.0-SNAPSHOT</version>
+	</parent>
 
-    <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-    <artifactId>movement</artifactId>
-    <version>3.0.8-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <description>Maven projekt-archetype for UnionVms modules</description>
+	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
+	<artifactId>movement</artifactId>
+	<version>3.0.8-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<description>Maven projekt-archetype for UnionVms modules</description>
 
-    <properties>
-        <release.branch.name>uvms-3.0.5-C3PO</release.branch.name>
-        <java.version>1.7</java.version>
-        <maven.version>3.2.0</maven.version>
-        
-        <docker.dev.version>3.1.0-SNAPSHOT</docker.dev.version>
-        <docker.dev.start.phase>none</docker.dev.start.phase>
-        <docker.dev.stop.phase>none</docker.dev.stop.phase>
-        <docker.dev.prestop.phase>none</docker.dev.prestop.phase>        
+	<properties>
+		<docker.dev.version>3.1.0-SNAPSHOT</docker.dev.version>
+		<docker.dev.start.phase>none</docker.dev.start.phase>
+		<docker.dev.stop.phase>none</docker.dev.stop.phase>
+		<docker.dev.prestop.phase>none</docker.dev.prestop.phase>
 
-        <usm4uvms.version>3.0.4</usm4uvms.version>
-        <uvms.common.version>2.0.17</uvms.common.version>
-        <uvms.config.version>3.0.4</uvms.config.version>
-        <longpolling.version>2.0.13</longpolling.version>
-        <user.model.version>2.0.0</user.model.version>
-        <spatial.model.version>0.5.2</spatial.model.version>
-        <movement.model.version>3.0.6</movement.model.version>
-        <audit.model.version>3.0.4</audit.model.version>
-        <exchange.model.version>3.0.4</exchange.model.version>
-        <!--Arquillian test Properties-->
-        <hibernate.version>4.3.11.Final</hibernate.version>
-        <version.org.jboss.arquillian>1.1.12.Final</version.org.jboss.arquillian>
-        <version.arquillian.suite.extension>1.1.2</version.arquillian.suite.extension>
-        <version.jacoco>0.7.9</version.jacoco>
-   		<version.arquillian_jacoco>1.0.0.Alpha9</version.arquillian_jacoco>
-   		<joda-time.version>2.8.2</joda-time.version>        
-   		       
-        <version.org.wildfly>8.2.0.Final</version.org.wildfly>
-        <version.arquillian.postgres>9.4.1212.jre7</version.arquillian.postgres>
-        <netbeans.hint.jdkPlatform>JDK-${java.version}</netbeans.hint.jdkPlatform>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- Modules dep-->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>movement-model</artifactId>
-                <version>${movement.model.version}</version>
-                <classifier>date</classifier> <!-- TODO: Why this classifier=?-->
-                <type>jar</type>
-            </dependency>
-            <!-- ### HIBERNATE ###-->
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-spatial</artifactId>
-                <version>4.3</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>postgresql</groupId>
-                        <artifactId>postgresql</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.vividsolutions</groupId>
-                        <artifactId>jts</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.postgis</groupId>
-                        <artifactId>postgis-jdbc</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-core</artifactId>
-                <version>${hibernate.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-entitymanager</artifactId>
-                <version>${hibernate.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-testing</artifactId>
-                <version>${hibernate.version}</version>
-                <scope>test</scope>
-            </dependency>
-            
-            <!-- *** /HIBERNATE ***-->
-            <!-- ### POSTGRES ###-->
-            <dependency>
-                <groupId>org.postgis</groupId>
-                <artifactId>postgis-jdbc</artifactId>
-                <version>${postgis.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${postgresql.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <!-- *** /POSTGRES *** -->
-            <!-- TODO: is this used and why-->
-            <dependency>
-                <groupId>com.vividsolutions</groupId>
-                <artifactId>jts</artifactId>
-                <version>${jts.version}</version>
-                <!--scope>provided</scope-->
-            </dependency>
-            <dependency>
-			    <groupId>net.bull.javamelody</groupId>
-			    <artifactId>javamelody-core</artifactId>
-			    <version>1.65.0</version>
+		<usm4uvms.version>3.0.4</usm4uvms.version>
+		<uvms.common.version>2.0.17</uvms.common.version>
+		<uvms.config.version>3.0.4</uvms.config.version>
+		<longpolling.version>2.0.13</longpolling.version>
+		<user.model.version>2.0.0</user.model.version>
+		<spatial.model.version>0.5.2</spatial.model.version>
+		<movement.model.version>3.0.6</movement.model.version>
+		<audit.model.version>3.0.4</audit.model.version>
+		<exchange.model.version>3.0.4</exchange.model.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+		</dependency>		
+	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<!-- Modules dep -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>movement-model</artifactId>
+				<version>${movement.model.version}</version>
+				<classifier>date</classifier>
+				<type>jar</type>
 			</dependency>
 			<dependency>
-			    <groupId>com.lowagie</groupId>
-			    <artifactId>itext</artifactId>
-			    <version>2.1.7</version>
-			    <exclusions>
-					<exclusion>
-						<artifactId>bcmail-jdk14</artifactId>
-						<groupId>bouncycastle</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>bcprov-jdk14</artifactId>
-						<groupId>bouncycastle</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>bctsp-jdk14</artifactId>
-						<groupId>bouncycastle</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>            
-
-            <!-- Arquillian BOM (Bill Of Materials). -->
-            <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-bom</artifactId>
-                <version>${version.org.jboss.arquillian}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            
-			<dependency>
-			    <groupId>org.eu.ingwar.tools</groupId>
-			    <artifactId>arquillian-suite-extension</artifactId>
-			    <version>${version.arquillian.suite.extension}</version>
-			    <scope>test</scope>
-			    <exclusions>
-			    	<exclusion>
-			    		 <groupId>javax.inject</groupId>
-  						 <artifactId>javax.inject</artifactId>
-			    	</exclusion>
-			    	<exclusion>
-			    	 	<groupId>javax.annotation</groupId>
-  						<artifactId>jsr250-api</artifactId>
-			    	</exclusion>
-			    	<exclusion>
-			    		 <groupId>javax.enterprise</groupId>
-   						 <artifactId>cdi-api</artifactId>
-			    	</exclusion>
-			    	<exclusion>
-			    		  <groupId>javassist</groupId>
-  						  <artifactId>javassist</artifactId>			    		
-			    	</exclusion>
-			    	<exclusion>
-			    		<groupId>com.google.guava</groupId>
-			    		<artifactId>guava</artifactId>
-			    	</exclusion>
-			    </exclusions>
+				<groupId>fish.focus.uvms.maven</groupId>
+				<artifactId>uvms-pom-gis-deps</artifactId>
+				<version>2.1.0-SNAPSHOT</version>
+				<type>pom</type>
 			</dependency>
 			<dependency>
-				<groupId>com.google.guava</groupId>
-			    <artifactId>guava</artifactId>
-				<version>19.0</version>
-				<scope>test</scope>
+				<groupId>fish.focus.uvms.maven</groupId>
+				<artifactId>uvms-pom-logging-deps</artifactId>
+				<version>2.1.0-SNAPSHOT</version>
+				<type>pom</type>
 			</dependency>
 			<dependency>
-				<groupId>org.jboss.arquillian.extension</groupId>
-				<artifactId>arquillian-jacoco</artifactId>
-				<version>${version.arquillian_jacoco}</version>
-				<scope>test</scope>
-			</dependency>		
-			<dependency>
-				<groupId>com.tocea.easycoverage</groupId>
-				<artifactId>easyCoverage4J-junit</artifactId>
-				<version>2.3.1</version>
-				<exclusions>
-					<exclusion>
-						<groupId>junit</groupId>
-						<artifactId>junit</artifactId>
-					</exclusion>
-				</exclusions>
-				<scope>test</scope>
+				<groupId>fish.focus.uvms.maven</groupId>
+				<artifactId>uvms-pom-monitoring-deps</artifactId>
+				<version>2.1.0-SNAPSHOT</version>
+				<type>pom</type>
 			</dependency>
-            <dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-api</artifactId>
-                <version>${javaee.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${sl4j.version}</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.slf4j</groupId>
-  				<artifactId>jcl-over-slf4j</artifactId>
-                <version>${sl4j.version}</version>
-            </dependency>            
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>${logback.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jvnet.jaxb2_commons</groupId>
-                <artifactId>jaxb2-basics</artifactId>
-                <version>${jaxb2.basics.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+			<dependency>
+				<groupId>fish.focus.uvms.maven</groupId>
+				<artifactId>uvms-pom-test-deps</artifactId>
+				<version>2.1.0-SNAPSHOT</version>
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>fish.focus.uvms.maven</groupId>
+				<artifactId>uvms-pom-arquillian-deps</artifactId>
+				<version>2.1.0-SNAPSHOT</version>
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.jaxb2_commons</groupId>
+				<artifactId>jaxb2-basics</artifactId>
+				<version>${uvms-pom.jaxb2.basics.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
+	<repositories>
+		<repository>
+			<id>focus-repo</id>
+			<name>Focus nexus repository</name>
+			<url>http://nexus.focus.fish/nexus/repository/public/</url>
+		</repository>
+		<repository>
+			<id>OSGEO GeoTools repo</id>
+			<url>http://download.osgeo.org/webdav/geotools</url>
+		</repository>
+		<repository>
+			<id>Hibernate Spatial repo</id>
+			<url>http://www.hibernatespatial.org/repository</url>
+		</repository>
+	</repositories>
 
-    <repositories>
-        <repository>
-            <id>focus-repo</id>
-            <name>Focus nexus repository</name>
-            <url>http://nexus.focus.fish/nexus/repository/public/</url>
-        </repository>
-        <repository>
-            <id>OSGEO GeoTools repo</id>
-            <url>http://download.osgeo.org/webdav/geotools</url>
-        </repository>
-        <repository>
-            <id>Hibernate Spatial repo</id>
-            <url>http://www.hibernatespatial.org/repository</url>
-        </repository>
-    </repositories>
+	<distributionManagement>
+		<repository>
+			<id>focus-releases</id>
+			<name>UnionVms Repository</name>
+			<url>http://nexus.focus.fish/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>focus-snapshots</id>
+			<name>UnionVms Snapshot Repository</name>
+			<url>http://nexus.focus.fish/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
-    <distributionManagement>
-        <repository>
-            <id>focus-releases</id>
-            <name>UnionVms Repository</name>
-            <url>http://nexus.focus.fish/nexus/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>focus-snapshots</id>
-            <name>UnionVms Snapshot Repository</name>
-            <url>http://nexus.focus.fish/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+	<scm>
+		<connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-APP.git</connection>
+		<tag>HEAD</tag>
+	</scm>
 
-    <scm>
-        <connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-APP.git</connection>
-        <tag>HEAD</tag>
-    </scm>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.4</version>
-                <configuration>
-                    <goalPrefix>plugin</goalPrefix>
-                    <outputDirectory>target/dir</outputDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>${maven.release.plugin.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.scm</groupId>
-                        <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.8.1</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-	   </plugins>
-    </build>
-
-    <profiles>
-        <!-- Arquillian WildFly remote profile -->
-        <profile>
-            <id>wildfly-remote</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.wildfly</groupId>
-                    <artifactId>wildfly-arquillian-container-remote</artifactId>
-                    <version>${version.org.wildfly}</version>
-                    <scope>test</scope>
-                    <exclusions>
-				    	<exclusion>
-				    		 <groupId>javax.inject</groupId>
-	  						 <artifactId>javax.inject</artifactId>
-				    	</exclusion>
-				    </exclusions>                    
-                </dependency>
-                <dependency>
-				  <groupId>org.jboss.shrinkwrap.resolver</groupId>
-				  <artifactId>shrinkwrap-resolver-depchain</artifactId>
-				  <type>pom</type>
-				  <scope>test</scope>
-				</dependency>
-                <dependency>
-					<groupId>com.google.guava</groupId>
-				    <artifactId>guava</artifactId>
-					<version>19.0</version>
-					<scope>test</scope>
-			   </dependency>		                      
-            </dependencies>
-        </profile>
-    	<profile>
-    		<id>enforce-rules</id>
-    		<build>
-		    	<plugins>
-			        <plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-enforcer-plugin</artifactId>
-			        <version>1.4.1</version>
-			        <executions>
-			          <execution>
-			            <id>enforce-versions</id>
-			            <goals>
-			              <goal>enforce</goal>
-			            </goals>
-			            <configuration>
-			              <rules>
-			                <requireMavenVersion>
-			                  <version>${maven.version}</version>
-			                </requireMavenVersion>
-			                <!-- <requireJavaVersion>
-			                  <version>[${java.version},${java.version}.999)</version>
-			                </requireJavaVersion>-->
-			                <banDuplicateClasses>
-			                  <findAllDuplicates>true</findAllDuplicates>
-			                  <ignoreClasses>
-			                    <ignoreClass>javax.mail.*</ignoreClass>
-			                    <ignoreClass>javax.transaction.*</ignoreClass>
-			                    <ignoreClass>javax.xml.bind.*</ignoreClass>
-			                    <ignoreClass>javax.xml.namespace.*</ignoreClass>			                    
-			                    <ignoreClass>org.w3._2001.*</ignoreClass>
-			                    <ignoreClass>org.hamcrest.*</ignoreClass>			                    			                        
-			                  </ignoreClasses>
-			                </banDuplicateClasses>
-			                <dependencyConvergence />			                
-			                <bannedDependencies>
-			                  <excludes>
-			                    <exclude>commons-logging:commons-logging</exclude>
-			                    <exclude>log4j:log4j</exclude>
-			                  </excludes>
-			                </bannedDependencies>
-			              </rules>
-			            </configuration>
-			          </execution>
-			        </executions>
-			           <dependencies>
-			            <dependency>
-			              <groupId>org.codehaus.mojo</groupId>
-			              <artifactId>extra-enforcer-rules</artifactId>
-			              <version>1.0-beta-6</version>
-			            </dependency>
-			          </dependencies>			        
-			      </plugin>    			
-    			</plugins>
-    		</build>
-    	</profile>  
-	    <profile>
-		   <id>jacoco</id>
-		   <dependencies>
-		      <dependency>
-		         <groupId>org.jacoco</groupId>
-		         <artifactId>org.jacoco.core</artifactId>
-		         <version>${version.jacoco}</version>
-		         <scope>test</scope>
-		      </dependency>
-		      <dependency>
-		         <groupId>org.jboss.arquillian.extension</groupId>
-		         <artifactId>arquillian-jacoco</artifactId>
-		         <version>${version.arquillian_jacoco}</version>
-		         <scope>test</scope>
-		      </dependency>
-		      <dependency>
-				<groupId>com.google.guava</groupId>
-			    <artifactId>guava</artifactId>
-				<version>19.0</version>
-				<scope>test</scope>
-			  </dependency>		      
-		      <dependency>
-                    <groupId>org.wildfly</groupId>
-                    <artifactId>wildfly-arquillian-container-remote</artifactId>
-                    <version>${version.org.wildfly}</version>
-                    <scope>test</scope>
-                    <exclusions>
-				    	<exclusion>
-				    		 <groupId>javax.inject</groupId>
-	  						 <artifactId>javax.inject</artifactId>
-				    	</exclusion>
-				    </exclusions>                    
-              </dependency>
-                <dependency>
-				  <groupId>org.jboss.shrinkwrap.resolver</groupId>
-				  <artifactId>shrinkwrap-resolver-depchain</artifactId>
-				  <type>pom</type>
-				  <scope>test</scope>
-				</dependency>
-		   </dependencies>
-		   <build>
-		      <plugins>
-		         <plugin>
-		            <groupId>org.jacoco</groupId>
-		            <artifactId>jacoco-maven-plugin</artifactId>
-		            <version>${version.jacoco}</version>
-		            <executions>
-		               <execution>
-		                  <goals>
-		                     <goal>prepare-agent</goal>
-		                  </goals>
-				            <configuration>
-				            	<includes><include>eu/europa/ec/fisheries/uvms/movement/**/*.class</include></includes>
-				            	<excludes>
-				            		<exclude>eu/europa/ec/fisheries/schema/**/*.class</exclude>
-				            		<exclude>eu.europa.ec.fisheries.schema.*</exclude>
-				            	</excludes>
-				            </configuration>		                  
-		               </execution>
-		               <execution>
-		                  <id>report</id>
-		                  <phase>prepare-package</phase>
-		                  <goals>
-		                     <goal>report</goal>
-		                  </goals>
-				            <configuration>
-				            	<includes><include>eu/europa/ec/fisheries/uvms/movement/**/*.class</include></includes>
-				            </configuration>
-		               </execution>
-		            </executions>
-		         </plugin>
-		      </plugins>
-		   </build>
-		</profile>
-		  <profile>
-	      <id>javadoc</id>
-	      <build>
-	        <plugins>
-	          <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-dependency-plugin</artifactId>
-	            <version>3.0.0</version>
-	            <executions>
-	              <execution>
-	                <id>unpack-dependencies</id>
-	                <goals>
-	                  <goal>unpack-dependencies</goal>
-	                </goals>
-	                <configuration>
-	                  <includeGroupIds>eu.europa.ec.fisheries.uvms.movement,eu.europa.ec.fisheries.schema.movement</includeGroupIds>	                  
-	                  <excludeArtifactIds>movement-message-mock</excludeArtifactIds>
-	                </configuration>
-	              </execution>
-	            </executions>
-	          </plugin>
-	          <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-javadoc-plugin</artifactId>
-	            <version>2.10.4</version>
-	            <executions>
-	              <execution>
-	                <id>attach-javadocs</id>
-	                <goals>
-	                  <goal>jar</goal>
-	                </goals>
-	              </execution>
-	            </executions>
-	            <inherited>true</inherited>
-	            <configuration>
-	              <includeDependencySources>true</includeDependencySources>
-	              <includeTransitiveDependencySources>true</includeTransitiveDependencySources>
-	              <detectOfflineLinks>false</detectOfflineLinks>
-	              <dependencySourceIncludes>
-	                <dependencySourceInclude>eu.europa.ec.fisheries.uvms.movement:*</dependencySourceInclude>
-	                <dependencySourceInclude>eu.europa.ec.fisheries.schema.movement:*</dependencySourceInclude>	                
-	              </dependencySourceIncludes>
-	              <dependencySourceExcludes>
-	                <dependencySourceExclude>eu.europa.ec.fisheries.uvms.movement:movement-message-mock</dependencySourceExclude>
-	                <dependencySourceExclude>eu.europa.ec.fisheries.uvms.movement:movement-model</dependencySourceExclude>	                
-	              </dependencySourceExcludes>
-	              <doclet>org.jboss.apiviz.APIviz</doclet>
-	              <docletArtifacts>
-	                <docletArtifact>
-					    <groupId>org.jboss.apiviz</groupId>
-					    <artifactId>apiviz</artifactId>
-					    <version>1.3.2.GA</version>
-	                </docletArtifact>
-	              </docletArtifacts>
-	              <useStandardDocletOptions>true</useStandardDocletOptions>
-	              <charset>UTF-8</charset>
-	              <encoding>UTF-8</encoding>
-	              <source>${java.version}</source>
-	              <docencoding>UTF-8</docencoding>
-	              <breakiterator>true</breakiterator>
-	              <version>true</version>
-	              <author>true</author>
-	              <keywords>true</keywords>
-	              <additionalparam>-sourceclasspath ${project.build.outputDirectory} -sourceclasspath ${project.build.directory}/dependency</additionalparam>
-	            </configuration>
-	          </plugin>
-	          <plugin>
-	            <artifactId>maven-source-plugin</artifactId>
-	            <version>3.0.1</version>
-	            <executions>
-	              <execution>
-	                <id>bundle-sources</id>
-	                <phase>package</phase>
-	                <goals>
-	                  <goal>jar-no-fork</goal>
-	                  <goal>test-jar-no-fork</goal>
-	                </goals>
-	              </execution>
-	            </executions>
-	          </plugin>
-	        </plugins>
-	      </build>
-	      <properties>
-	        <dependency.plugin.unpack.phase>test-compile</dependency.plugin.unpack.phase>
-	      </properties>	      
-	    </profile>
-	    <profile>
-	    	<id>version-updates</id>
-	    	<build>
-	    		<plugins>
-	    		  <plugin>
-		            <groupId>org.jboss.tattletale</groupId>
-		            <artifactId>tattletale-maven</artifactId>
-		            <version>1.2.0.Beta2</version>
-		            <executions>
-		              <execution>
-		                <phase>site</phase>
-		                <goals>
-		                  <goal>report</goal>
-		                </goals>
-		              </execution>
-		            </executions>
-		            <dependencies>
-		              <dependency>
-		                <groupId>org.javassist</groupId>
-		                <artifactId>javassist</artifactId>
-		                <version>3.22.0-CR1</version>
-		              </dependency>
-		            </dependencies>
-		            <inherited>true</inherited>
-		            <configuration>
-		              <source>${project.build.directory}/${project.artifactId}</source>
-		              <destination>${project.build.directory}/site/tattleTaleReport</destination>
-		              <graphvizDot>${graphviz.dot.executable}</graphvizDot>
-		              <profiles>
-		                <report>*</report>
-		              </profiles>
-		            </configuration>
-		          </plugin>
-	    		</plugins>
-	    	</build>
-	    	<reporting>
-	    		<plugins>
-	    			<plugin>
-			            <groupId>org.codehaus.mojo</groupId>
-			            <artifactId>versions-maven-plugin</artifactId>
-			            <version>2.3</version>
-			            <reportSets>
-			              <reportSet>
-			                <reports>
-			                  <report>dependency-updates-report</report>
-			                  <report>plugin-updates-report</report>
-			                  <report>property-updates-report</report>
-			                </reports>
-			              </reportSet>
-			            </reportSets>
-			            <inherited>true</inherited>
-			            <configuration>
-			              <allowSnapshots>true</allowSnapshots>
-			            </configuration>
-          			</plugin>
-	    		</plugins>
-	    	</reporting>	    
-	    </profile>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>3.4</version>
+				<configuration>
+					<goalPrefix>plugin</goalPrefix>
+					<outputDirectory>target/dir</outputDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
 		<profile>
 			<id>docker</id>
 			<build>
@@ -625,7 +149,7 @@
 								</goals>
 								<configuration>
 									<allContainers>true</allContainers>
-								</configuration>								
+								</configuration>
 							</execution>
 							<execution>
 								<id>start</id>
@@ -743,34 +267,34 @@
 						</configuration>
 					</plugin>
 				</plugins>
-			</build>	
+			</build>
 		</profile>
 		<profile>
 			<id>docker-start</id>
 			<properties>
 				<docker.dev.start.phase>validate</docker.dev.start.phase>
-        		<docker.dev.stop.phase>none</docker.dev.stop.phase>
-       			<docker.dev.prestop.phase>none</docker.dev.prestop.phase>        				
+				<docker.dev.stop.phase>none</docker.dev.stop.phase>
+				<docker.dev.prestop.phase>none</docker.dev.prestop.phase>
 			</properties>
 		</profile>
 		<profile>
 			<id>docker-stop</id>
 			<properties>
 				<docker.dev.start.phase>none</docker.dev.start.phase>
-        		<docker.dev.stop.phase>validate</docker.dev.stop.phase>
-       			<docker.dev.prestop.phase>validate</docker.dev.prestop.phase>        				
+				<docker.dev.stop.phase>validate</docker.dev.stop.phase>
+				<docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
 			</properties>
-		</profile>		
-    </profiles>
+		</profile>
+	</profiles>
 
-    <modules>
-        <module>domain</module>
-        <module>rest</module>
-        <module>service</module>
-        <module>message</module>
-        <module>message-impl</module>
-        <module>message-mock</module>
-        <module>module</module>
-        <module>module-integration-test</module>       
-    </modules>
+	<modules>
+		<module>domain</module>
+		<module>rest</module>
+		<module>service</module>
+		<module>message</module>
+		<module>message-impl</module>
+		<module>message-mock</module>
+		<module>module</module>
+		<module>module-integration-test</module>
+	</modules>
 </project>

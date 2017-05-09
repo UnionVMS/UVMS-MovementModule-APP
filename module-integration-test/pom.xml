@@ -24,27 +24,16 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.arquillian.junit</groupId>
-			<artifactId>arquillian-junit-container</artifactId>
-			<scope>test</scope>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-monitoring-deps</artifactId>
+			<type>pom</type>
 		</dependency>
 		<dependency>
-			<groupId>org.eu.ingwar.tools</groupId>
-			<artifactId>arquillian-suite-extension</artifactId>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-arquillian-deps</artifactId>
+			<type>pom</type>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.22.0-CR1</version>
-			<scope>test</scope>
-		</dependency>
+		</dependency>				
 	</dependencies>
 	<build>
 		<finalName>${project.name}-${project.version}</finalName>
@@ -75,16 +64,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

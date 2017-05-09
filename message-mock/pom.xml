@@ -17,16 +17,6 @@
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-message</artifactId>
             <version>3.0.8-SNAPSHOT</version>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.apache.commons</groupId>
-		      		<artifactId>commons-lang3</artifactId>            		
-            	</exclusion>
-            	<exclusion>
-            		<groupId>joda-time</groupId>
-      				<artifactId>joda-time</artifactId>            		
-            	</exclusion>            	
-            </exclusions>                                    
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
@@ -34,27 +24,7 @@
             <version>${movement.model.version}</version>
             <classifier>date</classifier>
             <scope>provided</scope>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.apache.commons</groupId>
-		      		<artifactId>commons-lang3</artifactId>            		
-            	</exclusion>
-            	<exclusion>
-            		<groupId>joda-time</groupId>
-      				<artifactId>joda-time</artifactId>            		
-            	</exclusion>
-            </exclusions>                                    
         </dependency>
-        <dependency>
-		      <groupId>org.apache.commons</groupId>
-		      <artifactId>commons-lang3</artifactId>
-		      <version>3.5</version>
-		</dependency>                    
-        <dependency>
-      		<groupId>joda-time</groupId>
-      		<artifactId>joda-time</artifactId>
-      		<version>2.8.2</version>
-     	</dependency>   
     </dependencies>
 
     <build>
@@ -62,17 +32,7 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ejb-plugin</artifactId>
-                <version>2.3</version>
                 <configuration>
                     <ejbVersion>3.1</ejbVersion>
                 </configuration>

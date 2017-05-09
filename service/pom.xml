@@ -22,57 +22,24 @@
         <application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log
         </application.error.logfile>
         <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
-        <commons-lang.version>2.6</commons-lang.version>
-        <postgis.version>1.5.2</postgis.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>${project.parent.artifactId}-model</artifactId>
-            <version>${movement.model.version}</version>
             <classifier>date</classifier>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.apache.commons</groupId>
-		      		<artifactId>commons-lang3</artifactId>            		
-            	</exclusion>
-            	<exclusion>
-            		<groupId>joda-time</groupId>
-      				<artifactId>joda-time</artifactId>            		
-            	</exclusion>
-            </exclusions>                                                
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.spatial</groupId>
             <artifactId>spatial-model</artifactId>
             <version>${spatial.model.version}</version>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.apache.commons</groupId>
-		      		<artifactId>commons-lang3</artifactId>            		
-            	</exclusion>
-            	<exclusion>
-        			<artifactId>jaxb2-basics-runtime</artifactId>
-					<groupId>org.jvnet.jaxb2_commons</groupId>
-            	</exclusion>
-            	<exclusion>
-            		<groupId>org.mockito</groupId>
-            		<artifactId>mockito-all</artifactId>
-            	</exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
             <classifier>date</classifier>
-            <exclusions>
-                <exclusion>
-            		<groupId>joda-time</groupId>
-      				<artifactId>joda-time</artifactId>            		
-            	</exclusion>            
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
@@ -80,136 +47,19 @@
             <version>${longpolling.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.sf.dozer</groupId>
-            <artifactId>dozer</artifactId>
-            <version>${dozer.version}</version>
-            <exclusions>
-            	<exclusion>
-            		<groupId>commons-beanutils</groupId>
-            		<artifactId>commons-beanutils</artifactId>
-            	</exclusion>
-            	<exclusion>
-            		<groupId>org.apache.commons</groupId>
-		      		<artifactId>commons-lang3</artifactId>            		            	
-            	</exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.user</groupId>
             <artifactId>user-model</artifactId>
             <version>${user.model.version}</version>
         </dependency>
-        <!-- JUnit Container Implementation for the Arquillian Project -->
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-		    <groupId>org.eu.ingwar.tools</groupId>
-		    <artifactId>arquillian-suite-extension</artifactId>
-		    <scope>test</scope>
-		    <exclusions>
-		    	<exclusion>
-		    		<groupId>commons-io</groupId>
-		    		<artifactId>commons-io</artifactId>
-		    	</exclusion>
-		    </exclusions>		    
-		</dependency>        
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-dbaccess-domain</artifactId>
             <version>3.0.8-SNAPSHOT</version>
-            <!-- <scope>test</scope>-->
-            <exclusions>
-            	<exclusion>
-            		<groupId>joda-time</groupId>
-      				<artifactId>joda-time</artifactId>            		            		
-            	</exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>movement-message</artifactId>
             <version>${project.parent.version}</version>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.javassist</groupId>
-            		<artifactId>javassist</artifactId>
-            	</exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-		      <groupId>org.apache.commons</groupId>
-		      <artifactId>commons-lang3</artifactId>
-		      <version>3.5</version>
-		</dependency>                    
-        <dependency>
-      		<groupId>joda-time</groupId>
-      		<artifactId>joda-time</artifactId>
-      		<version>2.8.2</version>
-     	</dependency>   
-		<dependency>
-		    <groupId>net.bull.javamelody</groupId>
-		    <artifactId>javamelody-core</artifactId>
-		    <scope>provided</scope>
-		</dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-spatial</artifactId>
-            <version>${hibernate-spatial.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>postgresql</groupId>
-                    <artifactId>postgresql</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.vividsolutions</groupId>
-                    <artifactId>jts</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.postgis</groupId>
-                    <artifactId>postgis-jdbc</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <exclusions>
-            	<exclusion>
-				  <groupId>org.hibernate.javax.persistence</groupId>
-				  <artifactId>hibernate-jpa-2.1-api</artifactId>
-              	</exclusion>
-            </exclusions>
-            <scope>test</scope>                           
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <exclusions>
-            	<exclusion>
-				  <groupId>org.hibernate.javax.persistence</groupId>
-				  <artifactId>hibernate-jpa-2.1-api</artifactId>
-              	</exclusion>
-            </exclusions>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgis</groupId>
-            <artifactId>postgis-jdbc</artifactId>
-            <version>${postgis.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
-            <version>${jts.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -223,6 +73,18 @@
             </exclusions>
             <scope>test</scope>
         </dependency>
+        <dependency>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-monitoring-deps</artifactId>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-arquillian-deps</artifactId>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>				
+        
     </dependencies>
 
     <build>
@@ -230,17 +92,7 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ejb-plugin</artifactId>
-                <version>2.3</version>
                 <configuration>
                     <ejbVersion>3.1</ejbVersion>
                 </configuration>
