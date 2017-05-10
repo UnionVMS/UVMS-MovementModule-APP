@@ -76,11 +76,6 @@
 				<version>2.1.1-SNAPSHOT</version>
 				<type>pom</type>
 			</dependency>
-			<dependency>
-				<groupId>org.jvnet.jaxb2_commons</groupId>
-				<artifactId>jaxb2-basics</artifactId>
-				<version>${uvms-pom.jaxb2.basics.version}</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
