@@ -22,7 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 @Stateless
 public class MovementConfigHelper implements ConfigHelper {
 
-    private final static String MOVEMENT_PU = "movementPU";
+    private final static String MOVEMENT_PU = "movement";
 
     @Override
     public List<String> getAllParameterKeys() {
