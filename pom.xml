@@ -16,7 +16,7 @@
 	<properties>
 		<docker.dev.version>3.3.0</docker.dev.version>
 
-		<usm4uvms.version>3.0.4</usm4uvms.version>
+		<usm4uvms.version>3.0.5</usm4uvms.version>
 		<uvms.common.version>2.0.20</uvms.common.version>
 		<uvms.config.version>3.0.4.1-SNAPSHOT</uvms.config.version>
 		<longpolling.version>2.0.13</longpolling.version>
