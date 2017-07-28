@@ -18,7 +18,7 @@
 
 		<usm4uvms.version>3.0.4</usm4uvms.version>
 		<uvms.common.version>2.0.17</uvms.common.version>
-		<uvms.config.version>3.0.4.1</uvms.config.version>
+		<uvms.config.version>3.0.4</uvms.config.version>
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.0.0</user.model.version>
 		<spatial.model.version>0.5.2</spatial.model.version>
