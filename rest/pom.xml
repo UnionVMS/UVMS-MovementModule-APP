@@ -49,29 +49,29 @@
             	</exclusion>
             	<exclusion>
             		  <groupId>com.sun.istack</groupId>
-    				  <artifactId>istack-commons-runtime</artifactId>            		
+    				  <artifactId>istack-commons-runtime</artifactId>
             	</exclusion>
             	<exclusion>
             		  <groupId>org.jboss.spec.javax.annotation</groupId>
-  					  <artifactId>jboss-annotations-api_1.1_spec</artifactId>            		
+  					  <artifactId>jboss-annotations-api_1.1_spec</artifactId>
             	</exclusion>
             	<exclusion>
             		  <groupId>org.jboss.resteasy</groupId>
-    				  <artifactId>jaxrs-api</artifactId>            		
+    				  <artifactId>jaxrs-api</artifactId>
             	</exclusion>
             	<exclusion>
             		  <groupId>commons-io</groupId>
-	    			  <artifactId>commons-io</artifactId>            		
+	    			  <artifactId>commons-io</artifactId>
             	</exclusion>
             	<exclusion>
             		    <groupId>eu.europa.ec.fisheries.uvms</groupId>
-    					<artifactId>uvms-commons</artifactId>            		
+    					<artifactId>uvms-commons</artifactId>
             	</exclusion>
             	<exclusion>
             		<groupId>com.fasterxml.jackson.core</groupId>
-  					<artifactId>jackson-databind</artifactId>            		
+  					<artifactId>jackson-databind</artifactId>
             	</exclusion>
-            </exclusions>            
+            </exclusions>
         </dependency>
 		<dependency>
 			<groupId>eu.europa.ec.fisheries.uvms</groupId>
@@ -84,7 +84,7 @@
 				</exclusion>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
-		      		<artifactId>commons-lang3</artifactId>					
+		      		<artifactId>commons-lang3</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>commons-logging</groupId>
@@ -92,14 +92,14 @@
 				</exclusion>
 				<exclusion>
 					<groupId>javax.mail</groupId>
-    				<artifactId>mail</artifactId>					
+    				<artifactId>mail</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.javassist</groupId>
 					<artifactId>javassist</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>	
+		</dependency>
 	    <dependency>
 	    	<groupId>commons-io</groupId>
 	    	<artifactId>commons-io</artifactId>
@@ -126,7 +126,7 @@
             <exclusions>
             	<exclusion>
             		<groupId>org.glassfish.hk2.external</groupId>
-    				<artifactId>javax.inject</artifactId>  		
+    				<artifactId>javax.inject</artifactId>
             	</exclusion>
             	<exclusion>
             		 <groupId>javax.validation</groupId>
@@ -134,7 +134,7 @@
             	</exclusion>
             	<exclusion>
             		<groupId>org.glassfish.hk2.external</groupId>
-    				<artifactId>aopalliance-repackaged</artifactId>            		
+    				<artifactId>aopalliance-repackaged</artifactId>
             	</exclusion>
             	<exclusion>
             		<groupId>javax.annotation</groupId>
@@ -142,12 +142,12 @@
             	</exclusion>
             	<exclusion>
             	    <groupId>javax.ws.rs</groupId>
-    				<artifactId>javax.ws.rs-api</artifactId>           	
+    				<artifactId>javax.ws.rs-api</artifactId>
             	</exclusion>
             	<exclusion>
             		<groupId>org.javassist</groupId>
             		<artifactId>javassist</artifactId>
-            	</exclusion>            	
+            	</exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -166,7 +166,7 @@
             <exclusions>
             	<exclusion>
             		<groupId>org.glassfish.hk2.external</groupId>
-    				<artifactId>javax.inject</artifactId>  		
+    				<artifactId>javax.inject</artifactId>
             	</exclusion>
             	<exclusion>
             		 <groupId>javax.validation</groupId>
@@ -174,13 +174,13 @@
             	</exclusion>
             	<exclusion>
             		<groupId>org.glassfish.hk2.external</groupId>
-    				<artifactId>aopalliance-repackaged</artifactId>            		
+    				<artifactId>aopalliance-repackaged</artifactId>
             	</exclusion>
             	<exclusion>
             	    <groupId>javax.ws.rs</groupId>
-    				<artifactId>javax.ws.rs-api</artifactId>           	
-            	</exclusion>            	            	
-            </exclusions>            
+    				<artifactId>javax.ws.rs-api</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -205,9 +205,9 @@
 			<artifactId>uvms-pom-arquillian-deps</artifactId>
 			<type>pom</type>
 			<scope>test</scope>
-		</dependency>				
+		</dependency>
     </dependencies>
-        
+
     <build>
         <finalName>${project.name}-${project.version}</finalName>
         <plugins>
@@ -220,7 +220,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <!-- USE following command to run this profile: mvn clean install -P generate-rest-doc -Dhostname=127.0.0.1 -Dport=8080  -->
     <profiles>
         <profile>
@@ -280,6 +280,6 @@
                 </plugins>
             </build>
         </profile>
-    </profiles> 
+    </profiles>
 
 </project>
