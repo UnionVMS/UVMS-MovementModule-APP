@@ -15,12 +15,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 
 @Stateless
 public class MovementConfigHelper implements ConfigHelper {
+
+    @PersistenceContext(unitName = MOVEMENT_PU)
+    protected EntityManager em;
 
     private final static String MOVEMENT_PU = "movement";
 
@@ -38,5 +43,10 @@ public class MovementConfigHelper implements ConfigHelper {
     public String getModuleName() {
         return MOVEMENT_PU;
     }
+
+	@Override
+	public EntityManager getEntityManager() {
+		return em;
+	}
 
 }
