@@ -60,6 +60,8 @@ public abstract class BuildMovementServiceTestDeployment {
 
         // Empty beans for EE6 CDI
         testWar.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        testWar.addAsResource("persistence-integration.xml", "META-INF/persistence.xml");
+
         testWar.addAsLibraries(files);
         
         testWar.addPackages(true, "eu.europa.fisheries.uvms.component.service.arquillian");

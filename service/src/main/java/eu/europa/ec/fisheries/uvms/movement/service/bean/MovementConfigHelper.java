@@ -24,7 +24,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 @Stateless
 public class MovementConfigHelper implements ConfigHelper {
 
-    @PersistenceContext(unitName = MOVEMENT_PU)
+    @PersistenceContext
     protected EntityManager em;
 
     private final static String MOVEMENT_PU = "movement";
