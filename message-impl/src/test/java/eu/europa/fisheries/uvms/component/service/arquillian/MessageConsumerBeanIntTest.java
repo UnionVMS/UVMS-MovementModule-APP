@@ -1,6 +1,18 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import javax.ejb.EJB;
+import javax.jms.Queue;
+import javax.jms.TextMessage;
+
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
@@ -9,19 +21,6 @@ import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.CreateMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import javax.ejb.EJB;
-import javax.jms.Queue;
-import javax.jms.TextMessage;
-import javax.naming.InitialContext;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by thofan on 2017-04-19.
@@ -88,7 +87,7 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
         createMovementRequest.setMethod(MovementModuleMethod.CREATE);
         createMovementRequest.setMovement(movementBaseType);
 
-        Queue test = JMSUtils.lookupQueue(new InitialContext(), MessageConstants.AUDIT_MODULE_QUEUE);
+        Queue test = JMSUtils.lookupQueue(MessageConstants.AUDIT_MODULE_QUEUE);
 
         String nafMovement= movements[0];
         SetReportMovementType mappedNafMovement = NafMessageResponseMapper.mapToMovementType(nafMovement, "NAF");

@@ -11,12 +11,18 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.producer.bean;
 
+import static eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean.LOG;
+
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Observes;
-import javax.jms.*;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
 import eu.europa.ec.fisheries.uvms.config.constants.ConfigConstants;
@@ -32,10 +38,6 @@ import eu.europa.ec.fisheries.uvms.movement.message.producer.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import javax.ejb.EJB;
-import javax.naming.InitialContext;
-
-import static eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean.LOG;
 
 @Stateless
 public class MessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
@@ -51,19 +53,12 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
 
     @PostConstruct
     public void init() {
-        InitialContext ctx;
-        try {
-            ctx = new InitialContext();
-        } catch (Exception e) {
-            LOG.error("Failed to get InitialContext",e);
-            throw new RuntimeException(e);
-        }
-        responseQueue = JMSUtils.lookupQueue(ctx, MessageConstants.COMPONENT_RESPONSE_QUEUE);
-        auditQueue = JMSUtils.lookupQueue(ctx, MessageConstants.AUDIT_MODULE_QUEUE);
-        exchangeQueue = JMSUtils.lookupQueue(ctx, MessageConstants.EXCHANGE_MODULE_QUEUE);
-        configQueue = JMSUtils.lookupQueue(ctx, ConfigConstants.CONFIG_MESSAGE_IN_QUEUE);
-        spatialQueue = JMSUtils.lookupQueue(ctx, MessageConstants.SPATIAL_MODULE_QUEUE);
-        userQueue = JMSUtils.lookupQueue(ctx, MessageConstants.USER_MODULE_QUEUE);
+        responseQueue = JMSUtils.lookupQueue(MessageConstants.COMPONENT_RESPONSE_QUEUE);
+        auditQueue = JMSUtils.lookupQueue(MessageConstants.AUDIT_MODULE_QUEUE);
+        exchangeQueue = JMSUtils.lookupQueue(MessageConstants.EXCHANGE_MODULE_QUEUE);
+        configQueue = JMSUtils.lookupQueue(ConfigConstants.CONFIG_MESSAGE_IN_QUEUE);
+        spatialQueue = JMSUtils.lookupQueue(MessageConstants.SPATIAL_MODULE_QUEUE);
+        userQueue = JMSUtils.lookupQueue(MessageConstants.USER_MODULE_QUEUE);
     }
 
     @Override

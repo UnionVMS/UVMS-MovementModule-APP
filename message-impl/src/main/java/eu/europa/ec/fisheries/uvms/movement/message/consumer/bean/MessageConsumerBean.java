@@ -11,15 +11,6 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
@@ -28,6 +19,16 @@ import javax.inject.Inject;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
+import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
+import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
+import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 
 @MessageDriven(mappedName = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE, activationConfig = {
         @ActivationConfigProperty(propertyName = "messagingType", propertyValue = MessageConstants.CONNECTION_TYPE),

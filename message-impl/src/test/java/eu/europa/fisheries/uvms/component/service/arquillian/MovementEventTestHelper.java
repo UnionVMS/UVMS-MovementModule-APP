@@ -1,20 +1,31 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.*;
-import eu.europa.ec.fisheries.schema.movement.v1.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
+import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
+import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
+import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 
 /**
  * Created by roblar on 2017-03-08.

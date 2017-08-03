@@ -1,13 +1,16 @@
 package eu.europa.fisheries.uvms.component.service;
 
-import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 
 @LocalBean

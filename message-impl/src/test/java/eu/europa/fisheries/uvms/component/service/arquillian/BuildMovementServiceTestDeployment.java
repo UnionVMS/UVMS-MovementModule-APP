@@ -1,19 +1,11 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.CreateMovementBean;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MessageConsumerBean;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.AbstractProducer;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import eu.europa.ec.fisheries.uvms.movement.service.*;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.*;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
-import eu.europa.fisheries.uvms.component.service.SpatialServiceMockedBean;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
@@ -24,11 +16,12 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.CreateMovementBean;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MessageConsumerBean;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.AbstractProducer;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.JMSConnectorBean;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 
 /**
  * Created by andreasw on 2017-02-13.

@@ -11,22 +11,30 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.*;
-import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.net.URLDecoder;
+import java.util.Date;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.net.URLDecoder;
-import java.util.Date;
+import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId;
+import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
+import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementActivityType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementActivityTypeType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementComChannelType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
+import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 
 /**
  *  code copied  and made standalone - from NAF Plugin

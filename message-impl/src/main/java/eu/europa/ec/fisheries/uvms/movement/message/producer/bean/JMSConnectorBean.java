@@ -11,16 +11,19 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.producer.bean;
 
-import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
-import org.slf4j.LoggerFactory;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.jms.*;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
+import org.slf4j.LoggerFactory;
+
+import eu.europa.ec.fisheries.uvms.message.JMSUtils;
 
 @Startup
 @Singleton
@@ -34,29 +37,8 @@ public class JMSConnectorBean {
 
     @PostConstruct
     private void connectToQueue() {
-        LOG.debug("Open connection to JMS broker");
-        InitialContext ctx;
         try {
-            ctx = new InitialContext();
-        } catch (Exception e) {
-            LOG.error("Failed to get InitialContext",e);
-            throw new RuntimeException(e);
-        }
-        try {
-            connectionFactory = (QueueConnectionFactory) ctx.lookup(MessageConstants.CONNECTION_FACTORY);
-        } catch (NamingException ne) {
-            //if we did not find the connection factory we might need to add java:/ at the start
-            LOG.debug("Connection Factory lookup failed for " + MessageConstants.CONNECTION_FACTORY);
-            String wfName = "java:/" + MessageConstants.CONNECTION_FACTORY;
-            try {
-                LOG.debug("trying " + wfName);
-                connectionFactory = (QueueConnectionFactory) ctx.lookup(wfName);
-            } catch (Exception e) {
-                LOG.error("Connection Factory lookup failed for both " + MessageConstants.CONNECTION_FACTORY  + " and " + wfName);
-                throw new RuntimeException(e);
-            }
-        }
-        try {
+        	connectionFactory = JMSUtils.lookupConnectionFactory();
             connection = connectionFactory.createConnection();
             connection.start();
         } catch (JMSException ex) {

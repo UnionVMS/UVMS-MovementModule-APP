@@ -11,18 +11,24 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.producer;
 
-import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
+import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 
 /**
  **/
