@@ -25,7 +25,7 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;

@@ -27,6 +27,7 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 import junit.framework.TestSuite;
 
+
 public class EasyCoverageTest extends Assert {
 
 	private static final String EXPECT_CLASSES_IN_PACKAGE = "Expect classes in package";
