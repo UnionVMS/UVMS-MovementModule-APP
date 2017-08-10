@@ -10,14 +10,14 @@
         <param-name>usmApplication</param-name>
         <param-value>Audit</param-value>
     </context-param>
-    
+
     <context-param>
-        <param-name>datasources</param-name>
+        <param-name>javamelody.datasources</param-name>
         <param-value>java:/jdbc/uvms_mobterm</param-value>
     </context-param>
 	<listener>
 		<listener-class>net.bull.javamelody.SessionListener</listener-class>
-	</listener>        
+	</listener>
 	<filter>
 		<filter-name>javamelody</filter-name>
 		<filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
@@ -37,7 +37,7 @@
 		<init-param>
 			<param-name>datasources</param-name>
 			<param-value>java:/jdbc/uvms_movement</param-value>
-		</init-param>						
+		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>javamelody</filter-name>
@@ -45,7 +45,7 @@
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>ASYNC</dispatcher>
 	</filter-mapping>
-	
+
 	<filter>
 		<filter-name>AuthenticationFilter</filter-name>
 		<filter-class>eu.europa.ec.fisheries.uvms.rest.security.AuthenticationFilter</filter-class>
