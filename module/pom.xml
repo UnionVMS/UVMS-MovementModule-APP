@@ -19,7 +19,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
-                <version>2.7</version>
                 <configuration>
                     <modules>
                         <ejbModule>
@@ -50,6 +49,7 @@
                     </modules>
                     <skinnyWars>true</skinnyWars>
                     <defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
+                    <version>7</version>
                 </configuration>
             </plugin>
         </plugins>
@@ -112,7 +112,7 @@
 		<dependency>
 			<groupId>eu.europa.ec.fisheries.uvms</groupId>
     		<artifactId>uvms-commons</artifactId>
-			<version>2.0.25</version>
+			<version>2.0.26</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-io</groupId>
