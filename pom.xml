@@ -14,7 +14,7 @@
 	<description>Maven projekt-archetype for UnionVms modules</description>
 
 	<properties>
-		<docker.dev.version>3.4.0</docker.dev.version>
+		<docker.dev.version>3.6.0</docker.dev.version>
 
 		<usm4uvms.version>3.0.8</usm4uvms.version>
 		<uvms.common.version>2.0.27</uvms.common.version>
