@@ -13,6 +13,8 @@ package eu.europa.ec.fisheries.uvms.movement.message.producer.bean;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Observes;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -64,6 +66,7 @@ public class MessageProducerBean implements MessageProducer, ConfigMessageProduc
 	}
 
 	@Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException {
 
 		Connection connection = null;
@@ -125,6 +128,8 @@ public class MessageProducerBean implements MessageProducer, ConfigMessageProduc
 		}
 	}
 
+	@Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage)
 			throws MovementMessageException {
 		try {
@@ -136,6 +141,7 @@ public class MessageProducerBean implements MessageProducer, ConfigMessageProduc
 	}
 
 	@Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public String sendConfigMessage(String text) throws ConfigMessageException {
 		try {
 			return sendModuleMessage(text, ModuleQueue.CONFIG);
