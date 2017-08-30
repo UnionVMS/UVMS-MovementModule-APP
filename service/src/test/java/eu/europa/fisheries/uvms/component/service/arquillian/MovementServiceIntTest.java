@@ -477,6 +477,22 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType.setMovementType(MovementTypeType.POS);
         return movementType;
     }
+    
+    
+    private MovementType createMovementTypeHelper(Date timeStamp, double longitude, double latitude, double tripNumber) {
+        MovementType movementType = new MovementType();
+        movementType.setPositionTime(timeStamp);
+        MovementPoint point = new MovementPoint();
+        point.setLatitude(latitude);
+        point.setLongitude(longitude);
+
+        movementType.setPosition(point);
+        movementType.setComChannelType(MovementComChannelType.MANUAL);
+        //movementType.setInternalReferenceNumber( );
+        movementType.setTripNumber(tripNumber);
+        movementType.setMovementType(MovementTypeType.POS);
+        return movementType;
+    }
 
 
     public static MovementMetaData getMappedMovementHelper(int numberOfAreas) {
