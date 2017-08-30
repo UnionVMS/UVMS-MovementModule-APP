@@ -51,7 +51,7 @@ public class CreateMovementBatchBean {
         LOG.debug("createMovementBatch Received.. processing request in CreateMovementBatchBean");
         try {
 
-            CreateMovementBatchRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, CreateMovementRequest.class);
+            CreateMovementBatchRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, CreateMovementBatchRequest.class);
             SimpleResponse createdMovement = movementService.createMovementBatch(request.getMovement());
             String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createdMovement);
             messageProducer.sendMessageBackToRecipient(textMessage, responseString);
