@@ -201,7 +201,6 @@ public class NafMessageResponseMapper {
             timeString = "0" + timeString;
         }
         Date date = parseToUTCDateTime(dateString + " " + timeString + " UTC");
-        LOG.info("Time String: {}; Converted date: {}", dateString + " " + timeString + " UTC", date);
         movement.setPositionTime(date);
     }
 
@@ -277,7 +276,6 @@ public class NafMessageResponseMapper {
     private static Date parseToUTC(String format, String dateString) {
         DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
         DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateString);
-        LOG.info("JodaTime: {}", dateTime);
         return dateTime.toLocalDateTime().toDate();
 
     }

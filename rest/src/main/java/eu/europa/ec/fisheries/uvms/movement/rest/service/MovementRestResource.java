@@ -74,18 +74,14 @@ public class MovementRestResource {
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<MovementListResponseDto> getListByQuery(MovementQuery query) {
-        LOG.debug("Get list invoked in rest layer");
         try {
-            long start = System.currentTimeMillis();
             ResponseDto response = new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
-            long end = System.currentTimeMillis();
-            LOG.info("GET STANDARD MOVEMENT: {} ms", (end - start));
             return response;
         } catch (MovementServiceException | NullPointerException ex) {
-            LOG.error("[ Error when getting list. ]", ex);
+            LOG.error("[ Error when getting list. {}] {}",query, ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (MovementDuplicateException ex) {
-            LOG.error("[ Error when getting list. ]", ex);
+            LOG.error("[ Error when getting list. {}] {}",query,, ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }

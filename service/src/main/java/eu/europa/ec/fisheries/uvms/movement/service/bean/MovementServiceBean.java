@@ -93,7 +93,6 @@ public class MovementServiceBean implements MovementService {
      */
     @Override
     public MovementType createMovement(MovementBaseType data, String username) {
-        LOG.info("Create invoked in service layer");
         try {
 
             MovementType enrichedMovement = spatial.enrichMovementWithSpatialData(data);
@@ -120,7 +119,6 @@ public class MovementServiceBean implements MovementService {
     @Override
     public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
         try {
-            LOG.info("Get map invoked in service layer");
             List<MovementMapResponseType> mapResponse = model.getMovementMapByQuery(query);
             if (mapResponse == null) {
                 LOG.error("[ Error when getting map, response from JMS Queue is null ]");
@@ -128,7 +126,7 @@ public class MovementServiceBean implements MovementService {
             }
             return MovementDataSourceResponseMapper.createMovementMapResponse(mapResponse);
         } catch (ModelMarshallException | MovementModelException ex) {
-            LOG.error("[ Error when getting movement map by query ] {}", ex.getMessage());
+            LOG.error("[ Error when getting movement map by query {}] {}", query,ex.getMessage());
             throw new MovementServiceException("[ Error when getting movement map by query ]", ex);
         }
     }

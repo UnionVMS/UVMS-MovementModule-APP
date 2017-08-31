@@ -182,10 +182,6 @@ public class MovementDomainModelBean implements MovementDomainModel {
     }
 
     public List<MovementMapResponseType> getMovementMapByQuery(MovementQuery query) throws MovementModelException, InputArgumentException {
-
-        LOG.info("Get map of movement from query.");
-        long start = System.currentTimeMillis();
-
         if (query == null) {
             throw new InputArgumentException("Movement list query is null");
         }
@@ -259,8 +255,6 @@ public class MovementDomainModelBean implements MovementDomainModel {
                 response.add(responseType);
 
             }
-            long diff = System.currentTimeMillis() - start;
-            LOG.debug("getMovementMapByQuery: " + " ---- TIME ---- " + diff +"ms" );
             return response;
         } catch (MovementDaoMappingException | MovementDaoException | ParseException ex) {
             LOG.error("[ Error when getting movement by query ] {} ", ex.getMessage());
@@ -333,7 +327,6 @@ public class MovementDomainModelBean implements MovementDomainModel {
 
     public List<MovementType> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementModelException {
         try {
-            LOG.debug("Getting Latest Movements By ConnectIds.");
             List<Movement> movements = dao.getLatestMovementsByConnectIdList(connectIds);
 
             return MovementEntityToModelMapper.mapToMovementType(movements);
@@ -345,7 +338,6 @@ public class MovementDomainModelBean implements MovementDomainModel {
     @Override
     public List<MovementType> getLatestMovements(Integer numberOfMovements) throws MovementModelException {
         try {
-            LOG.debug("Getting Latest Movements.");
             List<LatestMovement> movements = dao.getLatestMovements(numberOfMovements);
 
             return MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
@@ -356,7 +348,6 @@ public class MovementDomainModelBean implements MovementDomainModel {
 
     public MovementType getMovementByGUID(String guid) throws MovementModelException {
         try {
-            LOG.debug("Getting Latest Movements By ConnectId.");
             Movement latestMovements = dao.getMovementsByGUID(guid);
             return MovementEntityToModelMapper.mapToMovementType(latestMovements);
         } catch (MovementDaoException e) {
@@ -365,7 +356,6 @@ public class MovementDomainModelBean implements MovementDomainModel {
     }
 
     public ArrayList<MovementSegment> filterSegments(List<MovementSegment> movementSegments, List<SearchValue> searchKeyValuesRange) {
-        long start = System.currentTimeMillis();
         Set<MovementSegment> segments = new HashSet<>();
         if (movementSegments != null) {
             for (MovementSegment segment : movementSegments) {
@@ -374,8 +364,6 @@ public class MovementDomainModelBean implements MovementDomainModel {
                 }
             }
         }
-        long diff = System.currentTimeMillis() - start;
-        LOG.debug("filterSegments: " + " ---- TIME ---- " + diff +"ms" );
         return new ArrayList<>(segments);
     }
 

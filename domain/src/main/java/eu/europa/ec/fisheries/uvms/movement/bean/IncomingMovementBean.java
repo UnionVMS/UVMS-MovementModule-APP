@@ -48,7 +48,6 @@ public class IncomingMovementBean {
             String connectId = movement.getMovementConnect().getValue();
             Date timeStamp = movement.getTimestamp();
 
-            long before = System.currentTimeMillis();
             //ToDo: Timestamp will be null in the database if not set actively to a boolean value. This means duplicate timestamp Movements will not be detected by the processMovement method
             //ToDo: since the isDateAlreadyInserted method does not handle the null case (by e.g. setting a default value to false instead of null). Look at class MovementDaoBean and check if
             //ToDo: a null check is needed there or not.
@@ -58,7 +57,7 @@ public class IncomingMovementBean {
                     Date newDate = DateUtil.addSecondsToDate(timeStamp, 1);
                     movement.setTimestamp(newDate);
                 } else {
-                    LOG.info("Got a duplicate movement. Marking it as such.");
+                    LOG.info("Got a duplicate movement. Marking it as such.{}",id);
                     movement.setProcessed(true);
                     movement.setDuplicate(true);
                     movement.setDuplicateId(duplicateMovements.get(0).getGuid());
@@ -66,7 +65,6 @@ public class IncomingMovementBean {
                 }
             }
             movement.setDuplicate(false);
-            LOG.debug("Check for duplicate movement: {}", (System.currentTimeMillis() - before));
 
             Movement previousMovement = dao.getLatestMovement(connectId, timeStamp, false);
             Movement firstMovement = null;

@@ -506,7 +506,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             return singleResult;
         } catch (NoResultException ex) {
             // Not logged as an error, since this will be the case for the first position for every asset.
-            LOG.info("[ No result when retrieving MovementConnect from DAO ]");
+            LOG.info("[ No result when retrieving MovementConnect from DAO {}]",id);
             return null;
         } catch (IllegalArgumentException e) {
             LOG.error("[ Error when getting MovementConnect ] {}", e.getMessage());

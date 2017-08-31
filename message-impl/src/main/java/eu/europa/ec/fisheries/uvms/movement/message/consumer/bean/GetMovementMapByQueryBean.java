@@ -41,7 +41,7 @@ public class GetMovementMapByQueryBean {
     private MessageProducer messageProducer;
 
     public void getMovementMapByQuery(TextMessage textMessage) {
-        LOG.info("Get Movement By Query Received.. processing request in MovementEventServiceBean");
+        LOG.info("Get Movement By Query Received.. processing request in MovementEventServiceBean:{}",textMessage);
         try {
             GetMovementMapByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, GetMovementMapByQueryRequest.class);
             GetMovementMapByQueryResponse movementList = movementService.getMapByQuery(request.getQuery());
