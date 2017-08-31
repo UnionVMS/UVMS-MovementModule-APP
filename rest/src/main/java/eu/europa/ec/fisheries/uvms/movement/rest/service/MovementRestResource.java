@@ -81,7 +81,7 @@ public class MovementRestResource {
             LOG.error("[ Error when getting list. {}] {}",query, ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (MovementDuplicateException ex) {
-            LOG.error("[ Error when getting list. {}] {}",query,, ex);
+            LOG.error("[ Error when getting list. {}] {}",query, ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
