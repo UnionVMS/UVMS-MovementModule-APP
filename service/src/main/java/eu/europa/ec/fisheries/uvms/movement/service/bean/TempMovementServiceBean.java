@@ -30,7 +30,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseD
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementDataSourceResponseMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;

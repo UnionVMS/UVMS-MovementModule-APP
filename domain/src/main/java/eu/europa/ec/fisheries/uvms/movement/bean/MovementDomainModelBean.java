@@ -24,7 +24,6 @@ import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementDomainModel;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
@@ -51,7 +50,7 @@ import java.util.*;
 
 @LocalBean
 @Stateless
-public class MovementDomainModelBean implements MovementDomainModel {
+public class MovementDomainModelBean {
 
     @EJB
     MovementDaoBean dao;
@@ -335,7 +334,6 @@ public class MovementDomainModelBean implements MovementDomainModel {
         }
     }
 
-    @Override
     public List<MovementType> getLatestMovements(Integer numberOfMovements) throws MovementModelException {
         try {
             List<LatestMovement> movements = dao.getLatestMovements(numberOfMovements);
