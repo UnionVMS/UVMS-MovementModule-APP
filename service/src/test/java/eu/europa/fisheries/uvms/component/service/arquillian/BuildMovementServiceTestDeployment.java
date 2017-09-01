@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 //import eu.europa.ec.fisheries.uvms.movement.service.EventService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
@@ -83,6 +84,7 @@ public abstract class BuildMovementServiceTestDeployment {
         archive.addClass(MovementServiceBean.class)
         .addClass(MovementService.class)
         .addClass(SpatialService.class)
+        .addClass(MovementDataSourceResponseMapper.class)
         .addClass(SpatialServiceMockedBean.class)
         .addClass(MovementListResponseDto.class)
         .addClass(MovementDto.class).addClass(MovementMapper.class);
