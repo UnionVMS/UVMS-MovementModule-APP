@@ -117,7 +117,8 @@ public class SegmentCalculationUtil {
 
     public static Boolean isVesselInPort(Movement movement) {
         if (movement.getMetadata() != null) {
-            if (movement.getMetadata().getClosestPortDistance() < DISTANCE_TO_PORT_THRESHOLD_IN_NAUTICAL_MILES) {
+            if (movement.getMetadata().getClosestPortDistance() != null &&
+                    movement.getMetadata().getClosestPortDistance() < DISTANCE_TO_PORT_THRESHOLD_IN_NAUTICAL_MILES) {
                 return Boolean.TRUE;
             } else {
                 return Boolean.FALSE;
