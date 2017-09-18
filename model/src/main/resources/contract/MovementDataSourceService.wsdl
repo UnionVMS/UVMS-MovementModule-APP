@@ -1,0 +1,1031 @@
+<definitions name="MovementDataSource"
+             targetNamespace="urn:source.movement.schema.fisheries.ec.europa.eu:v1"
+             xmlns:source="urn:source.movement.schema.fisheries.ec.europa.eu:v1"
+             xmlns:area="urn:area.movement.schema.fisheries.ec.europa.eu:v1"
+             xmlns:movement="urn:movement.schema.fisheries.ec.europa.eu:v1"
+             xmlns:search="urn:search.movement.schema.fisheries.ec.europa.eu:v1"
+             xmlns:common="urn:common.movement.schema.fisheries.ec.europa.eu:v1"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:source.movement.schema.fisheries.ec.europa.eu:v1">
+            
+            <xsd:import namespace="urn:common.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="MovementCommon.xsd"/>
+            <xsd:import namespace="urn:search.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="MovementSearch.xsd"/>
+            <xsd:import namespace="urn:movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Movement.xsd"/>
+            <xsd:import namespace="urn:area.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Area.xsd"/>
+            
+            <!-- Mobile Terminal Base Request -->
+            <xsd:simpleType name="MovementDataSourceMethod">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="MOVEMENT_LIST"/>
+                    <xsd:enumeration value="MOVEMENT_BY_GUID"/>
+                    <xsd:enumeration value="MOVEMENT_MAP"/>
+                    <xsd:enumeration value="CREATE"/>
+                    <xsd:enumeration value="CREATE_BATCH"/>
+                    <xsd:enumeration value="CREATE_TEMP"/>
+                    <xsd:enumeration value="TEMP_UPDATE"/>
+                    <xsd:enumeration value="TEMP_DELETE"/>
+                    <xsd:enumeration value="TEMP_SEND"/>
+                    <xsd:enumeration value="TEMP_LIST_BY_QUERY"/>
+                    <xsd:enumeration value="GET_TRIP_BY_ID"/>
+                    <xsd:enumeration value="GET_SEGMENT_BY_ID"/>
+                    <xsd:enumeration value="GROUP_GET"/>
+                    <xsd:enumeration value="GROUP_CREATE"/>
+                    <xsd:enumeration value="GROUP_UPDATE"/>
+                    <xsd:enumeration value="GROUP_LIST"/>
+                    <xsd:enumeration value="GROUP_DELETE"/>
+                    <xsd:enumeration value="PING"/>
+                    <xsd:enumeration value="TEMP_GET"/>
+                    <xsd:enumeration value="LATEST_REPORT_BY_CONNECT_ID"/>
+                    <xsd:enumeration value="MOVEMENT_LIST_BY_AREA_TIME_INTERVAL"/>
+                    <xsd:enumeration value="GET_AREAS"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+
+
+            <xsd:complexType name="MovementBaseRequest" abstract="true">
+                <xsd:sequence>
+                    <xsd:element name="method" type="source:MovementDataSourceMethod"/>
+                    <xsd:element name="username" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            
+            <!-- LatestReportBy CoonnectId Query -->
+            <xsd:element name="getMovementByGUIDRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="GUID" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="getMovementByGUIDResponse">
+                <xsd:complexType>
+                    <xsd:sequence>                        
+                        <xsd:element name="movement" type="movement:MovementType" minOccurs="0" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- LatestReportBy CoonnectId Query -->
+            <xsd:element name="getLatestMovementsByConnectIdRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="connectIds" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="getLatestMovementsByConnectIdResponse">
+                <xsd:complexType>
+                    <xsd:sequence>                        
+                        <xsd:element name="movement" type="movement:MovementType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- QueryList request -->
+            <xsd:element name="getMovementListByQueryRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="query" type="search:MovementQuery"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="getMovementListByQueryResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:MovementType" minOccurs="0" maxOccurs="unbounded"/>
+                        <xsd:element name="totalNumberOfPages" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+                        <xsd:element name="currentPage" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+             
+            <!-- Get Movement Map By Query -->
+            <xsd:element name="getMovementMapByQueryRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="query" type="search:MovementQuery"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="getMovementMapByQueryResponse">
+                <xsd:complexType>
+                    <xsd:sequence>          
+                        <xsd:element name="movementMap" type="search:MovementMapResponseType" minOccurs="1" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Create movement request -->
+            <xsd:element name="createMovementRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="movement" type="movement:MovementType"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="createMovementResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:MovementType" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Create movement batch request -->
+            <xsd:element name="createMovementBatchRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="movement" type="movement:MovementType" minOccurs="1" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="createMovementBatchResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="response" type="common:SimpleResponse" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Create temporary movement request -->
+            <xsd:element name="createTempMovementRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="movement" type="movement:TempMovementType"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="createTempMovementResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:TempMovementType" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Update temporary movement request -->
+            <xsd:element name="updateTempMovementRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="movement" type="movement:TempMovementType"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="updateTempMovementResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:TempMovementType" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!-- Change status on temporary movement -->
+            <xsd:element name="setStatusMovementRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="guid" type="xsd:string"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="setStatusMovementResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:TempMovementType" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!-- Send temporary movement -->
+            <xsd:element name="sendTempMovementRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="guid" type="xsd:string"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="sendTempMovementResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:TempMovementType" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!-- Temp Movement List -->
+            <xsd:element name="getTempMovementListRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="query" type="search:MovementQuery"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="getTempMovementListResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:TempMovementType" minOccurs="0" maxOccurs="unbounded"/>
+                        <xsd:element name="totalNumberOfPages" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+                        <xsd:element name="currentPage" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Create movement search group -->
+            <xsd:element name="createMovementSearchGroupRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="searchGroup" type="search:MovementSearchGroup"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="singleMovementSearchGroupResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="searchGroup" type="search:MovementSearchGroup"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="listMovementSearchGroupResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="searchGroups" type="search:MovementSearchGroup" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!-- Get movement search group by ID -->
+            <xsd:element name="getMovementSearchGroupRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="id" type="xsd:integer"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!--  Update movement search group -->
+            <xsd:element name="updateMovementSearchGroupRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="searchGroup" type="search:MovementSearchGroup"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!--  Get movement search groups by user -->
+            <xsd:element name="getMovementSearchGroupsByUserRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="user" type="xsd:string"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!--  Get movement search groups by user -->
+            <xsd:element name="deleteMovementSearchGroupRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="id" type="xsd:integer"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!-- Get movement trip by id -->
+            <xsd:element name="getMovementTripByIdRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="id" type="xsd:string"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="getMovementTripByIdResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:MovementSegment" minOccurs="1" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <!-- Get segment by Id -->
+            <xsd:element name="getSegmentByIdRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="id" type="xsd:string"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+            
+            <xsd:element name="getSegmentByIdResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:MovementSegment"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+ 
+            <!-- Ping request -->
+            <xsd:element name="pingRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest"/>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+			
+            <xsd:element name="pingResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="response" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!-- Create temporary movement request -->
+            <xsd:element name="getTempMovementRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="guid" type="xsd:string"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getTempMovementResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:TempMovementType" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getMovementListByAreaAndTimeIntervalRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="movementAreaAndTimeIntervalCriteria" type="search:MovementAreaAndTimeIntervalCriteria" minOccurs="1" maxOccurs="1"/>
+
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getMovementListByAreaAndTimeIntervalResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movement" type="movement:MovementType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getAreasRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="source:MovementBaseRequest"/>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="areasResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="areas" type="area:AreaType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+        </xsd:schema>
+    </types>
+    
+    <message name="MovementException">
+        <part name="body" element="common:exceptionType"/>
+    </message>
+    
+    <message name="GetMovementByGUIDRequest">
+        <part name="body" element="source:getMovementByGUIDRequest"/>
+    </message>
+    <message name="GetMovementByGUIDResponse">
+        <part name="body" element="source:getMovementByGUIDResponse"/>
+    </message>
+    
+    <message name="GetLatestMovementsByConnectIdListRequest">
+        <part name="body" element="source:getLatestMovementsByConnectIdRequest"/>
+    </message>
+    <message name="GetLatestMovementsByConnectIdListResponse">
+        <part name="body" element="source:getLatestMovementsByConnectIdResponse"/>
+    </message>
+    
+    <message name="GetMovementMapRequest">
+        <part name="body" element="source:getMovementMapByQueryRequest"/>
+    </message>
+    <message name="GetMovementMapResponse">
+        <part name="body" element="source:getMovementMapByQueryResponse"/>
+    </message>
+    
+    <message name="GetMovementListRequest">
+        <part name="body" element="source:getMovementListByQueryRequest"/>
+    </message>
+    <message name="GetMovementListResponse">
+        <part name="body" element="source:getMovementListByQueryResponse"/>
+    </message>
+    
+    <message name="CreateMovementRequest">
+        <part name="body" element="source:createMovementRequest"/>
+    </message>
+    <message name="CreateMovementResponse">
+        <part name="body" element="source:createMovementResponse"/>
+    </message>
+    
+    <message name="CreateMovementBatchRequest">
+        <part name="body" element="source:createMovementBatchRequest"/>
+    </message>
+    <message name="CreateMovementBatchResponse">
+        <part name="body" element="source:createMovementBatchResponse"/>
+    </message>
+    
+    <message name="CreateTempMovementRequest">
+        <part name="body" element="source:createTempMovementRequest"/>
+    </message>
+    <message name="CreateTempMovementResponse">
+        <part name="body" element="source:createTempMovementResponse"/>
+    </message>
+    
+    <message name="GetTempMovementListRequest">
+        <part name="body" element="source:getTempMovementListRequest"/>
+    </message>
+    <message name="GetTempMovementListResponse">
+        <part name="body" element="source:getTempMovementListResponse"/>
+    </message>
+    
+    <message name="GetMovementTripByIdRequest">
+        <part name="body" element="source:getMovementTripByIdRequest"/>
+    </message>
+    <message name="GetMovementTripByIdResponse">
+        <part name="body" element="source:getMovementTripByIdResponse"/>
+    </message>
+    
+    <message name="GetSegmentByIdRequest">
+        <part name="body" element="source:getSegmentByIdRequest"/>
+    </message>
+    <message name="GetSegmentByIdResponse">
+        <part name="body" element="source:getSegmentByIdResponse"/>
+    </message>
+
+    <message name="CreateMovementSearchGroupRequest">
+        <part name="body" element="source:createMovementSearchGroupRequest"/>
+    </message>
+    <message name="CreateMovementSearchGroupResponse">
+        <part name="body" element="source:singleMovementSearchGroupResponse"/>
+    </message>
+
+    <message name="GetMovementSearchGroupRequest">
+        <part name="body" element="source:getMovementSearchGroupRequest"/>
+    </message>
+    <message name="GetMovementSearchGroupResponse">
+        <part name="body" element="source:singleMovementSearchGroupResponse"/>
+    </message>
+
+    <message name="UpdateMovementSearchGroupRequest">
+        <part name="body" element="source:updateMovementSearchGroupRequest"/>
+    </message>
+    <message name="UpdateMovementSearchGroupResponse">
+        <part name="body" element="source:singleMovementSearchGroupResponse"/>
+    </message>
+
+    <message name="GetMovementSearchGroupsByUserRequest">
+        <part name="body" element="source:getMovementSearchGroupsByUserRequest"/>
+    </message>
+    <message name="GetMovementSearchGroupsByUserResponse">
+        <part name="body" element="source:listMovementSearchGroupResponse"/>
+    </message>
+
+    <message name="DeleteMovementSearchGroupRequest">
+        <part name="body" element="source:deleteMovementSearchGroupRequest"/>
+    </message>
+    <message name="DeleteMovementSearchGroupResponse">
+        <part name="body" element="source:singleMovementSearchGroupResponse"/>
+    </message>
+
+    <message name="SetStatusMovementRequest">
+        <part name="body" element="source:setStatusMovementRequest"/>
+    </message>
+
+    <message name="SetStatusMovementResponse">
+        <part name="body" element="source:setStatusMovementResponse"/>
+    </message>
+    
+    <message name="SendTempMovementRequest">
+        <part name="body" element="source:sendTempMovementRequest"/>
+    </message>
+
+    <message name="SendTempMovementResponse">
+        <part name="body" element="source:sendTempMovementResponse"/>
+    </message>
+    
+    <message name="PingRequest">
+        <part name="body" element="source:pingRequest"/>
+    </message>
+    <message name="PingResponse">
+        <part name="body" element="source:pingResponse"/>
+    </message>
+
+    <message name="GetTempMovementRequest">
+        <part name="body" element="source:getTempMovementRequest"/>
+    </message>
+    <message name="GetTempMovementResponse">
+        <part name="body" element="source:getTempMovementResponse"/>
+    </message>
+
+    <message name="GetMovementListByAreaAndTimeIntervalRequest">
+        <part name="body" element="source:getMovementListByAreaAndTimeIntervalRequest"/>
+    </message>
+    <message name="GetMovementListAreaAndTimeIntervalResponse">
+        <part name="body" element="source:getMovementListByAreaAndTimeIntervalResponse"/>
+    </message>
+
+    <message name="GetAreasRequest">
+        <part name="body" element="source:getAreasRequest"/>
+    </message>
+    <message name="GetAreasResponse">
+        <part name="body" element="source:areasResponse"/>
+    </message>
+
+    <portType name="MovementDataSourcePortType">
+        
+        <operation name="GetMovementByGUID">
+            <input message="source:GetMovementByGUIDRequest"/>
+            <output message="source:GetMovementByGUIDResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+        
+        <operation name="GetLatestMovementListByConnectIds">
+            <input message="source:GetLatestMovementsByConnectIdListRequest"/>
+            <output message="source:GetLatestMovementsByConnectIdListResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+       
+        <operation name="GetMovementList">
+            <input message="source:GetMovementListRequest"/>
+            <output message="source:GetMovementListResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+        
+        <operation name="GetMovementMap">
+            <input message="source:GetMovementMapRequest"/>
+            <output message="source:GetMovementMapResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+        
+        <operation name="CreateMovement">
+            <input message="source:CreateMovementRequest"/>
+            <output message="source:CreateMovementResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+        
+        <operation name="CreateMovementBatch">
+            <input message="source:CreateMovementBatchRequest"/>
+            <output message="source:CreateMovementBatchResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+        
+        <operation name="CreateTempMovement">
+            <input message="source:CreateTempMovementRequest"/>
+            <output message="source:CreateTempMovementResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+        
+        <operation name="GetTempMovementList">
+            <input message="source:GetTempMovementListRequest"/>
+            <output message="source:GetTempMovementListResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+        
+        <operation name="GetTripById">
+            <input message="source:GetMovementTripByIdRequest"/>
+            <output message="source:GetMovementTripByIdResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+        
+        <operation name="GetSegmentById">
+            <input message="source:GetSegmentByIdRequest"/>
+            <output message="source:GetSegmentByIdResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+        <operation name="CreateMovementSearchGroup">
+            <input message="source:CreateMovementSearchGroupRequest"/>
+            <output message="source:CreateMovementSearchGroupResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+        <operation name="GetMovementSearchGroup">
+            <input message="source:GetMovementSearchGroupRequest"/>
+            <output message="source:GetMovementSearchGroupResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+        <operation name="UpdateMovementSearchGroup">
+            <input message="source:UpdateMovementSearchGroupRequest"/>
+            <output message="source:UpdateMovementSearchGroupResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+        <operation name="GetMovementSearchGroupsByUser">
+            <input message="source:GetMovementSearchGroupsByUserRequest"/>
+            <output message="source:GetMovementSearchGroupsByUserResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+        <operation name="DeleteMovementSearchGroup">
+            <input message="source:DeleteMovementSearchGroupRequest"/>
+            <output message="source:DeleteMovementSearchGroupResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+        <operation name="SetStatusMovement">
+            <input message="source:SetStatusMovementRequest"/>
+            <output message="source:SetStatusMovementResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+        <operation name="SendTempMovement">
+            <input message="source:SendTempMovementRequest"/>
+            <output message="source:SendTempMovementResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+        <operation name="Ping">
+            <input message="source:PingRequest"/>
+            <output message="source:PingResponse"/>
+        </operation>
+
+        <operation name="GetTempMovement">
+            <input message="source:GetTempMovementRequest"/>
+            <output message="source:GetTempMovementResponse"/>
+        </operation>
+
+        <operation name="GetMovementListByAreaAndTimeInterval">
+            <input message="source:GetMovementListByAreaAndTimeIntervalRequest"/>
+            <output message="source:GetMovementListAreaAndTimeIntervalResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+        <operation name="GetAreas">
+            <input message="source:GetAreasRequest"/>
+            <output message="source:GetAreasResponse"/>
+            <fault name="MovementException" message="source:MovementException"/>
+        </operation>
+
+    </portType>
+
+    <binding name="MovementDataSourceSoapBinding" type="source:MovementDataSourcePortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <operation name="GetMovementByGUID">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetLatestMovementListByConnectIds">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetMovementList">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetMovementMap">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="CreateMovement">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="CreateMovementBatch">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="CreateTempMovement">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetTempMovementList">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetTripById">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+        
+        <operation name="GetSegmentById">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="CreateMovementSearchGroup">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="GetMovementSearchGroup">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="UpdateMovementSearchGroup">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="GetMovementSearchGroupsByUser">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="DeleteMovementSearchGroup">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="SetStatusMovement">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="SendTempMovement">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="Ping">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation> 
+
+        <operation name="GetTempMovement">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="GetMovementListByAreaAndTimeInterval">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="GetAreas">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+    </binding>
+
+    <service name="MovementDataSourceQueueService">
+        <port name="DataSourcePortType" binding="source:MovementDataSourceSoapBinding">
+            <soap:address location="http://REPLACE_ME"/>
+        </port>
+    </service>
+
+</definitions>

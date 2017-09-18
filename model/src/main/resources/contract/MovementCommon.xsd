@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="urn:common.movement.schema.fisheries.ec.europa.eu:v1"
+            xmlns:common="urn:common.movement.schema.fisheries.ec.europa.eu:v1" 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+            xmlns="http://schemas.xmlsoap.org/wsdl/">
+    
+
+    <xsd:element name="exceptionType">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="code" type="xsd:int"/>
+                <xsd:element name="fault" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    
+    <xsd:simpleType name="SimpleResponse">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="OK"/>
+            <xsd:enumeration value="NOK"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="AcknowledgeTypeType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="OK"/>
+            <xsd:enumeration value="NOK"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="AcknowledgeType">
+        <xsd:sequence>
+            <xsd:element name="messageId" type="xsd:string"/>
+            <xsd:element name="message" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="type" type="common:AcknowledgeTypeType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

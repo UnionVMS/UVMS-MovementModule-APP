@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:search="urn:search.movement.schema.fisheries.ec.europa.eu:v1"
+            xmlns:movement="urn:movement.schema.fisheries.ec.europa.eu:v1"
+            targetNamespace="urn:search.movement.schema.fisheries.ec.europa.eu:v1"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+            xmlns="http://schemas.xmlsoap.org/wsdl/">
+    
+    <xsd:import namespace="urn:movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Movement.xsd"/>
+
+    <xsd:simpleType name="SearchKey">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="MOVEMENT_ID"/>
+            <xsd:enumeration value="SEGMENT_ID"/>
+            <xsd:enumeration value="TRACK_ID"/>
+            <xsd:enumeration value="CONNECT_ID"/>
+            <xsd:enumeration value="MOVEMENT_TYPE"/>
+            <xsd:enumeration value="ACTIVITY_TYPE"/>
+            <xsd:enumeration value="DATE"/>
+            <xsd:enumeration value="AREA"/>
+            <xsd:enumeration value="AREA_ID"/>
+            <xsd:enumeration value="STATUS"/>
+            <xsd:enumeration value="SOURCE"/>
+            <xsd:enumeration value="CATEGORY"/>
+            <xsd:enumeration value="NR_OF_LATEST_REPORTS"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="SearchKeyType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ASSET"/>
+            <xsd:enumeration value="OTHER"/>
+            <xsd:enumeration value="MOVEMENT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="RangeKeyType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DATE"/>
+            <xsd:enumeration value="MOVEMENT_SPEED"/>
+            <xsd:enumeration value="SEGMENT_SPEED"/>
+            <xsd:enumeration value="TRACK_SPEED"/>
+            <xsd:enumeration value="SEGMENT_DURATION"/>
+            <xsd:enumeration value="SEGMENT_LENGTH"/>
+            <xsd:enumeration value="TRACK_DURATION"/>
+            <xsd:enumeration value="TRACK_LENGTH"/>
+            <xsd:enumeration value="TRACK_DURATION_AT_SEA"/>
+        </xsd:restriction>
+    </xsd:simpleType>   
+    
+    <xsd:complexType name="RangeCriteria">
+        <xsd:sequence>
+            <xsd:element name="key" type="search:RangeKeyType" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="from" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="to" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="MovementQuery">
+        <xsd:sequence>
+            <xsd:element name="pagination" type="search:ListPagination" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="excludeFirstAndLastSegment" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="movementSearchCriteria" type="search:ListCriteria" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:element name="movementRangeSearchCriteria" type="search:RangeCriteria" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="MovementSearchGroup">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:integer"/>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="user" type="xsd:string"/>
+            <xsd:element name="dynamic" type="xsd:boolean"/>
+            <xsd:element name="searchFields" type="search:GroupListCriteria" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="GroupListCriteria">
+        <xsd:sequence>
+            <xsd:element name="key" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="type" type="search:SearchKeyType" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ListCriteria">
+        <xsd:sequence>
+            <xsd:element name="key" type="search:SearchKey" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+            
+    <xsd:complexType name="ListPagination">
+        <xsd:sequence>
+            <xsd:element name="page" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="listSize" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="MovementMapResponseType">
+        <xsd:sequence>
+            <xsd:element name="key" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="movements" type="movement:MovementType" minOccurs="1" maxOccurs="unbounded"/>
+            <!-- xsd:element name="latestMovements" type="movement:MovementType" minOccurs="1" maxOccurs="unbounded"/ -->
+            <xsd:element name="segments" type="movement:MovementSegment" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:element name="tracks" type="movement:MovementTrack" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="MovementAreaAndTimeIntervalCriteria">
+        <xsd:sequence>
+            <xsd:element name="fromDate" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="toDate" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="areaCode" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
