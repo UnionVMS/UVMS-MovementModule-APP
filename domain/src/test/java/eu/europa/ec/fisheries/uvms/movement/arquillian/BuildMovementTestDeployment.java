@@ -23,12 +23,12 @@ public abstract class BuildMovementTestDeployment {
     public static Archive<?> createDeployment() {
 
         // Import Maven runtime dependencies
-        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
+        final File[] files = Maven.resolver().loadPomFromFile("pom.xml")
                 .importRuntimeDependencies().resolve().withTransitivity().asFile();
 
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
-        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
+        final WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.constant");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.entity");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dao");

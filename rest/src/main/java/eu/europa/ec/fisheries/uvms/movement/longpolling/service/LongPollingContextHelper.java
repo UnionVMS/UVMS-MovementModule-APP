@@ -30,7 +30,7 @@ public class LongPollingContextHelper {
      * @param ctx an asynchronous context
      * @param longPollingPath a long-polling path
      */
-    public void add(AsyncContext ctx, String longPollingPath) {
+    public void add(final AsyncContext ctx, final String longPollingPath) {
         List<AsyncContext> ctxs = asyncContexts.get(longPollingPath);
         if (ctxs == null) {
             ctxs = new ArrayList<>();
@@ -46,8 +46,8 @@ public class LongPollingContextHelper {
      * @param longPollingPath a path
      * @return the first context for this path, or null if none exist
      */
-    public AsyncContext popContext(String longPollingPath) {
-        List<AsyncContext> ctxs = asyncContexts.get(longPollingPath);
+    public AsyncContext popContext(final String longPollingPath) {
+        final List<AsyncContext> ctxs = asyncContexts.get(longPollingPath);
         if (ctxs == null || ctxs.isEmpty()) {
             return null;
         }
@@ -55,8 +55,8 @@ public class LongPollingContextHelper {
         return ctxs.remove(0);
     }
 
-    public void remove(AsyncContext ctx) {
-        for (List<AsyncContext> ctxs : asyncContexts.values()) {
+    public void remove(final AsyncContext ctx) {
+        for (final List<AsyncContext> ctxs : asyncContexts.values()) {
             if (ctxs.contains(ctx)) {
                 ctxs.remove(ctx);
                 break;

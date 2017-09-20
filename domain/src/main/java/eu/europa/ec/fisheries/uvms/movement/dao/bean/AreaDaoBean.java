@@ -14,9 +14,6 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import org.slf4j.Logger;
@@ -36,18 +33,18 @@ public class AreaDaoBean extends Dao implements AreaDao {
     public List<Area> getAreas() throws AreaDaoException {
         try {
             return em.createNamedQuery(UvmsConstants.AREA_FIND_ALL, Area.class).getResultList();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error(" [ Error when getting areas. ] {}", e.getMessage());
             throw new AreaDaoException(" [ Error when getting areas. ]", e);
         }
     }
 
     @Override
-    public Area createMovementArea(Area area) throws AreaDaoException {
+    public Area createMovementArea(final Area area) throws AreaDaoException {
         try {
             em.persist(area);
             return area;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when creating movement area. ] {}", e.getMessage());
             throw new AreaDaoException(" [ Error when creating movement area. ] ", e);
         }
@@ -58,14 +55,14 @@ public class AreaDaoBean extends Dao implements AreaDao {
 
         try {
             em.flush();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error(" [ Error when flushing movement area. ] ");
             throw new AreaDaoException(" [ Error when flushing movement area. ] ", e);
         }
     }
 
     @Override
-    public Area readMovementAreaById(Long id) {
+    public Area readMovementAreaById(final Long id) {
         return em.find(Area.class, id);
         }
 }

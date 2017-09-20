@@ -76,11 +76,11 @@ public class Movementarea implements Serializable {
     public Movementarea() {
     }
 
-    public Movementarea(Long movareaId) {
+    public Movementarea(final Long movareaId) {
         this.movareaId = movareaId;
     }
 
-    public Movementarea(Long movareaId, Date movareaUpdattim, String movareaUpuser) {
+    public Movementarea(final Long movareaId, final Date movareaUpdattim, final String movareaUpuser) {
         this.movareaId = movareaId;
         this.movareaUpdattim = movareaUpdattim;
         this.movareaUpuser = movareaUpuser;
@@ -90,7 +90,7 @@ public class Movementarea implements Serializable {
         return movareaId;
     }
 
-    public void setMovareaId(Long movareaId) {
+    public void setMovareaId(final Long movareaId) {
         this.movareaId = movareaId;
     }
 
@@ -98,7 +98,7 @@ public class Movementarea implements Serializable {
         return movareaUpdattim;
     }
 
-    public void setMovareaUpdattim(Date movareaUpdattim) {
+    public void setMovareaUpdattim(final Date movareaUpdattim) {
         this.movareaUpdattim = movareaUpdattim;
     }
 
@@ -106,7 +106,7 @@ public class Movementarea implements Serializable {
         return movareaUpuser;
     }
 
-    public void setMovareaUpuser(String movareaUpuser) {
+    public void setMovareaUpuser(final String movareaUpuser) {
         this.movareaUpuser = movareaUpuser;
     }
 
@@ -114,7 +114,7 @@ public class Movementarea implements Serializable {
         return movareaMoveId;
     }
 
-    public void setMovareaMoveId(Movement movareaMoveId) {
+    public void setMovareaMoveId(final Movement movareaMoveId) {
         this.movareaMoveId = movareaMoveId;
     }
 
@@ -122,7 +122,7 @@ public class Movementarea implements Serializable {
         return movareaAreaId;
     }
 
-    public void setMovareaAreaId(Area movareaAreaId) {
+    public void setMovareaAreaId(final Area movareaAreaId) {
         this.movareaAreaId = movareaAreaId;
     }
 
@@ -134,12 +134,12 @@ public class Movementarea implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Movementarea)) {
             return false;
         }
-        Movementarea other = (Movementarea) object;
+        final Movementarea other = (Movementarea) object;
         if ((this.movareaId == null && other.movareaId != null) || (this.movareaId != null && !this.movareaId.equals(other.movareaId))) {
             return false;
         }

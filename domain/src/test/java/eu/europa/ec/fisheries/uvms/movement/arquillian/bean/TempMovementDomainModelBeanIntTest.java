@@ -15,28 +15,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.bean.TempMovementDomainModelBean;
-import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-
-import javax.ejb.EJB;
-import java.math.BigInteger;
-import java.util.UUID;
 
 
 @RunWith(Arquillian.class)
@@ -55,7 +34,7 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
         thrown.expect(MovementModelException.class);
         thrown.expectMessage("Could not create temp movement. TempMovementType is null, aborting mapping");
 
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementDomainModel.createTempMovement(null, username);
     }
 
@@ -70,10 +49,10 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void createTempMovementSuccessTest() throws MovementModelException {
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
-        TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
+        final TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+        final TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
         em.flush();
         Assert.assertNotNull(createTempMovement);
         Assert.assertNotNull(createTempMovement.getUpdatedTime());
@@ -96,7 +75,7 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
         thrown.expect(InputArgumentException.class);
         thrown.expectMessage("Non valid id of temp movement to update");
 
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementDomainModel.archiveTempMovement(null, username);
     }
 
@@ -112,13 +91,13 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void archiveTempMovementSuccessTest() throws MovementModelException {
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
-        TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
+        final TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+        final TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
         em.flush();
 
-        TempMovementType archiveTempMovement = tempMovementDomainModel.archiveTempMovement(createTempMovement.getGuid(), username);
+        final TempMovementType archiveTempMovement = tempMovementDomainModel.archiveTempMovement(createTempMovement.getGuid(), username);
         em.flush();
         Assert.assertNotNull(archiveTempMovement);
         Assert.assertNotNull(archiveTempMovement.getUpdatedTime());
@@ -133,7 +112,7 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
         thrown.expect(InputArgumentException.class);
         thrown.expectMessage("Non valid id of temp movement to update");
 
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementDomainModel.sendTempMovement(null, username);
     }
 
@@ -149,13 +128,13 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void sendTempMovementSuccessTest() throws MovementModelException {
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
-        TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
+        final TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+        final TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
         em.flush();
 
-        TempMovementType sendTempMovement = tempMovementDomainModel.sendTempMovement(createTempMovement.getGuid(), username);
+        final TempMovementType sendTempMovement = tempMovementDomainModel.sendTempMovement(createTempMovement.getGuid(), username);
         em.flush();
         Assert.assertNotNull(sendTempMovement);
         Assert.assertNotNull(sendTempMovement.getUpdatedTime());
@@ -170,7 +149,7 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
         thrown.expect(InputArgumentException.class);
         thrown.expectMessage("No temp movement to update");
 
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementDomainModel.updateTempMovement(null, username);
     }
 
@@ -188,8 +167,8 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
         thrown.expect(MovementModelException.class);
         thrown.expectMessage("Could not update temp movement.");
 
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
-        TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
+        final TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
         em.flush();
         tempMovementType.setGuid(UUID.randomUUID().toString());
         tempMovementDomainModel.updateTempMovement(tempMovementType, username);
@@ -198,15 +177,15 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void updateTempMovementSuccessTest() throws MovementModelException {
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
-        TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
+        final TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+        final TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
         em.flush();
 
         createTempMovement.setSpeed(25d);
 
-        TempMovementType updateTempMovement = tempMovementDomainModel.updateTempMovement(createTempMovement, username);
+        final TempMovementType updateTempMovement = tempMovementDomainModel.updateTempMovement(createTempMovement, username);
 
         Assert.assertNotNull(updateTempMovement);
         Assert.assertNotNull(updateTempMovement.getUpdatedTime());
@@ -226,13 +205,13 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getTempMovementSuccessTest() throws MovementModelException {
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
-        TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
+        final TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+        final TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
         em.flush();
 
-        TempMovementType getTempMovement = tempMovementDomainModel.getTempMovement(createTempMovement.getGuid());
+        final TempMovementType getTempMovement = tempMovementDomainModel.getTempMovement(createTempMovement.getGuid());
         Assert.assertEquals(createTempMovement, getTempMovement);
     }
 
@@ -264,18 +243,18 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getTempMovementListSuccessTest() throws MovementModelException {
-        String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
+        final String username = TempMovementDomainModelBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
-        TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
+        final TempMovementType tempMovementType = createTestTempMovementType(10d, 10d, 10d);
+        final TempMovementType createTempMovement = tempMovementDomainModel.createTempMovement(tempMovementType, username);
         em.flush();
 
-        MovementQuery query = new MovementQuery();
-        ListPagination listPagination = new ListPagination();
+        final MovementQuery query = new MovementQuery();
+        final ListPagination listPagination = new ListPagination();
         listPagination.setPage(BigInteger.valueOf(1));
         listPagination.setListSize(BigInteger.valueOf(1));
         query.setPagination(listPagination);
-        TempMovementsListResponseDto tempMovementList = tempMovementDomainModel.getTempMovementList(query);
+        final TempMovementsListResponseDto tempMovementList = tempMovementDomainModel.getTempMovementList(query);
         Assert.assertNotNull(tempMovementList);
         Assert.assertEquals(1, tempMovementList.getTempMovementList().size());
         //Assert.assertEquals(BigInteger.valueOf(1),tempMovementList.getTotalNumberOfPages());
@@ -283,9 +262,9 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
 
-    private TempMovementType createTestTempMovementType(double longitude, double latitude, double altitude) {
-        TempMovementType tempMovementType = new TempMovementType();
-        VesselType vesselType = new VesselType();
+    private TempMovementType createTestTempMovementType(final double longitude, final double latitude, final double altitude) {
+        final TempMovementType tempMovementType = new TempMovementType();
+        final VesselType vesselType = new VesselType();
         vesselType.setCfr("Cfr");
         vesselType.setExtMarking("ExtMarking");
         vesselType.setFlagState("SE");
@@ -295,7 +274,7 @@ public class TempMovementDomainModelBeanIntTest extends TransactionalTests {
         tempMovementType.setAsset(vesselType);
         tempMovementType.setCourse(90.0);
 
-        MovementPoint movementPoint = new MovementPoint();
+        final MovementPoint movementPoint = new MovementPoint();
         movementPoint.setLongitude(longitude);
         movementPoint.setLatitude(latitude);
         movementPoint.setAltitude(altitude);

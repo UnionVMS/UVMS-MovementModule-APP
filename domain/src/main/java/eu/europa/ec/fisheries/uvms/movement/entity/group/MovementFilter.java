@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.group;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -59,7 +58,7 @@ public class MovementFilter implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -67,7 +66,7 @@ public class MovementFilter implements Serializable {
         return field;
     }
 
-    public void setField(String field) {
+    public void setField(final String field) {
         this.field = field;
     }
 
@@ -75,7 +74,7 @@ public class MovementFilter implements Serializable {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -83,7 +82,7 @@ public class MovementFilter implements Serializable {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
@@ -91,7 +90,7 @@ public class MovementFilter implements Serializable {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -99,7 +98,7 @@ public class MovementFilter implements Serializable {
         return filterGroup;
     }
 
-    public void setFilterGroup(MovementFilterGroup filterGroup) {
+    public void setFilterGroup(final MovementFilterGroup filterGroup) {
         this.filterGroup = filterGroup;
     }
 
@@ -107,7 +106,7 @@ public class MovementFilter implements Serializable {
         return movementFilterType;
     }
 
-    public void setMovementFilterType(SearchKeyType movementFilterType) {
+    public void setMovementFilterType(final SearchKeyType movementFilterType) {
         this.movementFilterType = movementFilterType;
     }
 

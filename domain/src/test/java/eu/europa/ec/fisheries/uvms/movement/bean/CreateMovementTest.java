@@ -14,18 +14,12 @@ package eu.europa.ec.fisheries.uvms.movement.bean;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.exception.EntityDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import java.util.Date;
 import javax.persistence.EntityManager;
 import org.junit.Assert;
@@ -58,8 +52,8 @@ public class CreateMovementTest {
     public void setup() throws MovementDaoException {
         MockitoAnnotations.initMocks(this);
 
-        Movement prevMovement = new Movement();
-        Movement currentMovement = new Movement();
+        final Movement prevMovement = new Movement();
+        final Movement currentMovement = new Movement();
 
         //when(dao.getLatestMovement(any(String.class), any(Date.class))).thenReturn(prevMovement);
         //when(dao.getMovementConnectByConnectId(any(String.class))).thenReturn(getMovementConnect());
@@ -70,15 +64,15 @@ public class CreateMovementTest {
     public void createMovementFirstMovememt() throws GeometryUtilException, MovementDaoMappingException {
         try {
 
-            MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
-            IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);
+            final MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
+            final IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);
 
             when(dao.create(Matchers.any()))
                     .thenReturn(getMovementConnect())
                     .thenReturn(getMovememnt(eu.europa.ec.fisheries.uvms.movement.util.DateUtil.nowUTC(), 1, 2));
 
-            MovementType createMovement = createMovement(eu.europa.ec.fisheries.uvms.movement.util.DateUtil.nowUTC(), 1, 2);
-            MovementType created = test.createMovement(createMovement, "TEST");
+            final MovementType createMovement = createMovement(eu.europa.ec.fisheries.uvms.movement.util.DateUtil.nowUTC(), 1, 2);
+            final MovementType created = test.createMovement(createMovement, "TEST");
 
             //verify(model, atLeast(2)).splitSegment(any(Movement.class), any(Movement.class));
             //verify(model, times(3)).splitSegment(any(Movement.class), any(Movement.class));
@@ -86,7 +80,7 @@ public class CreateMovementTest {
             //verify(proc, never()).splitSegment(any(Movement.class), any(Movement.class));
             //verify(proc, never()).addMovementBeforeFirst(any(Movement.class), any(Movement.class));
 
-        } catch (MovementDaoException ex) {
+        } catch (final MovementDaoException ex) {
             Assert.fail("MovementDaoException Exception thrown");
         }/*
         catch (GeometryUtilException ex) {
@@ -96,13 +90,13 @@ public class CreateMovementTest {
         }*/
     }
 
-    private Movement getMovememnt(Date timeStamp, double loong, double lat) {
-        Movement movement = new Movement();
+    private Movement getMovememnt(final Date timeStamp, final double loong, final double lat) {
+        final Movement movement = new Movement();
         movement.setTimestamp(timeStamp);
 
-        Coordinate coordinate = new Coordinate(loong, lat);
-        GeometryFactory factory = new GeometryFactory();
-        Point point = factory.createPoint(coordinate);
+        final Coordinate coordinate = new Coordinate(loong, lat);
+        final GeometryFactory factory = new GeometryFactory();
+        final Point point = factory.createPoint(coordinate);
         point.setSRID(4326);
         movement.setLocation(point);
 
@@ -110,15 +104,15 @@ public class CreateMovementTest {
     }
 
     private MovementConnect getMovementConnect() {
-        MovementConnect connect = new MovementConnect();
+        final MovementConnect connect = new MovementConnect();
         connect.setValue("GUID");
         return connect;
     }
 
-    private MovementType createMovement(Date timeStamp, double loong, double lat) {
-        MovementType mock = new MovementType();
+    private MovementType createMovement(final Date timeStamp, final double loong, final double lat) {
+        final MovementType mock = new MovementType();
         mock.setPositionTime(timeStamp);
-        MovementPoint point = new MovementPoint();
+        final MovementPoint point = new MovementPoint();
         point.setLatitude(lat);
         point.setLongitude(loong);
         mock.setPosition(point);

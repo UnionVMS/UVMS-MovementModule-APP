@@ -18,7 +18,7 @@ import java.util.List;
  **/
 public class MovementPaging extends Pageable<Movement> {
 
-    public MovementPaging(List<Movement> movements) {
+    public MovementPaging(final List<Movement> movements) {
         super(movements);
     }
 

@@ -56,7 +56,7 @@ public class Pageable<T> {
   private static final int PAGE_WINDOW = 10;
 
   /** the list over which this class is paging */
-  private List<T> list;
+  private final List<T> list;
 
   /** the page size */
   private int pageSize = DEFAULT_PAGE_SIZE;
@@ -78,7 +78,7 @@ public class Pageable<T> {
    *
    * @param list    a List
    */
-  public Pageable(List<T> list) {
+  public Pageable(final List<T> list) {
     this.list = list;
     this.page = 1;
     this.maxPages = 1;
@@ -129,7 +129,7 @@ public class Pageable<T> {
    *
    * @param pageSize   the page size as an int
    */
-  public void setPageSize(int pageSize) {
+  public void setPageSize(final int pageSize) {
     this.pageSize = pageSize;
     calculatePages();
   }
@@ -148,7 +148,7 @@ public class Pageable<T> {
    *
    * @param p    the page as an int
    */
-  public void setPage(int p) {
+  public void setPage(final int p) {
     if (p >= maxPages) {
       this.page = maxPages;
     } else if (p <= 1) {

@@ -12,18 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
-
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
@@ -44,9 +33,9 @@ public class MovementEntityToModelMapper {
 
     static Logger LOG = LoggerFactory.getLogger(MovementEntityToModelMapper.class);
 
-    public static MovementBaseType mapToMovementBaseType(Movement movement) {
+    public static MovementBaseType mapToMovementBaseType(final Movement movement) {
 
-        MovementBaseType model = new MovementBaseType();
+        final MovementBaseType model = new MovementBaseType();
 
         if (movement.getSpeed() != null) {
             model.setReportedSpeed(movement.getSpeed());
@@ -69,15 +58,15 @@ public class MovementEntityToModelMapper {
         model.setMovementType(movement.getMovementType());
         model.setActivity(model.getActivity());
 
-        MovementPoint movementPoint = new MovementPoint();
-        Point point = (Point) movement.getLocation();
+        final MovementPoint movementPoint = new MovementPoint();
+        final Point point = movement.getLocation();
         movementPoint.setLatitude(point.getY());
         movementPoint.setLongitude(point.getX());
         model.setPosition(movementPoint);
 
         try {
             model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
+        } catch (final MovementDaoException ex) {
             LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
         }
 
@@ -85,10 +74,10 @@ public class MovementEntityToModelMapper {
     }
 
 
-    public static MovementType mapToMovementType(MinimalMovement movement) {
+    public static MovementType mapToMovementType(final MinimalMovement movement) {
 
         //Previous movement ID is mapped in MovementBatchModelBean
-        MovementType model = new MovementType();
+        final MovementType model = new MovementType();
 
         if (movement.getSpeed() != null) {
             model.setReportedSpeed(movement.getSpeed());
@@ -111,8 +100,8 @@ public class MovementEntityToModelMapper {
         model.setSource(movement.getMovementSource());
         model.setMovementType(movement.getMovementType());
 
-        MovementPoint movementPoint = new MovementPoint();
-        Point point = movement.getLocation();
+        final MovementPoint movementPoint = new MovementPoint();
+        final Point point = movement.getLocation();
 
         movementPoint.setLatitude(point.getY());
         movementPoint.setLongitude(point.getX());
@@ -120,7 +109,7 @@ public class MovementEntityToModelMapper {
 
         try {
             model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
+        } catch (final MovementDaoException ex) {
             LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
         }
 
@@ -128,17 +117,17 @@ public class MovementEntityToModelMapper {
 
         try {
             model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
+        } catch (final MovementDaoException ex) {
             LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
         }
 
         return model;
     }
 
-    public static MovementType mapToMovementType(Movement movement) {
+    public static MovementType mapToMovementType(final Movement movement) {
 
         //Previous movement ID is mapped in MovementBatchModelBean
-        MovementType model = new MovementType();
+        final MovementType model = new MovementType();
 
         if (movement.getSpeed() != null) {
             model.setReportedSpeed(movement.getSpeed());
@@ -163,8 +152,8 @@ public class MovementEntityToModelMapper {
         model.setSource(movement.getMovementSource());
         model.setMovementType(movement.getMovementType());
 
-        MovementPoint movementPoint = new MovementPoint();
-        Point point = (Point) movement.getLocation();
+        final MovementPoint movementPoint = new MovementPoint();
+        final Point point = movement.getLocation();
 
         movementPoint.setLatitude(point.getY());
         movementPoint.setLongitude(point.getX());
@@ -172,7 +161,7 @@ public class MovementEntityToModelMapper {
 
         try {
             model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
+        } catch (final MovementDaoException ex) {
             LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
         }
 
@@ -194,7 +183,7 @@ public class MovementEntityToModelMapper {
 
         try {
             model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
+        } catch (final MovementDaoException ex) {
             LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
         }
 
@@ -213,10 +202,10 @@ public class MovementEntityToModelMapper {
         return model;
     }
 
-    private static List<MovementMetaDataAreaType> mapToMovementMetaDataAreaTypeList(List<Movementarea> areas) {
-        List<MovementMetaDataAreaType> areaList = new ArrayList<>();
-        for (Movementarea area : areas) {
-            MovementMetaDataAreaType type = new MovementMetaDataAreaType();
+    private static List<MovementMetaDataAreaType> mapToMovementMetaDataAreaTypeList(final List<Movementarea> areas) {
+        final List<MovementMetaDataAreaType> areaList = new ArrayList<>();
+        for (final Movementarea area : areas) {
+            final MovementMetaDataAreaType type = new MovementMetaDataAreaType();
             type.setAreaType(area.getMovareaAreaId().getAreaType().getName());
             type.setRemoteId(area.getMovareaAreaId().getRemoteId());
             type.setCode(area.getMovareaAreaId().getAreaCode());
@@ -226,8 +215,8 @@ public class MovementEntityToModelMapper {
         return areaList;
     }
 
-    public static MovementActivityType mapToActivityType(Activity activity) {
-        MovementActivityType actType = new MovementActivityType();
+    public static MovementActivityType mapToActivityType(final Activity activity) {
+        final MovementActivityType actType = new MovementActivityType();
         if (activity != null) {
             actType.setCallback(activity.getCallback());
             actType.setMessageId(activity.getMessageId());
@@ -236,16 +225,16 @@ public class MovementEntityToModelMapper {
         return actType;
     }
 
-    public static MovementMetaData mapToMovementMetaData(Movementmetadata metaData) {
-        MovementMetaData meta = new MovementMetaData();
+    public static MovementMetaData mapToMovementMetaData(final Movementmetadata metaData) {
+        final MovementMetaData meta = new MovementMetaData();
 
-        ClosestLocationType country = new ClosestLocationType();
+        final ClosestLocationType country = new ClosestLocationType();
         country.setCode(metaData.getClosestCountryCode());
         country.setDistance(metaData.getClosestCountryDistance());
         country.setRemoteId(metaData.getClosestCountryRemoteId());
         meta.setClosestCountry(country);
 
-        ClosestLocationType port = new ClosestLocationType();
+        final ClosestLocationType port = new ClosestLocationType();
         port.setCode(metaData.getClosestPortCode());
         port.setDistance(metaData.getClosestPortDistance());
         port.setRemoteId(metaData.getClosestPortRemoteId());
@@ -254,48 +243,48 @@ public class MovementEntityToModelMapper {
         return meta;
     }
 
-    public static List<MovementType> mapToMovementType(List<Movement> movements) {
-        List<MovementType> mappedMovements = new ArrayList<>();
-        long start = System.currentTimeMillis();
-        for (Movement movement : movements) {
+    public static List<MovementType> mapToMovementType(final List<Movement> movements) {
+        final List<MovementType> mappedMovements = new ArrayList<>();
+        final long start = System.currentTimeMillis();
+        for (final Movement movement : movements) {
             mappedMovements.add(mapToMovementType(movement));
         }
-        long diff = System.currentTimeMillis() - start;
+        final long diff = System.currentTimeMillis() - start;
         LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff +"ms" );
         return mappedMovements;
     }
 
-    public static List<MovementType> mapToMovementTypeFromLatestMovement(List<LatestMovement> movements) {
-        List<MovementType> mappedMovements = new ArrayList<>();
-        long start = System.currentTimeMillis();
-        for (LatestMovement movement : movements) {
+    public static List<MovementType> mapToMovementTypeFromLatestMovement(final List<LatestMovement> movements) {
+        final List<MovementType> mappedMovements = new ArrayList<>();
+        final long start = System.currentTimeMillis();
+        for (final LatestMovement movement : movements) {
             mappedMovements.add(mapToMovementType(movement.getMovement()));
         }
-        long diff = System.currentTimeMillis() - start;
+        final long diff = System.currentTimeMillis() - start;
         LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff +"ms" );
         return mappedMovements;
     }
 
-    public static String mapToConnectId(MovementConnect connect) throws MovementDaoException {
+    public static String mapToConnectId(final MovementConnect connect) throws MovementDaoException {
         if (connect != null) {
             return connect.getValue();
         }
         return null;
     }
 
-    public static List<MovementSegment> mapToMovementSegment(List<Segment> segments) {
-        long start = System.currentTimeMillis();
-        List<MovementSegment> mappedSegments = new ArrayList<>();
-        for (Segment segment : segments) {
+    public static List<MovementSegment> mapToMovementSegment(final List<Segment> segments) {
+        final long start = System.currentTimeMillis();
+        final List<MovementSegment> mappedSegments = new ArrayList<>();
+        for (final Segment segment : segments) {
             mappedSegments.add(mapToMovementSegment(segment));
         }
-        long diff = System.currentTimeMillis() - start;
+        final long diff = System.currentTimeMillis() - start;
         LOG.debug("mapToMovementSegment: " + " ---- TIME ---- " + diff +"ms" );
         return mappedSegments;
     }
 
-    public static MovementSegment mapToMovementSegment(Segment segment) {
-        MovementSegment movSegment = new MovementSegment();
+    public static MovementSegment mapToMovementSegment(final Segment segment) {
+        final MovementSegment movSegment = new MovementSegment();
         movSegment.setCategory(segment.getSegmentCategory());
         movSegment.setId(segment.getId().toString());
         movSegment.setTrackId(segment.getTrack().getId().toString());
@@ -307,8 +296,8 @@ public class MovementEntityToModelMapper {
         return movSegment;
     }
 
-    public static MovementTrack mapToMovementTrack(Track track) {
-        MovementTrack movementTrack = new MovementTrack();
+    public static MovementTrack mapToMovementTrack(final Track track) {
+        final MovementTrack movementTrack = new MovementTrack();
         movementTrack.setDistance(track.getDistance());
         movementTrack.setDuration(track.getDuration());
         movementTrack.setTotalTimeAtSea(track.getTotalTimeAtSea());
@@ -317,40 +306,40 @@ public class MovementEntityToModelMapper {
         return movementTrack;
     }
 
-    public static Map<String, List<Movement>> orderMovementsByConnectId(List<Movement> movements) {
-        Map<String, List<Movement>> orderedMovements = new HashMap<>();
-        long start = System.currentTimeMillis();
-        for (Movement movement : movements) {
+    public static Map<String, List<Movement>> orderMovementsByConnectId(final List<Movement> movements) {
+        final Map<String, List<Movement>> orderedMovements = new HashMap<>();
+        final long start = System.currentTimeMillis();
+        for (final Movement movement : movements) {
             if (orderedMovements.get(movement.getMovementConnect().getValue()) == null) {
                 orderedMovements.put(movement.getMovementConnect().getValue(), new ArrayList<>(Arrays.asList(movement)));
             } else {
                 orderedMovements.get(movement.getMovementConnect().getValue()).add(movement);
             }
         }
-        long diff = System.currentTimeMillis() - start;
+        final long diff = System.currentTimeMillis() - start;
         LOG.debug("orderMovementByConnectID: " + " ---- TIME ---- " + diff + "ms");
         return orderedMovements;
     }
 
-    public static List<MovementTrack> extractTracks(List<Segment> segments) {
-        long start = System.currentTimeMillis();
-        Set<Track> tracks = new HashSet<>();
-        for (Segment segment : segments) {
+    public static List<MovementTrack> extractTracks(final List<Segment> segments) {
+        final long start = System.currentTimeMillis();
+        final Set<Track> tracks = new HashSet<>();
+        for (final Segment segment : segments) {
             tracks.add(segment.getTrack());
         }
-        List<MovementTrack> movementTracks = new ArrayList<>();
-        for (Track track : tracks) {
+        final List<MovementTrack> movementTracks = new ArrayList<>();
+        for (final Track track : tracks) {
             movementTracks.add(mapToMovementTrack(track));
         }
 
-        long diff = System.currentTimeMillis() - start;
+        final long diff = System.currentTimeMillis() - start;
         LOG.debug("extractTracks: " + " ---- TIME ---- " + diff +"ms" );
         return movementTracks;
     }
 
-    public static ArrayList<Segment> extractSegments(ArrayList<Movement> movements, boolean excludeFirstLastSegment) {
-        Set<Segment> segments = new HashSet<>();
-        long start = System.currentTimeMillis();
+    public static ArrayList<Segment> extractSegments(final ArrayList<Movement> movements, final boolean excludeFirstLastSegment) {
+        final Set<Segment> segments = new HashSet<>();
+        final long start = System.currentTimeMillis();
         if (movements.size() == 1 && excludeFirstLastSegment) {
             return new ArrayList<>(segments);
         }
@@ -386,7 +375,7 @@ public class MovementEntityToModelMapper {
             }
         }
 
-        long diff = System.currentTimeMillis() - start;
+        final long diff = System.currentTimeMillis() - start;
         LOG.debug("extractSegments: " + " ---- TIME ---- " + diff +"ms" );
         return new ArrayList<>(segments);
     }

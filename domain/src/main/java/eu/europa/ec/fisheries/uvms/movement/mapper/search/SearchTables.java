@@ -31,7 +31,7 @@ public enum SearchTables {
     private final String tableNameAlias;
     private final String tableName;
 
-    private SearchTables(String tableNameAlias, String tableName) {
+    private SearchTables(final String tableNameAlias, final String tableName) {
         this.tableNameAlias = tableNameAlias;
         this.tableName = tableName;
     }

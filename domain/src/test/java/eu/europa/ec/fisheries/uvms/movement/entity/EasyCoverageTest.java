@@ -38,7 +38,7 @@ public class EasyCoverageTest extends Assert {
 	@Test
 	public static TestSuite suite() {
 
-		JUnitTestSuiteProvider testSuiteProvider = new JUnitTestSuiteProvider();
+		final JUnitTestSuiteProvider testSuiteProvider = new JUnitTestSuiteProvider();
 		testSuiteProvider.setProvider(createInstanceProvider());
 
 		assertTrue(EXPECT_CLASSES_IN_PACKAGE,
@@ -65,7 +65,7 @@ public class EasyCoverageTest extends Assert {
 	}
 
 	private static MultipleInstanceProvider createInstanceProvider() {
-		MultipleInstanceProvider multipleInstanceProvider = new MultipleInstanceProvider();
+		final MultipleInstanceProvider multipleInstanceProvider = new MultipleInstanceProvider();
 		multipleInstanceProvider.addProvider(new SimpleInstanceProvider(
 				new LineString(new CoordinateArraySequence(new Coordinate[0]), new GeometryFactory())));
 		multipleInstanceProvider.addProvider(new SimpleInstanceProvider(
@@ -80,18 +80,18 @@ public class EasyCoverageTest extends Assert {
 	private static class SimpleInstanceProvider implements IInstanceProvider {
 		private final Object t;
 
-		public SimpleInstanceProvider(Object o) {
+		public SimpleInstanceProvider(final Object o) {
 			super();
 			this.t = o;
 		}
 
 		@Override
-		public <T> T getInstance(Class<T> paramClass) {
+		public <T> T getInstance(final Class<T> paramClass) {
 			return (T) t;
 		}
 
 		@Override
-		public <T> boolean canProvide(Class<T> paramClass) {
+		public <T> boolean canProvide(final Class<T> paramClass) {
 			return t.getClass().equals(paramClass);
 		}
 
@@ -105,9 +105,9 @@ public class EasyCoverageTest extends Assert {
 	 * @param string
 	 *            the string
 	 */
-	private static boolean checkAllClassesInPackage(JUnitTestSuiteProvider testSuiteProvider, String string) {
-		List<Class<?>> allClasses = getAllClasses(string);
-		for (Class<?> class1 : allClasses) {
+	private static boolean checkAllClassesInPackage(final JUnitTestSuiteProvider testSuiteProvider, final String string) {
+		final List<Class<?>> allClasses = getAllClasses(string);
+		for (final Class<?> class1 : allClasses) {
 			testSuiteProvider.addClass(class1);
 		}
 		return !allClasses.isEmpty();
@@ -120,21 +120,21 @@ public class EasyCoverageTest extends Assert {
 	 *            the pckgname
 	 * @return the all classes
 	 */
-	private static List<Class<?>> getAllClasses(String pckgname) {
+	private static List<Class<?>> getAllClasses(final String pckgname) {
 		final List<Class<?>> classes = new ArrayList<>();
-		File directory = new File(
+		final File directory = new File(
 				"target" + File.separatorChar + "classes" + File.separatorChar + pckgname.replace(PACKAGE_SEPARATOR, CLASS_FILE_DIRECTORY_SEPARATOR));
 		if (directory.exists()) {
-			String[] files = directory.list();
+			final String[] files = directory.list();
 			for (int i = 0; i < files.length; i++) {
 				if (files[i].endsWith(CLASS_SUFFIX)) {
 					try {
-						StringBuilder stringBuilder = new StringBuilder();
+						final StringBuilder stringBuilder = new StringBuilder();
 						stringBuilder.append(pckgname);
 						stringBuilder.append(PACKAGE_SEPARATOR);
 						stringBuilder.append(files[i].substring(0, files[i].length() - 6));
 						classes.add(Class.forName(stringBuilder.toString()));
-					} catch (ClassNotFoundException e) {
+					} catch (final ClassNotFoundException e) {
 					}
 				}
 			}

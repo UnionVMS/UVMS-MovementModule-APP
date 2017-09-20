@@ -26,9 +26,6 @@ import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
 import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageConsumer;
 import eu.europa.ec.fisheries.uvms.message.JMSUtils;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 
 @Stateless
 public class MovementMessageConsumerBean implements MessageConsumer, ConfigMessageConsumer {
@@ -48,7 +45,7 @@ public class MovementMessageConsumerBean implements MessageConsumer, ConfigMessa
     }
 
     @Override
-    public <T> T getMessage(String correlationId, Class type, Long timeout) throws MovementMessageException {
+    public <T> T getMessage(final String correlationId, final Class type, final Long timeout) throws MovementMessageException {
     	if (correlationId == null || correlationId.isEmpty()) {
     		LOG.error("[ No CorrelationID provided when listening to JMS message, aborting ]");
     		throw new MovementMessageException("No CorrelationID provided!");
@@ -61,13 +58,13 @@ public class MovementMessageConsumerBean implements MessageConsumer, ConfigMessa
             final Session session = JMSUtils.connectToQueue(connection);
 
             LOG.debug(" Movement module created listener and listens to JMS message with CorrelationID: " + correlationId);
-            T response = (T) session.createConsumer(responseQueue, "JMSCorrelationID='" + correlationId + "'").receive(timeout);
+            final T response = (T) session.createConsumer(responseQueue, "JMSCorrelationID='" + correlationId + "'").receive(timeout);
             if (response == null) {
                 throw new MovementMessageException("[ Timeout reached or message null in MovementMessageConsumerBean. ]");
             }
 
             return response;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when getting message ] {}", e.getMessage());
             throw new MovementMessageException("Error when retrieving message: ", e);
         } finally {
@@ -76,10 +73,10 @@ public class MovementMessageConsumerBean implements MessageConsumer, ConfigMessa
     }
 
     @Override
-    public <T> T getConfigMessage(String correlationId, Class type) throws ConfigMessageException {
+    public <T> T getConfigMessage(final String correlationId, final Class type) throws ConfigMessageException {
         try {
             return getMessage(correlationId, type, TIMEOUT);
-        } catch (MovementMessageException e) {
+        } catch (final MovementMessageException e) {
             LOG.error("[ Error when getting message ] {}", e.getMessage());
             throw new ConfigMessageException("Error when retrieving message: ");
         } 

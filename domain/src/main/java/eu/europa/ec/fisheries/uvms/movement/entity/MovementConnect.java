@@ -79,11 +79,11 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     public MovementConnect() {
     }
 
-    public MovementConnect(Long id) {
+    public MovementConnect(final Long id) {
         this.id = id;
     }
 
-    public MovementConnect(Long id, String value, Date updated, String updatedBy) {
+    public MovementConnect(final Long id, final String value, final Date updated, final String updatedBy) {
         this.id = id;
         this.value = value;
         this.updated = updated;
@@ -94,7 +94,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -102,7 +102,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
@@ -110,7 +110,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -118,7 +118,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -126,12 +126,12 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         return movementList;
     }
 
-    public void setMovementList(List<Movement> movementList) {
+    public void setMovementList(final List<Movement> movementList) {
         this.movementList = movementList;
     }
 
 	@Override
-	public int compareTo(MovementConnect o2) {
+	public int compareTo(final MovementConnect o2) {
 		return MovementComparator.MOVEMENT_CONNECT.compare(this, o2);
 	}
 

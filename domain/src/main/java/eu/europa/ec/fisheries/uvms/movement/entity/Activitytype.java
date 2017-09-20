@@ -11,28 +11,22 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
-import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  **/
@@ -86,7 +80,7 @@ public class Activitytype implements Serializable {
         return acttypId;
     }
 
-    public void setActtypId(Long acttypId) {
+    public void setActtypId(final Long acttypId) {
         this.acttypId = acttypId;
     }
 
@@ -94,7 +88,7 @@ public class Activitytype implements Serializable {
         return acttypName;
     }
 
-    public void setActtypName(String acttypName) {
+    public void setActtypName(final String acttypName) {
         this.acttypName = acttypName;
     }
 
@@ -102,7 +96,7 @@ public class Activitytype implements Serializable {
         return acttypDesc;
     }
 
-    public void setActtypDesc(String acttypDesc) {
+    public void setActtypDesc(final String acttypDesc) {
         this.acttypDesc = acttypDesc;
     }
 
@@ -110,7 +104,7 @@ public class Activitytype implements Serializable {
         return acttypUpdattim;
     }
 
-    public void setActtypUpdattim(Date acttypUpdattim) {
+    public void setActtypUpdattim(final Date acttypUpdattim) {
         this.acttypUpdattim = acttypUpdattim;
     }
 
@@ -118,7 +112,7 @@ public class Activitytype implements Serializable {
         return acttypUpuser;
     }
 
-    public void setActtypUpuser(String acttypUpuser) {
+    public void setActtypUpuser(final String acttypUpuser) {
         this.acttypUpuser = acttypUpuser;
     }
 
@@ -138,12 +132,12 @@ public class Activitytype implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Activitytype)) {
             return false;
         }
-        Activitytype other = (Activitytype) object;
+        final Activitytype other = (Activitytype) object;
         if ((this.acttypId == null && other.acttypId != null) || (this.acttypId != null && !this.acttypId.equals(other.acttypId))) {
             return false;
         }

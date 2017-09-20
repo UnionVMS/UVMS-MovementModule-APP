@@ -12,8 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
@@ -70,7 +68,7 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -78,7 +76,7 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
         return movementConnect;
     }
 
-    public void setMovementConnect(MovementConnect movementConnect) {
+    public void setMovementConnect(final MovementConnect movementConnect) {
         this.movementConnect = movementConnect;
     }
 
@@ -86,7 +84,7 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
         return movement;
     }
 
-    public void setMovement(Movement movement) {
+    public void setMovement(final Movement movement) {
         this.movement = movement;
     }
 
@@ -94,12 +92,12 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(final Date timestamp) {
         this.timestamp = timestamp;
     }
 
     @Override
-    public int compareTo(LatestMovement o) {
+    public int compareTo(final LatestMovement o) {
         return MovementComparator.LATEST_MOVEMENT.compare(this, o);
     }
 }

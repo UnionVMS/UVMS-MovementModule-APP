@@ -11,8 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.temp;
 
-import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
@@ -125,11 +123,11 @@ public class TempMovement implements Serializable {
         this.guid = UUID.randomUUID().toString();
     }
 
-    public TempMovement(Long id) {
+    public TempMovement(final Long id) {
         this.id = id;
     }
 
-    public TempMovement(Long id, Date updated, String updatedBy) {
+    public TempMovement(final Long id, final Date updated, final String updatedBy) {
         this.id = id;
         this.updated = updated;
         this.updatedBy = updatedBy;
@@ -139,7 +137,7 @@ public class TempMovement implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -147,7 +145,7 @@ public class TempMovement implements Serializable {
         return guid;
     }
 
-    public void setGuid(String guid) {
+    public void setGuid(final String guid) {
         this.guid = guid;
     }
 
@@ -155,7 +153,7 @@ public class TempMovement implements Serializable {
         return flag;
     }
 
-    public void setFlag(String flag) {
+    public void setFlag(final String flag) {
         this.flag = flag;
     }
 
@@ -163,7 +161,7 @@ public class TempMovement implements Serializable {
         return ircs;
     }
 
-    public void setIrcs(String ircs) {
+    public void setIrcs(final String ircs) {
         this.ircs = ircs;
     }
 
@@ -171,7 +169,7 @@ public class TempMovement implements Serializable {
         return cfr;
     }
 
-    public void setCfr(String cfr) {
+    public void setCfr(final String cfr) {
         this.cfr = cfr;
     }
 
@@ -179,7 +177,7 @@ public class TempMovement implements Serializable {
         return externalMarkings;
     }
 
-    public void setExternalMarkings(String externalMarkings) {
+    public void setExternalMarkings(final String externalMarkings) {
         this.externalMarkings = externalMarkings;
     }
 
@@ -187,7 +185,7 @@ public class TempMovement implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -195,7 +193,7 @@ public class TempMovement implements Serializable {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -203,7 +201,7 @@ public class TempMovement implements Serializable {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(final Date timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -211,7 +209,7 @@ public class TempMovement implements Serializable {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(final Double latitude) {
         this.latitude = latitude;
     }
 
@@ -219,7 +217,7 @@ public class TempMovement implements Serializable {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(final Double longitude) {
         this.longitude = longitude;
     }
 
@@ -227,7 +225,7 @@ public class TempMovement implements Serializable {
         return speed;
     }
 
-    public void setSpeed(Double speed) {
+    public void setSpeed(final Double speed) {
         this.speed = speed;
     }
 
@@ -235,7 +233,7 @@ public class TempMovement implements Serializable {
         return course;
     }
 
-    public void setCourse(Double course) {
+    public void setCourse(final Double course) {
         this.course = course;
     }
 
@@ -243,7 +241,7 @@ public class TempMovement implements Serializable {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -251,7 +249,7 @@ public class TempMovement implements Serializable {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -259,7 +257,7 @@ public class TempMovement implements Serializable {
         return state;
     }
 
-    public void setState(TempMovementStateEnum state) {
+    public void setState(final TempMovementStateEnum state) {
         this.state = state;
     }
 
@@ -271,13 +269,13 @@ public class TempMovement implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         // TODO: Warning - this method won't work in the case the id fields are
         // not set
         if (!(object instanceof TempMovement)) {
             return false;
         }
-        TempMovement other = (TempMovement) object;
+        final TempMovement other = (TempMovement) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

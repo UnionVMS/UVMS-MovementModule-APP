@@ -52,7 +52,7 @@ public class MovementConnectIntTest extends BuildMovementTestDeployment {
         try {
             userTransaction.begin();
             for(int i = 0 ; i < 10 ; i++) {
-                MovementConnect movementConnect = new MovementConnect();
+                final MovementConnect movementConnect = new MovementConnect();
                 movementConnect.setValue(UUID.randomUUID().toString());
                 movementConnect.setUpdatedBy("arquillian");
                 movementConnect.setUpdated(DateUtil.nowUTC());
@@ -61,9 +61,9 @@ public class MovementConnectIntTest extends BuildMovementTestDeployment {
             }
             userTransaction.rollback();
 
-      } catch (NotSupportedException e) {
+      } catch (final NotSupportedException e) {
             LOG.error(e.toString());
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             LOG.error(e.toString());
         }
 

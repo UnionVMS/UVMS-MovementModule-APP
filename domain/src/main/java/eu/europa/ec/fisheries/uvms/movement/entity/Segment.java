@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import com.vividsolutions.jts.geom.LineString;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -116,7 +115,7 @@ public class Segment implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -124,7 +123,7 @@ public class Segment implements Serializable {
         return location;
     }
 
-    public void setLocation(LineString location) {
+    public void setLocation(final LineString location) {
         this.location = location;
     }
 
@@ -132,7 +131,7 @@ public class Segment implements Serializable {
         return distance;
     }
 
-    public void setDistance(Double distance) {
+    public void setDistance(final Double distance) {
         this.distance = distance;
     }
 
@@ -140,7 +139,7 @@ public class Segment implements Serializable {
         return duration;
     }
 
-    public void setDuration(Double duration) {
+    public void setDuration(final Double duration) {
         this.duration = duration;
     }
 
@@ -148,7 +147,7 @@ public class Segment implements Serializable {
         return speedOverGround;
     }
 
-    public void setSpeedOverGround(Double speedOverGround) {
+    public void setSpeedOverGround(final Double speedOverGround) {
         this.speedOverGround = speedOverGround;
     }
 
@@ -156,7 +155,7 @@ public class Segment implements Serializable {
         return courseOverGround;
     }
 
-    public void setCourseOverGround(Double courseOverGround) {
+    public void setCourseOverGround(final Double courseOverGround) {
         this.courseOverGround = courseOverGround;
     }
 
@@ -164,7 +163,7 @@ public class Segment implements Serializable {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -172,7 +171,7 @@ public class Segment implements Serializable {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -180,7 +179,7 @@ public class Segment implements Serializable {
         return segmentCategory;
     }
 
-    public void setSegmentCategory(SegmentCategoryType segmentCategory) {
+    public void setSegmentCategory(final SegmentCategoryType segmentCategory) {
         this.segmentCategory = segmentCategory;
     }
 
@@ -188,7 +187,7 @@ public class Segment implements Serializable {
         return track;
     }
 
-    public void setTrack(Track track) {
+    public void setTrack(final Track track) {
         this.track = track;
     }
 
@@ -196,7 +195,7 @@ public class Segment implements Serializable {
         return fromMovement;
     }
 
-    public void setFromMovement(Movement fromMovement) {
+    public void setFromMovement(final Movement fromMovement) {
         this.fromMovement = fromMovement;
     }
 
@@ -204,7 +203,7 @@ public class Segment implements Serializable {
         return toMovement;
     }
 
-    public void setToMovement(Movement toMovement) {
+    public void setToMovement(final Movement toMovement) {
         this.toMovement = toMovement;
     }
 

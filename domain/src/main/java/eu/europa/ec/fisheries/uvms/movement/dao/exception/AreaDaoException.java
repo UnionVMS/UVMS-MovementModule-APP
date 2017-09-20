@@ -15,7 +15,7 @@ public class AreaDaoException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-    public AreaDaoException(String message, Throwable cause) {
+    public AreaDaoException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

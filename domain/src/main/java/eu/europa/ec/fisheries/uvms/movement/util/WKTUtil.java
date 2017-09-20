@@ -29,48 +29,48 @@ import java.util.List;
  **/
 public class WKTUtil {
 
-    public static String getWktLineString(List<Geometry> geometries) {
-        List<Coordinate> coords = new ArrayList<>();
-        for (Geometry geom : geometries) {
+    public static String getWktLineString(final List<Geometry> geometries) {
+        final List<Coordinate> coords = new ArrayList<>();
+        for (final Geometry geom : geometries) {
             coords.add(geom.getCoordinate());
         }
-        CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[0]));
+        final CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[0]));
         return WKTWriter.toLineString(seq);
     }
 
-    public static String getWktLineStringFromMovementList(List<Movement> movements) {
-        List<Coordinate> coords = new ArrayList<>();
-        for (Movement movement : movements) {
+    public static String getWktLineStringFromMovementList(final List<Movement> movements) {
+        final List<Coordinate> coords = new ArrayList<>();
+        for (final Movement movement : movements) {
             coords.add(movement.getLocation().getCoordinate());
         }
-        CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[0]));
+        final CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[0]));
         return WKTWriter.toLineString(seq);
     }
 
-    public static String getWktLineStringFromSegment(Segment segment) {
+    public static String getWktLineStringFromSegment(final Segment segment) {
         return WKTWriter.toLineString(segment.getLocation().getCoordinateSequence());
     }
 
-    public static String getWktLineStringFromTrack(Track track) {
+    public static String getWktLineStringFromTrack(final Track track) {
         return WKTWriter.toLineString(track.getLocation().getCoordinateSequence());
     }
 
-    public static Geometry getGeometryFromWKTSrring(String wkt) throws ParseException {
-        WKTReader reader = new WKTReader();
-        Geometry geom = reader.read(wkt);
+    public static Geometry getGeometryFromWKTSrring(final String wkt) throws ParseException {
+        final WKTReader reader = new WKTReader();
+        final Geometry geom = reader.read(wkt);
         geom.setSRID(GeometryUtil.SRID);
         return geom;
     }
 
-    public static String getWktPointString(Geometry geometry) {
+    public static String getWktPointString(final Geometry geometry) {
         return WKTWriter.toPoint(geometry.getCoordinate());
     }
 
-    public static String getWktPointFromMovement(Movement movement) {
+    public static String getWktPointFromMovement(final Movement movement) {
         return getWktPointString(movement.getLocation());
     }
 
-    public static String getWktPointFromMovement(MinimalMovement movement) {
+    public static String getWktPointFromMovement(final MinimalMovement movement) {
         return getWktPointString(movement.getLocation());
     }
 

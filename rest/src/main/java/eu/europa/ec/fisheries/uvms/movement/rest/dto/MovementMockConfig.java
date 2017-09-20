@@ -11,9 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.dto;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,14 +29,14 @@ public class MovementMockConfig {
     }
 
     public static Map<String, List<String>> getValues() {
-        Map<String, List<String>> configValues = new HashMap<>();
-        for (MovementConfig config : MovementConfig.values()) {
+        final Map<String, List<String>> configValues = new HashMap<>();
+        for (final MovementConfig config : MovementConfig.values()) {
             configValues.put(config.name(), getValues(config));
         }
         return configValues;
     }
 
-    private static List<String> getValues(MovementConfig config) {
+    private static List<String> getValues(final MovementConfig config) {
         switch (config) {
             case STATUS:
                 return getStatus();
@@ -58,7 +55,7 @@ public class MovementMockConfig {
     }
 
     private static List<String> getSpeedSpan() {
-        List<String> values = new ArrayList<>();
+        final List<String> values = new ArrayList<>();
         values.add("0-5");
         values.add("6-10");
         values.add("11-15");
@@ -68,31 +65,31 @@ public class MovementMockConfig {
     }
 
     private static List<String> getMessageType() {
-        List<String> values = new ArrayList<>();
-        for (MovementTypeType type : MovementTypeType.values()) {
+        final List<String> values = new ArrayList<>();
+        for (final MovementTypeType type : MovementTypeType.values()) {
             values.add(type.value());
         }
         return values;
     }
 	
 	private static List<String> getActivityType() {
-		List<String> values = new ArrayList<>();
-		for (MovementActivityTypeType type : MovementActivityTypeType.values()) {
+		final List<String> values = new ArrayList<>();
+		for (final MovementActivityTypeType type : MovementActivityTypeType.values()) {
 			values.add(type.value());
 		}
 		return values;
 	}
 	
 	private static List<String> getCategoryType() {
-		List<String> values = new ArrayList<>();
-		for (SegmentCategoryType type : SegmentCategoryType.values()) {
+		final List<String> values = new ArrayList<>();
+		for (final SegmentCategoryType type : SegmentCategoryType.values()) {
 			values.add(type.value());
 		}
 		return values;
 	}
 
     private static List<String> getStatus() {
-        List<String> values = new ArrayList<>();
+        final List<String> values = new ArrayList<>();
         values.add("10");
         values.add("11");
         values.add("30");
@@ -111,7 +108,7 @@ public class MovementMockConfig {
     }
 
     private static List<String> getTimeSpan() {
-        List<String> values = new ArrayList<>();
+        final List<String> values = new ArrayList<>();
         values.add("24");
         values.add("48");
         values.add("96");

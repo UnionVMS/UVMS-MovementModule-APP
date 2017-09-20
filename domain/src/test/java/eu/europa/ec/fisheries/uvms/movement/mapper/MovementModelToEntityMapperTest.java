@@ -17,13 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
@@ -33,7 +26,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 
 /**
  * Created by roblar on 2017-03-31.
@@ -44,19 +36,19 @@ public class MovementModelToEntityMapperTest extends Assert {
     public ExpectedException thrown = ExpectedException.none();
 
 	
-    private TestUtil testUtil = new TestUtil();
+    private final TestUtil testUtil = new TestUtil();
 
     @Test
     public void testMapNewMovementEntity_reportedSpeedIsNull() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
         movementType.setReportedSpeed(null);
 
         //When
-        Movement movement = mapNewMovementEntity(movementType, "testUser");
+        final Movement movement = mapNewMovementEntity(movementType, "testUser");
 
         //Then
         assertNull(movement.getSpeed());
@@ -66,13 +58,13 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testMapNewMovementEntity_reportedCourseIsNull() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
         movementType.setReportedCourse(null);
 
         //When
-        Movement movement = mapNewMovementEntity(movementType, "testUser");
+        final Movement movement = mapNewMovementEntity(movementType, "testUser");
 
         //Then
         assertNull(movement.getHeading());
@@ -82,13 +74,13 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testMapNewMovementEntity_positionIsNull() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
         movementType.setPosition(null);
 
         //When
-        Movement movement = mapNewMovementEntity(movementType, "testUser");
+        final Movement movement = mapNewMovementEntity(movementType, "testUser");
 
         //Then
         assertNull(movement.getLocation());
@@ -98,13 +90,13 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testMapNewMovementEntity_ifSourceIsNullThenMovementSourceTypeIs_INMARSATC() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
         movementType.setSource(null);
 
         //When
-        Movement movement = mapNewMovementEntity(movementType, "testUser");
+        final Movement movement = mapNewMovementEntity(movementType, "testUser");
 
         //Then
         assertThat(movement.getMovementSource(), is(MovementSourceType.INMARSAT_C));
@@ -114,13 +106,13 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testMapNewMovementEntity_ifMovementTypeIsNullThenMovementTypeTypeIs_POS() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
         movementType.setMovementType(null);
 
         //When
-        Movement movement = mapNewMovementEntity(movementType, "testUser");
+        final Movement movement = mapNewMovementEntity(movementType, "testUser");
 
         //Then
         assertThat(movement.getMovementType(), is(MovementTypeType.POS));
@@ -130,13 +122,13 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testMapNewMovementEntity_ifPositionTimeIsNullThenTimeStampIsSet() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
         movementType.setPositionTime(null);
 
         //When
-        Movement movement = mapNewMovementEntity(movementType, "testUser");
+        final Movement movement = mapNewMovementEntity(movementType, "testUser");
 
         //Then
         assertNotNull(movement.getTimestamp());
@@ -146,13 +138,13 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testMapNewMovementEntity_activityIsNull() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
         movementType.setActivity(null);
 
         //When
-        Movement movement = mapNewMovementEntity(movementType, "testUser");
+        final Movement movement = mapNewMovementEntity(movementType, "testUser");
 
         //Then
         assertNull(movement.getActivity());
@@ -162,13 +154,13 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testMapNewMovementEntity_metaDataIsNull() throws MovementDaoException, MovementDaoMappingException  {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
         movementType.setMetaData(null);
 
         //When
-        Movement movement = mapNewMovementEntity(movementType, "testUser");
+        final Movement movement = mapNewMovementEntity(movementType, "testUser");
 
         //Then
         assertNull(movement.getMetadata());
@@ -178,15 +170,15 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testMapToMovementMetaData_ifClosestPortIsNullThenClosestPortCodeAndDistanceAndRemoteIdAndNameAreNull() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
-        MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
 
         movementMetaDataToBeMapped.setClosestPort(null);
 
         //When
-        Movementmetadata mappedMovementMetaData = mapToMovementMetaData(movementMetaDataToBeMapped);
+        final Movementmetadata mappedMovementMetaData = mapToMovementMetaData(movementMetaDataToBeMapped);
 
         //Then
         assertNull(mappedMovementMetaData.getClosestPortCode());
@@ -200,15 +192,15 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testMapToMovementMetaData_ifClosestCountryIsNullThenClosestCountryCodeAndDistanceAndRemoteIdAndNameAreNull() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
-        MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
+        final MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
 
         movementMetaDataToBeMapped.setClosestCountry(null);
 
         //When
-        Movementmetadata mappedMovementMetaData = mapToMovementMetaData(movementMetaDataToBeMapped);
+        final Movementmetadata mappedMovementMetaData = mapToMovementMetaData(movementMetaDataToBeMapped);
 
         //Then
         assertNull(mappedMovementMetaData.getClosestCountryCode());
@@ -221,9 +213,9 @@ public class MovementModelToEntityMapperTest extends Assert {
     @Test
     public void testMapToAreaType() {
 
-        MovementMetaDataAreaType movementMetaDataAreaType = new MovementMetaDataAreaType();
+        final MovementMetaDataAreaType movementMetaDataAreaType = new MovementMetaDataAreaType();
 
-        AreaType areaType = mapToAreaType(movementMetaDataAreaType);
+        final AreaType areaType = mapToAreaType(movementMetaDataAreaType);
 
         assertNotNull(areaType);
         assertThat(areaType.getUpdatedUser(), is("UVMS"));
@@ -233,10 +225,10 @@ public class MovementModelToEntityMapperTest extends Assert {
     @Test
     public void testMapToArea() {
 
-        MovementMetaDataAreaType movementMetaDataAreaType = new MovementMetaDataAreaType();
-        AreaType areaType = mapToAreaType(movementMetaDataAreaType);
+        final MovementMetaDataAreaType movementMetaDataAreaType = new MovementMetaDataAreaType();
+        final AreaType areaType = mapToAreaType(movementMetaDataAreaType);
 
-        Area area = maptoArea(movementMetaDataAreaType, areaType);
+        final Area area = maptoArea(movementMetaDataAreaType, areaType);
 
         assertNotNull(area);
         assertThat(area.getAreaUpuser(), is("UVMS"));
@@ -246,10 +238,10 @@ public class MovementModelToEntityMapperTest extends Assert {
     @Test(expected = GeometryUtilException.class)
     public void testUpdateSegment_emptyMovementsThrowsGeometryUtilException() throws MovementDaoMappingException, GeometryUtilException {
 
-        Movement fromMovement = new Movement();
-        Movement toMovement = new Movement();
+        final Movement fromMovement = new Movement();
+        final Movement toMovement = new Movement();
 
-        Segment segment = createSegment(fromMovement, toMovement);
+        final Segment segment = createSegment(fromMovement, toMovement);
 
         updateSegment(segment, fromMovement, toMovement);
 
@@ -260,8 +252,8 @@ public class MovementModelToEntityMapperTest extends Assert {
     @Test(expected = GeometryUtilException.class)
     public void testCreateSegment_emptyMovementsThrowsGeometryUtilException() throws MovementDaoMappingException, GeometryUtilException {
 
-        Movement fromMovement = new Movement();
-        Movement toMovement = new Movement();
+        final Movement fromMovement = new Movement();
+        final Movement toMovement = new Movement();
 
         createSegment(fromMovement, toMovement);
 
@@ -273,11 +265,11 @@ public class MovementModelToEntityMapperTest extends Assert {
     public void testCreateActivity_mapFromMovementBaseTypeToActivity() throws MovementDaoException, MovementDaoMappingException {
 
         //Given
-        String uuid = UUID.randomUUID().toString();
-        MovementBaseType movementBaseType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        final String uuid = UUID.randomUUID().toString();
+        final MovementBaseType movementBaseType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
 
         //When
-        Activity activity = createActivity(movementBaseType);
+        final Activity activity = createActivity(movementBaseType);
 
         //Then
         assertNotNull(activity);

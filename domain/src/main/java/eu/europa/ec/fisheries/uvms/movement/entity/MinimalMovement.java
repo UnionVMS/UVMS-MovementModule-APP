@@ -24,8 +24,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
@@ -126,7 +124,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -134,7 +132,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return location;
     }
 
-    public void setLocation(Point location) {
+    public void setLocation(final Point location) {
         this.location = location;
     }
 
@@ -142,7 +140,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return movementConnect;
     }
 
-    public void setMovementConnect(MovementConnect movementConnect) {
+    public void setMovementConnect(final MovementConnect movementConnect) {
         this.movementConnect = movementConnect;
     }
 
@@ -150,7 +148,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return speed;
     }
 
-    public void setSpeed(Double speed) {
+    public void setSpeed(final Double speed) {
         this.speed = speed;
     }
 
@@ -158,7 +156,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return heading;
     }
 
-    public void setHeading(Double heading) {
+    public void setHeading(final Double heading) {
         this.heading = heading;
     }
 
@@ -166,7 +164,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return guid;
     }
 
-    public void setGuid(String guid) {
+    public void setGuid(final String guid) {
         this.guid = guid;
     }
 
@@ -174,7 +172,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -182,7 +180,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return movementType;
     }
 
-    public void setMovementType(MovementTypeType movementType) {
+    public void setMovementType(final MovementTypeType movementType) {
         this.movementType = movementType;
     }
 
@@ -190,7 +188,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return movementSource;
     }
 
-    public void setMovementSource(MovementSourceType movementSource) {
+    public void setMovementSource(final MovementSourceType movementSource) {
         this.movementSource = movementSource;
     }
 
@@ -198,7 +196,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return processed;
     }
 
-    public void setProcessed(Boolean processed) {
+    public void setProcessed(final Boolean processed) {
         this.processed = processed;
     }
 
@@ -210,11 +208,11 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return duplicateId;
     }
 
-    public void setDuplicate(Boolean duplicate) {
+    public void setDuplicate(final Boolean duplicate) {
         this.duplicate = duplicate;
     }
 
-    public void setDuplicateId(String duplicateId) {
+    public void setDuplicateId(final String duplicateId) {
         this.duplicateId = duplicateId;
     }
 
@@ -222,11 +220,11 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(final Date timestamp) {
         this.timestamp = timestamp;
     }
     @Override
-    public int compareTo(MinimalMovement o) {
+    public int compareTo(final MinimalMovement o) {
         return MovementComparator.MINIMAL_MOVEMENT.compare(this, o);
     }
 

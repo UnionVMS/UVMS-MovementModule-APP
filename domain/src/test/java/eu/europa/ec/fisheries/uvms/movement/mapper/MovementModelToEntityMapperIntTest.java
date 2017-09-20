@@ -23,8 +23,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
@@ -35,9 +33,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 /**
  * Created by roblar on 2017-03-31.
@@ -47,7 +42,7 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
     private final static Logger LOG = LoggerFactory.getLogger(MovementModelToEntityMapperIntTest.class);
 
-    private TestUtil testUtil = new TestUtil();
+    private final TestUtil testUtil = new TestUtil();
 
     @Inject
     MovementDaoBean movementDaoBean;
@@ -65,19 +60,19 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
         //Given: Set up two movements with different timestamps.
 
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        final Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
 
         //When
-        Segment segment = createSegment(fromMovement, toMovement);
+        final Segment segment = createSegment(fromMovement, toMovement);
 
         //Then
         assertNotNull(segment);
@@ -89,21 +84,21 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
     public void testCreateTrack_mapFromSegmentToTrack() throws MovementDaoException, MovementDaoMappingException, MovementModelException, MovementDuplicateException, GeometryUtilException {
 
         //Given: Create a Segment.
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        final Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
 
-        Segment segment = createSegment(fromMovement, toMovement);
+        final Segment segment = createSegment(fromMovement, toMovement);
 
         //When
-        Track track = MovementModelToEntityMapper.createTrack(segment);
+        final Track track = MovementModelToEntityMapper.createTrack(segment);
 
         //Then
         assertNotNull(track);
@@ -116,32 +111,32 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
     public void testUpdateTrack_sizeOfMovementListInRelatedTrackHasChanged() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
         //Given: Create a Track.
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        final Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
 
-        Segment segment = createSegment(fromMovement, toMovement);
+        final Segment segment = createSegment(fromMovement, toMovement);
 
-        Track trackBeforeUpdate = MovementModelToEntityMapper.createTrack(segment);
+        final Track trackBeforeUpdate = MovementModelToEntityMapper.createTrack(segment);
 
         cal.set(1940, 06, 06);
-        Date date3 = cal.getTime();
-        Movement currentMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId, "THREE", date3);
+        final Date date3 = cal.getTime();
+        final Movement currentMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId, "THREE", date3);
 
-        int movementListSizeBeforeUpdate = trackBeforeUpdate.getMovementList().size();
+        final int movementListSizeBeforeUpdate = trackBeforeUpdate.getMovementList().size();
 
         //When
         updateTrack(trackBeforeUpdate, currentMovement, segment);
-        Track trackAfterUpdate = currentMovement.getTrack();
+        final Track trackAfterUpdate = currentMovement.getTrack();
 
-        int movementListSizeAfterUpdate = trackAfterUpdate.getMovementList().size();
+        final int movementListSizeAfterUpdate = trackAfterUpdate.getMovementList().size();
 
         //Then
         assertNotEquals(movementListSizeBeforeUpdate, movementListSizeAfterUpdate);
@@ -152,26 +147,26 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
     public void testUpdateTrack_totalTimeAtSeaIncreasesWhenSegmentCategoryTypeIsNotEqualTo_ENTER_PORT_or_IN_PORT() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
         //Given: Create a Segment and set the segment category type to ENTER_PORT.
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        final Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
 
-        Segment segment = createSegment(fromMovement, toMovement);
+        final Segment segment = createSegment(fromMovement, toMovement);
 
-        Track track = MovementModelToEntityMapper.createTrack(segment);
-        double totalTimeAtSeaBeforeUpdate = track.getTotalTimeAtSea();
+        final Track track = MovementModelToEntityMapper.createTrack(segment);
+        final double totalTimeAtSeaBeforeUpdate = track.getTotalTimeAtSea();
 
         //When
         segment.setSegmentCategory(SegmentCategoryType.ENTER_PORT);
         updateTrack(track, toMovement, segment);
-        double totalTimeAtSeaAfterUpdate = track.getTotalTimeAtSea();
+        final double totalTimeAtSeaAfterUpdate = track.getTotalTimeAtSea();
 
         //Then
         assertNotEquals(totalTimeAtSeaBeforeUpdate, totalTimeAtSeaAfterUpdate);
@@ -183,36 +178,36 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
     public void testUpdateSegment_checkThatSegmentHasChanged() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
         //Given - A segment and two movements.
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        final Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
 
-        Segment segmentBeforeUpdate = createSegment(fromMovement, toMovement);
+        final Segment segmentBeforeUpdate = createSegment(fromMovement, toMovement);
 
         //When
         updateSegment(segmentBeforeUpdate, fromMovement, toMovement);
-        Segment segmentAfterUpdate = toMovement.getToSegment();
+        final Segment segmentAfterUpdate = toMovement.getToSegment();
 
         //Then
         assertNotEquals(segmentBeforeUpdate, segmentAfterUpdate);
     }
 
 
-    private Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
+    private Movement createMovement(final double longitude, final double latitude, final double altitude, final SegmentCategoryType segmentCategoryType, final String connectId, final String userName, final Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
         MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId);
         movementType.setPositionTime(positionTime);
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
         Assert.assertNotNull(movementType.getConnectId());
-        MovementConnect movementConnect = movementDaoBean.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
+        final MovementConnect movementConnect = movementDaoBean.getMovementConnectByConnectId(movementType.getConnectId());
+        final List<Movement> movementList = movementConnect.getMovementList();
         Assert.assertNotNull(movementList);
         return movementList.get(movementList.size() - 1);
     }

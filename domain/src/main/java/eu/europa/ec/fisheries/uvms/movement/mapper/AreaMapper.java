@@ -14,21 +14,20 @@ package eu.europa.ec.fisheries.uvms.movement.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 
 public class AreaMapper {
 
-    public static AreaType mapToAreaType(Area entity) {
-        AreaType areaType = new AreaType();
+    public static AreaType mapToAreaType(final Area entity) {
+        final AreaType areaType = new AreaType();
         areaType.setAreaId(entity.getAreaId());
         areaType.setAreaName(entity.getAreaName());
         return areaType;
     }
 
-    public static List<AreaType> mapToAreaTypes(List<Area> entities) {
-        List<AreaType> areaTypes = new ArrayList<>();
-        for (Area entity : entities) {
+    public static List<AreaType> mapToAreaTypes(final List<Area> entities) {
+        final List<AreaType> areaTypes = new ArrayList<>();
+        for (final Area entity : entities) {
             areaTypes.add(mapToAreaType(entity));
         }
 

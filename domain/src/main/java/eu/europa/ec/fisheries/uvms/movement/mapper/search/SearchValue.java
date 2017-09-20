@@ -22,12 +22,12 @@ public class SearchValue {
     private String toValue;
     private String fromValue;
 
-    public SearchValue(SearchField field, String value) {
+    public SearchValue(final SearchField field, final String value) {
         this.field = field;
         this.value = value;
     }
 
-    public SearchValue(SearchField field, String fromValue, String toValue) {
+    public SearchValue(final SearchField field, final String fromValue, final String toValue) {
         range = true;
         this.field = field;
         this.fromValue = fromValue;
@@ -38,7 +38,7 @@ public class SearchValue {
         return field;
     }
 
-    public void setField(SearchField field) {
+    public void setField(final SearchField field) {
         this.field = field;
     }
 
@@ -46,7 +46,7 @@ public class SearchValue {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
@@ -54,7 +54,7 @@ public class SearchValue {
         return range;
     }
 
-    public void setRange(boolean range) {
+    public void setRange(final boolean range) {
         this.range = range;
     }
 
@@ -62,7 +62,7 @@ public class SearchValue {
         return toValue;
     }
 
-    public void setToValue(String toValue) {
+    public void setToValue(final String toValue) {
         this.toValue = toValue;
     }
 
@@ -70,7 +70,7 @@ public class SearchValue {
         return fromValue;
     }
 
-    public void setFromValue(String fromValue) {
+    public void setFromValue(final String fromValue) {
         this.fromValue = fromValue;
     }
 

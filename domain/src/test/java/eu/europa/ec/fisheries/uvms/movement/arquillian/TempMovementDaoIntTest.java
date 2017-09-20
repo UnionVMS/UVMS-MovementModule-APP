@@ -2,8 +2,6 @@ package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
 import eu.europa.ec.fisheries.uvms.movement.dao.TempMovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
-import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -68,12 +66,12 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
     @OperateOnDeployment("normal")
     public void createTempMovementEntity() {
 
-        double longitude = 9.140626D;
-        double latitude = 57.683805D;
+        final double longitude = 9.140626D;
+        final double latitude = 57.683805D;
 
-        TempMovement tempMovement = createTempMovementEntityHelper(longitude,latitude);
+        final TempMovement tempMovement = createTempMovementEntityHelper(longitude,latitude);
         Assert.assertTrue(tempMovement.getId() == null);
-        TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
+        final TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
         em.flush();
         Assert.assertTrue(createdTempMovement.getId() != null);
         Assert.assertTrue(createdTempMovement.getGuid() != null);
@@ -85,16 +83,16 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
 
         try {
 
-            double longitude = 9.140626D;
-            double latitude = 57.683805D;
+            final double longitude = 9.140626D;
+            final double latitude = 57.683805D;
 
-            TempMovement tempMovement = createTempMovementEntityHelper(longitude,latitude);
+            final TempMovement tempMovement = createTempMovementEntityHelper(longitude,latitude);
             tempMovement.setState(null);
             Assert.assertTrue(tempMovement.getId() == null);
-            TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
+            final TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
             em.flush();
             Assert.fail("This is a db constraint violation and should not occur");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -104,26 +102,26 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
     @OperateOnDeployment("normal")
     public void getTempMovementByGuid() {
         try {
-            double longitude = 9.140626D;
-            double latitude = 57.683805D;
+            final double longitude = 9.140626D;
+            final double latitude = 57.683805D;
 
             // first create one
-            TempMovement tempMovement = createTempMovementEntityHelper(longitude, latitude);
-            TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
+            final TempMovement tempMovement = createTempMovementEntityHelper(longitude, latitude);
+            final TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
             em.flush();
-            Long createdTempMovementId = createdTempMovement.getId();
+            final Long createdTempMovementId = createdTempMovement.getId();
 
-            String createdTempMovementGUID = createdTempMovement.getGuid();
+            final String createdTempMovementGUID = createdTempMovement.getGuid();
             Assert.assertTrue(createdTempMovementGUID != null);
 
 
             // then fetch it
 
-            TempMovement fetchedTempMovement =  tempMovementDao.getTempMovementByGuid(createdTempMovementGUID);
+            final TempMovement fetchedTempMovement =  tempMovementDao.getTempMovementByGuid(createdTempMovementGUID);
             Assert.assertTrue(fetchedTempMovement != null);
-            Long fetchedTempMovementId = fetchedTempMovement.getId();
+            final Long fetchedTempMovementId = fetchedTempMovement.getId();
             Assert.assertTrue(createdTempMovementId.equals(fetchedTempMovementId));
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             Assert.fail(e.toString());
         }
     }
@@ -134,9 +132,9 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
         try {
 
             // we assume that the probability for zeroguid exists in db is so low so we consider this safe
-            TempMovement fetchedTempMovement =  tempMovementDao.getTempMovementByGuid("00000000-0000-0000-0000-000000000000");
+            final TempMovement fetchedTempMovement =  tempMovementDao.getTempMovementByGuid("00000000-0000-0000-0000-000000000000");
             Assert.fail("functions throws exception at nothing in result, so this should not happen");
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -151,8 +149,8 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
             double longitude = 9.140626D;
             double latitude = 57.683805D;
             for (int i = 0; i < 100; i++) {
-                TempMovement tempMovement = createTempMovementEntityHelper(longitude, latitude);
-                TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
+                final TempMovement tempMovement = createTempMovementEntityHelper(longitude, latitude);
+                final TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
                 em.flush();
                 longitude += 0.000010;
                 latitude += 0.000010;
@@ -169,7 +167,7 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
             Assert.assertTrue(list.size() == 25);
 
 
-        }catch(MovementDaoException e){
+        }catch(final MovementDaoException e){
             Assert.fail(e.toString());
         }
     }
@@ -183,8 +181,8 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
             double longitude = 9.140626D;
             double latitude = 57.683805D;
             for (int i = 0; i < 100; i++) {
-                TempMovement tempMovement = createTempMovementEntityHelper(longitude, latitude);
-                TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
+                final TempMovement tempMovement = createTempMovementEntityHelper(longitude, latitude);
+                final TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
                 em.flush();
                 longitude += 0.000010;
                 latitude += 0.000010;
@@ -201,7 +199,7 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
             Assert.assertTrue(list.size() == 0);
 
 
-        }catch(MovementDaoException e){
+        }catch(final MovementDaoException e){
             Assert.fail(e.toString());
         }
     }
@@ -217,19 +215,19 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
             double longitude = 9.140626D;
             double latitude = 57.683805D;
             for (int i = 0; i < 100; i++) {
-                TempMovement tempMovement = createTempMovementEntityHelper(longitude, latitude);
-                TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
+                final TempMovement tempMovement = createTempMovementEntityHelper(longitude, latitude);
+                final TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
                 em.flush();
                 longitude += 0.000010;
                 latitude += 0.000010;
             }
 
 
-            Long count = tempMovementDao.getTempMovementListCount();
+            final Long count = tempMovementDao.getTempMovementListCount();
             Assert.assertTrue(count != null);
 
 
-        }catch(MovementDaoException e){
+        }catch(final MovementDaoException e){
             Assert.fail(e.toString());
         }
 
@@ -243,11 +241,11 @@ public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
      ******************************************************************************************************************/
 
 
-    private TempMovement createTempMovementEntityHelper(double longitude, double latitude) {
+    private TempMovement createTempMovementEntityHelper(final double longitude, final double latitude) {
 
-        Date now = DateUtil.nowUTC();
+        final Date now = DateUtil.nowUTC();
 
-        TempMovement tempMovement = new TempMovement();
+        final TempMovement tempMovement = new TempMovement();
 
         tempMovement.setTimestamp(now);
         tempMovement.setUpdated(now);

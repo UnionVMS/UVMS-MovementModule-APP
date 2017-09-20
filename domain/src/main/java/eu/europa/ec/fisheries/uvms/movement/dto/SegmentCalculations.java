@@ -24,7 +24,7 @@ public class SegmentCalculations {
         return avgSpeed;
     }
 
-    public void setAvgSpeed(double avgSpeed) {
+    public void setAvgSpeed(final double avgSpeed) {
         this.avgSpeed = avgSpeed;
     }
 
@@ -32,7 +32,7 @@ public class SegmentCalculations {
         return durationBetweenPoints;
     }
 
-    public void setDurationBetweenPoints(double durationBetweenPoints) {
+    public void setDurationBetweenPoints(final double durationBetweenPoints) {
         this.durationBetweenPoints = durationBetweenPoints;
     }
 
@@ -40,7 +40,7 @@ public class SegmentCalculations {
         return distanceBetweenPoints;
     }
 
-    public void setDistanceBetweenPoints(double distanceBetweenPoints) {
+    public void setDistanceBetweenPoints(final double distanceBetweenPoints) {
         this.distanceBetweenPoints = distanceBetweenPoints;
     }
 
@@ -48,7 +48,7 @@ public class SegmentCalculations {
         return course;
     }
 
-    public void setCourse(double course) {
+    public void setCourse(final double course) {
         this.course = course;
     }
     

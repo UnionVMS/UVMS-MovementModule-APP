@@ -14,8 +14,6 @@ package eu.europa.ec.fisheries.uvms.movement.entity;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import com.vividsolutions.jts.geom.Point;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import java.io.Serializable;
@@ -205,7 +203,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -213,7 +211,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return location;
     }
 
-    public void setLocation(Point location) {
+    public void setLocation(final Point location) {
         this.location = location;
     }
 
@@ -221,7 +219,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return altitude;
     }
 
-    public void setMoveAltitude(Integer moveAltitude) {
+    public void setMoveAltitude(final Integer moveAltitude) {
         this.altitude = moveAltitude;
     }
 
@@ -229,7 +227,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return tripNumber;
     }
 
-    public void setTripNumber(Double tripNumber) {
+    public void setTripNumber(final Double tripNumber) {
         this.tripNumber = tripNumber;
     }
 
@@ -237,7 +235,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return internalReferenceNumber;
     }
 
-    public void setInternalReferenceNumber(String internalReferenceNumber) {
+    public void setInternalReferenceNumber(final String internalReferenceNumber) {
         this.internalReferenceNumber = internalReferenceNumber;
     }
 
@@ -245,7 +243,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return metadata;
     }
 
-    public void setMetadata(Movementmetadata metadata) {
+    public void setMetadata(final Movementmetadata metadata) {
         this.metadata = metadata;
     }
 
@@ -253,7 +251,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return movementConnect;
     }
 
-    public void setMovementConnect(MovementConnect movementConnect) {
+    public void setMovementConnect(final MovementConnect movementConnect) {
         this.movementConnect = movementConnect;
     }
 
@@ -261,7 +259,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return speed;
     }
 
-    public void setSpeed(Double speed) {
+    public void setSpeed(final Double speed) {
         this.speed = speed;
     }
 
@@ -269,7 +267,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return heading;
     }
 
-    public void setHeading(Double heading) {
+    public void setHeading(final Double heading) {
         this.heading = heading;
     }
 
@@ -277,7 +275,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return guid;
     }
 
-    public void setGuid(String guid) {
+    public void setGuid(final String guid) {
         this.guid = guid;
     }
 
@@ -285,7 +283,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -293,7 +291,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return movementareaList;
     }
 
-    public void setMovementareaList(List<Movementarea> movementareaList) {
+    public void setMovementareaList(final List<Movementarea> movementareaList) {
         this.movementareaList = movementareaList;
     }
 
@@ -301,7 +299,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return movementType;
     }
 
-    public void setMovementType(MovementTypeType movementType) {
+    public void setMovementType(final MovementTypeType movementType) {
         this.movementType = movementType;
     }
 
@@ -309,7 +307,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return movementSource;
     }
 
-    public void setMovementSource(MovementSourceType movementSource) {
+    public void setMovementSource(final MovementSourceType movementSource) {
         this.movementSource = movementSource;
     }
 
@@ -317,7 +315,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return activity;
     }
 
-    public void setActivity(Activity activity) {
+    public void setActivity(final Activity activity) {
         this.activity = activity;
     }
 
@@ -325,7 +323,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(final Date timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -333,7 +331,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return fromSegment;
     }
 
-    public void setFromSegment(Segment fromSegment) {
+    public void setFromSegment(final Segment fromSegment) {
         this.fromSegment = fromSegment;
     }
 
@@ -341,7 +339,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return toSegment;
     }
 
-    public void setToSegment(Segment toSegment) {
+    public void setToSegment(final Segment toSegment) {
         this.toSegment = toSegment;
     }
 
@@ -349,7 +347,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -357,7 +355,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -365,7 +363,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return altitude;
     }
 
-    public void setAltitude(Integer altitude) {
+    public void setAltitude(final Integer altitude) {
         this.altitude = altitude;
     }
 
@@ -373,7 +371,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return track;
     }
 
-    public void setTrack(Track track) {
+    public void setTrack(final Track track) {
         this.track = track;
     }
 
@@ -381,7 +379,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return tempFromSegment;
     }
 
-    public void setTempFromSegment(Segment tempFromSegment) {
+    public void setTempFromSegment(final Segment tempFromSegment) {
         this.tempFromSegment = tempFromSegment;
     }
 
@@ -393,11 +391,11 @@ public class Movement implements Serializable, Comparable<Movement> {
         return duplicateId;
     }
 
-    public void setDuplicate(Boolean duplicate) {
+    public void setDuplicate(final Boolean duplicate) {
         this.duplicate = duplicate;
     }
 
-    public void setDuplicateId(String duplicateId) {
+    public void setDuplicateId(final String duplicateId) {
         this.duplicateId = duplicateId;
     }
 
@@ -406,7 +404,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return areatransitionList;
     }
 
-    public void setAreatransitionList(List<Areatransition> areatransitionList) {
+    public void setAreatransitionList(final List<Areatransition> areatransitionList) {
         this.areatransitionList = areatransitionList;
     }
 
@@ -414,7 +412,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return processed;
     }
 
-    public void setProcessed(Boolean processed) {
+    public void setProcessed(final Boolean processed) {
         this.processed = processed;
     }
 
@@ -434,7 +432,7 @@ public class Movement implements Serializable, Comparable<Movement> {
              this.moveMovesourId = moveMovesourId;
              }*/
     @Override
-    public int compareTo(Movement o) {
+    public int compareTo(final Movement o) {
         return MovementComparator.MOVEMENT.compare(this, o);
     }
 

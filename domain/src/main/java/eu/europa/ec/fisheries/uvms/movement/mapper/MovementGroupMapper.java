@@ -11,16 +11,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilter;
@@ -29,7 +25,7 @@ import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 
 public class MovementGroupMapper {
 
-    public static MovementFilterGroup toGroupEntity(MovementFilterGroup filterGroup, MovementSearchGroup searchGroup, String username) throws MovementSearchMapperException {
+    public static MovementFilterGroup toGroupEntity(final MovementFilterGroup filterGroup, final MovementSearchGroup searchGroup, final String username) throws MovementSearchMapperException {
         validateMovementSearchGroup(searchGroup);
 
         filterGroup.setActive(UvmsConstants.TRUE);
@@ -41,10 +37,10 @@ public class MovementGroupMapper {
         filterGroup.setUser(searchGroup.getUser());
 
         filterGroup.getFilters().clear();
-        List<GroupListCriteria> searchFields = searchGroup.getSearchFields();
-        List<MovementFilter> newFilters = new ArrayList<>();
+        final List<GroupListCriteria> searchFields = searchGroup.getSearchFields();
+        final List<MovementFilter> newFilters = new ArrayList<>();
         if (searchFields != null) {
-            for (GroupListCriteria searchField : searchFields) {
+            for (final GroupListCriteria searchField : searchFields) {
                 newFilters.add(toFilterEntity(filterGroup, searchField, username));
             }
 
@@ -54,13 +50,13 @@ public class MovementGroupMapper {
         return filterGroup;
     }
 
-    public static MovementFilterGroup toGroupEntity(MovementSearchGroup searchGroup, String username) throws MovementSearchMapperException {
-        MovementFilterGroup filterGroup = new MovementFilterGroup();
+    public static MovementFilterGroup toGroupEntity(final MovementSearchGroup searchGroup, final String username) throws MovementSearchMapperException {
+        final MovementFilterGroup filterGroup = new MovementFilterGroup();
         return toGroupEntity(filterGroup, searchGroup, username);
     }
 
-    public static MovementSearchGroup toMovementSearchGroup(MovementFilterGroup filterGroup) {
-        MovementSearchGroup group = new MovementSearchGroup();
+    public static MovementSearchGroup toMovementSearchGroup(final MovementFilterGroup filterGroup) {
+        final MovementSearchGroup group = new MovementSearchGroup();
         group.setDynamic(getBoolean(filterGroup.getFiltgrpDynamic()));
         group.setName(filterGroup.getName());
         group.setUser(filterGroup.getUser());
@@ -69,15 +65,15 @@ public class MovementGroupMapper {
             group.setId(BigInteger.valueOf(filterGroup.getId().longValue()));
         }
 
-        for (MovementFilter filter : filterGroup.getFilters()) {
+        for (final MovementFilter filter : filterGroup.getFilters()) {
             group.getSearchFields().add(toGroupListCriteria(filter));
         }
 
         return group;
     }
 
-    private static MovementFilter toFilterEntity(MovementFilterGroup parent, GroupListCriteria searchField, String username) {
-        MovementFilter filter = new MovementFilter();
+    private static MovementFilter toFilterEntity(final MovementFilterGroup parent, final GroupListCriteria searchField, final String username) {
+        final MovementFilter filter = new MovementFilter();
         //filter.setId(parent.getId());
         filter.setField(searchField.getKey());
         filter.setValue(searchField.getValue());
@@ -88,8 +84,8 @@ public class MovementGroupMapper {
         return filter;
     }
 
-    private static GroupListCriteria toGroupListCriteria(MovementFilter filter) {
-        GroupListCriteria searchField = new GroupListCriteria();
+    private static GroupListCriteria toGroupListCriteria(final MovementFilter filter) {
+        final GroupListCriteria searchField = new GroupListCriteria();
         searchField.setKey(filter.getField());
         searchField.setValue(filter.getValue());
         searchField.setType(filter.getMovementFilterType());
@@ -100,14 +96,14 @@ public class MovementGroupMapper {
     //ToDo: following specific MovementTypeType enum values only: POS, ENT, EXI or MAN.
     //ToDo: Method toListCriteria() is the only usage of this setter but toListCriteria() is itself never used.
     //ToDo: Needs decision on if toListCriteria() method and the setter method ListCriteria.setValue() should be removed.
-    private static ListCriteria toListCriteria(MovementFilter filter) {
-        ListCriteria searchField = new ListCriteria();
+    private static ListCriteria toListCriteria(final MovementFilter filter) {
+        final ListCriteria searchField = new ListCriteria();
         searchField.setKey(SearchKey.fromValue(filter.getField()));
         searchField.setValue(filter.getValue());
         return searchField;
     }
 
-    private static boolean getBoolean(String value) {
+    private static boolean getBoolean(final String value) {
         if (value != null && !value.isEmpty()) {
             return value.equalsIgnoreCase(UvmsConstants.TRUE);
         }
@@ -115,7 +111,7 @@ public class MovementGroupMapper {
         return false;
     }
 
-    private static void validateMovementSearchGroup(MovementSearchGroup searchGroup) throws MovementSearchMapperException {
+    private static void validateMovementSearchGroup(final MovementSearchGroup searchGroup) throws MovementSearchMapperException {
         if (searchGroup.getName() == null) {
             throw new MovementSearchMapperException("MovementSearchGroupName cannot be null");
         }

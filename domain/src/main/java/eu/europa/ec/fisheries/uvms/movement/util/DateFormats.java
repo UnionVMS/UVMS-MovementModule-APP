@@ -24,7 +24,7 @@ public enum DateFormats {
 
     String format;
 
-    DateFormats(String format) {
+    DateFormats(final String format) {
         this.format = format;
     }
 

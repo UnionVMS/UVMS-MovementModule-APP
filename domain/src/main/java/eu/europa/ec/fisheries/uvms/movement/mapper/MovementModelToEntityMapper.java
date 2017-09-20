@@ -15,21 +15,12 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
-
 import java.util.ArrayList;
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
@@ -52,9 +43,9 @@ public class MovementModelToEntityMapper {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementModelToEntityMapper.class);
 
-    public static Movement mapNewMovementEntity(MovementType movement, String username) throws MovementDaoMappingException {
+    public static Movement mapNewMovementEntity(final MovementType movement, final String username) throws MovementDaoMappingException {
         try {
-            Movement entity = new Movement();
+            final Movement entity = new Movement();
 
             if (movement.getReportedSpeed() != null) {
                 entity.setSpeed(movement.getReportedSpeed());
@@ -70,9 +61,9 @@ public class MovementModelToEntityMapper {
             entity.setStatus(movement.getStatus());
 
             if (movement.getPosition() != null) {
-                Coordinate coordinate = new Coordinate(movement.getPosition().getLongitude(), movement.getPosition().getLatitude());
-                GeometryFactory factory = new GeometryFactory();
-                Point point = factory.createPoint(coordinate);
+                final Coordinate coordinate = new Coordinate(movement.getPosition().getLongitude(), movement.getPosition().getLatitude());
+                final GeometryFactory factory = new GeometryFactory();
+                final Point point = factory.createPoint(coordinate);
                 point.setSRID(4326);
                 entity.setLocation(point);
             }
@@ -99,26 +90,26 @@ public class MovementModelToEntityMapper {
             }
 
             if (movement.getActivity() != null) {
-                Activity activity = createActivity(movement);
+                final Activity activity = createActivity(movement);
                 entity.setActivity(activity);
             }
 
             if (movement.getMetaData() != null) {
-                Movementmetadata metaData = mapToMovementMetaData(movement.getMetaData());
+                final Movementmetadata metaData = mapToMovementMetaData(movement.getMetaData());
                 entity.setMetadata(metaData);
             }
 
             entity.setProcessed(false);
 
             return entity;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ ERROR when mapping to Movement entity: < mapNewMovementEntity > ]");
             throw new MovementDaoMappingException("Error when mapping to Movement Entity ", e);
         }
     }
 
-    public static Movementmetadata mapToMovementMetaData(MovementMetaData metaData) {
-        Movementmetadata meta = new Movementmetadata();
+    public static Movementmetadata mapToMovementMetaData(final MovementMetaData metaData) {
+        final Movementmetadata meta = new Movementmetadata();
 
         meta.setMovemetUpdattim(DateUtil.nowUTC());
         meta.setMovemetUpuser("UVMS");
@@ -142,37 +133,37 @@ public class MovementModelToEntityMapper {
 
     //ToDo: This method does not actually map anything. It only creates a MovementConnect object.
     //ToDo: Should be removed or made to actually map something to something else.
-    public static MovementConnect mapToMovementConnenct(String value, AssetIdType idType) throws MovementDaoMappingException {
+    public static MovementConnect mapToMovementConnenct(final String value, final AssetIdType idType) throws MovementDaoMappingException {
         try {
-            MovementConnect connect = new MovementConnect();
+            final MovementConnect connect = new MovementConnect();
             connect.setUpdated(DateUtil.nowUTC());
             connect.setUpdatedBy("UVMS");
             connect.setValue(value);
             return connect;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ ERROR when mapping to MovementConnect entity: < mapToMovementConnenct > ]");
             throw new MovementDaoMappingException("ERROR when mapping to MovementConnect entity", e);
         }
     }
 
-    public static Activity createActivity(MovementBaseType movement) throws MovementDaoMappingException {
+    public static Activity createActivity(final MovementBaseType movement) throws MovementDaoMappingException {
         try {
-            Activity activity = new Activity();
+            final Activity activity = new Activity();
             activity.setActivityType(movement.getActivity().getMessageType());
             activity.setCallback(movement.getActivity().getCallback());
             activity.setMessageId(movement.getActivity().getMessageId());
             activity.setUpdated(DateUtil.nowUTC());
             activity.setUpdatedBy("UVMS");
             return activity;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ ERROR when mapping to Activity entity: < createActivity > ]");
             throw new MovementDaoMappingException("ERROR when mapping to Activity entity ", e);
         }
     }
 
-    public static Track createTrack(Segment segment) throws MovementDaoMappingException {
+    public static Track createTrack(final Segment segment) throws MovementDaoMappingException {
         try {
-            Track track = new Track();
+            final Track track = new Track();
             track.setDistance(segment.getDistance());
             track.setDuration(segment.getDuration());
             track.setUpdated(DateUtil.nowUTC());
@@ -187,7 +178,7 @@ public class MovementModelToEntityMapper {
             track.getSegmentList().add(segment);
 
             return track;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ ERROR when mapping to Activity entity: < createTrack > ]");
             throw new MovementDaoMappingException("ERROR when mapping to Activity entity ", e);
         }
@@ -195,7 +186,7 @@ public class MovementModelToEntityMapper {
 
     //ToDo: This method does not perform mapping. It updates a Segment and a Track and uses a Movement.
     //ToDo: It could be a good idea to extract this method from the mapper class.
-    public static void updateTrack(Track track, Movement currentPosition, Segment segment) throws GeometryUtilException {
+    public static void updateTrack(final Track track, final Movement currentPosition, final Segment segment) throws GeometryUtilException {
 
         if (track.getMovementList() == null) {
             track.setMovementList(new ArrayList<Movement>());
@@ -206,15 +197,15 @@ public class MovementModelToEntityMapper {
         currentPosition.setTrack(track);
         track.getSegmentList().add(segment);
 
-        double calculatedDistance = track.getDistance() + segment.getDistance();
+        final double calculatedDistance = track.getDistance() + segment.getDistance();
         track.setDistance(calculatedDistance);
-        double calculatedDurationInSeconds = track.getDuration() + segment.getDuration();
+        final double calculatedDurationInSeconds = track.getDuration() + segment.getDuration();
         track.setDuration(calculatedDurationInSeconds);
 
-        LineString updatedTrackLineString = GeometryUtil.getLineStringFromMovments(track.getMovementList());
+        final LineString updatedTrackLineString = GeometryUtil.getLineStringFromMovments(track.getMovementList());
 
         if (!segment.getSegmentCategory().equals(SegmentCategoryType.ENTER_PORT) || !segment.getSegmentCategory().equals(SegmentCategoryType.IN_PORT)) {
-            double distance = track.getTotalTimeAtSea();
+            final double distance = track.getTotalTimeAtSea();
             track.setTotalTimeAtSea(distance + calculatedDistance);
         }
 
@@ -230,17 +221,17 @@ public class MovementModelToEntityMapper {
      * @throws GeometryUtilException
      * @throws MovementDaoMappingException
      */
-    public static Segment createSegment(Movement fromMovement, Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
-        Segment segment = new Segment();
+    public static Segment createSegment(final Movement fromMovement, final Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
+        final Segment segment = new Segment();
 
         if (toMovement == null && fromMovement == null) {
             LOG.error("[ ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null <createSegment> ]");
             throw new MovementDaoMappingException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null");
         }
 
-        SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
+        final SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
 
-        SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, fromMovement, toMovement);
+        final SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, fromMovement, toMovement);
         segment.setSegmentCategory(segCat);
 
         segment.setDistance(positionCalculations.getDistanceBetweenPoints());
@@ -256,7 +247,7 @@ public class MovementModelToEntityMapper {
         segment.setUpdated(DateUtil.nowUTC());
         segment.setUpdatedBy("UVMS");
 
-        LineString segmentLineString = GeometryUtil.getLineStringFromMovments(fromMovement, toMovement);
+        final LineString segmentLineString = GeometryUtil.getLineStringFromMovments(fromMovement, toMovement);
         segment.setLocation(segmentLineString);
 
         return segment;
@@ -264,16 +255,16 @@ public class MovementModelToEntityMapper {
 
     //ToDo: This method does not perform any mapping but rather updates an existing Segment.
     //ToDo: It should be extracted out from the mapper class.
-    public static void updateSegment(Segment segment, Movement fromMovement, Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
+    public static void updateSegment(final Segment segment, final Movement fromMovement, final Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
 
         if (toMovement == null && fromMovement == null) {
             LOG.error("[ ERROR when updating Segment entity: currentPosition AND previous Position cannot be null <updateSegment> ]");
             throw new MovementDaoMappingException("ERROR when updating Segment entity: currentPosition AND previous Position cannot be null");
         }
 
-        SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
+        final SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
 
-        SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, fromMovement, toMovement);
+        final SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, fromMovement, toMovement);
         segment.setSegmentCategory(segCat);
 
         segment.setDistance(positionCalculations.getDistanceBetweenPoints());
@@ -287,21 +278,21 @@ public class MovementModelToEntityMapper {
         segment.setFromMovement(fromMovement);
         segment.setToMovement(toMovement);
 
-        LineString segmentLineString = GeometryUtil.getLineStringFromMovments(fromMovement, toMovement);
+        final LineString segmentLineString = GeometryUtil.getLineStringFromMovments(fromMovement, toMovement);
         segment.setLocation(segmentLineString);
 
     }
 
-    public static AreaType mapToAreaType(MovementMetaDataAreaType type) {
-        AreaType newAreaType = new AreaType();
+    public static AreaType mapToAreaType(final MovementMetaDataAreaType type) {
+        final AreaType newAreaType = new AreaType();
         newAreaType.setName(type.getAreaType());
         newAreaType.setUpdatedUser("UVMS");
         newAreaType.setUpdatedTime(DateUtil.nowUTC());
         return newAreaType;
     }
 
-    public static Area maptoArea(MovementMetaDataAreaType area, AreaType areaType) {
-        Area newArea = new Area();
+    public static Area maptoArea(final MovementMetaDataAreaType area, final AreaType areaType) {
+        final Area newArea = new Area();
         newArea.setAreaCode(area.getCode());
         newArea.setAreaName(area.getName());
         newArea.setRemoteId(area.getRemoteId());

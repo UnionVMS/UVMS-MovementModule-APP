@@ -26,8 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eu.europa.ec.fisheries.uvms.movement.longpolling.constants.LongPollingConstants;
-import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import javax.ejb.EJB;
 
@@ -40,14 +38,14 @@ public class LongPollingHttpServlet extends HttpServlet {
     LongPollingContextHelper asyncContexts;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        AsyncContext ctx = req.startAsync(req, resp);
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+        final AsyncContext ctx = req.startAsync(req, resp);
         ctx.setTimeout(LongPollingConstants.ASYNC_TIMEOUT);
         ctx.addListener(new LongPollingAsyncListener() {
 
             @Override
-            public void onTimeout(AsyncEvent event) throws IOException {
-                AsyncContext ctx = event.getAsyncContext();
+            public void onTimeout(final AsyncEvent event) throws IOException {
+                final AsyncContext ctx = event.getAsyncContext();
                 asyncContexts.remove(ctx);
                 completePoll(ctx, createJsonMessage(null));
             }
@@ -57,18 +55,18 @@ public class LongPollingHttpServlet extends HttpServlet {
         asyncContexts.add(ctx, req.getServletPath());
     }
 
-    public void createdMovement(@Observes @CreatedMovement NotificationMessage message) throws IOException {
-        String guid = (String) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
+    public void createdMovement(@Observes @CreatedMovement final NotificationMessage message) throws IOException {
+        final String guid = (String) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
         completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(guid));
     }
 
-    public void createdManualMovement(@Observes @CreatedManualMovement NotificationMessage message) throws IOException {
-        String guid = (String) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
+    public void createdManualMovement(@Observes @CreatedManualMovement final NotificationMessage message) throws IOException {
+        final String guid = (String) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
         completePoll(LongPollingConstants.MANUAL_MOVEMENT_PATH, createJsonMessage(guid));
     }
 
-    private String createJsonMessage(String guid) {
-        JsonArrayBuilder array = Json.createArrayBuilder();
+    private String createJsonMessage(final String guid) {
+        final JsonArrayBuilder array = Json.createArrayBuilder();
         if (guid != null) {
             array.add(guid);
         }
@@ -76,14 +74,14 @@ public class LongPollingHttpServlet extends HttpServlet {
         return Json.createObjectBuilder().add("ids", array).build().toString();
     }
 
-    private void completePoll(String resourcePath, String message) throws IOException {
+    private void completePoll(final String resourcePath, final String message) throws IOException {
         AsyncContext ctx = null;
         while ((ctx = asyncContexts.popContext(resourcePath)) != null) {
             completePoll(ctx, message);
         }
     }
 
-    private void completePoll(AsyncContext ctx, String jsonMessage) throws IOException {
+    private void completePoll(final AsyncContext ctx, final String jsonMessage) throws IOException {
         ctx.getResponse().setContentType("application/json");
         ctx.getResponse().getWriter().write(jsonMessage);
         ctx.complete();
@@ -92,17 +90,17 @@ public class LongPollingHttpServlet extends HttpServlet {
     private abstract static class LongPollingAsyncListener implements AsyncListener {
 
         @Override
-        public void onComplete(AsyncEvent event) throws IOException {
+        public void onComplete(final AsyncEvent event) throws IOException {
             // Do nothing
         }
 
         @Override
-        public void onError(AsyncEvent event) throws IOException {
+        public void onError(final AsyncEvent event) throws IOException {
             // Do nothing
         }
 
         @Override
-        public void onStartAsync(AsyncEvent event) throws IOException {
+        public void onStartAsync(final AsyncEvent event) throws IOException {
             // Do nothing
         }
 

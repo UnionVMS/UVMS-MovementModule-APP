@@ -12,7 +12,6 @@
 
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
@@ -22,9 +21,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +66,7 @@ public class MovementProcessorBean {
             public void run() {
                 try {
                     processMovements();
-                } catch (SystemException e) {
+                } catch (final SystemException e) {
                     LOG.error("", e);
                 }
             }
@@ -85,20 +81,20 @@ public class MovementProcessorBean {
     }
 
     public void processMovements() throws SystemException {
-        UserTransaction utx = context.getUserTransaction();
+        final UserTransaction utx = context.getUserTransaction();
         LOG.debug("------------------- Processing started ------------------------");
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
         try {
             utx.begin();
-            List<Long> movements = dao.getUnprocessedMovementIds();
+            final List<Long> movements = dao.getUnprocessedMovementIds();
             LOG.debug("Movement processing time for {} movements: {} ms", movements.size(), (System.currentTimeMillis() - start));
             utx.commit();
 
-            for (Long id : movements) {
+            for (final Long id : movements) {
                 incomingMovementBean.processMovement(id);
             }
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("Error while processing movement", e);
             utx.rollback();
         }

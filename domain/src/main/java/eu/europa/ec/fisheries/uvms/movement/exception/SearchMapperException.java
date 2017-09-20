@@ -11,17 +11,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.exception;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-
 public class SearchMapperException extends MovementModelException {
 
     private static final long serialVersionUID = 1L;
 
-    public SearchMapperException(String message) {
+    public SearchMapperException(final String message) {
         super(message);
     }
 
-    public SearchMapperException(String message, Throwable cause) {
+    public SearchMapperException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
@@ -13,9 +12,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
@@ -42,44 +38,44 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @EJB
     MovementDao movementDao;
 
-    private TestUtil testUtil = new TestUtil();
+    private final TestUtil testUtil = new TestUtil();
 
     @Test
     @OperateOnDeployment("normal")
     public void createSegmentOnFirstMovement() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        final Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
         segmentBean.createSegmentOnFirstMovement(fromMovement, toMovement);
         em.flush();
 
-        TypedQuery<Movement> queryMovement =
+        final TypedQuery<Movement> queryMovement =
                 em.createQuery("select m from Movement m where m.id = :id", Movement.class);
 
         // get first movement from db
         queryMovement.setParameter("id", fromMovement.getId());
-        Movement fetchedFromMovement = queryMovement.getSingleResult();
+        final Movement fetchedFromMovement = queryMovement.getSingleResult();
 
         // get second movement from db
         queryMovement.setParameter("id", toMovement.getId());
-        Movement fetchedToMovement = queryMovement.getSingleResult();
+        final Movement fetchedToMovement = queryMovement.getSingleResult();
 
         // get the segment from the db
-        TypedQuery<Segment> querySegment =
+        final TypedQuery<Segment> querySegment =
                 em.createQuery("select s from Segment s where s.fromMovement = :fromMovement and s.toMovement= :toMovement", Segment.class);
 
         querySegment.setParameter("fromMovement", fetchedFromMovement);
         querySegment.setParameter("toMovement", fetchedToMovement);
-        Segment fetchedSegment = querySegment.getSingleResult();
-        Movement movement1FromList = fetchedSegment.getTrack().getMovementList().get(0);
-        Movement movement2FromList = fetchedSegment.getTrack().getMovementList().get(1);
+        final Segment fetchedSegment = querySegment.getSingleResult();
+        final Movement movement1FromList = fetchedSegment.getTrack().getMovementList().get(0);
+        final Movement movement2FromList = fetchedSegment.getTrack().getMovementList().get(1);
 
         // verify that the id:s are different
         Assert.assertFalse(movement1FromList.getId().equals(movement2FromList.getId()));
@@ -89,41 +85,41 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
 
-        Movement movement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        final Movement movement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
         segmentBean.createSegmentOnFirstMovement(movement, movement);
         em.flush();
 
         // get movement from db
-        TypedQuery<Movement> queryMovement =
+        final TypedQuery<Movement> queryMovement =
                 em.createQuery("select m from Movement m where m.id = :id", Movement.class);
 
 
         // get frommovement from db
         // obs they should be the same
         queryMovement.setParameter("id", movement.getId());
-        Movement fetchedFromMovement = queryMovement.getSingleResult();
+        final Movement fetchedFromMovement = queryMovement.getSingleResult();
 
         // get tpmovement from db
         // obs they should be the same
         queryMovement.setParameter("id", movement.getId());
-        Movement fetchedToMovement = queryMovement.getSingleResult();
+        final Movement fetchedToMovement = queryMovement.getSingleResult();
 
 
         // get the segment
-        TypedQuery<Segment> querySegment =
+        final TypedQuery<Segment> querySegment =
                 em.createQuery("select s from Segment s where s.fromMovement = :fromMovement and s.toMovement= :toMovement", Segment.class);
 
         querySegment.setParameter("fromMovement", fetchedFromMovement);
         querySegment.setParameter("toMovement", fetchedToMovement);
-        Segment fetchedSegment = querySegment.getSingleResult();
-        Movement movement1FromList = fetchedSegment.getTrack().getMovementList().get(0);
-        Movement movement2FromList = fetchedSegment.getTrack().getMovementList().get(1);
+        final Segment fetchedSegment = querySegment.getSingleResult();
+        final Movement movement1FromList = fetchedSegment.getTrack().getMovementList().get(0);
+        final Movement movement2FromList = fetchedSegment.getTrack().getMovementList().get(1);
 
         // verify that the id:s are same
         Assert.assertTrue(movement1FromList.getId().equals(movement2FromList.getId()));
@@ -137,20 +133,20 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
 
         // TODO nothing indicates that this splitFunction actually works
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
         cal.set(1925, 06, 06);
-        Date date3 = cal.getTime();
+        final Date date3 = cal.getTime();
 
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement toMovement = createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
-        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
-        Track track = segmentBean.createNewTrack(segment);
+        final Movement fromMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        final Movement toMovement = createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        final Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        final Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
 
@@ -163,7 +159,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
 
 //--------------------------------------------------------------------------
-        Movement newMovement = createMovement(.5d, .5d, 0d, SegmentCategoryType.GAP, connectId, "THREE", date3);
+        final Movement newMovement = createMovement(.5d, .5d, 0d, SegmentCategoryType.GAP, connectId, "THREE", date3);
         em.flush();
 
         segmentBean.splitSegment(toMovement, newMovement);
@@ -171,21 +167,21 @@ public class SegmentBeanIntTest extends TransactionalTests {
         em.flush();
 
         // get movement from db
-        TypedQuery<Segment> qry =
+        final TypedQuery<Segment> qry =
                 em.createQuery("select s from Segment s where s.track = :track order by s.updated ", Segment.class);
 
         qry.setParameter("track", track);
-        List<Segment> rs = qry.getResultList();
+        final List<Segment> rs = qry.getResultList();
 
         Assert.assertTrue(rs != null);
         Assert.assertTrue(rs.size() == 2);
 
-        Segment rsSegment1 = rs.get(0);
-        Segment rsSegment2 = rs.get(1);
-        Long id1 = rsSegment1.getFromMovement().getId();
-        Long id2 = rsSegment1.getToMovement().getId();
-        Long id3 = rsSegment2.getFromMovement().getId();
-        Long id4 = rsSegment2.getToMovement().getId();
+        final Segment rsSegment1 = rs.get(0);
+        final Segment rsSegment2 = rs.get(1);
+        final Long id1 = rsSegment1.getFromMovement().getId();
+        final Long id2 = rsSegment1.getToMovement().getId();
+        final Long id3 = rsSegment2.getFromMovement().getId();
+        final Long id4 = rsSegment2.getToMovement().getId();
 
 
         // this is how it works no - but it is not OK
@@ -198,18 +194,18 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
 
-    public void splitSegmentHelper(Movement aMovement) throws GeometryUtilException, MovementDaoException, MovementDaoMappingException, MovementModelException {
+    public void splitSegmentHelper(final Movement aMovement) throws GeometryUtilException, MovementDaoException, MovementDaoMappingException, MovementModelException {
 
         // search for segments
 
-        TypedQuery<Segment> qryFrom =
+        final TypedQuery<Segment> qryFrom =
                 em.createQuery("select s from  Segment s " +
                         " join  Movement m  " +
                         " on s.fromMovement = m.id", Segment.class);
         //  " order by xxx   desc";
 
 
-        List<Segment> segments = qryFrom.getResultList();
+        final List<Segment> segments = qryFrom.getResultList();
         if (segments.size() > 0) {
 
 
@@ -221,19 +217,19 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void createNewTrack() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException {
 
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
+        final Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
 
-        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
-        Track track = segmentBean.createNewTrack(segment);
+        final Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        final Track track = segmentBean.createNewTrack(segment);
 
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
@@ -247,16 +243,16 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertEquals(2, track.getMovementList().size());
 
         // get movement from db
-        TypedQuery<Movement> queryMovement =
+        final TypedQuery<Movement> queryMovement =
                 em.createQuery("select m from Movement m where m.id = :id", Movement.class);
 
         // get frommovement from db
         // obs they should be the same
         queryMovement.setParameter("id", fromMovement.getId());
-        Movement fetchedFromMovement = queryMovement.getSingleResult();
+        final Movement fetchedFromMovement = queryMovement.getSingleResult();
 
         queryMovement.setParameter("id", toMovement.getId());
-        Movement fetchedToMovement = queryMovement.getSingleResult();
+        final Movement fetchedToMovement = queryMovement.getSingleResult();
 
         // nullchecks
         Assert.assertTrue(fetchedFromMovement != null);
@@ -266,8 +262,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertTrue(fetchedFromMovement.getTrack().getId() != null);
         Assert.assertTrue(fetchedToMovement.getTrack().getId() != null);
 
-        Long trackFromId = fetchedFromMovement.getTrack().getId();
-        Long trackToId = fetchedToMovement.getTrack().getId();
+        final Long trackFromId = fetchedFromMovement.getTrack().getId();
+        final Long trackToId = fetchedToMovement.getTrack().getId();
 
         Assert.assertTrue(trackFromId.equals(trackToId));
     }
@@ -277,22 +273,22 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void createNewTrack_onSegmentMovement() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId);
-        Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId);
+        final Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId);
 
-        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
-        Track track = segmentBean.createNewTrack(segment);
+        final Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        final Track track = segmentBean.createNewTrack(segment);
 
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
 
         em.flush();
 
-        Movement newMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId);
+        final Movement newMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId);
 
-        Track theNewTrack = segmentBean.createNewTrack(segment, newMovement);
+        final Track theNewTrack = segmentBean.createNewTrack(segment, newMovement);
 
         em.flush();
 
@@ -305,21 +301,21 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void upsertTrack() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
         cal.set(1935, 06, 06);
-        Date date3 = cal.getTime();
+        final Date date3 = cal.getTime();
 
 
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
-        Movement toMovement = createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
+        final Movement toMovement = createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
-        Track track = segmentBean.createNewTrack(segment);
+        final Track track = segmentBean.createNewTrack(segment);
         Assert.assertNotNull(track);
 
         fromMovement.setTrack(track);
@@ -327,18 +323,18 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         em.flush();
 
-        Movement newMovement = createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId, "three", date3);
+        final Movement newMovement = createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId, "three", date3);
         segment = MovementModelToEntityMapper.createSegment(toMovement, newMovement);
 
-        Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
+        final Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
         Assert.assertNotNull(createdTrack);
 
         // get movement from db
-        TypedQuery<Segment> qry =
+        final TypedQuery<Segment> qry =
                 em.createQuery("select s from Segment s where s.track = :track", Segment.class);
 
         qry.setParameter("track", track);
-        List<Segment> rs = qry.getResultList();
+        final List<Segment> rs = qry.getResultList();
 
         Assert.assertTrue(rs != null);
         Assert.assertTrue(rs.size() == 2);
@@ -348,26 +344,26 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void upsertTrack5() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1925, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date3 = cal.getTime();
+        final Date date3 = cal.getTime();
         cal.set(1935, 06, 06);
-        Date date4 = cal.getTime();
+        final Date date4 = cal.getTime();
         cal.set(1940, 06, 06);
-        Date date5 = cal.getTime();
+        final Date date5 = cal.getTime();
         cal.set(1945, 06, 06);
-        Date date6 = cal.getTime();
+        final Date date6 = cal.getTime();
 
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
-        Movement toMovement = createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
+        final Movement toMovement = createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
-        Track track = segmentBean.createNewTrack(segment);
+        final Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
         em.flush();
@@ -375,7 +371,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement newMovement = createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId, "three", date3);
         segment = MovementModelToEntityMapper.createSegment(toMovement, newMovement);
-        Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
+        final Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
 
         Movement oldMovement = newMovement;
         newMovement = createMovement(20d, 20d, 0d, SegmentCategoryType.GAP, connectId, "four", date4);
@@ -394,12 +390,12 @@ public class SegmentBeanIntTest extends TransactionalTests {
         segmentBean.upsertTrack(track, segment, newMovement);
 
         // get Segment from db
-        TypedQuery<Segment> qry =
+        final TypedQuery<Segment> qry =
                 em.createQuery("select s from Segment s where s.track = :track", Segment.class);
 
 
         qry.setParameter("track", track);
-        List<Segment> rs = qry.getResultList();
+        final List<Segment> rs = qry.getResultList();
 
         Assert.assertTrue(rs != null);
         Assert.assertTrue(rs.size() == 5);
@@ -411,34 +407,34 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void updateTrack() throws MovementDuplicateException, MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
 
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1925, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date3 = cal.getTime();
+        final Date date3 = cal.getTime();
 
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = createMovement(0d, 0d, 1d, SegmentCategoryType.EXIT_PORT, connectId, "user1", date1);
-        Movement toMovement = createMovement(5d, 5d, 2d, SegmentCategoryType.GAP, connectId, "user2", date2);
+        final Movement fromMovement = createMovement(0d, 0d, 1d, SegmentCategoryType.EXIT_PORT, connectId, "user1", date1);
+        final Movement toMovement = createMovement(5d, 5d, 2d, SegmentCategoryType.GAP, connectId, "user2", date2);
         Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
-        Track track = segmentBean.createNewTrack(segment);
+        final Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
         Assert.assertNotNull(track);
 
-        Movement newMovement = createMovement(10d, 10d, 3d, SegmentCategoryType.GAP, connectId, "user3", date3);
+        final Movement newMovement = createMovement(10d, 10d, 3d, SegmentCategoryType.GAP, connectId, "user3", date3);
         segment = MovementModelToEntityMapper.createSegment(toMovement, newMovement);
         segmentBean.updateTrack(track, newMovement, segment);
 
         // get movement from db
-        TypedQuery<Segment> qry =
+        final TypedQuery<Segment> qry =
                 em.createQuery("select s from Segment s where s.track = :track", Segment.class);
 
         qry.setParameter("track", track);
-        List<Segment> rs = qry.getResultList();
+        final List<Segment> rs = qry.getResultList();
 
         Assert.assertTrue(rs != null);
         Assert.assertTrue(rs.size() == 2);
@@ -453,26 +449,26 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         // TODO better evaluation of results
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        final Date date1 = cal.getTime();
         cal.set(1925, 06, 06);
-        Date date2 = cal.getTime();
+        final Date date2 = cal.getTime();
         cal.set(1910, 06, 06);
-        Date date_before = cal.getTime();
+        final Date date_before = cal.getTime();
 
 
-        String connectId = UUID.randomUUID().toString();
+        final String connectId = UUID.randomUUID().toString();
 
-        Movement firstMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement secondMovement = createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
-        Segment segment = MovementModelToEntityMapper.createSegment(firstMovement, secondMovement);
-        Track track = segmentBean.createNewTrack(segment);
+        final Movement firstMovement = createMovement(2d, 2d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        final Movement secondMovement = createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        final Segment segment = MovementModelToEntityMapper.createSegment(firstMovement, secondMovement);
+        final Track track = segmentBean.createNewTrack(segment);
         firstMovement.setTrack(track);
         secondMovement.setTrack(track);
 
-        Segment fromSegment = firstMovement.getFromSegment();
-        Segment toSegment = secondMovement.getToSegment();
+        final Segment fromSegment = firstMovement.getFromSegment();
+        final Segment toSegment = secondMovement.getToSegment();
         em.flush();
 
 
@@ -480,31 +476,31 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertEquals(1, secondMovement.getTrack().getSegmentList().size());
         Assert.assertEquals(2, secondMovement.getTrack().getMovementList().size());
 
-        Movement beforeFirstMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "BEFORE_ONE", date_before);
+        final Movement beforeFirstMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "BEFORE_ONE", date_before);
 
         segmentBean.addMovementBeforeFirst(firstMovement, beforeFirstMovement);
 
         em.flush();
 
         // get movement from db
-        TypedQuery<Segment> qry =
+        final TypedQuery<Segment> qry =
                 em.createQuery("select s from Segment s where s.track = :track order by s.updated desc", Segment.class);
 
         qry.setParameter("track", track);
-        List<Segment> rs = qry.getResultList();
+        final List<Segment> rs = qry.getResultList();
 
         Assert.assertTrue(rs != null);
         Assert.assertTrue(rs.size() == 2);
 
 
 
-        Segment  rsSegment1 = rs.get(0);
-        Segment  rsSegment2 = rs.get(1);
+        final Segment  rsSegment1 = rs.get(0);
+        final Segment  rsSegment2 = rs.get(1);
 
-        Long id1 = rsSegment1.getFromMovement().getId();
-        Long id2 = rsSegment1.getToMovement().getId();
-        Long id3 = rsSegment2.getFromMovement().getId();
-        Long id4 = rsSegment2.getToMovement().getId();
+        final Long id1 = rsSegment1.getFromMovement().getId();
+        final Long id2 = rsSegment1.getToMovement().getId();
+        final Long id3 = rsSegment2.getFromMovement().getId();
+        final Long id4 = rsSegment2.getToMovement().getId();
 
 
 
@@ -520,31 +516,31 @@ public class SegmentBeanIntTest extends TransactionalTests {
      *****************************************************************************************************************************************************/
 
     // old version
-    private Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId) throws MovementModelException, MovementDuplicateException, MovementDaoException {
+    private Movement createMovement(final double longitude, final double latitude, final double altitude, final SegmentCategoryType segmentCategoryType, final String connectId) throws MovementModelException, MovementDuplicateException, MovementDaoException {
         return createMovement(longitude, latitude, altitude, segmentCategoryType, connectId, "TEST");
     }
 
     // added possibility to specify user for easier debug
-    private Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName) throws MovementModelException, MovementDuplicateException, MovementDaoException {
+    private Movement createMovement(final double longitude, final double latitude, final double altitude, final SegmentCategoryType segmentCategoryType, final String connectId, final String userName) throws MovementModelException, MovementDuplicateException, MovementDaoException {
         MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId);
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
         Assert.assertNotNull(movementType.getConnectId());
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
+        final MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+        final List<Movement> movementList = movementConnect.getMovementList();
         Assert.assertNotNull(movementList);
         return movementList.get(movementList.size() - 1);
     }
 
     /* positiontime is imortant */
-    private Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
+    private Movement createMovement(final double longitude, final double latitude, final double altitude, final SegmentCategoryType segmentCategoryType, final String connectId, final String userName, final Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
         MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId);
         movementType.setPositionTime(positionTime);
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
         Assert.assertNotNull(movementType.getConnectId());
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
+        final MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+        final List<Movement> movementList = movementConnect.getMovementList();
         Assert.assertNotNull(movementList);
         return movementList.get(movementList.size() - 1);
     }
