@@ -11,17 +11,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.exception;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDbException;
-
 /**
  **/
 public class CalculationUtilException extends MovementDbException {
 
-    public CalculationUtilException(int errorCode, String message) {
+    public CalculationUtilException(final int errorCode, final String message) {
         super(errorCode, message);
     }
 
-    public CalculationUtilException(int errorCode, String message, Throwable cause) {
+    public CalculationUtilException(final int errorCode, final String message, final Throwable cause) {
         super(errorCode, message, cause);
     }
 

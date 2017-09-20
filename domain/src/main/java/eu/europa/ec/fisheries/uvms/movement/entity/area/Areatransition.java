@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementType;
 import java.io.Serializable;
@@ -83,11 +82,11 @@ public class Areatransition implements Serializable {
     public Areatransition() {
     }
 
-    public Areatransition(Long areatranId) {
+    public Areatransition(final Long areatranId) {
         this.areatranId = areatranId;
     }
 
-    public Areatransition(Long areatranId, Date areatranUpdattim, String areatranUpuser) {
+    public Areatransition(final Long areatranId, final Date areatranUpdattim, final String areatranUpuser) {
         this.areatranId = areatranId;
         this.areatranUpdattim = areatranUpdattim;
         this.areatranUpuser = areatranUpuser;
@@ -97,7 +96,7 @@ public class Areatransition implements Serializable {
         return areatranId;
     }
 
-    public void setAreatranId(Long areatranId) {
+    public void setAreatranId(final Long areatranId) {
         this.areatranId = areatranId;
     }
 
@@ -105,7 +104,7 @@ public class Areatransition implements Serializable {
         return areatranUpdattim;
     }
 
-    public void setAreatranUpdattim(Date areatranUpdattim) {
+    public void setAreatranUpdattim(final Date areatranUpdattim) {
         this.areatranUpdattim = areatranUpdattim;
     }
 
@@ -113,7 +112,7 @@ public class Areatransition implements Serializable {
         return areatranUpuser;
     }
 
-    public void setAreatranUpuser(String areatranUpuser) {
+    public void setAreatranUpuser(final String areatranUpuser) {
         this.areatranUpuser = areatranUpuser;
     }
 
@@ -128,7 +127,7 @@ public class Areatransition implements Serializable {
         return movementType;
     }
 
-    public void setMovementType(MovementTypeType movementType) {
+    public void setMovementType(final MovementTypeType movementType) {
         this.movementType = movementType;
     }
 
@@ -136,7 +135,7 @@ public class Areatransition implements Serializable {
         return areatranMoveId;
     }
 
-    public void setAreatranMoveId(Movement areatranMoveId) {
+    public void setAreatranMoveId(final Movement areatranMoveId) {
         this.areatranMoveId = areatranMoveId;
     }
 
@@ -144,7 +143,7 @@ public class Areatransition implements Serializable {
         return areatranAreaId;
     }
 
-    public void setAreatranAreaId(Area areatranAreaId) {
+    public void setAreatranAreaId(final Area areatranAreaId) {
         this.areatranAreaId = areatranAreaId;
     }
 
@@ -156,12 +155,12 @@ public class Areatransition implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Areatransition)) {
             return false;
         }
-        Areatransition other = (Areatransition) object;
+        final Areatransition other = (Areatransition) object;
         if ((this.areatranId == null && other.areatranId != null) || (this.areatranId != null && !this.areatranId.equals(other.areatranId))) {
             return false;
         }

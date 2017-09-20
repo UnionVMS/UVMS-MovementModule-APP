@@ -1,8 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
@@ -13,9 +10,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -55,27 +49,27 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @EJB
     MovementDao movementDao;
 
-    private TestUtil testUtil = new TestUtil();
+    private final TestUtil testUtil = new TestUtil();
 
     @Test
     @OperateOnDeployment("normal")
     public void testCreatingMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException, MovementDuplicateException {
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
         MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
         movementType = movementBatchModelBean.createMovement(movementType, "TEST");
         assertNotNull("MovementType creation was successful.", movementType.getGuid());
         em.flush();
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+        final MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
         assertNotNull("MovementConnect creation was successful.", movementConnect);
-        List<Movement> movementList = movementConnect.getMovementList();
+        final List<Movement> movementList = movementConnect.getMovementList();
         assertNotNull("List of Movement creation was successful.", movementList);
         assertTrue("The list of Movement contains exactly one Movement object.", movementList.size() == 1);
-        Long id = movementList.get(0).getId();
+        final Long id = movementList.get(0).getId();
         incomingMovementBean.processMovement(id);
 
-        Movement movement = movementDao.getMovementById(id);
+        final Movement movement = movementDao.getMovementById(id);
         assertNotNull("Movement object was successfully created.", movement);
         LOG.info(" [ testCreatingMovement: Movement object was successfully created. ] ");
     }
@@ -86,23 +80,23 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         // Given: Get the id for a persisted movement entity.
 
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
         MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
         movementType = movementBatchModelBean.createMovement(movementType, "TEST");
         em.flush();
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
-        Long id = movementList.get(0).getId();
+        final MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+        final List<Movement> movementList = movementConnect.getMovementList();
+        final Long id = movementList.get(0).getId();
 
 
         //When: Invoke the processMovement method
          incomingMovementBean.processMovement(id);
 
         //Then: Test that the Movement is processed properly.
-        Movement actualMovement = movementDao.getMovementById(id);
-        boolean actualProcessedValue = actualMovement.getProcessed();
+        final Movement actualMovement = movementDao.getMovementById(id);
+        final boolean actualProcessedValue = actualMovement.getProcessed();
 
         assertThat(actualProcessedValue, is(true));
         LOG.info(" [ testProcessingMovement: Movement object was successfully processed. ] ");
@@ -114,22 +108,22 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         // Given: Get the id for a persisted movement entity.
 
-        String uuid = UUID.randomUUID().toString();
+        final String uuid = UUID.randomUUID().toString();
 
         MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
         movementType = movementBatchModelBean.createMovement(movementType, "TEST");
         em.flush();
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
-        Long id = movementList.get(0).getId();
+        final MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+        final List<Movement> movementList = movementConnect.getMovementList();
+        final Long id = movementList.get(0).getId();
 
         //When: Invoke the processMovement method on the read Movement entity.
         incomingMovementBean.processMovement(id);
 
         //Then: Test that the Movement is processed properly.
-        Movement actualMovement = movementDao.getMovementById(id);
-        boolean actualDuplicateValue = actualMovement.getDuplicate();
+        final Movement actualMovement = movementDao.getMovementById(id);
+        final boolean actualDuplicateValue = actualMovement.getDuplicate();
 
         assertThat(actualDuplicateValue, is(false));
         LOG.info(" [ testProcessingMovement_NoDuplicateMovement: Successful check that there are no duplicate movement entities in the database. ] ");
@@ -140,18 +134,18 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     public void testDuplicateMovementsInProcessingMovementMethod_sameTimeStamp_duplicationFlagSetToFalse_sameMovementType() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException, MovementDuplicateException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
 
         // Given: Create a movement with the exact same timestamp as a movement that exists in the database.
-        String firstUuid = UUID.randomUUID().toString();
+        final String firstUuid = UUID.randomUUID().toString();
 
         MovementType firstMovementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, firstUuid);
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
         em.flush();
 
-        MovementConnect firstMovementConnect = movementDao.getMovementConnectByConnectId(firstMovementType.getConnectId());
+        final MovementConnect firstMovementConnect = movementDao.getMovementConnectByConnectId(firstMovementType.getConnectId());
 
-        List<Movement> firstMovementList = firstMovementConnect.getMovementList();
+        final List<Movement> firstMovementList = firstMovementConnect.getMovementList();
 
         Movement firstMovement = firstMovementList.get(0);
-        Long firstMovementId = firstMovementList.get(0).getId();
+        final Long firstMovementId = firstMovementList.get(0).getId();
 
 
         /**** Setting same timestamp + duplicate flag set to false + same movement type. ****/
@@ -183,10 +177,10 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void testPopulateTransitions_SAME_ENT() {
 
-        Movement current = testUtil.getCurrentMovement(1);
-        Movement previous = testUtil.getPreviousMovement(1, MovementTypeType.ENT);
+        final Movement current = TestUtil.getCurrentMovement(1);
+        final Movement previous = testUtil.getPreviousMovement(1, MovementTypeType.ENT);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+        final List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
         assertNotNull(transitions);
         assertEquals(1, transitions.size());
@@ -201,10 +195,10 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void testPopulateTransitions_SAME_POS() {
 
-        Movement current = testUtil.getCurrentMovement(1);
-        Movement previous = testUtil.getPreviousMovement(1, MovementTypeType.POS);
+        final Movement current = TestUtil.getCurrentMovement(1);
+        final Movement previous = testUtil.getPreviousMovement(1, MovementTypeType.POS);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+        final List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
         assertNotNull(transitions);
         assertEquals(1, transitions.size());
@@ -219,10 +213,10 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void testPopulateTransitions_NOT_SAME_ENT() {
 
-        Movement current = testUtil.getCurrentMovement(1);
-        Movement previous = testUtil.getPreviousMovement(2, MovementTypeType.ENT);
+        final Movement current = TestUtil.getCurrentMovement(1);
+        final Movement previous = testUtil.getPreviousMovement(2, MovementTypeType.ENT);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+        final List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
         assertNotNull(transitions);
         assertEquals(2, transitions.size());
@@ -241,10 +235,10 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void testPopulateTransitions_NOT_SAME_POS() {
 
-        Movement current = testUtil.getCurrentMovement(1);
-        Movement previous = testUtil.getPreviousMovement(2, MovementTypeType.POS);
+        final Movement current = TestUtil.getCurrentMovement(1);
+        final Movement previous = testUtil.getPreviousMovement(2, MovementTypeType.POS);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+        final List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
         assertNotNull(transitions);
         assertEquals(2, transitions.size());
@@ -263,9 +257,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void testPopulateTransitionsNoPrevMovement() {
 
-        Movement current = testUtil.getCurrentMovement(1);
+        final Movement current = TestUtil.getCurrentMovement(1);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, null);
+        final List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, null);
 
         assertNotNull(transitions);
         assertEquals(1, transitions.size());

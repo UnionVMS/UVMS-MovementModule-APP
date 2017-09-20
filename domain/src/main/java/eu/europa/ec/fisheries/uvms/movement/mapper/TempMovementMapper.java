@@ -11,11 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
-import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
-import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
@@ -25,14 +20,14 @@ public class TempMovementMapper {
 
     final static Logger LOG = LoggerFactory.getLogger(TempMovementMapper.class);
 
-    public static TempMovement toTempMovementEntity(TempMovementType tempMovementType, String username) throws MovementDaoException {
+    public static TempMovement toTempMovementEntity(final TempMovementType tempMovementType, final String username) throws MovementDaoException {
         if (tempMovementType == null || tempMovementType.getPosition() == null) {
             LOG.warn("TempMovementType is null, aborting mapping");
             throw new MovementDaoException(14, "TempMovementType is null, aborting mapping");
         }
 
         try {
-            TempMovement tempMovement = new TempMovement();
+            final TempMovement tempMovement = new TempMovement();
             // Carrier values
             if (tempMovementType.getAsset() != null) {
 
@@ -79,12 +74,12 @@ public class TempMovementMapper {
             tempMovement.setUpdated(DateUtil.nowUTC());
             tempMovement.setUpdatedBy(username);
             return tempMovement;
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             throw new MovementDaoException(14, e.getMessage());
         }
     }
 
-    public static TempMovement toExistingTempMovementEntity(TempMovement currentTempMovement, TempMovementType newTempMovement, String username) throws MovementDaoException {
+    public static TempMovement toExistingTempMovementEntity(final TempMovement currentTempMovement, final TempMovementType newTempMovement, final String username) throws MovementDaoException {
         if (currentTempMovement == null) {
             LOG.warn("TempMovement is null, aborting mapping");
             throw new MovementDaoException(14, "TempMovement is null, aborting mapping");
@@ -100,7 +95,7 @@ public class TempMovementMapper {
             }
 
             if (newTempMovement.getAsset() != null) {
-                VesselType asset = newTempMovement.getAsset();
+                final VesselType asset = newTempMovement.getAsset();
                 if (asset.getCfr() != null && !asset.getCfr().isEmpty()) {
                     currentTempMovement.setCfr(asset.getCfr());
                 }
@@ -140,15 +135,15 @@ public class TempMovementMapper {
             currentTempMovement.setUpdatedBy(username);
 
             return currentTempMovement;
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             throw new MovementDaoException(14, e.getMessage());
         }
     }
 
-    public static TempMovementType toTempMovement(TempMovement tempMovement)  {
-        TempMovementType tempMovementType = new TempMovementType();
+    public static TempMovementType toTempMovement(final TempMovement tempMovement)  {
+        final TempMovementType tempMovementType = new TempMovementType();
 
-        VesselType vessleType = new VesselType();
+        final VesselType vessleType = new VesselType();
         vessleType.setCfr(tempMovement.getCfr());
         vessleType.setExtMarking(tempMovement.getExternalMarkings());
         vessleType.setFlagState(tempMovement.getFlag());
@@ -162,7 +157,7 @@ public class TempMovementMapper {
         }
         tempMovementType.setGuid(tempMovement.getGuid());
 
-        MovementPoint tempMovementPoint = new MovementPoint();
+        final MovementPoint tempMovementPoint = new MovementPoint();
         tempMovementPoint.setLatitude(tempMovement.getLatitude());
         tempMovementPoint.setLongitude(tempMovement.getLongitude());
         tempMovementType.setPosition(tempMovementPoint);

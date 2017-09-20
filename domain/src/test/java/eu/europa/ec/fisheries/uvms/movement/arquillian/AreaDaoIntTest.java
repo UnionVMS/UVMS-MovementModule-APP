@@ -64,10 +64,10 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
 
         try {
             userTransaction.begin();
-        } catch (NotSupportedException e) {
+        } catch (final NotSupportedException e) {
             LOG.error(" [ Error when setting up user transaction. ] {}", e.getMessage());
             throw new RuntimeException(" [ Error when setting up user transaction. ]", e);
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             LOG.error(" [ The transaction manager encountered an unexpected error condition that prevents future transaction services from proceeding. ] ", e.getMessage());
             throw new RuntimeException(" [ The transaction manager encountered an unexpected error condition that prevents future transaction services from proceeding. ] ", e);
         }
@@ -78,7 +78,7 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
 
         try {
             userTransaction.rollback();
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             LOG.error(" [ The transaction manager encountered an unexpected error condition that prevents future transaction services from proceeding. ] ", e.getMessage());
             throw new RuntimeException(" [ The transaction manager encountered an unexpected error condition that prevents future transaction services from proceeding. ] ", e);
         }
@@ -89,22 +89,22 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
     public void testCreateArea() throws AreaDaoException {
 
         try {
-            AreaType areaType = createAreaTypeHelper();
+            final AreaType areaType = createAreaTypeHelper();
             areaType.setName("testCreateArea");
             em.persist(areaType);
             em.flush();
 
-            Area area = createAreaHelper();
+            final Area area = createAreaHelper();
             area.setAreaCode("testCreateArea");
             area.setAreaType(areaType);
 
             // Persist the Area entity
-            Area createdArea = areaDao.createMovementArea(area);
+            final Area createdArea = areaDao.createMovementArea(area);
             areaDao.flushMovementAreas();
 
             assertNotNull(createdArea);
 
-        } catch (AreaDaoException e) {
+        } catch (final AreaDaoException e) {
             fail("AreaDaoIntTests.testCreateArea(): Failed to create an area.");
             LOG.error(" [ AreaDaoIntTests.testCreateArea(): Failed to create an area. ] {}", e.getMessage());
         }
@@ -114,18 +114,18 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
     @OperateOnDeployment("normal")
     public void testGetArea() throws AreaDaoException {
 
-        AreaType areaType = createAreaTypeHelper();
+        final AreaType areaType = createAreaTypeHelper();
         areaType.setName("testGetArea");
         em.persist(areaType);
         em.flush();
 
-        Area area = createAreaHelper();
+        final Area area = createAreaHelper();
         area.setAreaCode("testGetArea");
         area.setAreaType(areaType);
-        Area createdArea = areaDao.createMovementArea(area);
+        final Area createdArea = areaDao.createMovementArea(area);
         areaDao.flushMovementAreas();
 
-        Area readAreaFromDatabase = areaDao.readMovementAreaById(area.getAreaId());
+        final Area readAreaFromDatabase = areaDao.readMovementAreaById(area.getAreaId());
 
         assertNotNull(readAreaFromDatabase);
         assertEquals(readAreaFromDatabase.getAreaId(), area.getAreaId());
@@ -140,15 +140,15 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
         try {
 
             for (int i = 0; i < 3; i++) {
-                AreaType areaType = createAreaTypeHelper();
+                final AreaType areaType = createAreaTypeHelper();
                 areaType.setName("areaTypeName_testGetAllAreas_" + i);
                 em.persist(areaType);
                 em.flush();
 
-                Area area = createAreaHelper();
+                final Area area = createAreaHelper();
                 area.setAreaCode("areaCode_testGetAllAreas_" + i);
                 area.setAreaType(areaType);
-                Area createdArea = areaDao.createMovementArea(area);
+                final Area createdArea = areaDao.createMovementArea(area);
                 areaDao.flushMovementAreas();
             }
 
@@ -157,7 +157,7 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
             assertNotNull(readAllAreasFromDatabase);
             assertNotEquals(0, readAllAreasFromDatabase.size());
 
-        } catch (AreaDaoException e) {
+        } catch (final AreaDaoException e) {
             fail("AreaDaoIntTests.testGetAllAreas(): Failed to get a list of all entries in the database table movement.areas.");
             LOG.error(" [ AreaDaoIntTests.testGetAllAreas(): Failed to get a list of all entries in the database table movement.areas. ] {}", e.getMessage());
         }
@@ -168,14 +168,14 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
     public void failCreateArea_remoteId_erroneousFieldSize() throws AreaDaoException {
 
         try {
-            Area failingArea = new Area();
+            final Area failingArea = new Area();
             failingArea.setRemoteId("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); //61 characters.
             em.persist(failingArea);
             em.flush();
 
             fail("Negative test: Field size constraint violation for column remoteId in table movement.area. Setting a string larger than 60 characters is expected to fail.");
 
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             assertTrue(true);
             LOG.error(" [ Negative test: Field size constraint violation for column remoteId in table movement.area. Setting a string larger than 60 characters is expected to fail. ] {}", e.getMessage());
         }
@@ -186,19 +186,19 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
     public void failCreateAreaType_areaTypeName_uniqueNameConstraint() throws AreaDaoException {
 
         try {
-            AreaType originalAreaType = createAreaTypeHelper();
+            final AreaType originalAreaType = createAreaTypeHelper();
             originalAreaType.setName("failCreateAreaType_areaTypeName_uniqueNameConstraint");
             em.persist(originalAreaType);
             em.flush();
 
-            AreaType conflictingAreaType = createAreaTypeHelper();
+            final AreaType conflictingAreaType = createAreaTypeHelper();
             conflictingAreaType.setName("failCreateAreaType_areaTypeName_uniqueNameConstraint");
             em.persist(conflictingAreaType);
             em.flush();
 
             fail("Negative test: Unique name constraint violation for column areatype_name in table movement.areatype. Attempting to set an already existing name is expected to fail.");
 
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             assertTrue(true);
             LOG.error(" [ Negative test: Unique name constraint violation for column areatype_name in table movement.areatype. Attempting to set an already existing name is expected to fail. ] {}", e.getMessage());
         }
@@ -210,23 +210,23 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
 
         try {
 
-            AreaType originalAreaType = createAreaTypeHelper();
+            final AreaType originalAreaType = createAreaTypeHelper();
             originalAreaType.setName("failCreateArea_areaCode_uniqueNameConstraint_original");
             em.persist(originalAreaType);
             em.flush();
 
-            Area originalArea = createAreaHelper();
+            final Area originalArea = createAreaHelper();
             originalArea.setAreaCode("failCreateArea_areaCode_uniqueNameConstraint");
             originalArea.setAreaType(originalAreaType);
             em.persist(originalArea);
             em.flush();
 
-            AreaType conflictingAreaType = createAreaTypeHelper();
+            final AreaType conflictingAreaType = createAreaTypeHelper();
             conflictingAreaType.setName("failCreateArea_areaCode_uniqueNameConstraint_conflicting");
             em.persist(conflictingAreaType);
             em.flush();
 
-            Area conflictingArea = createAreaHelper();
+            final Area conflictingArea = createAreaHelper();
             conflictingArea.setAreaCode("failCreateArea_areaCode_uniqueNameConstraint"); //Introducing name constraint violation here.
             conflictingArea.setAreaType(conflictingAreaType);
             em.persist(conflictingArea);
@@ -234,7 +234,7 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
 
             fail("Negative test: Unique name constraint violation for column area_code in table movement.area. Attempting to set an already existing name is expected to fail.");
 
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             assertTrue(true);
             LOG.error(" [ Negative test: Unique name constraint violation for column area_code in table movement.area. Attempting to set an already existing name is expected to fail. ] {}", e.getMessage());
         }
@@ -245,12 +245,12 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
     public void failCreateArea_areaUpdattim_setToNull() throws AreaDaoException {
 
         try {
-            AreaType areaType = createAreaTypeHelper();
+            final AreaType areaType = createAreaTypeHelper();
             areaType.setName("failCreateArea_areaUpdattim_setToNull");
             em.persist(areaType);
             em.flush();
 
-            Area area = createAreaHelper();
+            final Area area = createAreaHelper();
             area.setAreaCode("failCreateArea_areaUpdattim_setToNull");
             area.setAreaType(areaType);
             em.persist(area);
@@ -262,7 +262,7 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
 
             fail("Negative test: Not null constraint violation for column area_updattim in table movement.area. Setting a null value is expected to fail.");
 
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             assertTrue(true);
             LOG.error(" [ Negative test: Not null constraint violation for column area_updattim in table movement.area. Setting a null value is expected to fail. ] {}", e.getMessage());
         }
@@ -273,12 +273,12 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
     public void failCreateArea_areaUpuser_setToNull() {
 
         try {
-            AreaType areaType = createAreaTypeHelper();
+            final AreaType areaType = createAreaTypeHelper();
             areaType.setName("failCreateArea_areaUpuser_setToNull");
             em.persist(areaType);
             em.flush();
 
-            Area area = new Area();
+            final Area area = new Area();
             area.setAreaName("areaName");
             area.setRemoteId("remoteId");
             area.setAreaUpdattim(DateUtil.nowUTC());
@@ -292,7 +292,7 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
 
             fail("Negative test: Not null constraint violation for column area_upuser in table movement.area. Setting a null value is expected to fail.");
 
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             assertTrue(true);
             LOG.error(" [ Negative test: Not null constraint violation for column area_upuser in table movement.area. Setting a null value is expected to fail. ] {}", e.getMessage());
         }
@@ -303,19 +303,19 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
     public void failCreateArea_areaUpuser_erroneousFieldSize() {
 
         try {
-            AreaType areaType = createAreaTypeHelper();
+            final AreaType areaType = createAreaTypeHelper();
             areaType.setName("failCreateArea_areaUpuser_erroneousFieldSize");
             em.persist(areaType);
             em.flush();
 
-            Area failingArea = createAreaHelper();
+            final Area failingArea = createAreaHelper();
             failingArea.setAreaUpuser("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); //61 characters.
             em.persist(failingArea);
             em.flush();
 
             fail("Negative test: Field size constraint violation for column area_upuser in table movement.area. Setting a string larger than 60 characters is expected to fail.");
 
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             assertTrue(true);
             LOG.error(" [ Negative test: Field size constraint violation for column area_upuser in table movement.area. Setting a string larger than 60 characters is expected to fail. ] {}", e.getMessage());
         }
@@ -325,13 +325,13 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
     @OperateOnDeployment("normal")
     public void failGetArea() throws AreaDaoException {
 
-        Area failingAreaRead = areaDao.readMovementAreaById(-42L);
+        final Area failingAreaRead = areaDao.readMovementAreaById(-42L);
         assertNull(failingAreaRead);
     }
 
     private Area createAreaHelper() {
 
-        Area area = new Area();
+        final Area area = new Area();
         area.setAreaName("areaName");
         area.setRemoteId("remoteId");
         area.setAreaUpdattim(DateUtil.nowUTC());
@@ -342,7 +342,7 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
 
     private AreaType createAreaTypeHelper() {
 
-        AreaType areaType = new AreaType();
+        final AreaType areaType = new AreaType();
         areaType.setUpdatedTime(DateUtil.nowUTC());
         areaType.setUpdatedUser("areaTypeUpdatedUser");
 

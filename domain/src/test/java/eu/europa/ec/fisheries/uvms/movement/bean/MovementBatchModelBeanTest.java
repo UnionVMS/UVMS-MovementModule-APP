@@ -11,8 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.MockData;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
@@ -45,8 +43,8 @@ public class MovementBatchModelBeanTest {
      */
     @Test
     public void testEnrichAreasSameArea() {
-        MovementType mappedMovement = MockData.getMappedMovement(2);
-        List<Areatransition> transitions = new ArrayList<>();
+        final MovementType mappedMovement = MockData.getMappedMovement(2);
+        final List<Areatransition> transitions = new ArrayList<>();
         transitions.add(MockData.getAreaTransition("AREA1", MovementTypeType.ENT));
         bean.enrichAreas(mappedMovement, transitions);
         Assert.assertTrue(" AreaSize should be 2", mappedMovement.getMetaData().getAreas().size() == 2);
@@ -59,8 +57,8 @@ public class MovementBatchModelBeanTest {
      */
     @Test
     public void testEnrichAreasNotSameArea() {
-        MovementType mappedMovement = MockData.getMappedMovement(2);
-        List<Areatransition> transitions = new ArrayList<>();
+        final MovementType mappedMovement = MockData.getMappedMovement(2);
+        final List<Areatransition> transitions = new ArrayList<>();
         transitions.add(MockData.getAreaTransition("AREA3", MovementTypeType.ENT));
         bean.enrichAreas(mappedMovement, transitions);
         Assert.assertTrue("AreaSize should be 3", mappedMovement.getMetaData().getAreas().size() == 3);

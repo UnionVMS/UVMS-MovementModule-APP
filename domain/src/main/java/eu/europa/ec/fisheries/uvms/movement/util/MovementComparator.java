@@ -26,7 +26,7 @@ public class MovementComparator {
 
     public static Comparator<Movement> MOVEMENT = new Comparator<Movement>() {
         @Override
-        public int compare(Movement m1, Movement m2) {
+        public int compare(final Movement m1, final Movement m2) {
         	if (m1 == null || m2 ==null) {
         		return ObjectUtils.compare(m1, m2);
         	} else {
@@ -37,7 +37,7 @@ public class MovementComparator {
 
     public static Comparator<MovementConnect> MOVEMENT_CONNECT = new Comparator<MovementConnect>() {
         @Override
-        public int compare(MovementConnect m1, MovementConnect m2) {
+        public int compare(final MovementConnect m1, final MovementConnect m2) {
         	if (m1 == null || m2 ==null) {
         		return ObjectUtils.compare(m1, m2);
         	} else {
@@ -48,7 +48,7 @@ public class MovementComparator {
 
     public static Comparator<LatestMovement> LATEST_MOVEMENT = new Comparator<LatestMovement>() {
         @Override
-        public int compare(LatestMovement m1, LatestMovement m2) {
+        public int compare(final LatestMovement m1, final LatestMovement m2) {
         	if (m1 == null || m2 ==null) {
         		return ObjectUtils.compare(m1, m2);
         	} else {
@@ -59,7 +59,7 @@ public class MovementComparator {
 
     public static Comparator<MinimalMovement> MINIMAL_MOVEMENT = new Comparator<MinimalMovement>() {
         @Override
-        public int compare(MinimalMovement m1, MinimalMovement m2) {
+        public int compare(final MinimalMovement m1, final MinimalMovement m2) {
         	if (m1 == null || m2 ==null) {
         		return ObjectUtils.compare(m1, m2);
         	} else {

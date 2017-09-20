@@ -12,10 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.mapper.search;
 
 import com.vividsolutions.jts.geom.Geometry;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import java.util.Date;
 
 /**
@@ -108,7 +104,7 @@ public enum SearchField implements SearchFieldType {
     private final SearchTables searchTables;
     private final Class clazz;
 
-    private SearchField(String fieldName, SearchTables searchTables, Class clazz) {
+    private SearchField(final String fieldName, final SearchTables searchTables, final Class clazz) {
         this.fieldName = fieldName;
         this.searchTables = searchTables;
         this.clazz = clazz;

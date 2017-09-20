@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.util;
 
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
@@ -31,20 +30,20 @@ public class SegmentCalculationUtilTest {
         double distanceToClosestPortTo = 1.4;
         double distanceToClosestPortFrom = 1.4;
 
-        double duration = 11;
-        double avgSpeed = 51;
+        final double duration = 11;
+        final double avgSpeed = 51;
 
-        SegmentCalculations segCat = new SegmentCalculations();
+        final SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
 
-        Movement toMovement = new Movement();
-        Movementmetadata toMeta = new Movementmetadata();
+        final Movement toMovement = new Movement();
+        final Movementmetadata toMeta = new Movementmetadata();
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         toMovement.setMetadata(toMeta);
 
-        Movement fromMovement = new Movement();
-        Movementmetadata fromMeta = new Movementmetadata();
+        final Movement fromMovement = new Movement();
+        final Movementmetadata fromMeta = new Movementmetadata();
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         fromMovement.setMetadata(fromMeta);
 
@@ -86,7 +85,7 @@ public class SegmentCalculationUtilTest {
         double avgSpeed = 51;
         double distance = 251;
 
-        SegmentCalculations segCalc = new SegmentCalculations();
+        final SegmentCalculations segCalc = new SegmentCalculations();
         segCalc.setDurationBetweenPoints(duration);
         segCalc.setAvgSpeed(avgSpeed);
         segCalc.setDistanceBetweenPoints(distance);
@@ -137,28 +136,28 @@ public class SegmentCalculationUtilTest {
     @Test
     public void testGap() {
 
-        double distanceToClosestPortTo = 1.6;
-        double distanceToClosestPortFrom = 1.6;
+        final double distanceToClosestPortTo = 1.6;
+        final double distanceToClosestPortFrom = 1.6;
 
-        double duration = 13;
-        double avgSpeed = 49;
-        double distance = 249;
+        final double duration = 13;
+        final double avgSpeed = 49;
+        final double distance = 249;
 
-        SegmentCalculations segCat = new SegmentCalculations();
+        final SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
 
-        Movement toMovement = new Movement();
-        Movementmetadata toMeta = new Movementmetadata();
+        final Movement toMovement = new Movement();
+        final Movementmetadata toMeta = new Movementmetadata();
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         toMovement.setMetadata(toMeta);
 
-        Movement fromMovement = new Movement();
-        Movementmetadata fromMeta = new Movementmetadata();
+        final Movement fromMovement = new Movement();
+        final Movementmetadata fromMeta = new Movementmetadata();
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         fromMovement.setMetadata(fromMeta);
 
-        SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
+        final SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
 
         Assert.assertEquals(SegmentCategoryType.GAP, segmentCategory);
 
@@ -175,25 +174,25 @@ public class SegmentCalculationUtilTest {
         double distanceToClosestPortTo = 1.6;
         double distanceToClosestPortFrom = 1.4;
 
-        double duration = 13;
-        double avgSpeed = 49;
-        double distance = 249;
+        final double duration = 13;
+        final double avgSpeed = 49;
+        final double distance = 249;
 
-        SegmentCalculations segCat = new SegmentCalculations();
+        final SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
 
-        Movement toMovement = new Movement();
-        Movementmetadata toMeta = new Movementmetadata();
+        final Movement toMovement = new Movement();
+        final Movementmetadata toMeta = new Movementmetadata();
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         toMovement.setMetadata(toMeta);
 
-        Movement fromMovement = new Movement();
-        Movementmetadata fromMeta = new Movementmetadata();
+        final Movement fromMovement = new Movement();
+        final Movementmetadata fromMeta = new Movementmetadata();
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         fromMovement.setMetadata(fromMeta);
 
-        SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
+        final SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
         Assert.assertEquals(SegmentCategoryType.EXIT_PORT, segmentCategory);
 
         distanceToClosestPortTo = 1.4;
@@ -207,28 +206,28 @@ public class SegmentCalculationUtilTest {
     @Test
     public void testExitPortFailure() {
 
-        double distanceToClosestPortTo = 1.4;
-        double distanceToClosestPortFrom = 1.6;
+        final double distanceToClosestPortTo = 1.4;
+        final double distanceToClosestPortFrom = 1.6;
 
-        double duration = 13;
-        double avgSpeed = 49;
-        double distance = 249;
+        final double duration = 13;
+        final double avgSpeed = 49;
+        final double distance = 249;
 
-        SegmentCalculations segCat = new SegmentCalculations();
+        final SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
 
-        Movement toMovement = new Movement();
-        Movementmetadata toMeta = new Movementmetadata();
+        final Movement toMovement = new Movement();
+        final Movementmetadata toMeta = new Movementmetadata();
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         toMovement.setMetadata(toMeta);
 
-        Movement fromMovement = new Movement();
-        Movementmetadata fromMeta = new Movementmetadata();
+        final Movement fromMovement = new Movement();
+        final Movementmetadata fromMeta = new Movementmetadata();
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         fromMovement.setMetadata(fromMeta);
 
-        SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
+        final SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
 
         Assert.assertNotSame(SegmentCategoryType.EXIT_PORT, segmentCategory);
 
@@ -242,28 +241,28 @@ public class SegmentCalculationUtilTest {
     @Test
     public void testEnterPort() {
 
-        double distanceToClosestPortTo = 1.4;
-        double distanceToClosestPortFrom = 1.6;
+        final double distanceToClosestPortTo = 1.4;
+        final double distanceToClosestPortFrom = 1.6;
 
-        double duration = 13;
-        double avgSpeed = 49;
-        double distance = 249;
+        final double duration = 13;
+        final double avgSpeed = 49;
+        final double distance = 249;
 
-        SegmentCalculations segCat = new SegmentCalculations();
+        final SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
 
-        Movement toMovement = new Movement();
-        Movementmetadata toMeta = new Movementmetadata();
+        final Movement toMovement = new Movement();
+        final Movementmetadata toMeta = new Movementmetadata();
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         toMovement.setMetadata(toMeta);
 
-        Movement fromMovement = new Movement();
-        Movementmetadata fromMeta = new Movementmetadata();
+        final Movement fromMovement = new Movement();
+        final Movementmetadata fromMeta = new Movementmetadata();
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         fromMovement.setMetadata(fromMeta);
 
-        SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
+        final SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
 
         Assert.assertEquals(SegmentCategoryType.ENTER_PORT, segmentCategory);
 
@@ -275,28 +274,28 @@ public class SegmentCalculationUtilTest {
     @Test
     public void testNullDuration() {
 
-        double distanceToClosestPortTo = 1.6;
-        double distanceToClosestPortFrom = 1.6;
+        final double distanceToClosestPortTo = 1.6;
+        final double distanceToClosestPortFrom = 1.6;
 
-        double duration = 0;
-        double avgSpeed = 49;
-        double distance = 249;
+        final double duration = 0;
+        final double avgSpeed = 49;
+        final double distance = 249;
 
-        SegmentCalculations segCat = new SegmentCalculations();
+        final SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
 
-        Movement toMovement = new Movement();
-        Movementmetadata toMeta = new Movementmetadata();
+        final Movement toMovement = new Movement();
+        final Movementmetadata toMeta = new Movementmetadata();
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         toMovement.setMetadata(toMeta);
 
-        Movement fromMovement = new Movement();
-        Movementmetadata fromMeta = new Movementmetadata();
+        final Movement fromMovement = new Movement();
+        final Movementmetadata fromMeta = new Movementmetadata();
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         fromMovement.setMetadata(fromMeta);
 
-        SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
+        final SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
 
         Assert.assertEquals(SegmentCategoryType.NULL_DUR, segmentCategory);
 
@@ -308,28 +307,28 @@ public class SegmentCalculationUtilTest {
     @Test
     public void testAnchored() {
 
-        double distanceToClosestPortTo = 1.6;
-        double distanceToClosestPortFrom = 1.6;
+        final double distanceToClosestPortTo = 1.6;
+        final double distanceToClosestPortFrom = 1.6;
 
-        double duration = 0;
-        double avgSpeed = 0;
-        double distance = 249;
+        final double duration = 0;
+        final double avgSpeed = 0;
+        final double distance = 249;
 
-        SegmentCalculations segCat = new SegmentCalculations();
+        final SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
 
-        Movement toMovement = new Movement();
-        Movementmetadata toMeta = new Movementmetadata();
+        final Movement toMovement = new Movement();
+        final Movementmetadata toMeta = new Movementmetadata();
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         toMovement.setMetadata(toMeta);
 
-        Movement fromMovement = new Movement();
-        Movementmetadata fromMeta = new Movementmetadata();
+        final Movement fromMovement = new Movement();
+        final Movementmetadata fromMeta = new Movementmetadata();
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         fromMovement.setMetadata(fromMeta);
 
-        SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
+        final SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
 
         Assert.assertEquals(SegmentCategoryType.ANCHORED, segmentCategory);
 

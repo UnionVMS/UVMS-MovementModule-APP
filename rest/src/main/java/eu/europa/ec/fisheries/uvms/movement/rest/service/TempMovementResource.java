@@ -24,17 +24,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.TempMovementListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
@@ -67,7 +61,7 @@ public class TempMovementResource {
         LOG.debug("Create temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.createTempMovement(data, request.getRemoteUser()), ResponseCode.OK);
-        } catch (Throwable throwable) {
+        } catch (final Throwable throwable) {
             LOG.error("[ Error when creating. ] {} ", throwable);
             return new ResponseDto(throwable.getMessage(), ResponseCode.ERROR);
         }
@@ -77,13 +71,13 @@ public class TempMovementResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/{guid}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto get(@PathParam("guid") String guid) {
+    public ResponseDto get(@PathParam("guid") final String guid) {
         try {
             return new ResponseDto(service.getTempMovement(guid), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException e) {
             LOG.error("[ Error when getting temp movement with GUID. ] {} ", e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (final MovementDuplicateException ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -102,14 +96,14 @@ public class TempMovementResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/remove/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto remove(@PathParam("guid") String guid) {
+    public ResponseDto remove(@PathParam("guid") final String guid) {
         LOG.debug("Archive(remove) temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.archiveTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when archiving temp movement. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (final MovementDuplicateException ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -134,7 +128,7 @@ public class TempMovementResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when updating temp movement. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (final MovementDuplicateException ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -153,14 +147,14 @@ public class TempMovementResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewManualMovements)
-    public ResponseDto<TempMovementListResponseDto> getTempMovements(MovementQuery query) {
+    public ResponseDto<TempMovementListResponseDto> getTempMovements(final MovementQuery query) {
         LOG.debug("List all active temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.getTempMovements(query), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when listing active temp movements. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (final MovementDuplicateException ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -179,11 +173,11 @@ public class TempMovementResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/send/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto send(@PathParam("guid") String guid) {
+    public ResponseDto send(@PathParam("guid") final String guid) {
         LOG.debug("Send temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.sendTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
-        } catch (MovementDuplicateException e) {
+        } catch (final MovementDuplicateException e) {
             LOG.error("[ Error: Cannot create duplicate movement] {} ", e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         } catch (MovementServiceException | NullPointerException ex) {

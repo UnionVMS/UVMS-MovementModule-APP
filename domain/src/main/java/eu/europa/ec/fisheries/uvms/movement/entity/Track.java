@@ -24,7 +24,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -105,7 +104,7 @@ public class Track implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -113,7 +112,7 @@ public class Track implements Serializable {
         return distance;
     }
 
-    public void setDistance(double distance) {
+    public void setDistance(final double distance) {
         this.distance = distance;
     }
 
@@ -121,7 +120,7 @@ public class Track implements Serializable {
         return duration;
     }
 
-    public void setDuration(double duration) {
+    public void setDuration(final double duration) {
         this.duration = duration;
     }
 
@@ -129,7 +128,7 @@ public class Track implements Serializable {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -137,7 +136,7 @@ public class Track implements Serializable {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -145,7 +144,7 @@ public class Track implements Serializable {
         return segmentList;
     }
 
-    public void setSegmentList(List<Segment> segmentList) {
+    public void setSegmentList(final List<Segment> segmentList) {
         this.segmentList = segmentList;
     }
 
@@ -153,7 +152,7 @@ public class Track implements Serializable {
         return location;
     }
 
-    public void setLocation(LineString location) {
+    public void setLocation(final LineString location) {
         this.location = location;
     }
 
@@ -161,7 +160,7 @@ public class Track implements Serializable {
         return totalTimeAtSea;
     }
 
-    public void setTotalTimeAtSea(double totalTimeAtSea) {
+    public void setTotalTimeAtSea(final double totalTimeAtSea) {
         this.totalTimeAtSea = totalTimeAtSea;
     }
 
@@ -169,7 +168,7 @@ public class Track implements Serializable {
         return averageSpeed;
     }
 
-    public void setAverageSpeed(double averageSpeed) {
+    public void setAverageSpeed(final double averageSpeed) {
         this.averageSpeed = averageSpeed;
     }
 
@@ -178,7 +177,7 @@ public class Track implements Serializable {
         return movementList;
     }
 
-    public void setMovementList(List<Movement> movementList) {
+    public void setMovementList(final List<Movement> movementList) {
         this.movementList = movementList;
     }
 

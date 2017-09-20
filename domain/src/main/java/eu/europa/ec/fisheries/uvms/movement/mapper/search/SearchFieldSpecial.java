@@ -11,8 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.mapper.search;
 
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-
 /**
  **/
 public enum SearchFieldSpecial implements SearchFieldType {
@@ -32,7 +30,7 @@ public enum SearchFieldSpecial implements SearchFieldType {
     private final SearchTables searchTables;
     private final Class clazz;
 
-    private SearchFieldSpecial(String fieldName, SearchTables searchTables, Class clazz) {
+    private SearchFieldSpecial(final String fieldName, final SearchTables searchTables, final Class clazz) {
         this.fieldName = fieldName;
         this.searchTables = searchTables;
         this.clazz = clazz;

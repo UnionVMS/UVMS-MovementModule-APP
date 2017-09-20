@@ -11,11 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementMockConfig;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -48,7 +43,7 @@ public class ConfigResource {
     public ResponseDto getMovementTypes() {
         try {
             return new ResponseDto(MovementTypeType.values(), ResponseCode.OK);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
@@ -61,7 +56,7 @@ public class ConfigResource {
     public ResponseDto getSegmetTypes() {
         try {
             return new ResponseDto(SegmentCategoryType.values(), ResponseCode.OK);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
@@ -74,7 +69,7 @@ public class ConfigResource {
     public ResponseDto getMovementSearchKeys() {
         try {
             return new ResponseDto(SearchKeyType.values(), ResponseCode.OK);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
@@ -87,7 +82,7 @@ public class ConfigResource {
     public ResponseDto getMovementSourceTypes() {
         try {
             return new ResponseDto(MovementSourceType.values(), ResponseCode.OK);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
@@ -100,7 +95,7 @@ public class ConfigResource {
     public ResponseDto getActivityTypes() {
         try {
             return new ResponseDto(MovementActivityTypeType.values(), ResponseCode.OK);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
@@ -112,7 +107,7 @@ public class ConfigResource {
     public ResponseDto getConfiguration() {
         try {
             return new ResponseDto(MovementMockConfig.getValues(), ResponseCode.OK);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }

@@ -50,7 +50,7 @@ public enum MovementConnectTypeEnum {
 
     private final Integer id;
 
-    private MovementConnectTypeEnum(Integer id) {
+    private MovementConnectTypeEnum(final Integer id) {
         this.id = id;
     }
 

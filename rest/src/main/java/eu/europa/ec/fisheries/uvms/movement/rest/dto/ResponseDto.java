@@ -22,14 +22,14 @@ public class ResponseDto<T> {
 
     private T data;
     private final RestResponseCode code;
-    private String requestId = MDC.get("requestId");
+    private final String requestId = MDC.get("requestId");
 
-    public ResponseDto(T data, RestResponseCode code) {
+    public ResponseDto(final T data, final RestResponseCode code) {
         this.data = data;
         this.code = code;
     }
 
-    public ResponseDto(RestResponseCode code) {
+    public ResponseDto(final RestResponseCode code) {
         this.code = code;
     }
 
@@ -54,7 +54,7 @@ public class ResponseDto<T> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }

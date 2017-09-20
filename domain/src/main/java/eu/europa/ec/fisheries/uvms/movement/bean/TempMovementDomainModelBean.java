@@ -20,32 +20,13 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.TempMovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.mapper.TempMovementMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
-import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 @Stateless
 @LocalBean
@@ -57,47 +38,47 @@ public class TempMovementDomainModelBean {
     @EJB
     TempMovementDao dao;
 
-    public TempMovementType createTempMovement(TempMovementType tempMovementType, String username) throws MovementModelException {
+    public TempMovementType createTempMovement(final TempMovementType tempMovementType, final String username) throws MovementModelException {
         try {
             LOG.debug("Create temp movement.");
             TempMovement tempMovement = TempMovementMapper.toTempMovementEntity(tempMovementType, username);
             tempMovement = dao.createTempMovementEntity(tempMovement);
             return TempMovementMapper.toTempMovement(tempMovement);
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             LOG.error("[ Error when creating new temp movement. ] {}", e.getMessage());
             throw new MovementModelException("Could not create temp movement. " + e.getMessage(), e);
         }
     }
 
-    public TempMovementType archiveTempMovement(String guid, String username) throws MovementModelException {
+    public TempMovementType archiveTempMovement(final String guid, final String username) throws MovementModelException {
         LOG.debug("Archiving temp movement.");
         return setTempMovementState(guid, TempMovementStateEnum.DELETED, username);
     }
 
-    public TempMovementType sendTempMovement(String guid, String username) throws MovementModelException {
+    public TempMovementType sendTempMovement(final String guid, final String username) throws MovementModelException {
         LOG.debug("Archiving temp movement.");
         return setTempMovementState(guid, TempMovementStateEnum.SENT, username);
     }
 
-    public TempMovementType setTempMovementState(String guid, TempMovementStateEnum state, String username) throws MovementModelException {
+    public TempMovementType setTempMovementState(final String guid, final TempMovementStateEnum state, final String username) throws MovementModelException {
         try {
             LOG.debug("Set temp movement state.");
             if (guid == null) {
                 throw new InputArgumentException("Non valid id of temp movement to update");
             }
 
-            TempMovement tempMovement = dao.getTempMovementByGuid(guid);
+            final TempMovement tempMovement = dao.getTempMovementByGuid(guid);
             tempMovement.setState(state);
             tempMovement.setUpdated(DateUtil.nowUTC());
             tempMovement.setUpdatedBy(username);
             return TempMovementMapper.toTempMovement(tempMovement);
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             LOG.error("[ Error when set temp movement state. ] {}", e.getMessage());
             throw new MovementModelException("Could not set temp movement state.", e);
         }
     }
 
-    public TempMovementType updateTempMovement(TempMovementType tempMovementType, String username) throws MovementModelException {
+    public TempMovementType updateTempMovement(final TempMovementType tempMovementType, final String username) throws MovementModelException {
         try {
             LOG.debug("Update temp movement.");
 
@@ -111,13 +92,13 @@ public class TempMovementDomainModelBean {
             TempMovement tempMovement = dao.getTempMovementByGuid(tempMovementType.getGuid());
             tempMovement = TempMovementMapper.toExistingTempMovementEntity(tempMovement, tempMovementType, username);
             return TempMovementMapper.toTempMovement(tempMovement);
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             LOG.error("[ Error when updating temp movement. ] {}", e.getMessage());
             throw new MovementModelException("Could not update temp movement.", e);
         }
     }
 
-    public TempMovementsListResponseDto getTempMovementList(MovementQuery query) throws MovementModelException {
+    public TempMovementsListResponseDto getTempMovementList(final MovementQuery query) throws MovementModelException {
 
         try {
             if (query == null || query.getPagination() == null || query.getPagination().getPage() == null) {
@@ -125,18 +106,18 @@ public class TempMovementDomainModelBean {
             }
 
         	
-            TempMovementsListResponseDto response = new TempMovementsListResponseDto();
-            List<TempMovementType> tempMovementList = new ArrayList<>();
+            final TempMovementsListResponseDto response = new TempMovementsListResponseDto();
+            final List<TempMovementType> tempMovementList = new ArrayList<>();
 
-            Integer page = query.getPagination().getPage().intValue();
-            Integer listSize = query.getPagination().getListSize().intValue();
+            final Integer page = query.getPagination().getPage().intValue();
+            final Integer listSize = query.getPagination().getListSize().intValue();
 
-            List<TempMovement> tempMovementEntityList = dao.getTempMovementListPaginated(page, listSize);
-            for (TempMovement entity : tempMovementEntityList) {
+            final List<TempMovement> tempMovementEntityList = dao.getTempMovementListPaginated(page, listSize);
+            for (final TempMovement entity : tempMovementEntityList) {
                 tempMovementList.add(TempMovementMapper.toTempMovement(entity));
             }
 
-            Long numberMatches = dao.getTempMovementListCount();
+            final Long numberMatches = dao.getTempMovementListCount();
             int numberOfPages = (int) (numberMatches / listSize);
             if (numberMatches % listSize != 0) {
                 numberOfPages += 1;
@@ -147,14 +128,14 @@ public class TempMovementDomainModelBean {
             response.setTempMovementList(tempMovementList);
 
             return response;
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             LOG.error("[ Error when updating temp movement. ] {}", e.getMessage());
             throw new MovementModelException("Could not list active temp movements.", e);
         }
 
     }
 
-    public TempMovementType getTempMovement(String guid) throws MovementModelException {
+    public TempMovementType getTempMovement(final String guid) throws MovementModelException {
         LOG.debug("Getting temp movement.");
         if (guid == null) {
             throw new InputArgumentException("TempMovement GUID cannot be null.");
@@ -163,7 +144,7 @@ public class TempMovementDomainModelBean {
         try {
             return TempMovementMapper.toTempMovement(dao.getTempMovementByGuid(guid));	
         }
-        catch (MovementDaoException e) {
+        catch (final MovementDaoException e) {
         	LOG.error("[ Error when gettin temp movement by GUID. ] {}", e.getMessage());
         	throw new MovementModelException("Could not get temp movement by GUID.", e);
         }

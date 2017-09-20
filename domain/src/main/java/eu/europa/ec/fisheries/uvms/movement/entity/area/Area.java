@@ -79,7 +79,7 @@ public class Area implements Serializable {
         return areaId;
     }
 
-    public void setAreaId(Long areaId) {
+    public void setAreaId(final Long areaId) {
         this.areaId = areaId;
     }
 
@@ -87,7 +87,7 @@ public class Area implements Serializable {
         return areaName;
     }
 
-    public void setAreaName(String areaName) {
+    public void setAreaName(final String areaName) {
         this.areaName = areaName;
     }
 
@@ -95,7 +95,7 @@ public class Area implements Serializable {
         return remoteId;
     }
 
-    public void setRemoteId(String remoteId) {
+    public void setRemoteId(final String remoteId) {
         this.remoteId = remoteId;
     }
 
@@ -103,7 +103,7 @@ public class Area implements Serializable {
         return areaUpdattim;
     }
 
-    public void setAreaUpdattim(Date areaUpdattim) {
+    public void setAreaUpdattim(final Date areaUpdattim) {
         this.areaUpdattim = areaUpdattim;
     }
 
@@ -111,7 +111,7 @@ public class Area implements Serializable {
         return areaUpuser;
     }
 
-    public void setAreaUpuser(String areaUpuser) {
+    public void setAreaUpuser(final String areaUpuser) {
         this.areaUpuser = areaUpuser;
     }
 
@@ -119,7 +119,7 @@ public class Area implements Serializable {
         return movementareaList;
     }
 
-    public void setMovementareaList(List<Movementarea> movementareaList) {
+    public void setMovementareaList(final List<Movementarea> movementareaList) {
         this.movementareaList = movementareaList;
     }
 
@@ -127,7 +127,7 @@ public class Area implements Serializable {
         return areaType;
     }
 
-    public void setAreaType(AreaType areaType) {
+    public void setAreaType(final AreaType areaType) {
         this.areaType = areaType;
     }
 
@@ -135,7 +135,7 @@ public class Area implements Serializable {
         return areaCode;
     }
 
-    public void setAreaCode(String areaCode) {
+    public void setAreaCode(final String areaCode) {
         this.areaCode = areaCode;
     }
 
@@ -147,7 +147,7 @@ public class Area implements Serializable {
         return areatransitionList;
     }
 
-    public void setAreatransitionList(List<Areatransition> areatransitionList) {
+    public void setAreatransitionList(final List<Areatransition> areatransitionList) {
         this.areatransitionList = areatransitionList;
     }
 

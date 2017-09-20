@@ -18,16 +18,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 /**
  * Created by thofan on 2017-02-25.
@@ -73,21 +67,21 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
 
             // TODO should every end of ifstatement have a continue instead of checking for something that will never occur ? method keepSegment
 
-            List<SearchValue> searchKeyValuesRange = new ArrayList<>();
+            final List<SearchValue> searchKeyValuesRange = new ArrayList<>();
             searchKeyValuesRange.add(createSearchValueDurationHelper());
             searchKeyValuesRange.add(createSearchValueLengthHelper());
             searchKeyValuesRange.add(createSearchValueSpeedHelper());
 
             // just try to satisfy all paths in the filter
-            List<MovementSegment> movementSegments = new ArrayList<>();
+            final List<MovementSegment> movementSegments = new ArrayList<>();
             movementSegments.add(createMovementSegmentDurationHelper(9,900, 90));
             movementSegments.add(createMovementSegmentDurationHelper(15,1500, 150));
             movementSegments.add(createMovementSegmentDurationHelper(21,2100, 210));
 
-            ArrayList<MovementSegment> segments = movementDomainModelBean.filterSegments(movementSegments, searchKeyValuesRange);
+            final ArrayList<MovementSegment> segments = movementDomainModelBean.filterSegments(movementSegments, searchKeyValuesRange);
 
             Assert.assertTrue(segments.size() == 1);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Assert.fail(e.toString());
         }
     }
@@ -97,9 +91,9 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     @OperateOnDeployment("normal")
     public void getAreas() {
         try {
-            List<AreaType> areas = movementDomainModelBean.getAreas();
+            final List<AreaType> areas = movementDomainModelBean.getAreas();
             Assert.assertTrue(areas != null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Assert.fail(e.toString());
         }
     }
@@ -108,9 +102,9 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     @OperateOnDeployment("normal")
     public void getLatestMovements_0() {
         try {
-            List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(0);
+            final List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(0);
             Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
+        } catch (final MovementModelException e) {
             Assert.fail();
         }
     }
@@ -119,9 +113,9 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     @OperateOnDeployment("normal")
     public void getLatestMovements_5() {
         try {
-            List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5);
+            final List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5);
             Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
+        } catch (final MovementModelException e) {
             Assert.fail();
         }
     }
@@ -130,9 +124,9 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     @OperateOnDeployment("normal")
     public void getLatestMovements_5000000() {
         try {
-            List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5000000);
+            final List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5000000);
             Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
+        } catch (final MovementModelException e) {
             Assert.fail();
         }
     }
@@ -141,9 +135,9 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     @OperateOnDeployment("normal")
     public void getLatestMovements_NULL() {
         try {
-            List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(null);
+            final List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(null);
             Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
+        } catch (final MovementModelException e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -152,9 +146,9 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     @OperateOnDeployment("normal")
     public void getLatestMovements_neg5() {
         try {
-            List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(-5);
+            final List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(-5);
             Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
+        } catch (final MovementModelException e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -163,10 +157,10 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     @OperateOnDeployment("normal")
     public void getLatestMovementsByConnectIds_crashOnEmpty() {
         try {
-            List<String> connectIds = new ArrayList<>();
-            List<MovementType> movementTypes = movementDomainModelBean.getLatestMovementsByConnectIds(connectIds);
+            final List<String> connectIds = new ArrayList<>();
+            final List<MovementType> movementTypes = movementDomainModelBean.getLatestMovementsByConnectIds(connectIds);
             Assert.assertTrue(movementTypes != null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -175,7 +169,7 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     public void getMinimalMovementListByQuery() {
         try {
             movementDomainModelBean.getMinimalMovementListByQuery(null);
-        } catch (MovementModelException e) {
+        } catch (final MovementModelException e) {
             Assert.fail(e.toString());
         }
     }
@@ -184,7 +178,7 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     public void getMovementByGUID() {
         try {
             movementDomainModelBean.getMovementByGUID(null);
-        } catch (MovementModelException e) {
+        } catch (final MovementModelException e) {
             Assert.fail(e.toString());
         }
     }
@@ -193,7 +187,7 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     public void getMovementListByAreaAndTimeInterval() {
         try {
             movementDomainModelBean.getMovementListByAreaAndTimeInterval(null);
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             Assert.fail(e.toString());
         }
     }
@@ -202,7 +196,7 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     public void getMovementListByQuery() {
         try {
             movementDomainModelBean.getMovementListByQuery(null);
-        } catch (MovementModelException e) {
+        } catch (final MovementModelException e) {
             Assert.fail(e.toString());
         }
     }
@@ -211,7 +205,7 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     public void getMovementMapByQuery() {
         try {
             movementDomainModelBean.getMovementMapByQuery(null);
-        } catch (MovementModelException e) {
+        } catch (final MovementModelException e) {
             Assert.fail(e.toString());
         }
     }
@@ -220,7 +214,7 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     public void keepSegment() {
         try {
             movementDomainModelBean.keepSegment(null, null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Assert.fail(e.toString());
         }
     }
@@ -229,7 +223,7 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     public void removeTrackMismatches() {
         try {
             movementDomainModelBean.removeTrackMismatches(null, null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Assert.fail(e.toString());
         }
     }
@@ -239,8 +233,8 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
      *   HELPER FUNCTIONS
      ******************************************************************************************************************/
 
-    private MovementSegment createMovementSegmentDurationHelper(double durationValue, double distanceValue, double speedValue) {
-        MovementSegment movementSegment = new MovementSegment();
+    private MovementSegment createMovementSegmentDurationHelper(final double durationValue, final double distanceValue, final double speedValue) {
+        final MovementSegment movementSegment = new MovementSegment();
         movementSegment.setId(String.valueOf(rnd.nextInt(1000)));
         movementSegment.setTrackId("TrackId_42");
         movementSegment.setCategory(SegmentCategoryType.OTHER);
@@ -253,17 +247,17 @@ public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment 
     }
 
     private SearchValue createSearchValueDurationHelper() {
-        SearchValue searchValue = new SearchValue(SearchField.SEGMENT_DURATION, "10", "20");
+        final SearchValue searchValue = new SearchValue(SearchField.SEGMENT_DURATION, "10", "20");
         return searchValue;
     }
 
     private SearchValue createSearchValueLengthHelper() {
-        SearchValue searchValue = new SearchValue(SearchField.SEGMENT_LENGTH, "1000", "2000");
+        final SearchValue searchValue = new SearchValue(SearchField.SEGMENT_LENGTH, "1000", "2000");
         return searchValue;
     }
 
     private SearchValue createSearchValueSpeedHelper() {
-        SearchValue searchValue = new SearchValue(SearchField.SEGMENT_SPEED, "100", "200");
+        final SearchValue searchValue = new SearchValue(SearchField.SEGMENT_SPEED, "100", "200");
         return searchValue;
     }
 

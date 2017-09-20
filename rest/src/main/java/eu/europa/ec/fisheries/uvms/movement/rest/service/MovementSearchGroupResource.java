@@ -28,15 +28,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
@@ -63,14 +59,14 @@ public class MovementSearchGroupResource {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Path("/group")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto createMovementSearchGroup(MovementSearchGroup searchGroup) {
+    public ResponseDto createMovementSearchGroup(final MovementSearchGroup searchGroup) {
         try {
-            MovementSearchGroup createdSearchGroup = service.createMovementSearchGroup(searchGroup, request.getRemoteUser());
+            final MovementSearchGroup createdSearchGroup = service.createMovementSearchGroup(searchGroup, request.getRemoteUser());
             return new ResponseDto(createdSearchGroup, ResponseCode.OK);
-        } catch (MovementServiceException e) {
+        } catch (final MovementServiceException e) {
             LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (final MovementDuplicateException e) {
             LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -87,14 +83,14 @@ public class MovementSearchGroupResource {
     @Path("/group/{id}")
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto getMovementSearchGroup(@PathParam("id") Long id) {
+    public ResponseDto getMovementSearchGroup(@PathParam("id") final Long id) {
         try {
-            MovementSearchGroup searchGroup = service.getMovementSearchGroup(id);
+            final MovementSearchGroup searchGroup = service.getMovementSearchGroup(id);
             return new ResponseDto(searchGroup, ResponseCode.OK);
-        } catch (MovementServiceException e) {
+        } catch (final MovementServiceException e) {
             LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage() + ": " + e.getCause().getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (final MovementDuplicateException e) {
             LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -111,14 +107,14 @@ public class MovementSearchGroupResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto updateMovementSearchGroup(MovementSearchGroup searchGroup) {
+    public ResponseDto updateMovementSearchGroup(final MovementSearchGroup searchGroup) {
         try {
-            MovementSearchGroup updatedSearchGroup = service.updateMovementSearchGroup(searchGroup, request.getRemoteUser());
+            final MovementSearchGroup updatedSearchGroup = service.updateMovementSearchGroup(searchGroup, request.getRemoteUser());
             return new ResponseDto(updatedSearchGroup, ResponseCode.OK);
-        } catch (MovementServiceException e) {
+        } catch (final MovementServiceException e) {
             LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (final MovementDuplicateException e) {
             LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -135,14 +131,14 @@ public class MovementSearchGroupResource {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Path("/groups")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto getMovementSearchGroupsByUser(@QueryParam(value = "user") String user) {
+    public ResponseDto getMovementSearchGroupsByUser(@QueryParam(value = "user") final String user) {
         try {
-            List<MovementSearchGroup> searchGroups = service.getMovementSearchGroupsByUser(user);
+            final List<MovementSearchGroup> searchGroups = service.getMovementSearchGroupsByUser(user);
             return new ResponseDto(searchGroups, ResponseCode.OK);
-        } catch (MovementServiceException e) {
+        } catch (final MovementServiceException e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (final MovementDuplicateException e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -158,14 +154,14 @@ public class MovementSearchGroupResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto deleteMovementSearchGroup(@PathParam(value = "id") Long id) {
+    public ResponseDto deleteMovementSearchGroup(@PathParam(value = "id") final Long id) {
         try {
-            MovementSearchGroup deletedSearchGroup = service.deleteMovementSearchGroup(id);
+            final MovementSearchGroup deletedSearchGroup = service.deleteMovementSearchGroup(id);
             return new ResponseDto(deletedSearchGroup, ResponseCode.OK);
-        } catch (MovementServiceException e) {
+        } catch (final MovementServiceException e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (final MovementDuplicateException e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }

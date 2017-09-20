@@ -21,8 +21,6 @@ import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
-
 @MessageDriven(mappedName = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE, activationConfig = {
     @ActivationConfigProperty(propertyName = "messagingType", propertyValue = MessageConstants.CONNECTION_TYPE),
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = MessageConstants.DESTINATION_TYPE_QUEUE),
@@ -36,12 +34,12 @@ public class MessageConsumerBean implements MessageListener {
     final static Logger LOG = LoggerFactory.getLogger(MessageConsumerBean.class);
 
     @Override
-    public void onMessage(Message message) {
-        TextMessage textMessage = (TextMessage) message;
+    public void onMessage(final Message message) {
+        final TextMessage textMessage = (TextMessage) message;
         try {
-            String txt = textMessage.getText();
+            final String txt = textMessage.getText();
             LOG.info(txt);
-        } catch (JMSException e) {
+        } catch (final JMSException e) {
             LOG.error("onMessage: ", e);
         }
     }

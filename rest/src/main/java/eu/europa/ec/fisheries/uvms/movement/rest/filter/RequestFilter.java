@@ -38,27 +38,27 @@ public class RequestFilter implements Filter {
     final static Logger LOG = LoggerFactory.getLogger(RequestFilter.class);
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(final FilterConfig filterConfig) throws ServletException {
         LOG.info("Requstfilter starting up!");
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(final ServletRequest request, final ServletResponse res, final FilterChain chain) throws IOException, ServletException {
 
         // TODO MDC is prototyping TEST
         // TODO if we want to put the entire request in a db-table with for instance requestId as key (to be able to fast and easy reproduce a reported error)
         // TODO we must do some things first since it will "consume" the stream and make it unusable at a later stage (the rest of the application)
         // TODO read this article http://stackoverflow.com/questions/10210645/http-servlet-request-lose-params-from-post-body-after-read-it-once
         try {
-            String val = MDC.get("requestId");
+            final String val = MDC.get("requestId");
             if(val == null || val.trim().length()< 1){
                 MDC.put("requestId", UUID.randomUUID().toString());
             }
-        }catch(IllegalArgumentException e){
+        }catch(final IllegalArgumentException e){
             LOG.error("MDC init error. App works but tracing will be unpredictible", e);
         }
 
-        HttpServletResponse response = (HttpServletResponse) res;
+        final HttpServletResponse response = (HttpServletResponse) res;
         response.setHeader(RestConstants.ACCESS_CONTROL_ALLOW_ORIGIN, RestConstants.ACCESS_CONTROL_ALLOW_METHODS_ALL);
         response.setHeader(RestConstants.ACCESS_CONTROL_ALLOW_METHODS, RestConstants.ACCESS_CONTROL_ALLOWED_METHODS);
        // response.setHeader(RestConstants.ACCESS_CONTROL_ALLOW_HEADERS, RestConstants.ACCESS_CONTROL_ALLOW_HEADERS_ALL);

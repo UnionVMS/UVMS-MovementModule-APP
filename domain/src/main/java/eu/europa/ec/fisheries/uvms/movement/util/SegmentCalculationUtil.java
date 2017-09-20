@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.util;
 
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import org.slf4j.Logger;
@@ -43,13 +42,13 @@ public class SegmentCalculationUtil {
      * @param toMovement
      * @return Returns the category the segment represents
      */
-    public static SegmentCategoryType getSegmentCategoryType(SegmentCalculations calc, Movement fromMovement, Movement toMovement) {
+    public static SegmentCategoryType getSegmentCategoryType(final SegmentCalculations calc, final Movement fromMovement, final Movement toMovement) {
 
         try {
             if (fromMovement != null && toMovement != null) {
 
-                Boolean fromMovementInPort = isVesselInPort(fromMovement);
-                Boolean toMovementInPort = isVesselInPort(toMovement);
+                final Boolean fromMovementInPort = isVesselInPort(fromMovement);
+                final Boolean toMovementInPort = isVesselInPort(toMovement);
 
                 if (toMovementInPort != null && fromMovementInPort != null) {
 
@@ -81,7 +80,7 @@ public class SegmentCalculationUtil {
                 return SegmentCategoryType.JUMP;
             }
 
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             LOG.error("[ Got nullpointer exception on line {} when trying to decide SegmentCategoryType, returning SegmentCategoryType.OTHER ]", e.getStackTrace()[0].getLineNumber());
         }
 
@@ -89,7 +88,7 @@ public class SegmentCalculationUtil {
 
     }
 
-    public static Boolean isGap(SegmentCalculations calc, Movement fromMovement, Movement toMovement) {
+    public static Boolean isGap(final SegmentCalculations calc, final Movement fromMovement, final Movement toMovement) {
         if (calc != null) {
             if ((!isVesselInPort(fromMovement) && !isVesselInPort(toMovement)) && (calc.getDurationBetweenPoints() > 12)) {
                 return Boolean.TRUE;
@@ -102,7 +101,7 @@ public class SegmentCalculationUtil {
         }
     }
 
-    public static Boolean isJump(SegmentCalculations calc) {
+    public static Boolean isJump(final SegmentCalculations calc) {
         if (calc != null) {
             if (calc.getAvgSpeed() > 50 || (calc.getDistanceBetweenPoints() > 250 && calc.getDurationBetweenPoints() > 12)) {
                 return Boolean.TRUE;
@@ -115,7 +114,7 @@ public class SegmentCalculationUtil {
         }
     }
 
-    public static Boolean isVesselInPort(Movement movement) {
+    public static Boolean isVesselInPort(final Movement movement) {
         if (movement.getMetadata() != null) {
             if (movement.getMetadata().getClosestPortDistance() != null &&
                     movement.getMetadata().getClosestPortDistance() < DISTANCE_TO_PORT_THRESHOLD_IN_NAUTICAL_MILES) {

@@ -19,11 +19,11 @@ public class JmsException extends Exception {
         super();
     }
 
-    public JmsException(String message) {
+    public JmsException(final String message) {
         super(message);
     }
 
-    public JmsException(String message, Throwable cause) {
+    public JmsException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

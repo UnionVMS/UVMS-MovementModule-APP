@@ -11,10 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
@@ -27,9 +23,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.exception.EntityDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +54,7 @@ public class MovementBatchModelBean {
      * @return
      * @throws MovementModelException
      */
-    public MovementConnect getMovementConnect(String connectId) {
+    public MovementConnect getMovementConnect(final String connectId) {
         MovementConnect movementConnectByConnectId = null;
 
         if (connectId == null) {
@@ -70,20 +63,20 @@ public class MovementBatchModelBean {
 
         try {
             movementConnectByConnectId = dao.getMovementConnectByConnectId(connectId);
-        } catch (MovementDaoException ex) {
+        } catch (final MovementDaoException ex) {
             LOG.error("ERROR WHEN GETTING MOVEMENTCONNECT", ex);
         }
 
         if (movementConnectByConnectId == null) {
             try {
                 LOG.info("CREATING NEW MOVEMENTCONNECT");
-                MovementConnect mapToMovementConnenct = MovementModelToEntityMapper.mapToMovementConnenct(connectId, AssetIdType.GUID);
+                final MovementConnect mapToMovementConnenct = MovementModelToEntityMapper.mapToMovementConnenct(connectId, AssetIdType.GUID);
                 return dao.create(mapToMovementConnenct);
-            } catch (MovementDaoException ex) {
+            } catch (final MovementDaoException ex) {
                 LOG.error("COULD NOT INSERT MOVEMENTCONNECT", ex);
-            } catch (MovementDaoMappingException ex) {
+            } catch (final MovementDaoMappingException ex) {
                 LOG.error("ERROR WHEN MAPPING TO MOVEMENTCONNECT", ex);
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 LOG.error("OTHER ERROR WHEN CREATING MOVEMENTCONNECT", ex);
             }
         }
@@ -98,17 +91,17 @@ public class MovementBatchModelBean {
      * @throws
      * EntityDuplicateException
      */
-    public MovementType createMovement(MovementType movement, String username) {
-        long start = System.currentTimeMillis();
+    public MovementType createMovement(final MovementType movement, final String username) {
+        final long start = System.currentTimeMillis();
         try {
             long before = System.currentTimeMillis();
             final Movement currentMovement = MovementModelToEntityMapper.mapNewMovementEntity(movement, username);
-            MovementConnect moveConnect = getMovementConnect(movement.getConnectId());
+            final MovementConnect moveConnect = getMovementConnect(movement.getConnectId());
             currentMovement.setMovementConnect(moveConnect);
             LOG.debug("Adding movement connect time: {}", (System.currentTimeMillis() - before));
 
             before = System.currentTimeMillis();
-            List<Movementarea> areas = getAreas(currentMovement, movement);
+            final List<Movementarea> areas = getAreas(currentMovement, movement);
             currentMovement.setMovementareaList(areas);
             LOG.debug("Adding areas time: {}", (System.currentTimeMillis() - before));
 
@@ -121,8 +114,8 @@ public class MovementBatchModelBean {
             moveConnect.getMovementList().add(currentMovement);
             dao.persist(moveConnect);
 
-            MovementType movementType = mapToMovementType(currentMovement);
-            long diff = System.currentTimeMillis() - start;
+            final MovementType movementType = mapToMovementType(currentMovement);
+            final long diff = System.currentTimeMillis() - start;
             LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
             return movementType;
         } catch (MovementDaoMappingException | MovementDaoException e) {
@@ -136,12 +129,12 @@ public class MovementBatchModelBean {
      * @param currentMovement
      * @return
      */
-    private MovementType mapToMovementType(Movement currentMovement) {
-        long start = System.currentTimeMillis();
-        MovementType mappedMovement = MovementEntityToModelMapper.mapToMovementType(currentMovement);
+    private MovementType mapToMovementType(final Movement currentMovement) {
+        final long start = System.currentTimeMillis();
+        final MovementType mappedMovement = MovementEntityToModelMapper.mapToMovementType(currentMovement);
         enrichMetaData(mappedMovement, currentMovement.getTempFromSegment());
         enrichAreas(mappedMovement, currentMovement.getAreatransitionList());
-        long diff = System.currentTimeMillis() - start;
+        final long diff = System.currentTimeMillis() - start;
         LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff + "ms" );
         return mappedMovement;
     }
@@ -153,18 +146,18 @@ public class MovementBatchModelBean {
      * @return
      * @throws MovementDaoException
      */
-    private List<Movementarea> getAreas(Movement currentMovement, MovementType movementType) throws MovementDaoException {
+    private List<Movementarea> getAreas(final Movement currentMovement, final MovementType movementType) throws MovementDaoException {
         LOG.debug("CREATING AND GETTING AREAS AND AREATYPES");
-        List<Movementarea> areas = new ArrayList<>();
-        long start = System.currentTimeMillis();
+        final List<Movementarea> areas = new ArrayList<>();
+        final long start = System.currentTimeMillis();
         if (movementType.getMetaData() != null) {
 
-            for (MovementMetaDataAreaType area : movementType.getMetaData().getAreas()) {
-                Movementarea movementArea = new Movementarea();
+            for (final MovementMetaDataAreaType area : movementType.getMetaData().getAreas()) {
+                final Movementarea movementArea = new Movementarea();
                 Area areaEntity = dao.getAreaByRemoteIdAndCode(area.getCode(), area.getRemoteId());
 
                 if (areaEntity != null) {
-                    String wrkRemoteId = areaEntity.getRemoteId();
+                    final String wrkRemoteId = areaEntity.getRemoteId();
                     if(wrkRemoteId != null) {
                         if (!wrkRemoteId.equals(area.getRemoteId())) {
                             areaEntity.setRemoteId(area.getRemoteId());
@@ -172,12 +165,12 @@ public class MovementBatchModelBean {
                     }
                     movementArea.setMovareaAreaId(areaEntity);
                 } else {
-                    AreaType areaType = getAreaType(area);
-                    Area newArea = MovementModelToEntityMapper.maptoArea(area, areaType);
+                    final AreaType areaType = getAreaType(area);
+                    final Area newArea = MovementModelToEntityMapper.maptoArea(area, areaType);
                     try {
                         dao.create(newArea);
                         movementArea.setMovareaAreaId(newArea);
-                    } catch (ConstraintViolationException e) {
+                    } catch (final ConstraintViolationException e) {
                         // Area was created while we tried to create it.
                         LOG.info("Area \"{}\"was created while we tried to create it. Trying to fetch it.", area.getCode());
                         areaEntity = dao.getAreaByRemoteIdAndCode(area.getCode(), area.getRemoteId());
@@ -195,7 +188,7 @@ public class MovementBatchModelBean {
                 movementArea.setMovareaUpuser("UVMS");
                 areas.add(movementArea);
             }
-            long diff = System.currentTimeMillis() - start;
+            final long diff = System.currentTimeMillis() - start;
             LOG.debug("getAreas: " + " ---- TIME ---- " + diff + "ms" );
         }
 
@@ -208,7 +201,7 @@ public class MovementBatchModelBean {
      * @param mappedMovement
      * @param fromSegment
      */
-    private void enrichMetaData(MovementType mappedMovement, Segment fromSegment) {
+    private void enrichMetaData(final MovementType mappedMovement, final Segment fromSegment) {
 
         if (fromSegment != null) {
             mappedMovement.setCalculatedSpeed(fromSegment.getSpeedOverGround());
@@ -221,7 +214,7 @@ public class MovementBatchModelBean {
             }
 
         } else {
-            MovementMetaData meta = new MovementMetaData();
+            final MovementMetaData meta = new MovementMetaData();
 
             if (fromSegment != null) {
                 meta.setFromSegmentType(fromSegment.getSegmentCategory());
@@ -241,19 +234,19 @@ public class MovementBatchModelBean {
      * @param areatransitionList the list of transitions that will enrich the
      * mapped movmement
      */
-    public void enrichAreas(MovementType mappedMovement, List<Areatransition> areatransitionList) {
+    public void enrichAreas(final MovementType mappedMovement, final List<Areatransition> areatransitionList) {
 
-        HashMap<String, MovementMetaDataAreaType> areas = new HashMap<>();
-        for (MovementMetaDataAreaType area : mappedMovement.getMetaData().getAreas()) {
+        final HashMap<String, MovementMetaDataAreaType> areas = new HashMap<>();
+        for (final MovementMetaDataAreaType area : mappedMovement.getMetaData().getAreas()) {
             areas.put(area.getCode(), area);
         }
 
         if (areatransitionList != null) {
-            for (Areatransition areaTransition : areatransitionList) {
+            for (final Areatransition areaTransition : areatransitionList) {
                 if (areas.containsKey(areaTransition.getAreatranAreaId().getAreaCode())) {
                     areas.get(areaTransition.getAreatranAreaId().getAreaCode()).setTransitionType(areaTransition.getMovementType());
                 } else {
-                    MovementMetaDataAreaType newArea = MapToMovementMetaDataAreaType(areaTransition);
+                    final MovementMetaDataAreaType newArea = MapToMovementMetaDataAreaType(areaTransition);
                     areas.put(newArea.getCode(), newArea);
                 }
             }
@@ -263,8 +256,8 @@ public class MovementBatchModelBean {
         mappedMovement.getMetaData().getAreas().addAll(areas.values());
     }
 
-    public MovementMetaDataAreaType MapToMovementMetaDataAreaType(Areatransition areaTransition) {
-        MovementMetaDataAreaType newArea = new MovementMetaDataAreaType();
+    public MovementMetaDataAreaType MapToMovementMetaDataAreaType(final Areatransition areaTransition) {
+        final MovementMetaDataAreaType newArea = new MovementMetaDataAreaType();
         newArea.setTransitionType(areaTransition.getMovementType());
         newArea.setCode(areaTransition.getAreatranAreaId().getAreaCode());
         newArea.setName(areaTransition.getAreatranAreaId().getAreaName());
@@ -279,10 +272,10 @@ public class MovementBatchModelBean {
      * @return
      * @throws MovementDaoException
      */
-    public AreaType getAreaType(MovementMetaDataAreaType type) throws MovementDaoException {
-        AreaType areaType = dao.getAreaTypeByCode(type.getAreaType());
+    public AreaType getAreaType(final MovementMetaDataAreaType type) throws MovementDaoException {
+        final AreaType areaType = dao.getAreaTypeByCode(type.getAreaType());
         if (areaType == null) {
-            AreaType newAreaType = MovementModelToEntityMapper.mapToAreaType(type);
+            final AreaType newAreaType = MovementModelToEntityMapper.mapToAreaType(type);
             return dao.create(newAreaType);
         } else {
             return areaType;
@@ -292,7 +285,7 @@ public class MovementBatchModelBean {
     public void flush() throws MovementDaoException {
         try {
             dao.flush();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when creating ] {}", e.getMessage());
             throw new MovementDaoException(12, "[ Error when creating ] ", e);
         }

@@ -20,21 +20,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 
 /**
@@ -78,8 +69,8 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
     public void getMovementConnect() {
 
         // Note getMovementConnect CREATES one if it does not exists  (probably to force a batchimport to succeed)
-        String randomUUID = UUID.randomUUID().toString();
-        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(randomUUID);
+        final String randomUUID = UUID.randomUUID().toString();
+        final MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(randomUUID);
         Assert.assertTrue(fetchedMovementConnect != null);
         Assert.assertTrue(fetchedMovementConnect.getValue().equals(randomUUID));
     }
@@ -89,9 +80,9 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
     @OperateOnDeployment("normal")
     public void getMovementConnect_ZEROISH_GUID() {
 
-        String guid = "100000-0000-0000-0000-000000000000";
+        final String guid = "100000-0000-0000-0000-000000000000";
         // Note getMovementConnect CREATES one if it does not exists  (probably to force a batchimport to succeed)
-        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(guid);
+        final MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(guid);
         Assert.assertTrue(fetchedMovementConnect != null);
         Assert.assertTrue(fetchedMovementConnect.getValue().equals(guid));
     }
@@ -107,18 +98,18 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
     public void createMovement() {
 
         try {
-            Date now = DateUtil.nowUTC();
-            double longitude = rnd.nextDouble();
-            double latitude = rnd.nextDouble();
+            final Date now = DateUtil.nowUTC();
+            final double longitude = rnd.nextDouble();
+            final double latitude = rnd.nextDouble();
 
-            String randomUUID = UUID.randomUUID().toString();
-            MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
+            final String randomUUID = UUID.randomUUID().toString();
+            final MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
             movementType.setConnectId(randomUUID);
 
             movementBatchModelBean.createMovement(movementType, TEST_USER_NAME);
             movementBatchModelBean.flush();
             Assert.assertTrue(true);
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             Assert.fail(e.toString());
         }
     }
@@ -129,16 +120,16 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
 
         // this test is migrated from the old testsuite
 
-        Date now = DateUtil.nowUTC();
-        double longitude = rnd.nextDouble();
-        double latitude = rnd.nextDouble();
+        final Date now = DateUtil.nowUTC();
+        final double longitude = rnd.nextDouble();
+        final double latitude = rnd.nextDouble();
 
-        MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
+        final MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
 
-        MovementMetaData metaData = getMappedMovementHelper(2);
+        final MovementMetaData metaData = getMappedMovementHelper(2);
         movementType.setMetaData(metaData);
 
-        List<Areatransition> areatransitionList = new ArrayList<>();
+        final List<Areatransition> areatransitionList = new ArrayList<>();
         areatransitionList.add(getAreaTransition("AREA1", MovementTypeType.ENT));
         movementBatchModelBean.enrichAreas(movementType, areatransitionList);
         Assert.assertTrue(" AreaSize should be 2", movementType.getMetaData().getAreas().size() == 2);
@@ -150,16 +141,16 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
 
         // this test is migrated from the old testsuite
 
-        Date now = DateUtil.nowUTC();
-        double longitude = rnd.nextDouble();
-        double latitude = rnd.nextDouble();
+        final Date now = DateUtil.nowUTC();
+        final double longitude = rnd.nextDouble();
+        final double latitude = rnd.nextDouble();
 
-        MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
+        final MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
 
-        MovementMetaData metaData = getMappedMovementHelper(2);
+        final MovementMetaData metaData = getMappedMovementHelper(2);
         movementType.setMetaData(metaData);
 
-        List<Areatransition> areatransitionList = new ArrayList<>();
+        final List<Areatransition> areatransitionList = new ArrayList<>();
         areatransitionList.add(getAreaTransition("AREA3", MovementTypeType.ENT));
         movementBatchModelBean.enrichAreas(movementType, areatransitionList);
         Assert.assertTrue(" AreaSize should be 3", movementType.getMetaData().getAreas().size() == 3);
@@ -174,12 +165,12 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
 
         try {
 
-            Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
+            final Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
             areaTransition.setMovementType(MovementTypeType.MAN);
             areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
-            MovementMetaDataAreaType movementMetaDataAreaType = movementBatchModelBean.MapToMovementMetaDataAreaType(areaTransition);
+            final MovementMetaDataAreaType movementMetaDataAreaType = movementBatchModelBean.MapToMovementMetaDataAreaType(areaTransition);
             Assert.assertTrue(true);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Assert.fail(toString());
         }
     }
@@ -189,13 +180,13 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
     public void getAreaType() {
 
         try {
-            Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
+            final Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
             areaTransition.setMovementType(MovementTypeType.MAN);
             areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
-            MovementMetaDataAreaType movementMetaDataAreaType = movementBatchModelBean.MapToMovementMetaDataAreaType(areaTransition);
-            AreaType areaType = movementBatchModelBean.getAreaType(movementMetaDataAreaType);
+            final MovementMetaDataAreaType movementMetaDataAreaType = movementBatchModelBean.MapToMovementMetaDataAreaType(areaTransition);
+            final AreaType areaType = movementBatchModelBean.getAreaType(movementMetaDataAreaType);
             Assert.assertTrue(areaType != null);
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             Assert.fail(e.toString());
         }
     }
@@ -209,17 +200,17 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
 
 
         try {
-            Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
+            final Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
             areaTransition.setMovementType(MovementTypeType.MAN);
             areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
-            MovementMetaDataAreaType movementMetaDataAreaType = movementBatchModelBean.MapToMovementMetaDataAreaType(areaTransition);
-            AreaType areaType = movementBatchModelBean.getAreaType(null);
+            final MovementMetaDataAreaType movementMetaDataAreaType = movementBatchModelBean.MapToMovementMetaDataAreaType(areaTransition);
+            final AreaType areaType = movementBatchModelBean.getAreaType(null);
             Assert.assertTrue(areaType != null);
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             Assert.assertTrue(e != null);
-        } catch (MovementDaoException e) {
+        } catch (final MovementDaoException e) {
             Assert.assertTrue(e != null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -229,31 +220,31 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
      *   HELPER FUNCTIONS
      ******************************************************************************************************************/
 
-    private Areatransition getAreaTransition(String code, MovementTypeType transitionType) {
-        Areatransition transition = new Areatransition();
+    private Areatransition getAreaTransition(final String code, final MovementTypeType transitionType) {
+        final Areatransition transition = new Areatransition();
         transition.setMovementType(transitionType);
         transition.setAreatranAreaId(getAreaHelper(code));
         return transition;
     }
 
-    private Area getAreaHelper(String areaCode) {
-        Area area = new Area();
+    private Area getAreaHelper(final String areaCode) {
+        final Area area = new Area();
         area.setAreaCode(areaCode);
         area.setAreaName(areaCode);
         area.setAreaType(getAraTypeHelper(areaCode));
         return area;
     }
 
-    private AreaType getAraTypeHelper(String name) {
-        AreaType areaType = new AreaType();
+    private AreaType getAraTypeHelper(final String name) {
+        final AreaType areaType = new AreaType();
         areaType.setName(name);
         return areaType;
     }
 
-    private MovementType createMovementTypeHelper(Date timeStamp, double longitude, double latitude) {
-        MovementType movementType = new MovementType();
+    private MovementType createMovementTypeHelper(final Date timeStamp, final double longitude, final double latitude) {
+        final MovementType movementType = new MovementType();
         movementType.setPositionTime(timeStamp);
-        MovementPoint point = new MovementPoint();
+        final MovementPoint point = new MovementPoint();
         point.setLatitude(latitude);
         point.setLongitude(longitude);
 
@@ -267,16 +258,16 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
     }
 
 
-    public static MovementMetaData getMappedMovementHelper(int numberOfAreas) {
-        MovementMetaData metaData = new MovementMetaData();
+    public static MovementMetaData getMappedMovementHelper(final int numberOfAreas) {
+        final MovementMetaData metaData = new MovementMetaData();
         for (int i = 0; i < numberOfAreas; i++) {
             metaData.getAreas().add(getMovementMetadataTypeHelper("AREA" + i));
         }
         return metaData;
     }
 
-    public static MovementMetaDataAreaType getMovementMetadataTypeHelper(String areaCode) {
-        MovementMetaDataAreaType area = new MovementMetaDataAreaType();
+    public static MovementMetaDataAreaType getMovementMetadataTypeHelper(final String areaCode) {
+        final MovementMetaDataAreaType area = new MovementMetaDataAreaType();
         area.setCode(areaCode);
         area.setName(areaCode);
         area.setAreaType(areaCode);

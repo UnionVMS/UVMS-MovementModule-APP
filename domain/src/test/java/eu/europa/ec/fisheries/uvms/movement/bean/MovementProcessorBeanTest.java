@@ -12,7 +12,6 @@
 
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.MockData;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
@@ -47,10 +46,10 @@ public class MovementProcessorBeanTest {
     @Test
     public void testPopulateTransitions_SAME_ENT() {
 
-        Movement current = MockData.getCurrentMovement(1);
-        Movement previous = MockData.getPreviousMovement(1, MovementTypeType.ENT);
+        final Movement current = MockData.getCurrentMovement(1);
+        final Movement previous = MockData.getPreviousMovement(1, MovementTypeType.ENT);
 
-        List<Areatransition> transitions = bean.populateTransitions(current, previous);
+        final List<Areatransition> transitions = bean.populateTransitions(current, previous);
 
         Assert.assertNotNull(transitions);
         Assert.assertEquals(1, transitions.size());
@@ -65,10 +64,10 @@ public class MovementProcessorBeanTest {
     @Test
     public void testPopulateTransitions_SAME_POS() {
 
-        Movement current = MockData.getCurrentMovement(1);
-        Movement previous = MockData.getPreviousMovement(1, MovementTypeType.POS);
+        final Movement current = MockData.getCurrentMovement(1);
+        final Movement previous = MockData.getPreviousMovement(1, MovementTypeType.POS);
 
-        List<Areatransition> transitions = bean.populateTransitions(current, previous);
+        final List<Areatransition> transitions = bean.populateTransitions(current, previous);
 
         Assert.assertNotNull(transitions);
         Assert.assertEquals(1, transitions.size());
@@ -83,10 +82,10 @@ public class MovementProcessorBeanTest {
     @Test
     public void testPopulateTransitions_NOT_SAME_ENT() {
 
-        Movement current = MockData.getCurrentMovement(1);
-        Movement previous = MockData.getPreviousMovement(2, MovementTypeType.ENT);
+        final Movement current = MockData.getCurrentMovement(1);
+        final Movement previous = MockData.getPreviousMovement(2, MovementTypeType.ENT);
 
-        List<Areatransition> transitions = bean.populateTransitions(current, previous);
+        final List<Areatransition> transitions = bean.populateTransitions(current, previous);
 
         Assert.assertNotNull(transitions);
         Assert.assertEquals(2, transitions.size());
@@ -105,10 +104,10 @@ public class MovementProcessorBeanTest {
     @Test
     public void testPopulateTransitions_NOT_SAME_POS() {
 
-        Movement current = MockData.getCurrentMovement(1);
-        Movement previous = MockData.getPreviousMovement(2, MovementTypeType.POS);
+        final Movement current = MockData.getCurrentMovement(1);
+        final Movement previous = MockData.getPreviousMovement(2, MovementTypeType.POS);
 
-        List<Areatransition> transitions = bean.populateTransitions(current, previous);
+        final List<Areatransition> transitions = bean.populateTransitions(current, previous);
 
         Assert.assertNotNull(transitions);
         Assert.assertEquals(2, transitions.size());
@@ -127,9 +126,9 @@ public class MovementProcessorBeanTest {
     @Test
     public void testPopulateTransitionsNoPrevMovement() {
 
-        Movement current = MockData.getCurrentMovement(1);
+        final Movement current = MockData.getCurrentMovement(1);
 
-        List<Areatransition> transitions = bean.populateTransitions(current, null);
+        final List<Areatransition> transitions = bean.populateTransitions(current, null);
 
         Assert.assertNotNull(transitions);
         Assert.assertEquals(1, transitions.size());

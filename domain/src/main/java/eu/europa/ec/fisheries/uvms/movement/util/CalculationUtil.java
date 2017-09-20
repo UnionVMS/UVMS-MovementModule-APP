@@ -36,7 +36,7 @@ public class CalculationUtil {
      * @param currentLon
      * @return distance
      */
-    public static Double calculateDistance(Double prevLat, Double prevLon, Double currentLat, Double currentLon) {
+    public static Double calculateDistance(final Double prevLat, final Double prevLon, final Double currentLat, final Double currentLon) {
         return distanceMeter(prevLat, prevLon, currentLat, currentLon);
     }
 
@@ -50,14 +50,14 @@ public class CalculationUtil {
      * @param prevLon
      * @return
      */
-    public static double calculateCourse(double prevLat, double prevLon, double currentLat, double currentLon) {
+    public static double calculateCourse(final double prevLat, final double prevLon, final double currentLat, final double currentLon) {
         return bearing(prevLat, prevLon, currentLat, currentLon);
     }
 
-    public static SegmentCalculations getPositionCalculations(Movement previousPosition, Movement currentPosition) throws GeometryUtilException {
+    public static SegmentCalculations getPositionCalculations(final Movement previousPosition, final Movement currentPosition) throws GeometryUtilException {
         // TODO no nullchecks on incoming
 
-        SegmentCalculations calculations = new SegmentCalculations();
+        final SegmentCalculations calculations = new SegmentCalculations();
 
         if (currentPosition.getLocation() == null) {
             throw new GeometryUtilException(4, "[ CalculationUtil.getPositionCalculations ] CurrentPosition is null! ");
@@ -67,8 +67,8 @@ public class CalculationUtil {
             throw new GeometryUtilException(4, "[ CalculationUtil.getPositionCalculations ] PreviousPosition is null! ");
         }
 
-        Point pointThisPosition = (Point) currentPosition.getLocation();
-        Point pointPreviousPosition = (Point) previousPosition.getLocation();
+        final Point pointThisPosition = currentPosition.getLocation();
+        final Point pointPreviousPosition = previousPosition.getLocation();
 
         double distanceInMeters = 0;
         double durationInSeconds = 0;
@@ -96,7 +96,7 @@ public class CalculationUtil {
 
     }
 
-    public static Double getNauticalMilesFromMeter(Double meters) {
+    public static Double getNauticalMilesFromMeter(final Double meters) {
         return NAUTICAL_MILE_ONE_METER * meters;
     }
 
@@ -110,13 +110,13 @@ public class CalculationUtil {
      * @return Bearing between the two points in degrees. A value of 0 means due
      * north.
      */
-    private static double bearing(double prevLat, double prevLon, double currentLat, double currentLon) {
-        double lat1Rad = Math.toRadians(prevLat);
-        double lat2Rad = Math.toRadians(currentLat);
-        double deltaLonRad = Math.toRadians(currentLon - prevLon);
+    private static double bearing(final double prevLat, final double prevLon, final double currentLat, final double currentLon) {
+        final double lat1Rad = Math.toRadians(prevLat);
+        final double lat2Rad = Math.toRadians(currentLat);
+        final double deltaLonRad = Math.toRadians(currentLon - prevLon);
 
-        double y = Math.sin(deltaLonRad) * Math.cos(lat2Rad);
-        double x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad)
+        final double y = Math.sin(deltaLonRad) * Math.cos(lat2Rad);
+        final double x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad)
                 * Math.cos(deltaLonRad);
         return radToDegrees(Math.atan2(y, x));
     }
@@ -124,17 +124,17 @@ public class CalculationUtil {
     /**
      * Converts an angle in radians to degrees
      */
-    private static double radToDegrees(double rad) {
+    private static double radToDegrees(final double rad) {
         return (Math.toDegrees(rad) + 360) % 360;
     }
 
     /**
      * Calculate the distance between two points (Latitude, Longitude)
      */
-    private static double distanceMeter(double prevLat, double prevLon, double currentLat, double currentLon) {
-        double lat1Rad = Math.toRadians(prevLat);
-        double lat2Rad = Math.toRadians(currentLat);
-        double deltaLonRad = Math.toRadians(currentLon - prevLon);
+    private static double distanceMeter(final double prevLat, final double prevLon, final double currentLat, final double currentLon) {
+        final double lat1Rad = Math.toRadians(prevLat);
+        final double lat2Rad = Math.toRadians(currentLat);
+        final double deltaLonRad = Math.toRadians(currentLon - prevLon);
 
         return Math.acos(Math.sin(lat1Rad) * Math.sin(lat2Rad) + Math.cos(lat1Rad) * Math.cos(lat2Rad)
                 * Math.cos(deltaLonRad))

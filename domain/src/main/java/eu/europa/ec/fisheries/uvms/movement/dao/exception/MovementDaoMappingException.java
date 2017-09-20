@@ -19,11 +19,11 @@ public class MovementDaoMappingException extends Exception {
         super();
     }
 
-    public MovementDaoMappingException(String message) {
+    public MovementDaoMappingException(final String message) {
         super(message);
     }
 
-    public MovementDaoMappingException(String message, Throwable cause) {
+    public MovementDaoMappingException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

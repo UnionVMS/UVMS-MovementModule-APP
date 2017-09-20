@@ -22,11 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
 import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 
 @Stateless
 public class MessageProducerBean implements MessageProducer, ConfigMessageProducer {
@@ -36,31 +31,31 @@ public class MessageProducerBean implements MessageProducer, ConfigMessageProduc
     final static Logger LOG = LoggerFactory.getLogger(MessageProducerBean.class);
 
     private void shouldIFail() throws MovementMessageException {
-        String fail = System.getProperty(MESSAGE_PRODUCER_METHODS_FAIL, "false");
+        final String fail = System.getProperty(MESSAGE_PRODUCER_METHODS_FAIL, "false");
         if(!"false".equals(fail.toLowerCase())) {
             throw new MovementMessageException();
         }
     }
 
     @Override
-    public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException {
+    public String sendModuleMessage(final String text, final ModuleQueue queue) throws MovementMessageException {
         shouldIFail();
         LOG.info("sendModuleMessage (" + queue.name() + "): " + text);
         return UUID.randomUUID().toString();
     }
 
-    public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException {
+    public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent final EventMessage message) throws MovementMessageException {
         shouldIFail();
         LOG.info("sendErrorMessageBackToRecipient: " + message.getErrorMessage());
     }
 
-    public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) throws MovementMessageException {
+    public void sendMessageBackToRecipient(final TextMessage requestMessage, final String returnMessage) throws MovementMessageException {
         shouldIFail();
         LOG.info("sendMessageBackToRecipient: " + returnMessage);
     }
 
     @Override
-    public String sendConfigMessage(String text) throws ConfigMessageException {
+    public String sendConfigMessage(final String text) throws ConfigMessageException {
         LOG.info("sendConfigMessage: " + text);
         return text;
     }

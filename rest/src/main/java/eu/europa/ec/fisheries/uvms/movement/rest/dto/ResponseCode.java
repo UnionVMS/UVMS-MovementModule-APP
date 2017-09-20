@@ -21,7 +21,7 @@ public enum ResponseCode implements RestResponseCode {
 
     private final String code;
 
-    private ResponseCode(String code) {
+    private ResponseCode(final String code) {
         this.code = code;
     }
 

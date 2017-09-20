@@ -20,14 +20,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
@@ -45,12 +42,12 @@ public class AreaRestResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     public ResponseDto getAreas() {
         try {
-            List<AreaType> areas = movementService.getAreas();
+            final List<AreaType> areas = movementService.getAreas();
             return new ResponseDto(areas, ResponseCode.OK);
-        } catch (MovementDuplicateException ex) {
+        } catch (final MovementDuplicateException ex) {
             LOG.error("[ Error when getting areas. ] {}", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("[ Error when getting areas. ] {}", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }

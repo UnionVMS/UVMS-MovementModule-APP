@@ -19,11 +19,11 @@ public class MovementSearchMapperException extends MovementDaoMappingException {
         super();
     }
 
-    public MovementSearchMapperException(String message) {
+    public MovementSearchMapperException(final String message) {
         super(message);
     }
 
-    public MovementSearchMapperException(String message, Throwable cause) {
+    public MovementSearchMapperException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

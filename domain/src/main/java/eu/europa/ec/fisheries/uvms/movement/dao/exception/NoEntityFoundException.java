@@ -11,15 +11,13 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.dao.exception;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-
 public class NoEntityFoundException extends MovementDaoException {
 
-    public NoEntityFoundException(int errorCode, String message) {
+    public NoEntityFoundException(final int errorCode, final String message) {
         super(errorCode, message);
     }
 
-    public NoEntityFoundException(int errorCode, String message, Throwable cause) {
+    public NoEntityFoundException(final int errorCode, final String message, final Throwable cause) {
         super(errorCode, message, cause);
     }
 

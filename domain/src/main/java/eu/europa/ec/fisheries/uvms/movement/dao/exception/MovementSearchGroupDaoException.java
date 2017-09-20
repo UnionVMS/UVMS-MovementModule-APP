@@ -19,11 +19,11 @@ public class MovementSearchGroupDaoException extends Exception {
         super();
     }
 
-    public MovementSearchGroupDaoException(String message) {
+    public MovementSearchGroupDaoException(final String message) {
         super(message);
     }
 
-    public MovementSearchGroupDaoException(String message, Throwable cause) {
+    public MovementSearchGroupDaoException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

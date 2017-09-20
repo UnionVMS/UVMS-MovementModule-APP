@@ -11,12 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.exception.SearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
@@ -77,7 +71,7 @@ public class SearchMapperListTest {
      * @param field
      * @return
      */
-    private SearchValue getSearchValue(String value, SearchField field) {
+    private SearchValue getSearchValue(final String value, final SearchField field) {
         return new SearchValue(field, value);
     }
 
@@ -88,7 +82,7 @@ public class SearchMapperListTest {
      * @param params
      * @return
      */
-    private String revertToInStatement(String data, String params) {
+    private String revertToInStatement(final String data, final String params) {
         return data.replace("=", "").trim() + getInStatement(params);
     }
 
@@ -99,12 +93,12 @@ public class SearchMapperListTest {
      * @param joins
      * @return
      */
-    private String getSelectString(String where, String... joins) {
-        StringBuilder builder = new StringBuilder();
+    private String getSelectString(final String where, final String... joins) {
+        final StringBuilder builder = new StringBuilder();
         builder.append(INITIAL_SELECT);
 
         if (joins != null) {
-            for (String data : joins) {
+            for (final String data : joins) {
                 builder.append(data);
             }
         }
@@ -123,7 +117,7 @@ public class SearchMapperListTest {
      * @param values
      * @return
      */
-    private String getInStatement(String values) {
+    private String getInStatement(final String values) {
         return " IN ( " + values + " )";
     }
 
@@ -139,16 +133,16 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testCreateSearchSql() throws ParseException, SearchMapperException {
-        String data = SearchFieldMapper.createSelectSearchSql(null, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(null, true);
         Assert.assertEquals(INITIAL_SELECT + ORDER_BY, data);
     }
 
     @Ignore
     @Test
     public void testMovementId() throws ParseException, SearchMapperException {
-        List<SearchValue> list = new ArrayList<>();
+        final List<SearchValue> list = new ArrayList<>();
         list.add(getSearchValue(GLOBAL_ID, SearchField.MOVEMENT_ID));
-        String data = SearchFieldMapper.createSelectSearchSql(list, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(list, true);
         Assert.assertEquals(getSelectString(MOVEMENT_ID + GLOBAL_ID, METADATA_JOIN), data);
         //Assert.assertEquals(getSelectString(MOVEMENT_ID + GLOBAL_ID, getAllJoins()), data);
     }
@@ -156,9 +150,9 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testSegmentId() throws ParseException, SearchMapperException {
-        List<SearchValue> list = new ArrayList<>();
+        final List<SearchValue> list = new ArrayList<>();
         list.add(getSearchValue(GLOBAL_ID, SearchField.SEGMENT_ID));
-        String data = SearchFieldMapper.createSelectSearchSql(list, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(list, true);
         //TODO  
         //Assert.assertEquals(getSelectString(SEGMENT_ID + GLOBAL_ID, MOVEMENT_SEGMENT1_JOIN, MOVEMENT_SEGMENT2_JOIN, METADATA_JOIN), data);
         //Assert.assertEquals(getSelectString(SEGMENT_ID + GLOBAL_ID, getAllJoins()), data);
@@ -167,9 +161,9 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testTrackId() throws ParseException, SearchMapperException {
-        List<SearchValue> list = new ArrayList<>();
+        final List<SearchValue> list = new ArrayList<>();
         list.add(getSearchValue(GLOBAL_ID, SearchField.TRACK_ID));
-        String data = SearchFieldMapper.createSelectSearchSql(list, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(list, true);
         Assert.assertEquals(getSelectString(TRACK_ID + GLOBAL_ID, MOVEMENT_TRACK_JOIN, METADATA_JOIN), data);
         //Assert.assertEquals(getSelectString(TRACK_ID + GLOBAL_ID, getAllJoins()), data);
     }
@@ -177,9 +171,9 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testConnectId() throws ParseException, SearchMapperException {
-        List<SearchValue> list = new ArrayList<>();
+        final List<SearchValue> list = new ArrayList<>();
         list.add(getSearchValue(GLOBAL_ID, SearchField.CONNECT_ID));
-        String data = SearchFieldMapper.createSelectSearchSql(list, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(list, true);
         //Assert.assertEquals(getSelectString(MOVEMENT_CONNECT_ID + GLOBAL_ID, getAllJoins()), data);
         //Assert.assertEquals(getSelectString(MOVEMENT_CONNECT_ID + GLOBAL_ID, MOVEMENT_CONECT_JOIN, METADATA_JOIN), data);
     }
@@ -188,23 +182,23 @@ public class SearchMapperListTest {
     @Test
     public void testGetOrdinalValueFromEnum() throws ParseException, SearchMapperException {
 
-        for (MovementTypeType mt : MovementTypeType.values()) {
-            Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mt.name(), SearchField.MOVMENT_TYPE));
+        for (final MovementTypeType mt : MovementTypeType.values()) {
+            final Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mt.name(), SearchField.MOVMENT_TYPE));
             Assert.assertTrue(mt.ordinal() == data);
         }
 
-        for (MovementActivityTypeType mat : MovementActivityTypeType.values()) {
-            Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mat.name(), SearchField.ACTIVITY_TYPE));
+        for (final MovementActivityTypeType mat : MovementActivityTypeType.values()) {
+            final Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mat.name(), SearchField.ACTIVITY_TYPE));
             Assert.assertTrue(mat.ordinal() == data);
         }
 
-        for (MovementSourceType mst : MovementSourceType.values()) {
-            Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mst.name(), SearchField.SOURCE));
+        for (final MovementSourceType mst : MovementSourceType.values()) {
+            final Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mst.name(), SearchField.SOURCE));
             Assert.assertTrue(mst.ordinal() == data);
         }
 
-        for (SegmentCategoryType sct : SegmentCategoryType.values()) {
-            Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(sct.name(), SearchField.CATEGORY));
+        for (final SegmentCategoryType sct : SegmentCategoryType.values()) {
+            final Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(sct.name(), SearchField.CATEGORY));
             Assert.assertTrue(sct.ordinal() == data);
         }
 
@@ -213,10 +207,10 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testMovementType() throws ParseException, SearchMapperException {
-        for (MovementTypeType mt : MovementTypeType.values()) {
-            List<SearchValue> list = new ArrayList<>();
+        for (final MovementTypeType mt : MovementTypeType.values()) {
+            final List<SearchValue> list = new ArrayList<>();
             list.add(getSearchValue(mt.name(), SearchField.MOVMENT_TYPE));
-            String data = SearchFieldMapper.createSelectSearchSql(list, true);
+            final String data = SearchFieldMapper.createSelectSearchSql(list, true);
             Assert.assertEquals(getSelectString(MOVEMENT_TYPE + mt.ordinal(), METADATA_JOIN), data);
             //Assert.assertEquals(getSelectString(MOVEMENT_TYPE + mt.ordinal(), getAllJoins()), data);
         }
@@ -225,10 +219,10 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testActivityType() throws ParseException, SearchMapperException {
-        for (MovementActivityTypeType mt : MovementActivityTypeType.values()) {
-            List<SearchValue> list = new ArrayList<>();
+        for (final MovementActivityTypeType mt : MovementActivityTypeType.values()) {
+            final List<SearchValue> list = new ArrayList<>();
             list.add(getSearchValue(mt.name(), SearchField.ACTIVITY_TYPE));
-            String data = SearchFieldMapper.createSelectSearchSql(list, true);
+            final String data = SearchFieldMapper.createSelectSearchSql(list, true);
             Assert.assertEquals(getSelectString(ACTIVITY_TYPE + mt.ordinal(), ACTIVITY_JOIN, METADATA_JOIN), data);
             //Assert.assertEquals(getSelectString(ACTIVITY_TYPE + mt.ordinal(), getAllJoins()), data);
         }
@@ -238,9 +232,9 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testArea() throws ParseException, SearchMapperException {
-        List<SearchValue> list = new ArrayList<>();
+        final List<SearchValue> list = new ArrayList<>();
         list.add(getSearchValue(AREA, SearchField.AREA));
-        String data = SearchFieldMapper.createSelectSearchSql(list, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(list, true);
         //Assert.assertEquals(getSelectString(AREA, getAllJoins()), data);
         Assert.assertEquals(getSelectString(AREA, METADATA_JOIN), data);
     }
@@ -249,10 +243,10 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testSource() throws ParseException, SearchMapperException {
-        for (MovementSourceType mt : MovementSourceType.values()) {
-            List<SearchValue> list = new ArrayList<>();
+        for (final MovementSourceType mt : MovementSourceType.values()) {
+            final List<SearchValue> list = new ArrayList<>();
             list.add(getSearchValue(mt.name(), SearchField.SOURCE));
-            String data = SearchFieldMapper.createSelectSearchSql(list, true);
+            final String data = SearchFieldMapper.createSelectSearchSql(list, true);
             Assert.assertEquals(getSelectString(SOURCE + mt.ordinal(), METADATA_JOIN), data);
             //Assert.assertEquals(getSelectString(SOURCE + mt.ordinal(), getAllJoins()), data);
         }
@@ -261,10 +255,10 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testCategory() throws ParseException, SearchMapperException {
-        for (SegmentCategoryType mt : SegmentCategoryType.values()) {
-            List<SearchValue> list = new ArrayList<>();
+        for (final SegmentCategoryType mt : SegmentCategoryType.values()) {
+            final List<SearchValue> list = new ArrayList<>();
             list.add(getSearchValue(mt.name(), SearchField.CATEGORY));
-            String data = SearchFieldMapper.createSelectSearchSql(list, true);
+            final String data = SearchFieldMapper.createSelectSearchSql(list, true);
 
             //TODO  
             //Assert.assertEquals(getSelectString(CATEGORY + mt.ordinal(), getAllJoins()), data);
@@ -276,7 +270,7 @@ public class SearchMapperListTest {
     @Test
     public void testSingleQueryAllCategory() throws ParseException, SearchMapperException {
 
-        List<SearchValue> list = new ArrayList<>();
+        final List<SearchValue> list = new ArrayList<>();
         list.add(getSearchValue(GLOBAL_ID, SearchField.MOVEMENT_ID));
         list.add(getSearchValue(GLOBAL_ID, SearchField.SEGMENT_ID));
         list.add(getSearchValue(GLOBAL_ID, SearchField.TRACK_ID));
@@ -288,7 +282,7 @@ public class SearchMapperListTest {
         list.add(getSearchValue(MovementSourceType.INMARSAT_C.name(), SearchField.SOURCE));
         list.add(getSearchValue(SegmentCategoryType.ANCHORED.name(), SearchField.CATEGORY));
 
-        String data = SearchFieldMapper.createSelectSearchSql(list, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(list, true);
 
         Assert.assertTrue(StringUtils.countMatches(data, MOVEMENT_ID + GLOBAL_ID) == 1);
         //TODO
@@ -323,10 +317,10 @@ public class SearchMapperListTest {
     @Test
     public void testQueryAllCategoryTwoTimes() throws ParseException, SearchMapperException {
 
-        String ID = "1";
-        String ID2 = "2";
+        final String ID = "1";
+        final String ID2 = "2";
 
-        List<SearchValue> list = new ArrayList<>();
+        final List<SearchValue> list = new ArrayList<>();
 
         //FIRST ROUND
         list.add(getSearchValue(ID, SearchField.MOVEMENT_ID));
@@ -355,33 +349,33 @@ public class SearchMapperListTest {
         list.add(getSearchValue(SegmentCategoryType.EXIT_PORT.name(), SearchField.CATEGORY));
 
         //GET THE LIST
-        String data = SearchFieldMapper.createSelectSearchSql(list, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(list, true);
 
         //ASSERT THE DATA
-        String movement = revertToInStatement(MOVEMENT_ID, ID + ", " + ID2);
+        final String movement = revertToInStatement(MOVEMENT_ID, ID + ", " + ID2);
         Assert.assertTrue(StringUtils.countMatches(data, movement) == 1);
 
-        String segment = revertToInStatement(SEGMENT_ID, ID + ", " + ID2);
+        final String segment = revertToInStatement(SEGMENT_ID, ID + ", " + ID2);
         /*//System.out.println(data);
          //System.out.println(segment);*/
         //TODO FIX!
         //Assert.assertTrue(StringUtils.countMatches(data, segment) == 1);
 
-        String track = revertToInStatement(TRACK_ID, ID + ", " + ID2);
+        final String track = revertToInStatement(TRACK_ID, ID + ", " + ID2);
         Assert.assertTrue(StringUtils.countMatches(data, track) == 1);
 
         //String connect = revertToInStatement(MOVEMENT_CONNECT_ID, ID + ", " + ID2);
         //Assert.assertTrue(StringUtils.countMatches(data, connect) == 1);
-        String movementType = revertToInStatement(MOVEMENT_TYPE, MovementTypeType.ENT.ordinal() + ", " + MovementTypeType.EXI.ordinal());
+        final String movementType = revertToInStatement(MOVEMENT_TYPE, MovementTypeType.ENT.ordinal() + ", " + MovementTypeType.EXI.ordinal());
         Assert.assertTrue(StringUtils.countMatches(data, movementType) == 1);
 
-        String activityType = revertToInStatement(ACTIVITY_TYPE, MovementActivityTypeType.ANC.ordinal() + ", " + MovementActivityTypeType.CAN.ordinal());
+        final String activityType = revertToInStatement(ACTIVITY_TYPE, MovementActivityTypeType.ANC.ordinal() + ", " + MovementActivityTypeType.CAN.ordinal());
         Assert.assertTrue(StringUtils.countMatches(data, activityType) == 1);
 
-        String movementSource = revertToInStatement(SOURCE, MovementSourceType.INMARSAT_C.ordinal() + ", " + MovementSourceType.INMARSAT_C.ordinal());
+        final String movementSource = revertToInStatement(SOURCE, MovementSourceType.INMARSAT_C.ordinal() + ", " + MovementSourceType.INMARSAT_C.ordinal());
         Assert.assertTrue(StringUtils.countMatches(data, movementSource) == 1);
 
-        String segmentCategory = revertToInStatement(CATEGORY, SegmentCategoryType.ANCHORED.ordinal() + ", " + SegmentCategoryType.EXIT_PORT.ordinal());
+        final String segmentCategory = revertToInStatement(CATEGORY, SegmentCategoryType.ANCHORED.ordinal() + ", " + SegmentCategoryType.EXIT_PORT.ordinal());
         //TODO FIX!
         //Assert.assertTrue(StringUtils.countMatches(data, movementSource) == 1);
 
@@ -397,36 +391,36 @@ public class SearchMapperListTest {
     @Ignore
     @Test
     public void testSearchFieldSegmentId() throws MovementDaoMappingException, ParseException, SearchMapperException {
-        List<ListCriteria> listCriterias = new ArrayList<>();
+        final List<ListCriteria> listCriterias = new ArrayList<>();
 
-        ListCriteria criteria = new ListCriteria();
+        final ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.SEGMENT_ID);
         criteria.setValue(GLOBAL_ID);
         listCriterias.add(criteria);
 
-        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
+        final List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
 
         Assert.assertTrue(mapSearchField.size() == 1);
 
-        String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
 
     }
 
     @Ignore
     @Test
     public void testSearchFieldCategory() throws MovementDaoMappingException, ParseException, SearchMapperException {
-        List<ListCriteria> listCriterias = new ArrayList<>();
+        final List<ListCriteria> listCriterias = new ArrayList<>();
 
-        ListCriteria criteria = new ListCriteria();
+        final ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CATEGORY);
         criteria.setValue(SegmentCategoryType.ANCHORED.name());
         listCriterias.add(criteria);
 
-        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
+        final List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
 
         Assert.assertTrue(mapSearchField.size() == 1);
 
-        String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
+        final String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
     }
     
     

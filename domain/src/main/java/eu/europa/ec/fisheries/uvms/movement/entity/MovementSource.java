@@ -84,11 +84,11 @@ public class MovementSource implements Serializable {
     public MovementSource() {
     }
 
-    public MovementSource(Long id) {
+    public MovementSource(final Long id) {
         this.id = id;
     }
 
-    public MovementSource(Long id, String name, String description, Date updated, String updatedBy) {
+    public MovementSource(final Long id, final String name, final String description, final Date updated, final String updatedBy) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -100,7 +100,7 @@ public class MovementSource implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -108,7 +108,7 @@ public class MovementSource implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -116,7 +116,7 @@ public class MovementSource implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -124,7 +124,7 @@ public class MovementSource implements Serializable {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -132,7 +132,7 @@ public class MovementSource implements Serializable {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -141,7 +141,7 @@ public class MovementSource implements Serializable {
         return movementList;
     }
 
-    public void setMovementList(List<Movement> movementList) {
+    public void setMovementList(final List<Movement> movementList) {
         this.movementList = movementList;
     }
 
@@ -153,12 +153,12 @@ public class MovementSource implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof MovementSource)) {
             return false;
         }
-        MovementSource other = (MovementSource) object;
+        final MovementSource other = (MovementSource) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

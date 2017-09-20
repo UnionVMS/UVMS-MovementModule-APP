@@ -74,7 +74,7 @@ public class AreaType implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -82,7 +82,7 @@ public class AreaType implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -90,7 +90,7 @@ public class AreaType implements Serializable {
         return updatedTime;
     }
 
-    public void setUpdatedTime(Date updatedTime) {
+    public void setUpdatedTime(final Date updatedTime) {
         this.updatedTime = updatedTime;
     }
 
@@ -98,7 +98,7 @@ public class AreaType implements Serializable {
         return updatedUser;
     }
 
-    public void setUpdatedUser(String updatedUser) {
+    public void setUpdatedUser(final String updatedUser) {
         this.updatedUser = updatedUser;
     }
 

@@ -12,12 +12,8 @@ package eu.europa.ec.fisheries.uvms.movement.dao;
  copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
-import java.util.Properties;
 
 public class Dao {
 

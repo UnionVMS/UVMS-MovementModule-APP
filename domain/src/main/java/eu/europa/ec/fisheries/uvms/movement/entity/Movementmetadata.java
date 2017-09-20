@@ -93,7 +93,7 @@ public class Movementmetadata implements Serializable {
         return movemetId;
     }
 
-    public void setMovemetId(Long movemetId) {
+    public void setMovemetId(final Long movemetId) {
         this.movemetId = movemetId;
     }
 
@@ -101,7 +101,7 @@ public class Movementmetadata implements Serializable {
         return closestPortRemoteId;
     }
 
-    public void setClosestPortRemoteId(String closestPortRemoteId) {
+    public void setClosestPortRemoteId(final String closestPortRemoteId) {
         this.closestPortRemoteId = closestPortRemoteId;
     }
 
@@ -109,7 +109,7 @@ public class Movementmetadata implements Serializable {
         return closestPortCode;
     }
 
-    public void setClosestPortCode(String closestPortCode) {
+    public void setClosestPortCode(final String closestPortCode) {
         this.closestPortCode = closestPortCode;
     }
 
@@ -117,7 +117,7 @@ public class Movementmetadata implements Serializable {
         return closestPortDistance;
     }
 
-    public void setClosestPortDistance(Double closestPortDistance) {
+    public void setClosestPortDistance(final Double closestPortDistance) {
         this.closestPortDistance = closestPortDistance;
     }
 
@@ -125,7 +125,7 @@ public class Movementmetadata implements Serializable {
         return closestCountryRemoteId;
     }
 
-    public void setClosestCountryRemoteId(String closestCountryRemoteId) {
+    public void setClosestCountryRemoteId(final String closestCountryRemoteId) {
         this.closestCountryRemoteId = closestCountryRemoteId;
     }
 
@@ -133,7 +133,7 @@ public class Movementmetadata implements Serializable {
         return closestCountryCode;
     }
 
-    public void setClosestCountryCode(String closestCountryCode) {
+    public void setClosestCountryCode(final String closestCountryCode) {
         this.closestCountryCode = closestCountryCode;
     }
 
@@ -141,7 +141,7 @@ public class Movementmetadata implements Serializable {
         return closestCountryDistance;
     }
 
-    public void setClosestCountryDistance(Double closestCountryDistance) {
+    public void setClosestCountryDistance(final Double closestCountryDistance) {
         this.closestCountryDistance = closestCountryDistance;
     }
 
@@ -149,7 +149,7 @@ public class Movementmetadata implements Serializable {
         return closestPortName;
     }
 
-    public void setClosestPortName(String closestPortName) {
+    public void setClosestPortName(final String closestPortName) {
         this.closestPortName = closestPortName;
     }
 
@@ -157,7 +157,7 @@ public class Movementmetadata implements Serializable {
         return closestCountryName;
     }
 
-    public void setClosestCountryName(String closestCountryName) {
+    public void setClosestCountryName(final String closestCountryName) {
         this.closestCountryName = closestCountryName;
     }
 
@@ -165,7 +165,7 @@ public class Movementmetadata implements Serializable {
         return movemetUpdattim;
     }
 
-    public void setMovemetUpdattim(Date movemetUpdattim) {
+    public void setMovemetUpdattim(final Date movemetUpdattim) {
         this.movemetUpdattim = movemetUpdattim;
     }
 
@@ -173,7 +173,7 @@ public class Movementmetadata implements Serializable {
         return movemetUpuser;
     }
 
-    public void setMovemetUpuser(String movemetUpuser) {
+    public void setMovemetUpuser(final String movemetUpuser) {
         this.movemetUpuser = movemetUpuser;
     }
 
@@ -182,7 +182,7 @@ public class Movementmetadata implements Serializable {
         return movementList;
     }
 
-    public void setMovementList(List<Movement> movementList) {
+    public void setMovementList(final List<Movement> movementList) {
         this.movementList = movementList;
     }
 

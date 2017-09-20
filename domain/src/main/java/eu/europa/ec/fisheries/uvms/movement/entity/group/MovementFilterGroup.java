@@ -19,11 +19,9 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -79,7 +77,7 @@ public class MovementFilterGroup implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -87,7 +85,7 @@ public class MovementFilterGroup implements Serializable {
         return active;
     }
 
-    public void setActive(String active) {
+    public void setActive(final String active) {
         this.active = active;
     }
 
@@ -95,7 +93,7 @@ public class MovementFilterGroup implements Serializable {
         return global;
     }
 
-    public void setGlobal(String global) {
+    public void setGlobal(final String global) {
         this.global = global;
     }
 
@@ -103,7 +101,7 @@ public class MovementFilterGroup implements Serializable {
         return dynamic;
     }
 
-    public void setDynamic(String dynamic) {
+    public void setDynamic(final String dynamic) {
         this.dynamic = dynamic;
     }
 
@@ -111,7 +109,7 @@ public class MovementFilterGroup implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -119,7 +117,7 @@ public class MovementFilterGroup implements Serializable {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -127,7 +125,7 @@ public class MovementFilterGroup implements Serializable {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -135,11 +133,11 @@ public class MovementFilterGroup implements Serializable {
         return user;
     }
 
-    public void setUser(String user) {
+    public void setUser(final String user) {
         this.user = user;
     }
 
-    public void setFilters(List<MovementFilter> filters) {
+    public void setFilters(final List<MovementFilter> filters) {
         this.filters = filters;
     }
 
@@ -154,7 +152,7 @@ public class MovementFilterGroup implements Serializable {
         return dynamic;
     }
 
-    public void setFiltgrpDynamic(String filtgrpDynamic) {
+    public void setFiltgrpDynamic(final String filtgrpDynamic) {
         this.dynamic = filtgrpDynamic;
     }
 }

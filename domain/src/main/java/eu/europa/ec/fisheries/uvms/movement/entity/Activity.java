@@ -35,7 +35,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -97,7 +96,7 @@ public class Activity implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -105,7 +104,7 @@ public class Activity implements Serializable {
         return messageId;
     }
 
-    public void setMessageId(String messageId) {
+    public void setMessageId(final String messageId) {
         this.messageId = messageId;
     }
 
@@ -113,7 +112,7 @@ public class Activity implements Serializable {
         return callback;
     }
 
-    public void setCallback(String callback) {
+    public void setCallback(final String callback) {
         this.callback = callback;
     }
 
@@ -121,7 +120,7 @@ public class Activity implements Serializable {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -129,7 +128,7 @@ public class Activity implements Serializable {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -137,7 +136,7 @@ public class Activity implements Serializable {
         return movementList;
     }
 
-    public void setMovementList(List<Movement> movementList) {
+    public void setMovementList(final List<Movement> movementList) {
         this.movementList = movementList;
     }
 
@@ -145,7 +144,7 @@ public class Activity implements Serializable {
         return activityType;
     }
 
-    public void setActivityType(MovementActivityTypeType activityType) {
+    public void setActivityType(final MovementActivityTypeType activityType) {
         this.activityType = activityType;
     }
 

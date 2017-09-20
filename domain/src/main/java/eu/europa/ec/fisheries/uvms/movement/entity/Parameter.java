@@ -50,11 +50,11 @@ public class Parameter implements Serializable {
     public Parameter() {
     }
 
-    public Parameter(String paramId) {
+    public Parameter(final String paramId) {
         this.paramId = paramId;
     }
 
-    public Parameter(String paramId, String paramDescription) {
+    public Parameter(final String paramId, final String paramDescription) {
         this.paramId = paramId;
         this.paramDescription = paramDescription;
     }
@@ -63,7 +63,7 @@ public class Parameter implements Serializable {
         return paramId;
     }
 
-    public void setParamId(String paramId) {
+    public void setParamId(final String paramId) {
         this.paramId = paramId;
     }
 
@@ -71,7 +71,7 @@ public class Parameter implements Serializable {
         return paramDescription;
     }
 
-    public void setParamDescription(String paramDescription) {
+    public void setParamDescription(final String paramDescription) {
         this.paramDescription = paramDescription;
     }
 
@@ -79,7 +79,7 @@ public class Parameter implements Serializable {
         return paramValue;
     }
 
-    public void setParamValue(String paramValue) {
+    public void setParamValue(final String paramValue) {
         this.paramValue = paramValue;
     }
 
@@ -91,12 +91,12 @@ public class Parameter implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Parameter)) {
             return false;
         }
-        Parameter other = (Parameter) object;
+        final Parameter other = (Parameter) object;
         if ((this.paramId == null && other.paramId != null) || (this.paramId != null && !this.paramId.equals(other.paramId))) {
             return false;
         }

@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNull;
 import javax.persistence.EntityManager;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,106 +39,106 @@ public class MovementDomainModelBeanBeanTest {
 
     @Test
     public void north() {
-        Double expectedResult = 0.0;
+        final Double expectedResult = 0.0;
 
-        Double prevLon = 0.0;
-        Double prevLat = 0.0;
-        Double thisLon = 0.0;
-        Double thisLat = 1.0;
+        final Double prevLon = 0.0;
+        final Double prevLat = 0.0;
+        final Double thisLon = 0.0;
+        final Double thisLat = 1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        final Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
 
         assertEquals(expectedResult, alfa);
     }
 
     @Test
     public void northEast() {
-        Double expectedResult = 44.99563645534488;
+        final Double expectedResult = 44.99563645534488;
 
-        Double prevLon = 0.0;
-        Double prevLat = 0.0;
-        Double thisLon = 1.0;
-        Double thisLat = 1.0;
+        final Double prevLon = 0.0;
+        final Double prevLat = 0.0;
+        final Double thisLon = 1.0;
+        final Double thisLat = 1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        final Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
 
         assertEquals(expectedResult, alfa);
     }
 
     @Test
     public void east() {
-        Double expectedResult = 90.0;
+        final Double expectedResult = 90.0;
 
-        Double prevLon = 0.0;
-        Double prevLat = 0.0;
-        Double thisLon = 1.0;
-        Double thisLat = 0.0;
+        final Double prevLon = 0.0;
+        final Double prevLat = 0.0;
+        final Double thisLon = 1.0;
+        final Double thisLat = 0.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        final Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
 
         assertEquals(expectedResult, alfa);
     }
 
     @Test
     public void southEast() {
-        Double expectedResult = 135.00436354465512;
+        final Double expectedResult = 135.00436354465512;
 
-        Double prevLon = 0.0;
-        Double prevLat = 0.0;
-        Double thisLon = 1.0;
-        Double thisLat = -1.0;
+        final Double prevLon = 0.0;
+        final Double prevLat = 0.0;
+        final Double thisLon = 1.0;
+        final Double thisLat = -1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        final Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
 
         assertEquals(expectedResult, alfa);
     }
 
     @Test
     public void south() {
-        Double expectedResult = 180.0;
+        final Double expectedResult = 180.0;
 
-        Double prevLon = 0.0;
-        Double prevLat = 0.0;
-        Double thisLon = 0.0;
-        Double thisLat = -1.0;
+        final Double prevLon = 0.0;
+        final Double prevLat = 0.0;
+        final Double thisLon = 0.0;
+        final Double thisLat = -1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        final Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
         assertEquals(expectedResult, alfa);
     }
 
     @Test
     public void southWest() {
-        Double expectedResult = 224.99563645534485;
+        final Double expectedResult = 224.99563645534485;
 
-        Double prevLon = 0.0;
-        Double prevLat = 0.0;
-        Double thisLon = -1.0;
-        Double thisLat = -1.0;
+        final Double prevLon = 0.0;
+        final Double prevLat = 0.0;
+        final Double thisLon = -1.0;
+        final Double thisLat = -1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        final Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
         assertEquals(expectedResult, alfa);
     }
 
     @Test
     public void west() {
-        Double expectedResult = 270.0;
+        final Double expectedResult = 270.0;
 
-        Double prevLon = 0.0;
-        Double prevLat = 0.0;
-        Double thisLon = -1.0;
-        Double thisLat = 0.0;
+        final Double prevLon = 0.0;
+        final Double prevLat = 0.0;
+        final Double thisLon = -1.0;
+        final Double thisLat = 0.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        final Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
         assertEquals(expectedResult, alfa);
     }
 
     public void noMovement() {
-        Double prevLon = 0.0;
-        Double prevLat = 0.0;
-        Double thisLon = 0.0;
-        Double thisLat = 0.0;
+        final Double prevLon = 0.0;
+        final Double prevLat = 0.0;
+        final Double thisLon = 0.0;
+        final Double thisLat = 0.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        final Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
         assertNull(alfa);
     }
 

@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -87,11 +86,11 @@ public class MovementType implements Serializable {
     public MovementType() {
     }
 
-    public MovementType(Long id) {
+    public MovementType(final Long id) {
         this.id = id;
     }
 
-    public MovementType(Long id, String name, String description, Date updated, String updatedBy) {
+    public MovementType(final Long id, final String name, final String description, final Date updated, final String updatedBy) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -103,7 +102,7 @@ public class MovementType implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -111,7 +110,7 @@ public class MovementType implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -119,7 +118,7 @@ public class MovementType implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -127,7 +126,7 @@ public class MovementType implements Serializable {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(final Date updated) {
         this.updated = updated;
     }
 
@@ -135,7 +134,7 @@ public class MovementType implements Serializable {
         return updatedBy;
     }
 
-    public void setUpdatedBy(String updatedBy) {
+    public void setUpdatedBy(final String updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -144,7 +143,7 @@ public class MovementType implements Serializable {
         return movementList;
     }
 
-    public void setMovementList(List<Movement> movementList) {
+    public void setMovementList(final List<Movement> movementList) {
         this.movementList = movementList;
     }
 
@@ -156,12 +155,12 @@ public class MovementType implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(final Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof MovementType)) {
             return false;
         }
-        MovementType other = (MovementType) object;
+        final MovementType other = (MovementType) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

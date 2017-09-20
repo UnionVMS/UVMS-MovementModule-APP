@@ -40,14 +40,14 @@ public class GeometryUtil {
      * @param sequence
      * @return
      */
-    public static LineString getLineString(Coordinate[] sequence) {
-        LineString lineString = FACTORY.createLineString(sequence);
+    public static LineString getLineString(final Coordinate[] sequence) {
+        final LineString lineString = FACTORY.createLineString(sequence);
         lineString.setSRID(SRID);
         return lineString;
     }
 
-    public static Coordinate[] getCoordinateSequenceFromMovements(Movement previousPosition, Movement currentPosition) throws GeometryUtilException {
-        Coordinate[] corSeq = new Coordinate[2];
+    public static Coordinate[] getCoordinateSequenceFromMovements(final Movement previousPosition, final Movement currentPosition) throws GeometryUtilException {
+        final Coordinate[] corSeq = new Coordinate[2];
 
         if (previousPosition.getLocation() == null) {
             throw new GeometryUtilException(5, "[ GeometryUtil.getCoordinateSequenceFromMovements ] Previous location is null");
@@ -61,8 +61,8 @@ public class GeometryUtil {
         return corSeq;
     }
 
-    public static LineString getLineStringFromMovments(Movement previousPosition, Movement currentPosition) throws GeometryUtilException {
-        Coordinate[] corSeq = getCoordinateSequenceFromMovements(previousPosition, currentPosition);
+    public static LineString getLineStringFromMovments(final Movement previousPosition, final Movement currentPosition) throws GeometryUtilException {
+        final Coordinate[] corSeq = getCoordinateSequenceFromMovements(previousPosition, currentPosition);
         return getLineString(corSeq);
     }
 
@@ -74,17 +74,17 @@ public class GeometryUtil {
      * @return
      * @throws GeometryUtilException
      */
-    public static LineString getLineStringFromMovments(List<Movement> movements) throws GeometryUtilException {
+    public static LineString getLineStringFromMovments(final List<Movement> movements) throws GeometryUtilException {
 
         Collections.sort(movements, MovementComparator.MOVEMENT);
 
-        LinkedList<Coordinate> coordinates = new LinkedList<>();
-        for (Movement movement : movements) {
+        final LinkedList<Coordinate> coordinates = new LinkedList<>();
+        for (final Movement movement : movements) {
             coordinates.add(movement.getLocation().getCoordinate());
         }
 
-        Coordinate[] coordinateArray = coordinates.toArray(new Coordinate[coordinates.size()]);
-        LineString lineString = getLineString(coordinateArray);
+        final Coordinate[] coordinateArray = coordinates.toArray(new Coordinate[coordinates.size()]);
+        final LineString lineString = getLineString(coordinateArray);
 
         LOG.debug("LINESTERING FROM MOVEMENT LIST {}", WKTUtil.getWktLineStringFromMovementList(movements));
 
