@@ -36,8 +36,13 @@
 		<dependency>
 			<groupId>org.jvnet.jaxb2_commons</groupId>
 			<artifactId>jaxb2-basics</artifactId>
-			<version>${jaxb2-basics.version}</version>
+			<version>0.9.5</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.6</version>
+		</dependency>		
 	</dependencies>
 
 	<scm>
@@ -71,9 +76,8 @@
 										<bindingFile>${basedir}/src/main/resources/binding-date.xml</bindingFile>
 									</bindingFiles>
 									<extraargs>
-										<extraarg>-xjc-XhashCode</extraarg>
-										<extraarg>-xjc-Xequals</extraarg>
-										<extraarg>-xjc-XtoString</extraarg>
+										<extraarg>-xjc-Xcommons-lang</extraarg>
+										<extraarg>-xjc-Xcommons-lang:ToStringStyle=SHORT_PREFIX_STYLE</extraarg>										
 									</extraargs>
 								</wsdlOption>
 							</wsdlOptions>
@@ -93,9 +97,8 @@
 										<bindingFile>${basedir}/src/main/resources/binding-date.xml</bindingFile>
 									</bindingFiles>
 									<extraargs>
-										<extraarg>-xjc-XhashCode</extraarg>
-										<extraarg>-xjc-Xequals</extraarg>
-										<extraarg>-xjc-XtoString</extraarg>
+										<extraarg>-xjc-Xcommons-lang</extraarg>
+										<extraarg>-xjc-Xcommons-lang:ToStringStyle=SHORT_PREFIX_STYLE</extraarg>										
 									</extraargs>
 								</wsdlOption>
 							</wsdlOptions>
@@ -107,9 +110,9 @@
 				</executions>
 				<dependencies>
 					<dependency>
-						<groupId>org.jvnet.jaxb2_commons</groupId>
-						<artifactId>jaxb2-basics</artifactId>
-						<version>${jaxb2-basics.version}</version>
+					    <groupId>org.jvnet.jaxb2_commons</groupId>
+					    <artifactId>jaxb2-commons-lang</artifactId>
+					    <version>2.4</version>
 					</dependency>
 				</dependencies>
 			</plugin>
