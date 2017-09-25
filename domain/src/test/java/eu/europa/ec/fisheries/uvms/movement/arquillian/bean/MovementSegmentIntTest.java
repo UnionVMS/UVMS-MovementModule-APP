@@ -34,6 +34,9 @@ import java.util.UUID;
 public class MovementSegmentIntTest extends TransactionalTests {
 
     private static int ALL = -1;
+    private static int ORDER_NORMAL = 1;
+    private static int ORDER_REVERSED = 2;
+    private static int ORDER_RANDOM = 3;
 
     private static Logger LOGGER = LoggerFactory.getLogger(MovementSegmentIntTest.class);
 
@@ -180,7 +183,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
-        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(1, ALL ,connectId);
+        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(ORDER_NORMAL, ALL ,connectId);
         for(Movement movement : rs){
             incomingMovementBean.processMovement(movement.getId());
             em.flush();
@@ -206,6 +209,8 @@ public class MovementSegmentIntTest extends TransactionalTests {
             Assert.assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
             Assert.assertEquals(segment.getToMovement().getId(), currentMovement.getId());
 
+            LOGGER.error(previousMovement.getId() + "  " + currentMovement.getId());
+
             i++;
             if(i < n){
                 previousMovement = currentMovement;
@@ -216,6 +221,9 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
         Assert.assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
         Assert.assertEquals(segment.getToMovement().getId(), currentMovement.getId());
+
+
+        LOGGER.error(previousMovement.getId() + "  " + currentMovement.getId());
 
         Assert.assertEquals(rs.size(), i);
     }
