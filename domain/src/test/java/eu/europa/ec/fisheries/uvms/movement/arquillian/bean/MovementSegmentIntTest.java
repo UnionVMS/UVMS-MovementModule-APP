@@ -86,7 +86,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Date dateFirstMovement = Calendar.getInstance().getTime();
         Date dateSecondMovement = new Date(dateFirstMovement.getTime() + 300000);
         Date dateThirdMovement = new Date(dateSecondMovement.getTime() + 300000);
-        Date dateForthMovement = new Date(dateSecondMovement.getTime() + 300000);
+        Date dateForthMovement = new Date(dateThirdMovement.getTime() + 300000);
 
         Movement firstMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", dateFirstMovement);
         Movement secondMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", dateSecondMovement);
@@ -130,7 +130,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Date dateFirstMovement = Calendar.getInstance().getTime();
         Date dateSecondMovement = new Date(dateFirstMovement.getTime() + 300000);
         Date dateThirdMovement = new Date(dateSecondMovement.getTime() + 300000);
-        Date dateForthMovement = new Date(dateSecondMovement.getTime() + 300000);
+        Date dateForthMovement = new Date(dateThirdMovement.getTime() + 300000);
 
         Movement firstMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", dateFirstMovement);
         Movement secondMovement = movementHelpers.createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId, "THREE", dateThirdMovement);
