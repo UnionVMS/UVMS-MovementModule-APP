@@ -17,6 +17,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelExcepti
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,6 +25,7 @@ import javax.ejb.EJB;
 import javax.transaction.SystemException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @RunWith(Arquillian.class)
@@ -166,6 +168,23 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     }
 
+    @Test
+    @Ignore
+    @OperateOnDeployment("normal")
+    public void createVarbergGrenaNormal() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
+        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        String connectId = UUID.randomUUID().toString();
+
+        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(1, 3 ,connectId);
+        for(Movement movement : rs){
+            incomingMovementBean.processMovement(movement.getId());
+            em.flush();
+        }
+        Assert.assertEquals(3,rs.size());
+
+
+
+    }
 
 
 
