@@ -120,6 +120,53 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
 
+    @Test
+    @OperateOnDeployment("normal")
+    public void createFourMovementTrackOutOfOrder() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
+        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+
+        String connectId = UUID.randomUUID().toString();
+
+        Date dateFirstMovement = Calendar.getInstance().getTime();
+        Date dateSecondMovement = new Date(dateFirstMovement.getTime() + 300000);
+        Date dateThirdMovement = new Date(dateSecondMovement.getTime() + 300000);
+        Date dateForthMovement = new Date(dateSecondMovement.getTime() + 300000);
+
+        Movement firstMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", dateFirstMovement);
+        Movement secondMovement = movementHelpers.createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId, "THREE", dateThirdMovement);
+        Movement thirdMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", dateSecondMovement);
+        Movement forthMovement = movementHelpers.createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "FORTH", dateForthMovement);
+
+        incomingMovementBean.processMovement(firstMovement.getId());
+        em.flush();
+        incomingMovementBean.processMovement(secondMovement.getId());
+        em.flush();
+        incomingMovementBean.processMovement(thirdMovement.getId());
+        em.flush();
+        incomingMovementBean.processMovement(forthMovement.getId());
+        em.flush();
+
+
+        Movement firstAfter = movementDao.getMovementById(firstMovement.getId());
+
+        Assert.assertEquals(3, firstAfter.getTrack().getSegmentList().size());
+
+        Track track = firstAfter.getTrack();
+        Segment s1 = track.getSegmentList().get(0);
+        Assert.assertEquals(s1.getFromMovement().getId(), firstMovement.getId());
+        Assert.assertEquals(s1.getToMovement().getId(), thirdMovement.getId());
+
+        Segment s2 = track.getSegmentList().get(1);
+        Assert.assertEquals(s2.getFromMovement().getId(), thirdMovement.getId());
+        Assert.assertEquals(s2.getToMovement().getId(), secondMovement.getId());
+
+        Segment s3 = track.getSegmentList().get(2);
+        Assert.assertEquals(s3.getFromMovement().getId(), secondMovement.getId());
+        Assert.assertEquals(s3.getToMovement().getId(), forthMovement.getId());
+
+    }
+
+
 
 
 
