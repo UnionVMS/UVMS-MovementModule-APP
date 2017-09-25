@@ -20,6 +20,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
@@ -30,6 +32,10 @@ import java.util.UUID;
 
 @RunWith(Arquillian.class)
 public class MovementSegmentIntTest extends TransactionalTests {
+
+    private static int ALL = -1;
+
+    private static Logger LOGGER = LoggerFactory.getLogger(MovementSegmentIntTest.class);
 
     @EJB
     MovementBatchModelBean movementBatchModelBean;
@@ -169,25 +175,49 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
-    @Ignore
     @OperateOnDeployment("normal")
     public void createVarbergGrenaNormal() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
-        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(1, 3 ,connectId);
+        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(1, ALL ,connectId);
         for(Movement movement : rs){
             incomingMovementBean.processMovement(movement.getId());
             em.flush();
         }
-        Assert.assertEquals(3,rs.size());
 
+        int n = rs.size();
+        int i = 0;
 
+        Movement currentMovement = null;
+        Movement previousMovement = null;
+        Segment segment = null;
+        while(i < n){
+            currentMovement = rs.get(i);
+            if(i == 0){
+                previousMovement = currentMovement;
+                i++;
+                continue;
+            }
 
+            Track track = currentMovement.getTrack();
+            segment = track.getSegmentList().get(i - 1);
+
+            Assert.assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
+            Assert.assertEquals(segment.getToMovement().getId(), currentMovement.getId());
+
+            i++;
+            if(i < n){
+                previousMovement = currentMovement;
+            }
+        }
+
+        // check last as well
+
+        Assert.assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
+        Assert.assertEquals(segment.getToMovement().getId(), currentMovement.getId());
+
+        Assert.assertEquals(rs.size(), i);
     }
-
-
-
-
 
 }
