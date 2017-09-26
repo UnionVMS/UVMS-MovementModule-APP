@@ -192,40 +192,63 @@ public class MovementSegmentIntTest extends TransactionalTests {
         int n = rs.size();
         int i = 0;
 
-        Movement currentMovement = null;
         Movement previousMovement = null;
-        Segment segment = null;
         while(i < n){
-            currentMovement = rs.get(i);
+            Movement currentMovement = rs.get(i);
             if(i == 0){
                 previousMovement = currentMovement;
                 i++;
                 continue;
             }
-
             Track track = currentMovement.getTrack();
-            segment = track.getSegmentList().get(i - 1);
-
+            Segment  segment = track.getSegmentList().get(i - 1);
             Assert.assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
             Assert.assertEquals(segment.getToMovement().getId(), currentMovement.getId());
-
-            LOGGER.error(previousMovement.getId() + "  " + currentMovement.getId());
-
             i++;
             if(i < n){
                 previousMovement = currentMovement;
             }
         }
-
-        // check last as well
-
-        Assert.assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
-        Assert.assertEquals(segment.getToMovement().getId(), currentMovement.getId());
-
-
-        LOGGER.error(previousMovement.getId() + "  " + currentMovement.getId());
-
         Assert.assertEquals(rs.size(), i);
     }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void createVarbergGrenaBasedOnSegmentList() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
+        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        String connectId = UUID.randomUUID().toString();
+
+        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(ORDER_RANDOM, 4 ,connectId);
+        for(Movement movement : rs){
+            incomingMovementBean.processMovement(movement.getId());
+            em.flush();
+        }
+
+
+        Movement currentMovement = rs.get(0);
+        Track track = currentMovement.getTrack();
+        List<Segment> segmentList = track.getSegmentList();
+        int n = segmentList.size();
+        int i = 0;
+        Assert.assertEquals(segmentList.size(), rs.size() - 1);
+
+        Segment previousSegment = null;
+        while(i < n){
+            Segment currentSegment = segmentList.get(i);
+            if(i == 0){
+                previousSegment = currentSegment;
+                i++;
+                continue;
+            }
+            Assert.assertEquals(currentSegment.getFromMovement().getId(), previousSegment.getToMovement().getId());
+            i++;
+            if(i < n){
+                previousSegment = currentSegment;
+            }
+        }
+        Assert.assertEquals(segmentList.size(), i);
+    }
+
+
 
 }
