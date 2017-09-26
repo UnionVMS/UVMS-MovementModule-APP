@@ -39,9 +39,8 @@ public class IncomingMovementBean {
     @EJB
     private MovementDaoBean dao;
 
-    public void processMovement(Long id) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException, MovementModelException, SystemException {
-        Movement currentMovement = dao.getMovementById(id);
-        LOG.debug("Processing movement {}", id);
+    public void processMovement(Movement currentMovement) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException, MovementModelException, SystemException {
+        LOG.debug("Processing movement {}", currentMovement.getId());
         if (currentMovement != null && !currentMovement.getProcessed()) {
             String connectId = currentMovement.getMovementConnect().getValue();
             Date timeStamp = currentMovement.getTimestamp();
@@ -55,7 +54,7 @@ public class IncomingMovementBean {
                     Date newDate = DateUtil.addSecondsToDate(timeStamp, 1);
                     currentMovement.setTimestamp(newDate);
                 } else {
-                    LOG.info("Got a duplicate movement. Marking it as such.{}",id);
+                    LOG.info("Got a duplicate movement. Marking it as such.{}", currentMovement.getId());
                     currentMovement.setProcessed(true);
                     currentMovement.setDuplicate(true);
                     currentMovement.setDuplicateId(duplicateMovements.get(0).getGuid());
@@ -108,6 +107,12 @@ public class IncomingMovementBean {
 
             currentMovement.setProcessed(true);
         }
+    }
+
+
+    public void processMovement(Long id) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException, MovementModelException, SystemException {
+        Movement currentMovement = dao.getMovementById(id);
+        processMovement(currentMovement);
     }
 
     /**
