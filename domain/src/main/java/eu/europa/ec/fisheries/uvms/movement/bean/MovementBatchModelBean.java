@@ -217,6 +217,10 @@ public class MovementBatchModelBean {
      */
     public void enrichAreas(MovementType mappedMovement, List<Areatransition> areatransitionList) {
 
+        if(mappedMovement.getMetaData() == null) {
+            mappedMovement.setMetaData(new MovementMetaData());
+        }
+
         HashMap<String, MovementMetaDataAreaType> areas = new HashMap<>();
         for (MovementMetaDataAreaType area : mappedMovement.getMetaData().getAreas()) {
             areas.put(area.getCode(), area);

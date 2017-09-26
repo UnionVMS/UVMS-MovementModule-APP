@@ -138,6 +138,7 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
             Movement movement = createMovementHelper();
             movement.setMovementConnect(createdMovementConnect);
             Movement createdMovement = movementDao.create(movement);
+            createdMovement.setProcessed(true);
             movementDao.flush();
             Assert.assertTrue(createdMovement != null);
 

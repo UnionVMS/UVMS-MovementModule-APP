@@ -45,15 +45,52 @@ public class SegmentBean {
      * @throws GeometryUtilException
      * @throws MovementDaoMappingException
      */
-    public void createSegmentOnFirstMovement(Movement fromMovement, Movement toMovement) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException {
-        // TODO this method should return a segment
-        // TODO this method should be renamed to createSegmentAndTrackOnFirstMovement
+    public Segment createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException {
         Segment segment = createSegment(fromMovement, toMovement);
         Track track = upsertTrack(fromMovement.getTrack(), segment, toMovement);
         fromMovement.setTrack(track);
+        toMovement.setTrack(track);
         dao.persist(fromMovement);
+        return segment;
     }
 
+    /**
+     *
+     * @param fromMovement
+     * @param toMovement
+     * @return
+     * @throws GeometryUtilException
+     * @throws MovementDaoMappingException
+     */
+    public Segment createSegment(Movement fromMovement, Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
+        Segment segment = new Segment();
+
+        if (toMovement == null && fromMovement == null) {
+            LOG.error("[ ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null <createSegment> ]");
+            throw new MovementDaoMappingException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null");
+        }
+
+        SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
+
+        SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, fromMovement, toMovement);
+        segment.setSegmentCategory(segCat);
+
+        segment.setDistance(positionCalculations.getDistanceBetweenPoints());
+        segment.setSpeedOverGround(positionCalculations.getAvgSpeed());
+        segment.setCourseOverGround(positionCalculations.getCourse());
+        segment.setDuration(positionCalculations.getDurationBetweenPoints());
+
+        segment.setFromMovement(fromMovement);
+        segment.setToMovement(toMovement);
+
+        segment.setUpdated(DateUtil.nowUTC());
+        segment.setUpdatedBy("UVMS");
+
+        LineString segmentLineString = GeometryUtil.getLineStringFromMovments(fromMovement, toMovement);
+        segment.setLocation(segmentLineString);
+
+        return segment;
+    }
 
 
     /**
@@ -130,44 +167,6 @@ public class SegmentBean {
         dao.persist(track);
         dao.persist(segment);
         dao.persist(newMovement);
-    }
-
-    /**
-     *
-     * @param fromMovement
-     * @param toMovement
-     * @return
-     * @throws GeometryUtilException
-     * @throws MovementDaoMappingException
-     */
-    public Segment createSegment(Movement fromMovement, Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
-        Segment segment = new Segment();
-
-        if (toMovement == null && fromMovement == null) {
-            LOG.error("[ ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null <createSegment> ]");
-            throw new MovementDaoMappingException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null");
-        }
-
-        SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
-
-        SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, fromMovement, toMovement);
-        segment.setSegmentCategory(segCat);
-
-        segment.setDistance(positionCalculations.getDistanceBetweenPoints());
-        segment.setSpeedOverGround(positionCalculations.getAvgSpeed());
-        segment.setCourseOverGround(positionCalculations.getCourse());
-        segment.setDuration(positionCalculations.getDurationBetweenPoints());
-
-        segment.setFromMovement(fromMovement);
-        segment.setToMovement(toMovement);
-
-        segment.setUpdated(DateUtil.nowUTC());
-        segment.setUpdatedBy("UVMS");
-
-        LineString segmentLineString = GeometryUtil.getLineStringFromMovments(fromMovement, toMovement);
-        segment.setLocation(segmentLineString);
-
-        return segment;
     }
 
     public Track createNewTrack(Segment segment) throws MovementDaoMappingException, MovementDaoException {

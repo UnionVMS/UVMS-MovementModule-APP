@@ -11,7 +11,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
@@ -58,7 +57,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
         Movement toMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
-        segmentBean.createSegmentOnFirstMovement(fromMovement, toMovement);
+        segmentBean.createSegmentAndTrack(fromMovement, toMovement);
         em.flush();
 
         TypedQuery<Movement> queryMovement =
@@ -105,7 +104,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Date date1 = cal.getTime();
 
         Movement movement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        segmentBean.createSegmentOnFirstMovement(movement, movement);
+        segmentBean.createSegmentAndTrack(movement, movement);
         em.flush();
 
         // get movement from db

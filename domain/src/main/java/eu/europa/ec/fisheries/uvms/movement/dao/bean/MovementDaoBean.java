@@ -265,7 +265,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             TypedQuery<Segment> query = em.createNamedQuery("Segment.findByMovement", Segment.class);
             query.setParameter("movement", movement);
             List<Segment> resultList = query.getResultList();
-            return resultList.isEmpty();
+            return !resultList.isEmpty();
         } catch (javax.persistence.NoResultException e) {
             LOG.debug("Could not get Segment by fromMovement, No result of movementId:" + movement.getId());
             return null;
