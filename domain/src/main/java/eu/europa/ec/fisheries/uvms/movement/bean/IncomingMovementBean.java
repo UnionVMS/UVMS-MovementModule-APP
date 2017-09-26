@@ -100,6 +100,8 @@ public class IncomingMovementBean {
                     Segment segment = segmentBean.createSegment(currentMovement, firstMovement);
                     track.getSegmentList().add(segment);
                     segment.setTrack(track);
+                    currentMovement.setTrack(track);
+                    firstMovement.setTrack(track);
                 }
             } else {
                 segmentBean.splitSegment(previousMovement, currentMovement);
