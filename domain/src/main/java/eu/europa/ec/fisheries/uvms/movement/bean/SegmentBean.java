@@ -219,7 +219,30 @@ public class SegmentBean {
 
         Movement oldToMovement = theSegmentToBeBroken.getToMovement();
 
-        MovementModelToEntityMapper.updateSegment(theSegmentToBeBroken, previousMovement, currentMovement);
+        if (currentMovement == null && previousMovement == null) {
+            LOG.error("[ ERROR when updating Segment entity: currentPosition AND previous Position cannot be null <updateSegment> ]");
+            throw new MovementDaoMappingException("ERROR when updating Segment entity: currentPosition AND previous Position cannot be null");
+        }
+
+        SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, currentMovement);
+
+        SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, previousMovement, currentMovement);
+        theSegmentToBeBroken.setSegmentCategory(segCat);
+
+        theSegmentToBeBroken.setDistance(positionCalculations.getDistanceBetweenPoints());
+        theSegmentToBeBroken.setSpeedOverGround(positionCalculations.getAvgSpeed());
+        theSegmentToBeBroken.setCourseOverGround(positionCalculations.getCourse());
+        theSegmentToBeBroken.setDuration(positionCalculations.getDurationBetweenPoints());
+
+        theSegmentToBeBroken.setUpdated(DateUtil.nowUTC());
+        theSegmentToBeBroken.setUpdatedBy("UVMS");
+
+        theSegmentToBeBroken.setFromMovement(previousMovement);
+        theSegmentToBeBroken.setToMovement(currentMovement);
+
+        LineString segmentLineString = GeometryUtil.getLineStringFromMovments(previousMovement, currentMovement);
+        theSegmentToBeBroken.setLocation(segmentLineString);
+
         theSegmentToBeBroken = dao.persist(theSegmentToBeBroken);
         dao.flush();
 

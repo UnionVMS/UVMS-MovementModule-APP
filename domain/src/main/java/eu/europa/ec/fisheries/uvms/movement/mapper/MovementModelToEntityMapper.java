@@ -13,12 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.mapper;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,25 +24,14 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
-import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
-import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.util.GeometryUtil;
-import eu.europa.ec.fisheries.uvms.movement.util.SegmentCalculationUtil;
 
-//TODO: AW: Rewrite this, This class is NOT ModelToEntity Mapper, contains a lot of business logic and handles mostly
-// entities..
 public class MovementModelToEntityMapper {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementModelToEntityMapper.class);
@@ -153,37 +137,6 @@ public class MovementModelToEntityMapper {
             LOG.error("[ ERROR when mapping to Activity entity: < createActivity > ]");
             throw new MovementDaoMappingException("ERROR when mapping to Activity entity ", e);
         }
-    }
-
-
-    //ToDo: This method does not perform any mapping but rather updates an existing Segment.
-    //ToDo: It should be extracted out from the mapper class.
-    public static void updateSegment(Segment segment, Movement fromMovement, Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
-
-        if (toMovement == null && fromMovement == null) {
-            LOG.error("[ ERROR when updating Segment entity: currentPosition AND previous Position cannot be null <updateSegment> ]");
-            throw new MovementDaoMappingException("ERROR when updating Segment entity: currentPosition AND previous Position cannot be null");
-        }
-
-        SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
-
-        SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, fromMovement, toMovement);
-        segment.setSegmentCategory(segCat);
-
-        segment.setDistance(positionCalculations.getDistanceBetweenPoints());
-        segment.setSpeedOverGround(positionCalculations.getAvgSpeed());
-        segment.setCourseOverGround(positionCalculations.getCourse());
-        segment.setDuration(positionCalculations.getDurationBetweenPoints());
-
-        segment.setUpdated(DateUtil.nowUTC());
-        segment.setUpdatedBy("UVMS");
-
-        segment.setFromMovement(fromMovement);
-        segment.setToMovement(toMovement);
-
-        LineString segmentLineString = GeometryUtil.getLineStringFromMovments(fromMovement, toMovement);
-        segment.setLocation(segmentLineString);
-
     }
 
     public static AreaType mapToAreaType(MovementMetaDataAreaType type) {
