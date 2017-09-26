@@ -216,9 +216,9 @@ public class MovementSegmentIntTest extends TransactionalTests {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
-        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(ORDER_NORMAL, ALL ,connectId);
+        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(ORDER_REVERSED, ALL ,connectId);
         for(Movement movement : rs){
-            incomingMovementBean.processMovement(movement.getId());
+            incomingMovementBean.processMovement(movement);
             em.flush();
         }
 
@@ -231,13 +231,13 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Assert.assertEquals(segmentList.size(), rs.size() - 1);
 
 
-        /*
+
         Collections.sort(segmentList, new Comparator<Segment>(){
             public int compare(Segment s1, Segment s2) {
-                return s1.getFromMovement().compareTo(s2.getFromMovement());
+                return s1.getFromMovement().getTimestamp().compareTo(s2.getFromMovement().getTimestamp());
             }
         });
-        */
+
 
 
 
