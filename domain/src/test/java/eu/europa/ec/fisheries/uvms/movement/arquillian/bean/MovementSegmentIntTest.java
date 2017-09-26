@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
+import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
@@ -25,10 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RunWith(Arquillian.class)
 public class MovementSegmentIntTest extends TransactionalTests {
@@ -192,40 +190,75 @@ public class MovementSegmentIntTest extends TransactionalTests {
         int n = rs.size();
         int i = 0;
 
-        Movement currentMovement = null;
         Movement previousMovement = null;
-        Segment segment = null;
         while(i < n){
-            currentMovement = rs.get(i);
+            Movement currentMovement = rs.get(i);
             if(i == 0){
                 previousMovement = currentMovement;
                 i++;
                 continue;
             }
-
             Track track = currentMovement.getTrack();
-            segment = track.getSegmentList().get(i - 1);
-
+            Segment  segment = track.getSegmentList().get(i - 1);
             Assert.assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
             Assert.assertEquals(segment.getToMovement().getId(), currentMovement.getId());
-
-            LOGGER.error(previousMovement.getId() + "  " + currentMovement.getId());
-
             i++;
             if(i < n){
                 previousMovement = currentMovement;
             }
         }
-
-        // check last as well
-
-        Assert.assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
-        Assert.assertEquals(segment.getToMovement().getId(), currentMovement.getId());
-
-
-        LOGGER.error(previousMovement.getId() + "  " + currentMovement.getId());
-
         Assert.assertEquals(rs.size(), i);
     }
 
+    @Test
+    @OperateOnDeployment("normal")
+    public void createVarbergGrenaBasedOnSegmentList() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
+        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        String connectId = UUID.randomUUID().toString();
+
+        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(ORDER_NORMAL, ALL ,connectId);
+        for(Movement movement : rs){
+            incomingMovementBean.processMovement(movement.getId());
+            em.flush();
+        }
+
+
+        Movement aMovement = rs.get(rs.size() - 1);
+        Track track = aMovement.getTrack();
+        List<Segment> segmentList = track.getSegmentList();
+        int n = segmentList.size();
+        int i = 0;
+        Assert.assertEquals(segmentList.size(), rs.size() - 1);
+
+
+        /*
+        Collections.sort(segmentList, new Comparator<Segment>(){
+            public int compare(Segment s1, Segment s2) {
+                return s1.getFromMovement().compareTo(s2.getFromMovement());
+            }
+        });
+        */
+
+
+
+        Segment previousSegment = null;
+        while(i < n){
+            Segment currentSegment = segmentList.get(i);
+            if(i == 0){
+                previousSegment = currentSegment;
+                i++;
+                continue;
+            }
+            Assert.assertEquals(currentSegment.getFromMovement().getId(), previousSegment.getToMovement().getId());
+            i++;
+            if(i < n){
+                previousSegment = currentSegment;
+            }
+        }
+        Assert.assertEquals(segmentList.size(), i);
+    }
+
+
+
 }
+
