@@ -159,7 +159,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement fromMovement = movementHelpers.createMovement(2d, 2d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
         Movement toMovement = movementHelpers.createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
-        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
@@ -223,7 +223,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
         Movement toMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
 
-        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
 
         fromMovement.setTrack(track);
@@ -274,7 +274,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId);
         Movement toMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId);
 
-        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
 
         fromMovement.setTrack(track);
@@ -311,7 +311,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
         Movement toMovement = movementHelpers.createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
-        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         Assert.assertNotNull(track);
 
@@ -321,7 +321,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         em.flush();
 
         Movement newMovement = movementHelpers.createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId, "three", date3);
-        segment = MovementModelToEntityMapper.createSegment(toMovement, newMovement);
+        segment = segmentBean.createSegment(toMovement, newMovement);
 
         Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
         Assert.assertNotNull(createdTrack);
@@ -360,7 +360,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
         Movement toMovement = movementHelpers.createMovement(5d, 5d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
-        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
@@ -368,23 +368,23 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Assert.assertNotNull(track);
 
         Movement newMovement = movementHelpers.createMovement(10d, 10d, 0d, SegmentCategoryType.GAP, connectId, "three", date3);
-        segment = MovementModelToEntityMapper.createSegment(toMovement, newMovement);
+        segment = segmentBean.createSegment(toMovement, newMovement);
         Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
 
         Movement oldMovement = newMovement;
         newMovement = movementHelpers.createMovement(20d, 20d, 0d, SegmentCategoryType.GAP, connectId, "four", date4);
-        segment = MovementModelToEntityMapper.createSegment(oldMovement, newMovement);
+        segment = segmentBean.createSegment(oldMovement, newMovement);
         segmentBean.upsertTrack(track, segment, newMovement);
 
 
         oldMovement = newMovement;
         newMovement = movementHelpers.createMovement(30d, 30d, 0d, SegmentCategoryType.GAP, connectId, "five", date5);
-        segment = MovementModelToEntityMapper.createSegment(oldMovement, newMovement);
+        segment = segmentBean.createSegment(oldMovement, newMovement);
         segmentBean.upsertTrack(track, segment, newMovement);
 
         oldMovement = newMovement;
         newMovement = movementHelpers.createMovement(40d, 40d, 0d, SegmentCategoryType.GAP, connectId, "six", date6);
-        segment = MovementModelToEntityMapper.createSegment(oldMovement, newMovement);
+        segment = segmentBean.createSegment(oldMovement, newMovement);
         segmentBean.upsertTrack(track, segment, newMovement);
 
         // get Segment from db
@@ -418,14 +418,14 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, 1d, SegmentCategoryType.EXIT_PORT, connectId, "user1", date1);
         Movement toMovement = movementHelpers.createMovement(5d, 5d, 2d, SegmentCategoryType.GAP, connectId, "user2", date2);
-        Segment segment = MovementModelToEntityMapper.createSegment(fromMovement, toMovement);
+        Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
         Assert.assertNotNull(track);
 
         Movement newMovement = movementHelpers.createMovement(10d, 10d, 3d, SegmentCategoryType.GAP, connectId, "user3", date3);
-        segment = MovementModelToEntityMapper.createSegment(toMovement, newMovement);
+        segment = segmentBean.createSegment(toMovement, newMovement);
         segmentBean.updateTrack(track, newMovement, segment);
 
         // get movement from db
@@ -462,7 +462,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement firstMovement = movementHelpers.createMovement(2d, 2d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
         Movement secondMovement = movementHelpers.createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
-        Segment segment = MovementModelToEntityMapper.createSegment(firstMovement, secondMovement);
+        Segment segment = segmentBean.createSegment(firstMovement, secondMovement);
         Track track = segmentBean.createNewTrack(segment);
         firstMovement.setTrack(track);
         secondMovement.setTrack(track);

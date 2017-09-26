@@ -1,8 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
-import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.createSegment;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.updateSegment;
-import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.updateTrack;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -11,8 +9,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
 
+import eu.europa.ec.fisheries.uvms.movement.bean.SegmentBean;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
@@ -33,7 +33,6 @@ import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingExce
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
@@ -49,11 +48,14 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
 
     private TestUtil testUtil = new TestUtil();
 
-    @Inject
+    @EJB
     MovementDaoBean movementDaoBean;
 
-    @Inject
+    @EJB
     MovementBatchModelBean movementBatchModelBean;
+
+    @EJB
+    SegmentBean segmentBean;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -77,7 +79,7 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
         Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
 
         //When
-        Segment segment = createSegment(fromMovement, toMovement);
+        Segment segment = segmentBean.createSegment(fromMovement, toMovement);
 
         //Then
         assertNotNull(segment);
@@ -101,7 +103,7 @@ public class MovementModelToEntityMapperIntTest extends TransactionalTests {
         Movement fromMovement = createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
         Movement toMovement = createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
 
-        Segment segmentBeforeUpdate = createSegment(fromMovement, toMovement);
+        Segment segmentBeforeUpdate = segmentBean.createSegment(fromMovement, toMovement);
 
         //When
         updateSegment(segmentBeforeUpdate, fromMovement, toMovement);

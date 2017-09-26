@@ -1,7 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.createActivity;
-import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.createSegment;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapNewMovementEntity;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapToAreaType;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapToMovementMetaData;
@@ -11,7 +10,6 @@ import static org.hamcrest.core.Is.is;
 
 import java.util.UUID;
 
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -241,32 +239,6 @@ public class MovementModelToEntityMapperTest extends Assert {
         assertNotNull(area);
         assertThat(area.getAreaUpuser(), is("UVMS"));
         assertNotNull(area.getAreaUpdattim());
-    }
-
-    @Test(expected = GeometryUtilException.class)
-    public void testUpdateSegment_emptyMovementsThrowsGeometryUtilException() throws MovementDaoMappingException, GeometryUtilException {
-
-        Movement fromMovement = new Movement();
-        Movement toMovement = new Movement();
-
-        Segment segment = createSegment(fromMovement, toMovement);
-
-        updateSegment(segment, fromMovement, toMovement);
-
-        thrown.expect(GeometryUtilException.class);
-        thrown.expectMessage("CurrentPosition is null!");
-    }
-    
-    @Test(expected = GeometryUtilException.class)
-    public void testCreateSegment_emptyMovementsThrowsGeometryUtilException() throws MovementDaoMappingException, GeometryUtilException {
-
-        Movement fromMovement = new Movement();
-        Movement toMovement = new Movement();
-
-        createSegment(fromMovement, toMovement);
-
-        thrown.expect(GeometryUtilException.class);
-        thrown.expectMessage("CurrentPosition is null!");
     }
 
     @Test
