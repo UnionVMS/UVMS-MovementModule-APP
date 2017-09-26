@@ -9,12 +9,14 @@ import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import java.util.ArrayList;
 
 /**
  * Created by andreasw on 2017-03-08.
@@ -60,11 +62,13 @@ public class SegmentBean {
      */
     public Track upsertTrack(Track track, Segment segment, Movement newMovement) throws MovementDaoMappingException, MovementDaoException, GeometryUtilException {
         if (track == null) {
-            return createNewTrack(segment, newMovement);
+            dao.persist(newMovement);
+            return createNewTrack(segment);
         } else {
             switch (segment.getSegmentCategory()) {
                 case EXIT_PORT:
-                    return createNewTrack(segment, newMovement);
+                    dao.persist(newMovement);
+                    return createNewTrack(segment);
                 case GAP:
                 case JUMP:
                 case IN_PORT:
@@ -99,32 +103,24 @@ public class SegmentBean {
         dao.persist(newMovement);
     }
 
-    /**
-     *
-     * @param segment
-     * @param newMovement
-     * @return
-     * @throws MovementDaoMappingException
-     * @throws MovementDaoException
-     */
-    public Track createNewTrack(Segment segment, Movement newMovement) throws MovementDaoMappingException, MovementDaoException {
-        LOG.debug("CREATING NEW TRACK ");
-        Track newTrack = MovementModelToEntityMapper.createTrack(segment);
-        segment.setTrack(newTrack);
-        newMovement.setTrack(newTrack);
-        dao.create(newTrack);
-        dao.persist(segment);
-        dao.persist(newMovement);
-        return newTrack;
-    }
-
     public Track createNewTrack(Segment segment) throws MovementDaoMappingException, MovementDaoException {
         LOG.debug("CREATING NEW TRACK ");
-        Track newTrack = MovementModelToEntityMapper.createTrack(segment);
-        segment.setTrack(newTrack);
-        dao.create(newTrack);
+
+        Track track = new Track();
+        track.setDistance(segment.getDistance());
+        track.setDuration(segment.getDuration());
+        track.setUpdated(DateUtil.nowUTC());
+        track.setLocation(segment.getLocation());
+        track.setUpdatedBy("UVMS");
+        track.setMovementList(new ArrayList<Movement>());
+        track.getMovementList().add(segment.getFromMovement());
+        track.getMovementList().add(segment.getToMovement());
+        track.setSegmentList(new ArrayList<Segment>());
+        track.getSegmentList().add(segment);
+        segment.setTrack(track);
+        dao.create(track);
         dao.persist(segment);
-        return newTrack;
+        return track;
     }
 
     /**

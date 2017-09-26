@@ -140,21 +140,6 @@ public class MovementModelToEntityMapper {
         return meta;
     }
 
-    //ToDo: This method does not actually map anything. It only creates a MovementConnect object.
-    //ToDo: Should be removed or made to actually map something to something else.
-    public static MovementConnect mapToMovementConnenct(String value, AssetIdType idType) throws MovementDaoMappingException {
-        try {
-            MovementConnect connect = new MovementConnect();
-            connect.setUpdated(DateUtil.nowUTC());
-            connect.setUpdatedBy("UVMS");
-            connect.setValue(value);
-            return connect;
-        } catch (Exception e) {
-            LOG.error("[ ERROR when mapping to MovementConnect entity: < mapToMovementConnenct > ]");
-            throw new MovementDaoMappingException("ERROR when mapping to MovementConnect entity", e);
-        }
-    }
-
     public static Activity createActivity(MovementBaseType movement) throws MovementDaoMappingException {
         try {
             Activity activity = new Activity();
@@ -166,29 +151,6 @@ public class MovementModelToEntityMapper {
             return activity;
         } catch (Exception e) {
             LOG.error("[ ERROR when mapping to Activity entity: < createActivity > ]");
-            throw new MovementDaoMappingException("ERROR when mapping to Activity entity ", e);
-        }
-    }
-
-    public static Track createTrack(Segment segment) throws MovementDaoMappingException {
-        try {
-            Track track = new Track();
-            track.setDistance(segment.getDistance());
-            track.setDuration(segment.getDuration());
-            track.setUpdated(DateUtil.nowUTC());
-            track.setLocation(segment.getLocation());
-            track.setUpdatedBy("UVMS");
-            // TODO: AW Fixed association when creating track.
-            track.setMovementList(new ArrayList<Movement>());
-            track.getMovementList().add(segment.getFromMovement());
-            track.getMovementList().add(segment.getToMovement());
-            // TODO: AW Fixed association for segments
-            track.setSegmentList(new ArrayList<Segment>());
-            track.getSegmentList().add(segment);
-
-            return track;
-        } catch (Exception e) {
-            LOG.error("[ ERROR when mapping to Activity entity: < createTrack > ]");
             throw new MovementDaoMappingException("ERROR when mapping to Activity entity ", e);
         }
     }

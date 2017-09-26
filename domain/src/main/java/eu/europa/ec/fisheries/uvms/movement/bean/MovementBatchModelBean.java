@@ -77,12 +77,13 @@ public class MovementBatchModelBean {
         if (movementConnectByConnectId == null) {
             try {
                 LOG.info("CREATING NEW MOVEMENTCONNECT");
-                MovementConnect mapToMovementConnenct = MovementModelToEntityMapper.mapToMovementConnenct(connectId, AssetIdType.GUID);
-                return dao.create(mapToMovementConnenct);
+                MovementConnect connect = new MovementConnect();
+                connect.setUpdated(DateUtil.nowUTC());
+                connect.setUpdatedBy("UVMS");
+                connect.setValue(connectId);
+                return dao.create(connect);
             } catch (MovementDaoException ex) {
                 LOG.error("COULD NOT INSERT MOVEMENTCONNECT", ex);
-            } catch (MovementDaoMappingException ex) {
-                LOG.error("ERROR WHEN MAPPING TO MOVEMENTCONNECT", ex);
             } catch (Exception ex) {
                 LOG.error("OTHER ERROR WHEN CREATING MOVEMENTCONNECT", ex);
             }

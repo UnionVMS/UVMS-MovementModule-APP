@@ -284,7 +284,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement newMovement = movementHelpers.createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId);
 
-        Track theNewTrack = segmentBean.createNewTrack(segment, newMovement);
+        Track theNewTrack = segmentBean.createNewTrack(segment);
 
         em.flush();
 
