@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
+import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
@@ -25,10 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RunWith(Arquillian.class)
 public class MovementSegmentIntTest extends TransactionalTests {
@@ -218,19 +216,30 @@ public class MovementSegmentIntTest extends TransactionalTests {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
-        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(ORDER_RANDOM, 4 ,connectId);
+        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(ORDER_NORMAL, ALL ,connectId);
         for(Movement movement : rs){
             incomingMovementBean.processMovement(movement.getId());
             em.flush();
         }
 
 
-        Movement currentMovement = rs.get(0);
-        Track track = currentMovement.getTrack();
+        Movement aMovement = rs.get(rs.size() - 1);
+        Track track = aMovement.getTrack();
         List<Segment> segmentList = track.getSegmentList();
         int n = segmentList.size();
         int i = 0;
         Assert.assertEquals(segmentList.size(), rs.size() - 1);
+
+
+        /*
+        Collections.sort(segmentList, new Comparator<Segment>(){
+            public int compare(Segment s1, Segment s2) {
+                return s1.getFromMovement().compareTo(s2.getFromMovement());
+            }
+        });
+        */
+
+
 
         Segment previousSegment = null;
         while(i < n){
@@ -252,3 +261,4 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
 
 }
+
