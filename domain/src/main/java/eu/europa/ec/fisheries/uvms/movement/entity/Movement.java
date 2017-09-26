@@ -169,9 +169,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    @Transient
-    Segment tempFromSegment;
-
     @Basic(optional = false)
     @NotNull
     @Column(name = "move_updattim")
@@ -377,14 +374,6 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.track = track;
     }
 
-    public Segment getTempFromSegment() {
-        return tempFromSegment;
-    }
-
-    public void setTempFromSegment(Segment tempFromSegment) {
-        this.tempFromSegment = tempFromSegment;
-    }
-
     public Boolean getDuplicate() {
         return duplicate;
     }
@@ -418,21 +407,6 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.processed = processed;
     }
 
-    /*public MovementType getMoveMovetypId() {
-             return moveMovetypId;
-             }
-
-             public void setMoveMovetypId(MovementType moveMovetypId) {
-             this.moveMovetypId = moveMovetypId;
-             }
-
-             public MovementSource getMoveMovesourId() {
-             return moveMovesourId;
-             }
-
-             public void setMoveMovesourId(MovementSource moveMovesourId) {
-             this.moveMovesourId = moveMovesourId;
-             }*/
     @Override
     public int compareTo(Movement o) {
         return MovementComparator.MOVEMENT.compare(this, o);

@@ -161,8 +161,6 @@ public class SegmentBean {
         segment.setFromMovement(fromMovement);
         segment.setToMovement(toMovement);
 
-        toMovement.setTempFromSegment(segment);
-
         segment.setUpdated(DateUtil.nowUTC());
         segment.setUpdatedBy("UVMS");
 

@@ -140,7 +140,8 @@ public class MovementBatchModelBean {
     private MovementType mapToMovementType(Movement currentMovement) {
         long start = System.currentTimeMillis();
         MovementType mappedMovement = MovementEntityToModelMapper.mapToMovementType(currentMovement);
-        enrichMetaData(mappedMovement, currentMovement.getTempFromSegment());
+        // We cannot enrich a movement at this point, there is no segment
+        //enrichMetaData(mappedMovement);
         enrichAreas(mappedMovement, currentMovement.getAreatransitionList());
         long diff = System.currentTimeMillis() - start;
         LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff + "ms" );
@@ -204,34 +205,6 @@ public class MovementBatchModelBean {
 
     }
 
-    /**
-     *
-     * @param mappedMovement
-     * @param fromSegment
-     */
-    private void enrichMetaData(MovementType mappedMovement, Segment fromSegment) {
-
-        if (fromSegment != null) {
-            mappedMovement.setCalculatedSpeed(fromSegment.getSpeedOverGround());
-            mappedMovement.setCalculatedCourse(fromSegment.getCourseOverGround());
-        }
-
-        if (mappedMovement.getMetaData() != null) {
-            if (fromSegment != null) {
-                mappedMovement.getMetaData().setFromSegmentType(fromSegment.getSegmentCategory());
-            }
-
-        } else {
-            MovementMetaData meta = new MovementMetaData();
-
-            if (fromSegment != null) {
-                meta.setFromSegmentType(fromSegment.getSegmentCategory());
-            }
-
-            mappedMovement.setMetaData(meta);
-        }
-
-    }
 
     /**
      * Enriches the MovemementTypes Areas in the metadata object. If there are
