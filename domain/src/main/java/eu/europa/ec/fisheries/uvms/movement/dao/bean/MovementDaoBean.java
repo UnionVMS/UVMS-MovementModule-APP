@@ -204,39 +204,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     @Override
-    public Movement getLatestMovement(String id, Date date, boolean tryLatestTable) throws MovementDaoException {
-
-            try {
-                Movement singleResult;
-                if (tryLatestTable) {
-                    try {
-                        LatestMovement latest = getLatestMovement(id);
-                        singleResult = latest.getMovement();
-                    } catch (javax.persistence.NoResultException e) {
-                        TypedQuery<Movement> query = em.createNamedQuery("Movement.findLatest", Movement.class);
-                        query.setParameter("id", id);
-                        query.setParameter("date", date, TemporalType.TIMESTAMP);
-                        singleResult = query.getSingleResult();
-                    }
-
-                } else {
-                    TypedQuery<Movement> query = em.createNamedQuery("Movement.findLatest", Movement.class);
-                    query.setParameter("id", id);
-                    query.setParameter("date", date, TemporalType.TIMESTAMP);
-                    singleResult = query.getSingleResult();
-                }
-
-                return singleResult;
-            } catch (javax.persistence.NoResultException e) {
-                LOG.debug("Could not get previous position, No result of id:" + id);
-                return null;
-            } catch (Exception e) {
-                LOG.error("[ Error when getting latest movement. ] {} ID: {} DATE: {} ", e.getMessage(), id, date.toString());
-                throw new MovementDaoException(6, "[ Error when getting latest movement. ]", e);
-            }
-    }
-
-    public Movement getLatestMovementByTimeStamp(String id, Date date){
+    public Movement getLatestMovement(String id, Date date) {
         Movement singleResult = null;
         try {
             TypedQuery<Movement> query = em.createNamedQuery("Movement.findLatest", Movement.class);

@@ -162,15 +162,13 @@ public interface MovementDao {
      */
     List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementDaoException;
 
-    public Movement getLatestMovementByTimeStamp(String id, Date date);
-
     List<LatestMovement> getLatestMovements(Integer numberOfMovements) throws MovementDaoException;
 
     List<Movement> getUnprocessedMovements() throws javax.persistence.NoResultException;
 
     List<Long> getUnprocessedMovementIds() throws javax.persistence.NoResultException;
 
-    Movement getLatestMovement(String id, Date date, boolean tryLatestTable) throws MovementDaoException;
+    Movement getLatestMovement(String id, Date date);
 
     Movement getMovementById(Long id);
 

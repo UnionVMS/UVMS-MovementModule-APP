@@ -183,7 +183,7 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
             MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
 
-            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp, false);
+            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
             // null is not an error
             Assert.assertTrue(true);
         } catch (RuntimeException e) {
@@ -220,7 +220,7 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
             MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
 
-            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp, true);
+            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
             // TODO unclear what to expect
             // Assert.assertTrue(latestMovement != null);
         } catch (RuntimeException e) {

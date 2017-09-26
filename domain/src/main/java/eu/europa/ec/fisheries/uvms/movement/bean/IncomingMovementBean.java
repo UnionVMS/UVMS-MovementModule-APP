@@ -52,7 +52,7 @@ public class IncomingMovementBean {
             //ToDo: since the isDateAlreadyInserted method does not handle the null case (by e.g. setting a default value to false instead of null). Look at class MovementDaoBean and check if
             //ToDo: a null check is needed there or not.
             List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
-            if (!duplicateMovements.isEmpty() && duplicateMovements.size() == 1) {
+            if (!duplicateMovements.isEmpty()) {
                 if (!movement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {
                     Date newDate = DateUtil.addSecondsToDate(timeStamp, 1);
                     movement.setTimestamp(newDate);
@@ -66,7 +66,7 @@ public class IncomingMovementBean {
             }
             movement.setDuplicate(false);
 
-            Movement previousMovement = dao.getLatestMovement(connectId, timeStamp, false);
+            Movement previousMovement = dao.getLatestMovement(connectId, timeStamp);
             Movement firstMovement = null;
 
             if (previousMovement == null) {
@@ -77,7 +77,7 @@ public class IncomingMovementBean {
                 // Should only be true when a new position reports which is not the latest position. Should not occur often but may occur when the mobile terminal has buffered its positions or inserted a manual position.
                 if (previousMovement.getTimestamp().after(timeStamp)) {
                     firstMovement = dao.getFirstMovement(connectId, timeStamp);
-                    previousMovement = dao.getLatestMovementByTimeStamp(connectId, timeStamp);
+                    previousMovement = dao.getLatestMovement(connectId, timeStamp);
                 }
             }
             movement.setAreatransitionList(populateTransitions(movement, previousMovement));
