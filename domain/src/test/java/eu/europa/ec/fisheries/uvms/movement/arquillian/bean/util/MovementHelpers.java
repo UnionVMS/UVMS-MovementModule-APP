@@ -96,6 +96,19 @@ public class MovementHelpers {
         long timeStamp = System.currentTimeMillis();
         int loopCount = 0;
 
+        long timeDelta = 300000;
+
+        switch (order) {
+            case 2:
+                Collections.reverse(positions);
+                timeDelta = -300000;
+                break;
+            case 3:
+                Collections.shuffle(positions);
+                break;
+        }
+
+
         for(LatLong position : positions){
             loopCount++;
             Movement movement = createMovement(position.longitude, position.latitude, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp) );
@@ -103,19 +116,10 @@ public class MovementHelpers {
                 firstLoop = false;
                 segmentCategoryType = SegmentCategoryType.GAP;
             }
-            timeStamp += 300000;
+            timeStamp += timeDelta;
             createdRoute.add(movement);
         }
 
-        switch (order) {
-            case 2:
-                List<Movement> shallowCopy = createdRoute.subList(0, createdRoute.size());
-                Collections.reverse(shallowCopy);
-                return shallowCopy;
-            case 3:
-                Collections.shuffle(createdRoute);
-                break;
-        }
         return createdRoute;
     }
 
