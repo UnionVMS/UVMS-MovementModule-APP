@@ -13,6 +13,8 @@ package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -45,6 +47,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = UvmsConstants.MOVEMENT_CONNECT_BY_CONNECT_ID, query = "SELECT m FROM MovementConnect m WHERE m.value = :value"),
     @NamedQuery(name = UvmsConstants.MOVEMENT_CONNECT_GET_ALL, query = "SELECT m FROM MovementConnect m")
 })
+@DynamicUpdate
+@DynamicInsert
 public class MovementConnect implements Serializable, Comparable<MovementConnect> {
 
     private static final long serialVersionUID = 1L;

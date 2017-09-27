@@ -12,6 +12,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +49,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Activitytype.findByActtypDesc", query = "SELECT a FROM Activitytype a WHERE a.acttypDesc = :acttypDesc"),
     @NamedQuery(name = "Activitytype.findByActtypUpdattim", query = "SELECT a FROM Activitytype a WHERE a.acttypUpdattim = :acttypUpdattim"),
     @NamedQuery(name = "Activitytype.findByActtypUpuser", query = "SELECT a FROM Activitytype a WHERE a.acttypUpuser = :acttypUpuser")})
+@DynamicUpdate
+@DynamicInsert
 public class Activitytype implements Serializable {
 
     private static final long serialVersionUID = 1L;

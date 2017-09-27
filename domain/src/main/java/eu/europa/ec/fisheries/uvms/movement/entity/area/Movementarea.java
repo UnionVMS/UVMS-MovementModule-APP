@@ -31,6 +31,9 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -41,6 +44,8 @@ import org.hibernate.annotations.FetchMode;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Movementarea.findAll", query = "SELECT m FROM Movementarea m")})
+@DynamicUpdate
+@DynamicInsert
 public class Movementarea implements Serializable {
 
     private static final long serialVersionUID = 1L;
