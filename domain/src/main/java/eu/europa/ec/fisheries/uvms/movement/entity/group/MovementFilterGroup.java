@@ -29,6 +29,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 /**
  * The persistent class for the movementfiltergroup database table.
@@ -39,6 +41,8 @@ import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
     @NamedQuery(name = UvmsConstants.GROUP_VESSEL_FIND_ALL, query = "SELECT f FROM MovementFilterGroup f"),
     @NamedQuery(name = UvmsConstants.GROUP_VESSEL_BY_USER, query="SELECT f FROM MovementFilterGroup f WHERE f.user = :user")
 })
+@DynamicUpdate
+@DynamicInsert
 public class MovementFilterGroup implements Serializable {
     private static final long serialVersionUID = 1L;
 

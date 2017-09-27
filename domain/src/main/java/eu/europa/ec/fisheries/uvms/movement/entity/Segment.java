@@ -57,6 +57,8 @@ import org.hibernate.annotations.*;
     @NamedQuery(name = "Segment.findByFromMovement", query = "SELECT s FROM Segment s WHERE s.fromMovement = :movement"),
     @NamedQuery(name = "Segment.findByToMovement", query = "SELECT s FROM Segment s WHERE s.toMovement = :movement"),
     @NamedQuery(name = "Segment.findByMovement", query = "SELECT s FROM Segment s WHERE s.toMovement = :movement OR s.fromMovement = :movement"),})
+@DynamicUpdate
+@DynamicInsert
 public class Segment implements Serializable {
 
     @Id

@@ -12,6 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -33,6 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Area.findByCode", query = "SELECT a FROM Area a where a.areaCode=:code"),
     @NamedQuery(name = "Area.findByRemoteIdAndCode", query = "SELECT a FROM Area a where a.remoteId =:remoteId AND a.areaCode =:code")
 })
+@DynamicUpdate
+@DynamicInsert
 public class Area implements Serializable {
     @OneToMany(mappedBy = "areatranAreaId", fetch = FetchType.LAZY)
     private List<Areatransition> areatransitionList;

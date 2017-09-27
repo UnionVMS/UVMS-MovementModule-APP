@@ -12,6 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.entity.temp;
 
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -48,6 +50,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "TempMovement.findByUpdated", query = "SELECT t FROM TempMovement t WHERE t.updated = :updated"),
     @NamedQuery(name = "TempMovement.findByUpdatedBy", query = "SELECT t FROM TempMovement t WHERE t.updatedBy = :updatedBy") })
 //@formatter:on
+@DynamicUpdate
+@DynamicInsert
 public class TempMovement implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -11,6 +11,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +43,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "AreaType.findByCode", query = "SELECT a FROM AreaType a where a.name =:code ")
 })
+@DynamicUpdate
+@DynamicInsert
 public class AreaType implements Serializable {
 
     private static final long serialVersionUID = 1L;

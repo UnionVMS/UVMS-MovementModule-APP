@@ -34,6 +34,9 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 
 /**
@@ -49,6 +52,8 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = "Track.findByUpdated", query = "SELECT t FROM Track t WHERE t.updated = :updated"),
     @NamedQuery(name = "Track.findByMovementId", query = "SELECT t FROM Track t join t.segmentList sg WHERE sg.fromMovement = :movement"),
     @NamedQuery(name = "Track.findByUpdatedBy", query = "SELECT t FROM Track t WHERE t.updatedBy = :updatedBy")})
+@DynamicUpdate
+@DynamicInsert
 public class Track implements Serializable {
 
     private static final long serialVersionUID = 1L;

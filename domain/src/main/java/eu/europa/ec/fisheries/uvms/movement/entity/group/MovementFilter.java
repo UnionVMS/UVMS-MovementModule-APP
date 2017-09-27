@@ -12,6 +12,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.entity.group;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -23,6 +26,8 @@ import javax.persistence.*;
  */
 @Entity
 @NamedQuery(name = "Filter.findAll", query = "SELECT f FROM MovementFilter f")
+@DynamicUpdate
+@DynamicInsert
 public class MovementFilter implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -29,11 +29,14 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -60,6 +63,8 @@ import java.util.UUID;
     @NamedQuery(name = "MinimalMovement.findFirst", query = "SELECT m FROM MinimalMovement m INNER JOIN m.movementConnect mc2 WHERE m.timestamp = (select min(mm.timestamp) from MinimalMovement mm INNER JOIN mm.movementConnect mc where mc.value = :id ) AND m.duplicate = false AND mc2.value = :id"),
     @NamedQuery(name = "MinimalMovement.findExistingDate", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false")
 })
+@DynamicUpdate
+@DynamicInsert
 public class MinimalMovement implements Serializable, Comparable<MinimalMovement> {
 
     private static final long serialVersionUID = 1L;

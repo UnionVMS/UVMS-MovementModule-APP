@@ -36,6 +36,9 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -51,6 +54,8 @@ import javax.persistence.ManyToOne;
     @NamedQuery(name = "Activity.findByCallback", query = "SELECT a FROM Activity a WHERE a.callback = :callback"),
     @NamedQuery(name = "Activity.findByUpdated", query = "SELECT a FROM Activity a WHERE a.updated = :updated"),
     @NamedQuery(name = "Activity.findByUpdatedBy", query = "SELECT a FROM Activity a WHERE a.updatedBy = :updatedBy")})
+@DynamicUpdate
+@DynamicInsert
 public class Activity implements Serializable {
 
     /**

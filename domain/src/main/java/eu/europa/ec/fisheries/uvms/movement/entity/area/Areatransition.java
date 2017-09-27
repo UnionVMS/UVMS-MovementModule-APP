@@ -14,6 +14,9 @@ package eu.europa.ec.fisheries.uvms.movement.entity.area;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementType;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -46,6 +49,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Areatransition.findByAreatranId", query = "SELECT a FROM Areatransition a WHERE a.areatranId = :areatranId"),
     @NamedQuery(name = "Areatransition.findByAreatranUpdattim", query = "SELECT a FROM Areatransition a WHERE a.areatranUpdattim = :areatranUpdattim"),
     @NamedQuery(name = "Areatransition.findByAreatranUpuser", query = "SELECT a FROM Areatransition a WHERE a.areatranUpuser = :areatranUpuser")})
+@DynamicUpdate
+@DynamicInsert
 public class Areatransition implements Serializable {
 
     private static final long serialVersionUID = 1L;

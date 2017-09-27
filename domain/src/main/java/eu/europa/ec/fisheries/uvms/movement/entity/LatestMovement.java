@@ -17,11 +17,14 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -40,6 +43,8 @@ import java.util.UUID;
     @NamedQuery(name = "LatestMovement.findLatest", query = "SELECT m FROM LatestMovement m ORDER BY m.timestamp")
 
 })
+@DynamicUpdate
+@DynamicInsert
 public class LatestMovement implements Serializable, Comparable<LatestMovement> {
 
     private static final long serialVersionUID = 1L;

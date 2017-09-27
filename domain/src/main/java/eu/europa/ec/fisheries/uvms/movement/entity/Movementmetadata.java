@@ -11,6 +11,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +42,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Movementmetadata.findAll", query = "SELECT m FROM Movementmetadata m")})
+@DynamicUpdate
+@DynamicInsert
 public class Movementmetadata implements Serializable {
 
     @Id
