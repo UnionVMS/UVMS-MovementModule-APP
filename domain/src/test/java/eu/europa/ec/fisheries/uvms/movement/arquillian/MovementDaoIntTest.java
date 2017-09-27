@@ -125,10 +125,6 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
     @OperateOnDeployment("normal")
     public void getFirstMovement() {
 
-        /*
-        TODO: Date NOT USED in Implementation
-         */
-
         try {
 
             MovementConnect movementConnect = createMovementConnectHelper();
@@ -149,7 +145,7 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
             Assert.assertTrue(fetchedMovement != null);
             MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
-            Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getValue(), null);
+            Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getValue());
             Assert.assertTrue(firstMovement != null);
         } catch (RuntimeException e) {
             Assert.fail(e.toString());

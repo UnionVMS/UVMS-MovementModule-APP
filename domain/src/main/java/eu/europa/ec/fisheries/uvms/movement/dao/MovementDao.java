@@ -138,12 +138,11 @@ public interface MovementDao {
     /**
      *
      * @param movementConnectValue
-     * @param date
      * @return
      * @throws MovementDaoException
      */
 
-    public Movement getFirstMovement(String movementConnectValue, Date date) throws MovementDaoException;
+    public Movement getFirstMovement(String movementConnectValue) throws MovementDaoException;
 
 
     /**

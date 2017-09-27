@@ -49,9 +49,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
+
+import org.hibernate.annotations.*;
 
 /**
  **/
@@ -72,10 +71,12 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = "Movement.findByUpdatedBy", query = "SELECT m FROM Movement m WHERE m.updatedBy = :updatedBy AND m.duplicate = false"),
     @NamedQuery(name = "Movement.findLatestByMovementConnect", query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
     @NamedQuery(name = "Movement.findLatest", query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select max(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.timestamp < :date and mm.processed = true) AND mc2.value = :id and m.processed = true"),
-    @NamedQuery(name = "Movement.findFirst", query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id ) AND mc2.value = :id and m.processed = true"),
+    @NamedQuery(name = "Movement.findFirst", query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.duplicate = false and mm.processed = true) AND mc2.value = :id and m.processed = true"),
     @NamedQuery(name = "Movement.findMovementByAreaAndTimestampInterval", query = "SELECT movement FROM Movement movement INNER JOIN movement.movementareaList movementArea WHERE (movement.timestamp BETWEEN :fromDate AND :toDate) AND movement.duplicate = false AND movementArea.movareaMoveId = movement.id AND movementArea.movareaAreaId.areaId = :areaId"),
     @NamedQuery(name = "Movement.findExistingDate", query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false")
 })
+@DynamicUpdate
+@DynamicInsert
 public class Movement implements Serializable, Comparable<Movement> {
 
     private static final long serialVersionUID = 1L;

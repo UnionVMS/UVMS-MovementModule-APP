@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
@@ -18,7 +17,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelExcepti
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -31,21 +29,21 @@ import java.util.*;
 @RunWith(Arquillian.class)
 public class MovementSegmentIntTest extends TransactionalTests {
 
-    private static int ALL = -1;
-    private static int ORDER_NORMAL = 1;
-    private static int ORDER_REVERSED = 2;
-    private static int ORDER_RANDOM = 3;
+    private static final int ALL = -1;
+    private static final int ORDER_NORMAL = 1;
+    private static final int ORDER_REVERSED = 2;
+    private static final int ORDER_RANDOM = 3;
 
-    private static Logger LOGGER = LoggerFactory.getLogger(MovementSegmentIntTest.class);
-
-    @EJB
-    MovementBatchModelBean movementBatchModelBean;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovementSegmentIntTest.class);
 
     @EJB
-    MovementDao movementDao;
+    private MovementBatchModelBean movementBatchModelBean;
 
     @EJB
-    IncomingMovementBean incomingMovementBean;
+    private MovementDao movementDao;
+
+    @EJB
+    private IncomingMovementBean incomingMovementBean;
 
 
     @Test
@@ -212,16 +210,24 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createVarbergGrenaBasedOnSegmentList() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
+    public void createVarbergGrenaBasedOnReversedOrder() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
+        testVarbergGrenaBasedOnOrdering(ORDER_REVERSED);
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void createVarbergGrenaBasedOnRandomOrder() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
+        testVarbergGrenaBasedOnOrdering(ORDER_RANDOM);
+    }
+
+    private void testVarbergGrenaBasedOnOrdering(int order) throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
-        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(ORDER_REVERSED, ALL ,connectId);
+        List<Movement> rs = movementHelpers.createVarbergGrenaMovements(order, ALL, connectId);
         for(Movement movement : rs){
             incomingMovementBean.processMovement(movement);
-            em.flush();
         }
-
 
         Movement aMovement = rs.get(rs.size() - 1);
         Track track = aMovement.getTrack();
@@ -237,8 +243,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
                 return s1.getFromMovement().getTimestamp().compareTo(s2.getFromMovement().getTimestamp());
             }
         });
-
-
 
 
         Segment previousSegment = null;
@@ -257,8 +261,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
         }
         Assert.assertEquals(segmentList.size(), i);
     }
-
-
 
 }
 

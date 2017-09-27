@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.SystemException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +40,9 @@ public class IncomingMovementBean {
 
     @EJB
     private MovementDaoBean dao;
+
+    @PersistenceContext
+    EntityManager em;
 
     public void processMovement(Movement currentMovement) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException, MovementModelException, SystemException {
         LOG.debug("Processing movement {}", currentMovement.getId());
@@ -67,13 +72,13 @@ public class IncomingMovementBean {
             Movement firstMovement = null;
 
             if (previousMovement == null) {
-                firstMovement = dao.getFirstMovement(connectId, timeStamp);
+                firstMovement = dao.getFirstMovement(connectId);
             } else if (previousMovement.getId().equals(currentMovement.getId())) {
                 return;
             } else {
                 // Should only be true when a new position reports which is not the latest position. Should not occur often but may occur when the mobile terminal has buffered its positions or inserted a manual position.
                 if (previousMovement.getTimestamp().after(timeStamp)) {
-                    firstMovement = dao.getFirstMovement(connectId, timeStamp);
+                    firstMovement = dao.getFirstMovement(connectId);
                     previousMovement = dao.getLatestMovement(connectId, timeStamp);
                 }
             }
@@ -108,6 +113,7 @@ public class IncomingMovementBean {
             }
 
             currentMovement.setProcessed(true);
+            em.flush();
         }
     }
 

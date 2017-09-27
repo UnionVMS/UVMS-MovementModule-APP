@@ -295,7 +295,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     @Override
-    public Movement getFirstMovement(String movementConnectValue, Date date) throws MovementDaoException {
+    public Movement getFirstMovement(String movementConnectValue) throws MovementDaoException {
         Movement firstMovememnt;
         try {
             TypedQuery<Movement> query = em.createNamedQuery("Movement.findFirst", Movement.class);
