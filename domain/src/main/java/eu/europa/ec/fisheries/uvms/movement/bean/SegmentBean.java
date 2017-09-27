@@ -50,7 +50,11 @@ public class SegmentBean {
         Track track = upsertTrack(fromMovement.getTrack(), segment, toMovement);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
-        dao.persist(fromMovement);
+        if(track.getMovementList() == null) {
+            track.setMovementList(new ArrayList<Movement>());
+        }
+        track.getMovementList().add(fromMovement);
+        track.getMovementList().add(toMovement);
         return segment;
     }
 
@@ -139,6 +143,7 @@ public class SegmentBean {
      * @throws GeometryUtilException
      */
     public void updateTrack(Track track, Movement newMovement, Segment segment) throws MovementDaoException, GeometryUtilException {
+        //TODO: This needs som serious overlooking
         LOG.debug("UPDATING TRACK ");
 
         if (track.getMovementList() == null) {
@@ -155,14 +160,15 @@ public class SegmentBean {
         double calculatedDurationInSeconds = track.getDuration() + segment.getDuration();
         track.setDuration(calculatedDurationInSeconds);
 
-        LineString updatedTrackLineString = GeometryUtil.getLineStringFromMovments(track.getMovementList());
-
-        if (!segment.getSegmentCategory().equals(SegmentCategoryType.ENTER_PORT) || !segment.getSegmentCategory().equals(SegmentCategoryType.IN_PORT)) {
-            double distance = track.getTotalTimeAtSea();
-            track.setTotalTimeAtSea(distance + calculatedDistance);
+        if(track.getMovementList().size() > 1) {
+            LineString updatedTrackLineString = GeometryUtil.getLineStringFromMovments(track.getMovementList());
+            track.setLocation(updatedTrackLineString);
         }
 
-        track.setLocation(updatedTrackLineString);
+        if (!segment.getSegmentCategory().equals(SegmentCategoryType.ENTER_PORT) || !segment.getSegmentCategory().equals(SegmentCategoryType.IN_PORT)) {
+            double totalTimeAtSea = track.getTotalTimeAtSea();
+            track.setTotalTimeAtSea(totalTimeAtSea + segment.getDuration());
+        }
 
         dao.persist(track);
         dao.persist(segment);
