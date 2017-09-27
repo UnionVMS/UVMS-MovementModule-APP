@@ -434,7 +434,7 @@ public class SearchFieldMapper {
 
         builder.append(getJoin(fetch, JoinType.INNER)).append(SearchTables.MOVEMENT.getTableAlias()).append(".").append("movementConnect ").append(SearchTables.MOVEMENT_CONNECT.getTableAlias()).append(" ");
         builder.append(getJoin(fetch, JoinType.LEFT)).append(SearchTables.MOVEMENT.getTableAlias()).append(".").append("activity ").append(SearchTables.ACTIVITY.getTableAlias()).append(" ");
-        //builder.append(getJoin(fetch, JoinType.LEFT)).append(SearchTables.MOVEMENT.getTableAlias()).append(".").append("track ").append(SearchTables.TRACK.getTableAlias()).append(" ");
+        builder.append(getJoin(fetch, JoinType.LEFT)).append(SearchTables.MOVEMENT.getTableAlias()).append(".").append("track ").append(SearchTables.TRACK.getTableAlias()).append(" ");
         builder.append(getJoin(fetch, JoinType.LEFT)).append(SearchTables.MOVEMENT.getTableAlias()).append(".").append("fromSegment ").append(SearchTables.FROM_SEGMENT.getTableAlias()).append(" ");
         builder.append(getJoin(fetch, JoinType.LEFT)).append(SearchTables.MOVEMENT.getTableAlias()).append(".").append("toSegment ").append(SearchTables.TO_SEGMENT.getTableAlias()).append(" ");
         builder.append(getJoin(fetch, JoinType.LEFT)).append(SearchTables.MOVEMENT.getTableAlias()).append(".").append("metadata ").append(SearchTables.MOVEMENT_METADATA.getTableAlias()).append(" ");
