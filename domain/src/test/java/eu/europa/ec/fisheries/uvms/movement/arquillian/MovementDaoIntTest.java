@@ -125,10 +125,6 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
     @OperateOnDeployment("normal")
     public void getFirstMovement() {
 
-        /*
-        TODO: Date NOT USED in Implementation
-         */
-
         try {
 
             MovementConnect movementConnect = createMovementConnectHelper();
@@ -138,6 +134,7 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
             Movement movement = createMovementHelper();
             movement.setMovementConnect(createdMovementConnect);
             Movement createdMovement = movementDao.create(movement);
+            createdMovement.setProcessed(true);
             movementDao.flush();
             Assert.assertTrue(createdMovement != null);
 
@@ -148,7 +145,7 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
             Assert.assertTrue(fetchedMovement != null);
             MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
-            Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getValue(), null);
+            Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getValue());
             Assert.assertTrue(firstMovement != null);
         } catch (RuntimeException e) {
             Assert.fail(e.toString());
@@ -183,7 +180,7 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
             MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
 
-            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp, false);
+            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
             // null is not an error
             Assert.assertTrue(true);
         } catch (RuntimeException e) {
@@ -220,7 +217,7 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
             MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
 
-            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp, true);
+            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
             // TODO unclear what to expect
             // Assert.assertTrue(latestMovement != null);
         } catch (RuntimeException e) {

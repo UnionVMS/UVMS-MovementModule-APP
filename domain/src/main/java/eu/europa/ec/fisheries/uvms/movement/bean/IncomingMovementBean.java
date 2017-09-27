@@ -9,7 +9,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
@@ -19,8 +18,9 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.SystemException;
-import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,78 +41,86 @@ public class IncomingMovementBean {
     @EJB
     private MovementDaoBean dao;
 
-    public void processMovement(Long id) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException, MovementModelException, SystemException {
-        Movement movement = dao.getMovementById(id);
-        LOG.debug("Processing movement {}", id);
-        if (movement != null && !movement.getProcessed()) {
-            String connectId = movement.getMovementConnect().getValue();
-            Date timeStamp = movement.getTimestamp();
+    @PersistenceContext
+    EntityManager em;
+
+    public void processMovement(Movement currentMovement) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException, MovementModelException, SystemException {
+        LOG.debug("Processing movement {}", currentMovement.getId());
+        if (currentMovement != null && !currentMovement.getProcessed()) {
+            String connectId = currentMovement.getMovementConnect().getValue();
+            Date timeStamp = currentMovement.getTimestamp();
 
             //ToDo: Timestamp will be null in the database if not set actively to a boolean value. This means duplicate timestamp Movements will not be detected by the processMovement method
             //ToDo: since the isDateAlreadyInserted method does not handle the null case (by e.g. setting a default value to false instead of null). Look at class MovementDaoBean and check if
             //ToDo: a null check is needed there or not.
             List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
-            if (!duplicateMovements.isEmpty() && duplicateMovements.size() == 1) {
-                if (!movement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {
+            if (!duplicateMovements.isEmpty()) {
+                if (!currentMovement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {
                     Date newDate = DateUtil.addSecondsToDate(timeStamp, 1);
-                    movement.setTimestamp(newDate);
+                    currentMovement.setTimestamp(newDate);
                 } else {
-                    LOG.info("Got a duplicate movement. Marking it as such.{}",id);
-                    movement.setProcessed(true);
-                    movement.setDuplicate(true);
-                    movement.setDuplicateId(duplicateMovements.get(0).getGuid());
+                    LOG.info("Got a duplicate movement. Marking it as such.{}", currentMovement.getId());
+                    currentMovement.setProcessed(true);
+                    currentMovement.setDuplicate(true);
+                    currentMovement.setDuplicateId(duplicateMovements.get(0).getGuid());
                     return;
                 }
             }
-            movement.setDuplicate(false);
+            currentMovement.setDuplicate(false);
 
-            Movement previousMovement = dao.getLatestMovement(connectId, timeStamp, false);
+            Movement previousMovement = dao.getLatestMovement(connectId, timeStamp);
             Movement firstMovement = null;
 
             if (previousMovement == null) {
-                firstMovement = dao.getFirstMovement(connectId, timeStamp);
-            } else if (previousMovement.getId().equals(movement.getId())) {
+                firstMovement = dao.getFirstMovement(connectId);
+            } else if (previousMovement.getId().equals(currentMovement.getId())) {
                 return;
             } else {
                 // Should only be true when a new position reports which is not the latest position. Should not occur often but may occur when the mobile terminal has buffered its positions or inserted a manual position.
                 if (previousMovement.getTimestamp().after(timeStamp)) {
-                    firstMovement = dao.getFirstMovement(connectId, timeStamp);
-                    previousMovement = dao.getLatestMovementByTimeStamp(connectId, timeStamp);
+                    firstMovement = dao.getFirstMovement(connectId);
+                    previousMovement = dao.getLatestMovement(connectId, timeStamp);
                 }
             }
-            movement.setAreatransitionList(populateTransitions(movement, previousMovement));
+            currentMovement.setAreatransitionList(populateTransitions(currentMovement, previousMovement));
 
             LOG.debug("ADDING CURRENT MOVEMENT TO LATESTMOVEMENT FOR {}", connectId);
-            dao.upsertLatestMovement(movement, movement.getMovementConnect());
+            dao.upsertLatestMovement(currentMovement, currentMovement.getMovementConnect());
 
             if (firstMovement == null && previousMovement == null) {
-                LOG.debug("CREATING FIRST MOVEMENT FOR CONNECTID: " + connectId + " MOVEMENT ID: " + movement.getId());
+                LOG.debug("CREATING FIRST MOVEMENT FOR CONNECTID: " + connectId + " MOVEMENT ID: " + currentMovement.getId());
             } else if (previousMovement != null && firstMovement == null) {
-                if (dao.hasMovementToOrFromSegment(previousMovement)) {
-                    LOG.debug("PREVIOUS MOVEMENT IS THE FIRST CREATED AND HAS NO SEGMENT YET, CREATING ONE..");
-                    segmentBean.createSegmentOnFirstMovement(previousMovement, movement);
+                if (!dao.hasMovementToOrFromSegment(previousMovement)) {
+                    segmentBean.createSegmentAndTrack(previousMovement, currentMovement);
                 } else {
-                    try {
-                        LOG.debug("PREVIOUS MOVEMENT FOUND, ID: " + previousMovement.getId() + " [ SPLITTING or ADDING SEGMENT ]");
-                        segmentBean.splitSegment(previousMovement, movement);
-                    } catch (ConstraintViolationException e) {
-                        LOG.error("[ Error when splitting segment. Concurrency issue. {}", e.getMessage());
-                    }
+                    LOG.debug("PREVIOUS MOVEMENT FOUND, ID: " + previousMovement.getId() + " [ SPLITTING or ADDING SEGMENT ]");
+                    segmentBean.splitSegment(previousMovement, currentMovement);
                 }
+
             } else if (firstMovement != null && previousMovement == null) {
-                if (dao.hasMovementToOrFromSegment(firstMovement)) {
-                    LOG.debug("PREVIOUS MOVEMENT IS THE FIRST CREATED AND HAS NO SEGMENT YET CREATING ONE..");
-                    segmentBean.createSegmentOnFirstMovement(movement, firstMovement);
+                Track track = firstMovement.getTrack();
+                if(track == null) {
+                    segmentBean.createSegmentAndTrack(currentMovement, firstMovement);
                 } else {
-                    LOG.debug("PREVIOUS MOVEMENT NOT FOUND BUT FIRST MOVEMENT FOUND ID: " + firstMovement.getId() + " [ ADDING NEW MOVEMENT BEFORE FIRST ]");
-                    segmentBean.addMovementBeforeFirst(firstMovement, movement);
+                    Segment segment = segmentBean.createSegment(currentMovement, firstMovement);
+                    track.getSegmentList().add(segment);
+                    segment.setTrack(track);
+                    currentMovement.setTrack(track);
+                    firstMovement.setTrack(track);
                 }
             } else {
-                segmentBean.splitSegment(previousMovement, movement);
+                segmentBean.splitSegment(previousMovement, currentMovement);
             }
 
-            movement.setProcessed(true);
+            currentMovement.setProcessed(true);
+            em.flush();
         }
+    }
+
+
+    public void processMovement(Long id) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException, MovementModelException, SystemException {
+        Movement currentMovement = dao.getMovementById(id);
+        processMovement(currentMovement);
     }
 
     /**

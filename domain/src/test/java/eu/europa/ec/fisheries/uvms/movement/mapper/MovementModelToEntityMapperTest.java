@@ -1,17 +1,14 @@
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.createActivity;
-import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.createSegment;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapNewMovementEntity;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapToAreaType;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.mapToMovementMetaData;
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.maptoArea;
-import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.updateSegment;
 import static org.hamcrest.core.Is.is;
 
 import java.util.UUID;
 
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,10 +26,8 @@ import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingExce
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
-import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 
 /**
@@ -241,32 +236,6 @@ public class MovementModelToEntityMapperTest extends Assert {
         assertNotNull(area);
         assertThat(area.getAreaUpuser(), is("UVMS"));
         assertNotNull(area.getAreaUpdattim());
-    }
-
-    @Test(expected = GeometryUtilException.class)
-    public void testUpdateSegment_emptyMovementsThrowsGeometryUtilException() throws MovementDaoMappingException, GeometryUtilException {
-
-        Movement fromMovement = new Movement();
-        Movement toMovement = new Movement();
-
-        Segment segment = createSegment(fromMovement, toMovement);
-
-        updateSegment(segment, fromMovement, toMovement);
-
-        thrown.expect(GeometryUtilException.class);
-        thrown.expectMessage("CurrentPosition is null!");
-    }
-    
-    @Test(expected = GeometryUtilException.class)
-    public void testCreateSegment_emptyMovementsThrowsGeometryUtilException() throws MovementDaoMappingException, GeometryUtilException {
-
-        Movement fromMovement = new Movement();
-        Movement toMovement = new Movement();
-
-        createSegment(fromMovement, toMovement);
-
-        thrown.expect(GeometryUtilException.class);
-        thrown.expectMessage("CurrentPosition is null!");
     }
 
     @Test

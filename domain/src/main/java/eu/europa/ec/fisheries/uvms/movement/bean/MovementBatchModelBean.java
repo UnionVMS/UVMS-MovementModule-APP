@@ -77,12 +77,13 @@ public class MovementBatchModelBean {
         if (movementConnectByConnectId == null) {
             try {
                 LOG.info("CREATING NEW MOVEMENTCONNECT");
-                MovementConnect mapToMovementConnenct = MovementModelToEntityMapper.mapToMovementConnenct(connectId, AssetIdType.GUID);
-                return dao.create(mapToMovementConnenct);
+                MovementConnect connect = new MovementConnect();
+                connect.setUpdated(DateUtil.nowUTC());
+                connect.setUpdatedBy("UVMS");
+                connect.setValue(connectId);
+                return dao.create(connect);
             } catch (MovementDaoException ex) {
                 LOG.error("COULD NOT INSERT MOVEMENTCONNECT", ex);
-            } catch (MovementDaoMappingException ex) {
-                LOG.error("ERROR WHEN MAPPING TO MOVEMENTCONNECT", ex);
             } catch (Exception ex) {
                 LOG.error("OTHER ERROR WHEN CREATING MOVEMENTCONNECT", ex);
             }
@@ -139,7 +140,8 @@ public class MovementBatchModelBean {
     private MovementType mapToMovementType(Movement currentMovement) {
         long start = System.currentTimeMillis();
         MovementType mappedMovement = MovementEntityToModelMapper.mapToMovementType(currentMovement);
-        enrichMetaData(mappedMovement, currentMovement.getTempFromSegment());
+        // We cannot enrich a movement at this point, there is no segment
+        //enrichMetaData(mappedMovement);
         enrichAreas(mappedMovement, currentMovement.getAreatransitionList());
         long diff = System.currentTimeMillis() - start;
         LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff + "ms" );
@@ -203,34 +205,6 @@ public class MovementBatchModelBean {
 
     }
 
-    /**
-     *
-     * @param mappedMovement
-     * @param fromSegment
-     */
-    private void enrichMetaData(MovementType mappedMovement, Segment fromSegment) {
-
-        if (fromSegment != null) {
-            mappedMovement.setCalculatedSpeed(fromSegment.getSpeedOverGround());
-            mappedMovement.setCalculatedCourse(fromSegment.getCourseOverGround());
-        }
-
-        if (mappedMovement.getMetaData() != null) {
-            if (fromSegment != null) {
-                mappedMovement.getMetaData().setFromSegmentType(fromSegment.getSegmentCategory());
-            }
-
-        } else {
-            MovementMetaData meta = new MovementMetaData();
-
-            if (fromSegment != null) {
-                meta.setFromSegmentType(fromSegment.getSegmentCategory());
-            }
-
-            mappedMovement.setMetaData(meta);
-        }
-
-    }
 
     /**
      * Enriches the MovemementTypes Areas in the metadata object. If there are
@@ -242,6 +216,10 @@ public class MovementBatchModelBean {
      * mapped movmement
      */
     public void enrichAreas(MovementType mappedMovement, List<Areatransition> areatransitionList) {
+
+        if(mappedMovement.getMetaData() == null) {
+            mappedMovement.setMetaData(new MovementMetaData());
+        }
 
         HashMap<String, MovementMetaDataAreaType> areas = new HashMap<>();
         for (MovementMetaDataAreaType area : mappedMovement.getMetaData().getAreas()) {
