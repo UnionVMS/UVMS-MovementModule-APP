@@ -55,17 +55,10 @@ public class MovementHelpers {
 
     /* positiontime is imortant */
     public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
-        MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId);
-        movementType.setPositionTime(positionTime);
-        movementType = movementBatchModelBean.createMovement(movementType, userName);
-        em.flush();
-        Assert.assertNotNull(movementType.getConnectId());
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
-        Assert.assertNotNull(movementList);
-        return movementList.get(movementList.size() - 1);
+        return createMovement(longitude, latitude, altitude, segmentCategoryType,connectId,userName,positionTime, 0);
     }
 
+    /* positiontime is imortant */
     public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime, double bearing) throws MovementModelException, MovementDuplicateException, MovementDaoException {
         MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, bearing);
         movementType.setPositionTime(positionTime);
@@ -143,9 +136,7 @@ public class MovementHelpers {
         LatLong currentPosition = null;
         int i = 0;
         int n = route.size();
-
         while(i < n){
-
             currentPosition = route.get(i);
             if(i == 0){
                 previousPosition = route.get(i);
@@ -162,12 +153,7 @@ public class MovementHelpers {
         }
         double bearing = bearingInDegrees(previousPosition, currentPosition);
         route.get(i - 1).bearing = bearing;
-
-
-
         return route;
-
-
     }
 
 
