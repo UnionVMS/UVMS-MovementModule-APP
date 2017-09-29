@@ -55,7 +55,12 @@ public class MovementHelpers {
 
     /* positiontime is imortant */
     public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
-        MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId);
+        return createMovement(longitude, latitude, altitude, segmentCategoryType,connectId,userName,positionTime, 0);
+    }
+
+    /* positiontime is imortant */
+    public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime, double bearing) throws MovementModelException, MovementDuplicateException, MovementDaoException {
+        MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, bearing);
         movementType.setPositionTime(positionTime);
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
@@ -65,6 +70,7 @@ public class MovementHelpers {
         Assert.assertNotNull(movementList);
         return movementList.get(movementList.size() - 1);
     }
+
 
 
     /**
@@ -111,7 +117,7 @@ public class MovementHelpers {
 
         for(LatLong position : positions){
             loopCount++;
-            Movement movement = createMovement(position.longitude, position.latitude, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp) );
+            Movement movement = createMovement(position.longitude, position.latitude, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp), position.bearing );
             if(firstLoop){
                 firstLoop = false;
                 segmentCategoryType = SegmentCategoryType.GAP;
@@ -123,6 +129,32 @@ public class MovementHelpers {
         return createdRoute;
     }
 
+
+    List<LatLong> calculateReportedDataForRoute(List<LatLong>  route){
+
+        LatLong previousPosition = null;
+        LatLong currentPosition = null;
+        int i = 0;
+        int n = route.size();
+        while(i < n){
+            currentPosition = route.get(i);
+            if(i == 0){
+                previousPosition = route.get(i);
+                i++;
+                continue;
+            }
+
+            double bearing = bearingInDegrees(previousPosition, currentPosition);
+            route.get(i - 1).bearing = bearing;
+            if(i < n){
+                previousPosition = currentPosition;
+            }
+            i++;
+        }
+        double bearing = bearingInDegrees(previousPosition, currentPosition);
+        route.get(i - 1).bearing = bearing;
+        return route;
+    }
 
 
 
@@ -150,6 +182,10 @@ public class MovementHelpers {
                 break;
             rutt.add(new LatLong(latitude, longitude, getDate(ts += movementTimeDeltaInMillis)));
         }
+
+
+        // now when we have a route we must calculate heading and speed
+        rutt = calculateReportedDataForRoute(rutt);
 
 		if (numberPositions == -1) {
             return rutt;
@@ -182,6 +218,9 @@ public class MovementHelpers {
             rutt.add(new LatLong(latitude, longitude, getDate(ts += movementTimeDeltaInMillis)));
         }
 
+        // now when we have a route we must calculate heading and speed
+        rutt = calculateReportedDataForRoute(rutt);
+
         if (numberPositions == -1) {
             return rutt;
         } else {
@@ -193,6 +232,19 @@ public class MovementHelpers {
         return new Date(millis);
     }
 
+    private  double bearingInRadians(LatLong src, LatLong dst) {
+        double srcLat = Math.toRadians(src.latitude);
+        double dstLat = Math.toRadians(dst.latitude);
+        double dLng = Math.toRadians(dst.longitude - src.longitude);
+
+        return Math.atan2(Math.sin(dLng) * Math.cos(dstLat),
+                Math.cos(srcLat) * Math.sin(dstLat) -
+                        Math.sin(srcLat) * Math.cos(dstLat) * Math.cos(dLng));
+    }
+
+    private  double bearingInDegrees(LatLong src, LatLong dst) {
+        return (Math.toDegrees((bearingInRadians(src, dst) + Math.PI) % Math.PI) + 180) % 360;
+    }
 
 
 

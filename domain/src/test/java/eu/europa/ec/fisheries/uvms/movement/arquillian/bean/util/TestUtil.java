@@ -28,7 +28,13 @@ import java.util.List;
  */
 public class TestUtil {
 
+
     public MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId) {
+        return createMovementType(longitude,latitude,altitude,segmentCategoryType,connectId,0d);
+    }
+
+
+        public MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, double reportedCourse) {
 
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
@@ -57,7 +63,7 @@ public class TestUtil {
         movementType.setDuplicates("false");
         movementType.setInternalReferenceNumber("TEST");
         movementType.setPosition(movementPoint);
-        movementType.setReportedCourse(0d);
+        movementType.setReportedCourse(reportedCourse);
         movementType.setReportedSpeed(0d);
         movementType.setSource(MovementSourceType.NAF);
         movementType.setStatus("TEST");
