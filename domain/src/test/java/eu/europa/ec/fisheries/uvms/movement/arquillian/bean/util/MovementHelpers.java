@@ -13,6 +13,7 @@ import org.junit.Assert;
 
 import javax.persistence.EntityManager;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class MovementHelpers {
 
@@ -70,6 +71,19 @@ public class MovementHelpers {
         Assert.assertNotNull(movementList);
         return movementList.get(movementList.size() - 1);
     }
+
+    public Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName) throws MovementModelException, MovementDuplicateException, MovementDaoException {
+        MovementType movementType = testUtil.createMovementType(latlong,  segmentCategoryType, connectId);
+        movementType.setPositionTime(latlong.positionTime);
+        movementType = movementBatchModelBean.createMovement(movementType, userName);
+        em.flush();
+        Assert.assertNotNull(movementType.getConnectId());
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+        List<Movement> movementList = movementConnect.getMovementList();
+        Assert.assertNotNull(movementList);
+        return movementList.get(movementList.size() - 1);
+    }
+
 
 
 
@@ -145,14 +159,23 @@ public class MovementHelpers {
             }
 
             double bearing = bearingInDegrees(previousPosition, currentPosition);
+            double distance = distance(previousPosition, currentPosition);
             route.get(i - 1).bearing = bearing;
+            route.get(i - 1).distance= distance;
+            double speed = calcSpeed(previousPosition, currentPosition);
+            route.get(i - 1).speed= speed;
+
             if(i < n){
                 previousPosition = currentPosition;
             }
             i++;
         }
         double bearing = bearingInDegrees(previousPosition, currentPosition);
+        double distance = distance(previousPosition, currentPosition);
+        route.get(i - 1).distance= distance;
         route.get(i - 1).bearing = bearing;
+        double speed = calcSpeed(previousPosition, currentPosition);
+        route.get(i - 1).speed= speed;
         return route;
     }
 
@@ -245,6 +268,63 @@ public class MovementHelpers {
     private  double bearingInDegrees(LatLong src, LatLong dst) {
         return (Math.toDegrees((bearingInRadians(src, dst) + Math.PI) % Math.PI) + 180) % 360;
     }
+
+    private double distance(LatLong src, LatLong dst) {
+
+        // in kilometers
+        char unit = 'K';
+        double lat1 = src.latitude;
+        double lon1 = src.longitude;
+        double lat2 = dst.latitude;
+        double lon2 = dst.longitude;
+
+
+        double theta = lon1 - lon2;
+        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        if (unit == 'K') {
+            dist = dist * 1.609344;
+        } else if (unit == 'N') {
+            dist = dist * 0.8684;
+        } else if (unit == 'M') {
+            dist = dist * 1.609344;
+            dist = dist * 1000;
+        }
+        return (dist);
+    }
+
+    private double calcSpeed(LatLong src, LatLong dst){
+
+        try {
+
+            if (src.positionTime == null) return 0;
+            if (dst.positionTime == null) return 0;
+
+            // distance to next
+            double distanceKM = src.distance;
+
+            double durationms = (double) Math.abs(dst.positionTime.getTime() - src.positionTime.getTime());
+            double durationSecs = durationms / 1000;
+            double speedPerSecond = (distanceKM / durationSecs);
+            double speed = speedPerSecond * 3600;
+            return speed;
+        }
+        catch(RuntimeException e){
+            return 0.0;
+        }
+    }
+
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
+    }
+
 
 
 
