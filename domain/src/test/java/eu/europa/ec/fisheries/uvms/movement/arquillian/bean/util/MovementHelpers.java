@@ -243,7 +243,7 @@ public class MovementHelpers {
     }
 
     private  double bearingInDegrees(LatLong src, LatLong dst) {
-        return Math.toDegrees((bearingInRadians(src, dst) + Math.PI) % Math.PI);
+        return (Math.toDegrees((bearingInRadians(src, dst) + Math.PI) % Math.PI) + 180) % 360;
     }
 
 
