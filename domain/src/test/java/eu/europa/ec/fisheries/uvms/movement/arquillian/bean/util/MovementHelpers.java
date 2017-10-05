@@ -198,9 +198,9 @@ public class MovementHelpers {
 		while (true) {
 
             if (latitude >= END_LATITUDE)
-                latitude = latitude - 0.03;
+                latitude = latitude - 0.003;
             if (longitude >= END_LONGITUDE)
-                longitude = longitude - 0.03;
+                longitude = longitude - 0.003;
             if (latitude < END_LATITUDE && longitude < END_LONGITUDE)
                 break;
             rutt.add(new LatLong(latitude, longitude, getDate(ts += movementTimeDeltaInMillis)));
@@ -233,9 +233,9 @@ public class MovementHelpers {
         while (true) {
 
             if (latitude >= END_LATITUDE)
-                latitude = latitude - 0.5;
+                latitude = latitude - 0.01;
             if (longitude >= END_LONGITUDE)
-                longitude = longitude - 0.5;
+                longitude = longitude - 0.01;
             if (latitude < END_LATITUDE && longitude < END_LONGITUDE)
                 break;
             rutt.add(new LatLong(latitude, longitude, getDate(ts += movementTimeDeltaInMillis)));
@@ -295,23 +295,24 @@ public class MovementHelpers {
         return (dist);
     }
 
-    private double calcSpeed(LatLong src, LatLong dst){
+    private double calcSpeed(LatLong src, LatLong dst) {
 
         try {
 
-            if (src.positionTime == null) return 0;
-            if (dst.positionTime == null) return 0;
+            if (src.positionTime == null)
+                return 0;
+            if (dst.positionTime == null)
+                return 0;
 
             // distance to next
-            double distanceKM = src.distance;
+            double distanceM = src.distance * 1000;
 
             double durationms = (double) Math.abs(dst.positionTime.getTime() - src.positionTime.getTime());
             double durationSecs = durationms / 1000;
-            double speedPerSecond = (distanceKM / durationSecs);
-            double speed = speedPerSecond * 3600;
-            return speed;
-        }
-        catch(RuntimeException e){
+            double speedMeterPerSecond = (distanceM / durationSecs);
+            double speedKmPerHour = speedMeterPerSecond * 3600;
+            return speedKmPerHour;
+        } catch (RuntimeException e) {
             return 0.0;
         }
     }
