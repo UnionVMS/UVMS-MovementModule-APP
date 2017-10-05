@@ -8,6 +8,9 @@ public class LatLong {
 	public double longitude;
 	public Date positionTime;
 	public double bearing = Double.MIN_NORMAL;
+	public double distance = 0;
+	public double speed = 0;
+
 	public LatLong(double latitude, double longitude, Date positionTime) {
 		super();
 		this.latitude = latitude;
@@ -23,7 +26,7 @@ public class LatLong {
 		String be = String.format(formatStr , bearing) ;
 
 		
-		return "[lat=" + la + ", lon=" + lo + ", pos=" + positionTime + ", bearing="+be+"]";
+		return "[lat=" + la + ", lon=" + lo + ", pos=" + positionTime + ", bearing="+be + ", distance="+distance + ", speed="+speed+"]";
 	}
 	
 	
