@@ -47,7 +47,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType.setReportedSpeed(null);
 
         //When
@@ -63,7 +63,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType.setReportedCourse(null);
 
         //When
@@ -79,7 +79,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType.setPosition(null);
 
         //When
@@ -95,7 +95,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType.setSource(null);
 
         //When
@@ -111,7 +111,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType.setMovementType(null);
 
         //When
@@ -127,7 +127,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType.setPositionTime(null);
 
         //When
@@ -143,7 +143,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType.setActivity(null);
 
         //When
@@ -159,7 +159,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType.setMetaData(null);
 
         //When
@@ -175,7 +175,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
 
         movementMetaDataToBeMapped.setClosestPort(null);
@@ -197,7 +197,7 @@ public class MovementModelToEntityMapperTest extends Assert {
         //Given
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
         MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
 
         movementMetaDataToBeMapped.setClosestCountry(null);
@@ -243,7 +243,7 @@ public class MovementModelToEntityMapperTest extends Assert {
 
         //Given
         String uuid = UUID.randomUUID().toString();
-        MovementBaseType movementBaseType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementBaseType movementBaseType = testUtil.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
 
         //When
         Activity activity = createActivity(movementBaseType);

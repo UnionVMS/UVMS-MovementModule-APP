@@ -37,31 +37,9 @@ public class MovementHelpers {
      *  helpers
      *****************************************************************************************************************************************************/
 
-    // old version
-    public  Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId) throws MovementModelException, MovementDuplicateException, MovementDaoException {
-        return createMovement(longitude, latitude, altitude, segmentCategoryType, connectId, "TEST");
-    }
-
-    // added possibility to specify user for easier debug
-    public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName) throws MovementModelException, MovementDuplicateException, MovementDaoException {
-        MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId);
-        movementType = movementBatchModelBean.createMovement(movementType, userName);
-        em.flush();
-        Assert.assertNotNull(movementType.getConnectId());
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
-        Assert.assertNotNull(movementList);
-        return movementList.get(movementList.size() - 1);
-    }
-
     /* positiontime is imortant */
     public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
-        return createMovement(longitude, latitude, altitude, segmentCategoryType,connectId,userName,positionTime, 0);
-    }
-
-    /* positiontime is imortant */
-    public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime, double bearing) throws MovementModelException, MovementDuplicateException, MovementDaoException {
-        MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, bearing);
+        MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, 0);
         movementType.setPositionTime(positionTime);
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
@@ -73,7 +51,7 @@ public class MovementHelpers {
     }
 
     public Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName) throws MovementModelException, MovementDuplicateException, MovementDaoException {
-        MovementType movementType = testUtil.createMovementType(latlong,  segmentCategoryType, connectId);
+        MovementType movementType = testUtil.createMovementType(latlong,  segmentCategoryType, connectId, altitude);
         movementType.setPositionTime(latlong.positionTime);
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
@@ -131,7 +109,8 @@ public class MovementHelpers {
 
         for(LatLong position : positions){
             loopCount++;
-            Movement movement = createMovement(position.longitude, position.latitude, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp), position.bearing );
+            //Movement movement = createMovement(position.longitude, position.latitude, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp), position.bearing );
+            Movement movement = createMovement(position, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount));
             if(firstLoop){
                 firstLoop = false;
                 segmentCategoryType = SegmentCategoryType.GAP;
