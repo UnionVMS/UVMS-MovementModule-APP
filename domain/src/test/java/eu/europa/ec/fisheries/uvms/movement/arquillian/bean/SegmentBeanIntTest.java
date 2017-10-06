@@ -14,6 +14,7 @@ import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
@@ -270,8 +271,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId);
-        Movement toMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId);
+        Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "TEST", DateUtil.nowUTC());
+        Movement toMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TEST", DateUtil.nowUTC());
 
         Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
@@ -281,7 +282,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         em.flush();
 
-        Movement newMovement = movementHelpers.createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId);
+        Movement newMovement = movementHelpers.createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId, "TEST", DateUtil.nowUTC());
 
         Track theNewTrack = segmentBean.createNewTrack(segment);
 

@@ -62,7 +62,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     public void testCreatingMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException, MovementDuplicateException {
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType = movementBatchModelBean.createMovement(movementType, "TEST");
         assertNotNull("MovementType creation was successful.", movementType.getGuid());
         em.flush();
@@ -88,7 +88,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType = movementBatchModelBean.createMovement(movementType, "TEST");
         em.flush();
 
@@ -116,7 +116,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid);
+        MovementType movementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid,0);
         movementType = movementBatchModelBean.createMovement(movementType, "TEST");
         em.flush();
 
@@ -142,7 +142,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         // Given: Create a movement with the exact same timestamp as a movement that exists in the database.
         String firstUuid = UUID.randomUUID().toString();
 
-        MovementType firstMovementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, firstUuid);
+        MovementType firstMovementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, firstUuid,0);
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
         em.flush();
 

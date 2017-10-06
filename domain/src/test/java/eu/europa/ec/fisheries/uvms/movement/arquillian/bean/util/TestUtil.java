@@ -18,6 +18,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
+import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -99,55 +100,17 @@ public class TestUtil {
         return previousMovement;
     }
 
-        public MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId) {
-           return createMovementType(longitude,latitude,altitude,segmentCategoryType,connectId,0d);
-        }
 
-        public MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, double reportedCourse) {
 
-        MovementActivityType activityType = new MovementActivityType();
-        activityType.setCallback("TEST");
-        activityType.setMessageId("TEST");
-        activityType.setMessageType(MovementActivityTypeType.AUT);
+    public MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, double reportedCourse) {
 
-        AssetId assetId = new AssetId();
-        assetId.setAssetType(AssetType.VESSEL);
-        assetId.setIdType(AssetIdType.GUID);
-        assetId.setValue("TEST");
-
-        MovementPoint movementPoint = new MovementPoint();
-        movementPoint.setLongitude(longitude);
-        movementPoint.setLatitude(latitude);
-        movementPoint.setAltitude(altitude);
-
-        MovementMetaData movementMetaData = new MovementMetaData();
-        movementMetaData.setFromSegmentType(segmentCategoryType);
-
-        MovementType movementType = new MovementType();
-
-        movementType.setMovementType(MovementTypeType.POS);
-        movementType.setActivity(activityType);
-        movementType.setConnectId(connectId);
-        movementType.setAssetId(assetId);
-        movementType.setDuplicates("false");
-        movementType.setInternalReferenceNumber("TEST");
-        movementType.setPosition(movementPoint);
-        movementType.setReportedCourse(reportedCourse);
-        movementType.setReportedSpeed(0d);
-        movementType.setSource(MovementSourceType.NAF);
-        movementType.setStatus("TEST");
-        movementType.setPositionTime(Calendar.getInstance().getTime());
-        movementType.setTripNumber(0d);
-
-        movementType.setCalculatedCourse(0d);
-        movementType.setCalculatedSpeed(0d);
-        movementType.setComChannelType(MovementComChannelType.NAF);
-        movementType.setMetaData(movementMetaData);
-
-        return movementType;
+        LatLong latLong = new LatLong(latitude, longitude, DateUtil.nowUTC());
+        latLong.bearing = reportedCourse;
+        return createMovementType(latLong, segmentCategoryType, connectId, altitude);
     }
 
-    public MovementType createMovementType(LatLong latlong, SegmentCategoryType segmentCategoryType, String connectId) {
+
+        public MovementType createMovementType(LatLong latlong, SegmentCategoryType segmentCategoryType, String connectId, double altitude) {
 
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
@@ -162,7 +125,7 @@ public class TestUtil {
         MovementPoint movementPoint = new MovementPoint();
         movementPoint.setLongitude(latlong.longitude);
         movementPoint.setLatitude(latlong.latitude);
-        movementPoint.setAltitude(3d);
+        movementPoint.setAltitude(altitude);
 
         MovementMetaData movementMetaData = new MovementMetaData();
         movementMetaData.setFromSegmentType(segmentCategoryType);
@@ -180,7 +143,8 @@ public class TestUtil {
         movementType.setReportedSpeed(latlong.speed);
         movementType.setSource(MovementSourceType.NAF);
         movementType.setStatus("TEST");
-        movementType.setPositionTime(Calendar.getInstance().getTime());
+
+        movementType.setPositionTime(latlong.positionTime);
         movementType.setTripNumber(0d);
 
         movementType.setCalculatedCourse(0d);
