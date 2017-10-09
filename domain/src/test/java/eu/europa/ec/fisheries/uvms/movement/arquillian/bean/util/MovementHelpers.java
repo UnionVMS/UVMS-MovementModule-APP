@@ -50,9 +50,9 @@ public class MovementHelpers {
         return movementList.get(movementList.size() - 1);
     }
 
-    public Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName) throws MovementModelException, MovementDuplicateException, MovementDaoException {
+    public Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
         MovementType movementType = testUtil.createMovementType(latlong,  segmentCategoryType, connectId, altitude);
-        movementType.setPositionTime(latlong.positionTime);
+        movementType.setPositionTime(positionTime);
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
         Assert.assertNotNull(movementType.getConnectId());
@@ -109,8 +109,7 @@ public class MovementHelpers {
 
         for(LatLong position : positions){
             loopCount++;
-            //Movement movement = createMovement(position.longitude, position.latitude, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp), position.bearing );
-            Movement movement = createMovement(position, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount));
+            Movement movement = createMovement(position, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp));
             if(firstLoop){
                 firstLoop = false;
                 segmentCategoryType = SegmentCategoryType.GAP;
@@ -289,8 +288,10 @@ public class MovementHelpers {
             double durationms = (double) Math.abs(dst.positionTime.getTime() - src.positionTime.getTime());
             double durationSecs = durationms / 1000;
             double speedMeterPerSecond = (distanceM / durationSecs);
-            double speedKmPerHour = speedMeterPerSecond * 3600;
-            return speedKmPerHour;
+            double speedMPerHour = speedMeterPerSecond * 3600;
+            return speedMPerHour / 1000;
+
+
         } catch (RuntimeException e) {
             return 0.0;
         }
