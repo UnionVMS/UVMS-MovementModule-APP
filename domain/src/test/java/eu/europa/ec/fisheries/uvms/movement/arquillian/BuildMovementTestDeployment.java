@@ -39,6 +39,7 @@ public abstract class BuildMovementTestDeployment {
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dto");
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.dto");
         testWar.addPackages(true, "com.tocea.easycoverage.framework.api");
+        testWar.addPackages(true, "com.peertopark.java.geocalc");
         
         // No no, starts threaded job...
         // Need to exclude job first...
