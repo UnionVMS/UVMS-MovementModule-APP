@@ -45,7 +45,15 @@
 			<artifactId>uvms-pom-arquillian-deps</artifactId>
 			<type>pom</type>
 			<scope>test</scope>
-		</dependency>				
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.sis.core/sis-utility -->
+		<dependency>
+			<groupId>com.peertopark.java</groupId>
+			<artifactId>geocalc</artifactId>
+			<version>1.1.0</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
