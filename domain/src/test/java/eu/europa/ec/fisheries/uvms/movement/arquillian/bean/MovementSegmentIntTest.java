@@ -246,8 +246,9 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
 
         Segment previousSegment = null;
+        Segment currentSegment = null;
         while(i < n){
-            Segment currentSegment = segmentList.get(i);
+            currentSegment = segmentList.get(i);
             if(i == 0){
                 previousSegment = currentSegment;
                 i++;
@@ -255,12 +256,48 @@ public class MovementSegmentIntTest extends TransactionalTests {
             }
             Assert.assertEquals(currentSegment.getFromMovement().getId(), previousSegment.getToMovement().getId());
             i++;
-            if(i < n){
-                previousSegment = currentSegment;
-            }
+            previousSegment = currentSegment;
         }
         Assert.assertEquals(segmentList.size(), i);
     }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void createFishingTourVarberg() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, MovementDuplicateException, SystemException {
+        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        String connectId = UUID.randomUUID().toString();
+
+        List<Movement> rs = movementHelpers.createFishingTourVarberg(ORDER_NORMAL ,connectId);
+        for(Movement movement : rs){
+            incomingMovementBean.processMovement(movement.getId());
+            em.flush();
+        }
+
+        int n = rs.size();
+        int i = 0;
+
+        Movement previousMovement = null;
+        while(i < n){
+            Movement currentMovement = rs.get(i);
+            if(i == 0){
+                previousMovement = currentMovement;
+                i++;
+                continue;
+            }
+            Track track = currentMovement.getTrack();
+            Segment  segment = track.getSegmentList().get(i - 1);
+            Assert.assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
+            Assert.assertEquals(segment.getToMovement().getId(), currentMovement.getId());
+            i++;
+            if(i < n){
+                previousMovement = currentMovement;
+            }
+        }
+        Assert.assertEquals(rs.size(), i);
+    }
+
+
+
 
 }
 
