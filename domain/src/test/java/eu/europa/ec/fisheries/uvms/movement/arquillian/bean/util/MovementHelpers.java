@@ -348,6 +348,45 @@ public class MovementHelpers {
 
 
 
+    public List<Movement> createFishingTourVarberg(int order,  String connectId) throws MovementDuplicateException, MovementDaoException, MovementModelException {
+
+        List<LatLong> positions = createRuttSmallFishingTourFromVarberg();
+        List<Movement> createdRoute = new ArrayList<>();
+        String userName = "TEST";
+
+        boolean firstLoop = true;
+        SegmentCategoryType segmentCategoryType = SegmentCategoryType.EXIT_PORT;
+        long timeStamp = System.currentTimeMillis();
+        int loopCount = 0;
+
+        long timeDelta = 300000;
+
+        switch (order) {
+            case 2:
+                Collections.reverse(positions);
+                timeDelta = -300000;
+                break;
+            case 3:
+                Collections.shuffle(positions);
+                break;
+        }
+
+
+        for(LatLong position : positions){
+            loopCount++;
+            Movement movement = createMovement(position, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp));
+            if(firstLoop){
+                firstLoop = false;
+                segmentCategoryType = SegmentCategoryType.GAP;
+            }
+            timeStamp += timeDelta;
+            createdRoute.add(movement);
+        }
+
+        return createdRoute;
+    }
+
+
 
 
 }
