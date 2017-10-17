@@ -83,7 +83,7 @@
 									<goal>stop</goal>
 								</goals>
 								<configuration>
-									<allContainers>true</allContainers>
+									<allContainers>false</allContainers>
 								</configuration>
 							</execution>
 							<execution>
@@ -104,7 +104,7 @@
 								</configuration>
 							</execution>
 						</executions>
-						<configuration>
+						<configuration combine.self="override">
 							<images>
 								<image>
 									<alias>postgres</alias>
