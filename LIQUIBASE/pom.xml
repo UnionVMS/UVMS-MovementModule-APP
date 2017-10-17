@@ -74,7 +74,7 @@
 					<plugin>
 						<groupId>io.fabric8</groupId>
 						<artifactId>docker-maven-plugin</artifactId>
-						<extensions>true</extensions>
+						<inherited>false</inherited>
 						<executions>
 							<execution>
 								<id>verifyallstopped</id>
