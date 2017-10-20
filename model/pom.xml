@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>4.0.2</version>
+        <version>4.0.3-SNAPSHOT</version>
     </parent>
 
 	<artifactId>movement-model</artifactId>
@@ -46,7 +46,7 @@
 
 	<scm>
 		<connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-MODEL.git</connection>
-		<tag>movement-4.0.2</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<build>
