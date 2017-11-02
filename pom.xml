@@ -15,9 +15,9 @@
 
 	<properties>
 		<movement.api.check.against.version>4.0.0</movement.api.check.against.version>
-		<docker.dev.version>3.15.0</docker.dev.version>
-		<usm4uvms.version>4.0.0</usm4uvms.version>
-		<uvms.common.version>3.0.0</uvms.common.version>
+		<docker.dev.version>3.16.0</docker.dev.version>
+		<usm4uvms.version>4.0.1</usm4uvms.version>
+		<uvms.common.version>3.0.2</uvms.common.version>
 		<uvms.config.version>4.0.0</uvms.config.version>
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.0.0</user.model.version>
