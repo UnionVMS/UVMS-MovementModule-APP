@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>4.0.3-SNAPSHOT</version>
+        <version>4.0.3</version>
     </parent>
 
     <!-- PROPERTIES USED FOR LOGBACK -->
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-dbaccess-domain</artifactId>
-            <version>4.0.3-SNAPSHOT</version>
+            <version>4.0.3</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
