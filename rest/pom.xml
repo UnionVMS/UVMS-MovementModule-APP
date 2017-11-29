@@ -13,7 +13,6 @@
     </parent>
 
     <properties>
-        <hibernate.dialect>org.hibernate.spatial.dialect.postgis.PostgisDialect</hibernate.dialect>
         <docker.dev.stop.phase>verify</docker.dev.stop.phase>
         <docker.dev.prestop.phase>install</docker.dev.prestop.phase>        	
     </properties>

@@ -5,7 +5,7 @@
     <jta-data-source>jdbc/uvms_movement</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
-      <property name="hibernate.dialect" value="${hibernate.dialect}"/>
+      <property name="hibernate.dialect" value="${hibernate.spatial.dialect}"/>
       <property name="hibernate.show_sql" value="false"/>
       <property name="hibernate.format_sql" value="false"/>
     </properties>

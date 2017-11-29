@@ -5,7 +5,7 @@
     <persistence-unit name="movementPU" transaction-type="JTA">
         <jta-data-source>jdbc/uvms_movement</jta-data-source>
         <properties>
-            <property name="hibernate.dialect" value="${hibernate.dialect}"/>
+            <property name="hibernate.dialect" value="${hibernate.spatial.dialect}"/>
             <property name="hibernate.cache.use_second_level_cache" value="true"/>
             <property name="hibernate.generate_statistics" value="true"/>
         </properties>

@@ -12,10 +12,6 @@
         <version>4.0.9-SNAPSHOT</version>
     </parent>
 
-    <properties>
-    <hibernate.dialect>org.hibernate.spatial.dialect.postgis.PostgisDialect</hibernate.dialect>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
