@@ -1,21 +1,23 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
-import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
-import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import static junit.framework.TestCase.assertNotNull;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import javax.ejb.EJB;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+
+import org.apache.commons.lang.time.DateUtils;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -23,20 +25,24 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import static junit.framework.TestCase.assertNotNull;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
+import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
+import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
+import eu.europa.ec.fisheries.uvms.movement.entity.Track;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
+import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 /**
  * Created by andreasw on 2017-03-09.
@@ -53,7 +59,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     MovementBatchModelBean movementBatchModelBean;
 
     @EJB
-    MovementDao movementDao;
+    MovementDaoBean movementDao;
 
     private TestUtil testUtil = new TestUtil();
 
@@ -272,5 +278,198 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         assertEquals(MovementTypeType.ENT, transitions.get(0).getMovementType());
         assertTrue(transitions.get(0).getAreatranAreaId().getAreaId() == 1);
+    }
+    
+    @Test
+    @OperateOnDeployment("normal")
+    public void testMovementAndSegmentRelation() throws Exception {
+    	String connectId = UUID.randomUUID().toString();
+    	MovementType firstMovementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+       
+        MovementType secondMovementType = testUtil.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        
+        for (Movement movement : movementList) {
+			incomingMovementBean.processMovement(movement);
+		}
+        
+        Movement firstMovement = movementList.get(0);
+        Movement secondMovement = movementList.get(1);
+        
+        assertNotNull(firstMovement.getToSegment());
+        assertThat(firstMovement.getToSegment(), is(secondMovement.getFromSegment()));
+        
+        Segment segment = firstMovement.getToSegment();
+        
+        assertThat(segment.getFromMovement(), is(firstMovement));
+        assertThat(segment.getToMovement(), is(secondMovement));
+    }
+    
+    @Test
+    @OperateOnDeployment("normal")
+    public void testMovementAndSegmentRelationThreeMovements() throws Exception {
+    	String connectId = UUID.randomUUID().toString();
+    	MovementType firstMovementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+       
+        MovementType secondMovementType = testUtil.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        
+        MovementType thirdMovementType = testUtil.createMovementType(1d, 2d, 0d, SegmentCategoryType.GAP, connectId, 0);
+        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType, "TEST");
+        
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        
+        for (Movement movement : movementList) {
+			incomingMovementBean.processMovement(movement);
+		}
+        
+        Movement firstMovement = movementList.get(0);
+        Movement secondMovement = movementList.get(1);
+        Movement thirdMovement = movementList.get(2);
+        
+        // First segment
+        assertNotNull(firstMovement.getToSegment());
+        assertThat(firstMovement.getToSegment(), is(secondMovement.getFromSegment()));
+        
+        Segment segment = firstMovement.getToSegment();
+        
+        assertThat(segment.getFromMovement(), is(firstMovement));
+        assertThat(segment.getToMovement(), is(secondMovement));
+        
+        // Second segment
+        assertNotNull(secondMovement.getToSegment());
+        assertThat(secondMovement.getToSegment(), is(thirdMovement.getFromSegment()));
+        
+        Segment secondSegment = secondMovement.getToSegment();
+        
+        assertThat(secondSegment.getFromMovement(), is(secondMovement));
+        assertThat(secondSegment.getToMovement(), is(thirdMovement));
+    }
+    
+    @Test
+    @OperateOnDeployment("normal")
+    public void testMovementAndSegmentRelationThreeMovementsNonOrdered() throws Exception {
+    	int tenMinutes = 600000;
+    	String connectId = UUID.randomUUID().toString();
+    	Date positionTime = new Date();
+    	MovementType firstMovementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
+    	firstMovementType.setPositionTime(positionTime);
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+
+        MovementType thirdMovementType = testUtil.createMovementType(1d, 2d, 0d, SegmentCategoryType.GAP, connectId, 0);
+        thirdMovementType.setPositionTime(new Date(positionTime.getTime() + 2*tenMinutes));
+        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType, "TEST");
+       
+        MovementType secondMovementType = testUtil.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
+        secondMovementType.setPositionTime(new Date(positionTime.getTime() + tenMinutes));
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        
+        for (Movement movement : movementList) {
+			incomingMovementBean.processMovement(movement);
+		}
+        
+        Movement firstMovement = movementList.get(0);
+        Movement thirdMovement = movementList.get(1);
+        Movement secondMovement = movementList.get(2);
+        
+        // First segment
+        assertNotNull(firstMovement.getToSegment());
+        assertThat(firstMovement.getToSegment(), is(secondMovement.getFromSegment()));
+        
+        Segment segment = firstMovement.getToSegment();
+        
+        assertThat(segment.getFromMovement(), is(firstMovement));
+        assertThat(segment.getToMovement(), is(secondMovement));
+        
+        // Second segment
+        assertNotNull(secondMovement.getToSegment());
+        assertThat(secondMovement.getToSegment(), is(thirdMovement.getFromSegment()));
+        
+        Segment secondSegment = secondMovement.getToSegment();
+        
+        assertThat(secondSegment.getFromMovement(), is(secondMovement));
+        assertThat(secondSegment.getToMovement(), is(thirdMovement));
+    }
+    
+    @Test
+    @OperateOnDeployment("normal")
+    public void testTrackWithThreeMovements() throws Exception {
+    	String connectId = UUID.randomUUID().toString();
+    	MovementType firstMovementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+       
+        MovementType secondMovementType = testUtil.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        
+        MovementType thirdMovementType = testUtil.createMovementType(1d, 2d, 0d, SegmentCategoryType.GAP, connectId, 0);
+        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType, "TEST");
+        
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        
+        for (Movement movement : movementList) {
+			incomingMovementBean.processMovement(movement);
+		}
+        
+        Movement firstMovement = movementList.get(0);
+        Movement secondMovement = movementList.get(1);
+        Movement thirdMovement = movementList.get(2);
+        
+        Track track = firstMovement.getTrack();
+        assertThat(track, is(secondMovement.getTrack()));
+        assertThat(track, is(thirdMovement.getTrack()));
+        
+        assertThat(track.getMovementList().size(), is(3));
+        assertThat(track.getMovementList(), hasItem(firstMovement));
+        assertThat(track.getMovementList(), hasItem(secondMovement));
+        assertThat(track.getMovementList(), hasItem(thirdMovement));
+    }
+    
+    @Test
+    @OperateOnDeployment("normal")
+    public void testTrackWithThreeMovementsNonOrdered() throws Exception {
+    	int tenMinutes = 600000;
+    	String connectId = UUID.randomUUID().toString();
+    	Date positionTime = new Date();
+    	MovementType firstMovementType = testUtil.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
+    	firstMovementType.setPositionTime(positionTime);
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+       
+        MovementType secondMovementType = testUtil.createMovementType(2d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
+		secondMovementType.setPositionTime(new Date(positionTime.getTime() + 2*tenMinutes));
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        
+        MovementType thirdMovementType = testUtil.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
+        thirdMovementType.setPositionTime(new Date(positionTime.getTime() + tenMinutes));
+        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType, "TEST");
+        
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        
+        for (Movement movement : movementList) {
+			incomingMovementBean.processMovement(movement);
+		}
+        
+        Movement firstMovement = movementList.get(0);
+        Movement secondMovement = movementList.get(1);
+        Movement thirdMovement = movementList.get(2);
+        
+        Track track = firstMovement.getTrack();
+        assertThat(track, is(secondMovement.getTrack()));
+        assertThat(track, is(thirdMovement.getTrack()));
+        
+        assertThat(track.getMovementList().size(), is(3));
+        assertThat(track.getMovementList(), hasItem(firstMovement));
+        assertThat(track.getMovementList(), hasItem(secondMovement));
+        assertThat(track.getMovementList(), hasItem(thirdMovement));
     }
 }
