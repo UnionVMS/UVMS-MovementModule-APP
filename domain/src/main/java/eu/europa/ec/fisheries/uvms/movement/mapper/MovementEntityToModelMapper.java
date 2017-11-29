@@ -124,13 +124,12 @@ public class MovementEntityToModelMapper {
             LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
         }
 
-        model.setWkt(WKTUtil.getWktPointFromMovement(movement));
-
-        try {
-            model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
-            LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
+        if (movement.getFromSegment() != null) {
+        	model.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
+        	model.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
         }
+        
+        model.setWkt(WKTUtil.getWktPointFromMovement(movement));
 
         return model;
     }
