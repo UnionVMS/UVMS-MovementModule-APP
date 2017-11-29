@@ -31,7 +31,7 @@ import java.util.ArrayList;
 @Stateless
 public class SegmentBean {
 
-    final static Logger LOG = LoggerFactory.getLogger(SegmentBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SegmentBean.class);
 
 
     @EJB
@@ -50,11 +50,6 @@ public class SegmentBean {
         Track track = upsertTrack(fromMovement.getTrack(), segment, toMovement);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
-        if(track.getMovementList() == null) {
-            track.setMovementList(new ArrayList<Movement>());
-        }
-        track.getMovementList().add(fromMovement);
-        track.getMovementList().add(toMovement);
         return segment;
     }
 
@@ -92,6 +87,9 @@ public class SegmentBean {
 
         LineString segmentLineString = GeometryUtil.getLineStringFromMovments(fromMovement, toMovement);
         segment.setLocation(segmentLineString);
+        
+        fromMovement.setToSegment(segment);
+        toMovement.setFromSegment(segment);
 
         return segment;
     }
@@ -109,13 +107,15 @@ public class SegmentBean {
      */
     public Track upsertTrack(Track track, Segment segment, Movement newMovement) throws MovementDaoMappingException, MovementDaoException, GeometryUtilException {
         if (track == null) {
+        	Track newTrack = createNewTrack(segment);
             dao.persist(newMovement);
-            return createNewTrack(segment);
+            return newTrack;
         } else {
             switch (segment.getSegmentCategory()) {
                 case EXIT_PORT:
+                	Track newTrack = createNewTrack(segment);
                     dao.persist(newMovement);
-                    return createNewTrack(segment);
+                    return newTrack;
                 case GAP:
                 case JUMP:
                 case IN_PORT:
@@ -175,7 +175,7 @@ public class SegmentBean {
         dao.persist(newMovement);
     }
 
-    public Track createNewTrack(Segment segment) throws MovementDaoMappingException, MovementDaoException {
+    public Track createNewTrack(Segment segment) {
         LOG.debug("CREATING NEW TRACK ");
 
         Track track = new Track();
@@ -190,8 +190,6 @@ public class SegmentBean {
         track.setSegmentList(new ArrayList<Segment>());
         track.getSegmentList().add(segment);
         segment.setTrack(track);
-        dao.create(track);
-        dao.persist(segment);
         return track;
     }
 
@@ -242,6 +240,9 @@ public class SegmentBean {
 
         theSegmentToBeBroken.setFromMovement(previousMovement);
         theSegmentToBeBroken.setToMovement(currentMovement);
+        
+        previousMovement.setToSegment(theSegmentToBeBroken);
+        currentMovement.setFromSegment(theSegmentToBeBroken);
 
         LineString segmentLineString = GeometryUtil.getLineStringFromMovments(previousMovement, currentMovement);
         theSegmentToBeBroken.setLocation(segmentLineString);

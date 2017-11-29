@@ -100,6 +100,10 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
     @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_id")
     @ManyToOne(cascade = CascadeType.PERSIST)
     private MovementConnect movementConnect;
+    
+    @Fetch(FetchMode.JOIN)
+    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "toMovement")
+    private Segment fromSegment;
 
     @Column(name = "move_movesour_id")
     @Enumerated(EnumType.ORDINAL)
@@ -151,7 +155,15 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         this.movementConnect = movementConnect;
     }
 
-    public Double getSpeed() {
+    public Segment getFromSegment() {
+		return fromSegment;
+	}
+
+	public void setFromSegment(Segment fromSegment) {
+		this.fromSegment = fromSegment;
+	}
+
+	public Double getSpeed() {
         return speed;
     }
 

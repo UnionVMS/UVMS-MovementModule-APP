@@ -33,7 +33,7 @@ import java.util.List;
 @LocalBean
 public class IncomingMovementBean {
 
-    final static Logger LOG = LoggerFactory.getLogger(IncomingMovementBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IncomingMovementBean.class);
 
     @EJB
     private SegmentBean segmentBean;
@@ -104,6 +104,7 @@ public class IncomingMovementBean {
                 } else {
                     Segment segment = segmentBean.createSegment(currentMovement, firstMovement);
                     track.getSegmentList().add(segment);
+                    track.getMovementList().add(currentMovement);
                     segment.setTrack(track);
                     currentMovement.setTrack(track);
                     firstMovement.setTrack(track);
