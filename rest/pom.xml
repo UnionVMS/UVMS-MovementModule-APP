@@ -97,106 +97,10 @@
 	    	<artifactId>commons-io</artifactId>
 	    	<version>2.5</version>
 	    </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>movement-dbaccess-domain</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-           <groupId>eu.europa.ec.fisheries.uvms</groupId>
-           <artifactId>uvms-config</artifactId>
-           <version>3.1.1</version>
-           <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>2.15</version>
-            <type>jar</type>
-            <scope>test</scope>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.glassfish.hk2.external</groupId>
-    				<artifactId>javax.inject</artifactId>
-            	</exclusion>
-            	<exclusion>
-            		 <groupId>javax.validation</groupId>
-    				 <artifactId>validation-api</artifactId>
-            	</exclusion>
-            	<exclusion>
-            		<groupId>org.glassfish.hk2.external</groupId>
-    				<artifactId>aopalliance-repackaged</artifactId>
-            	</exclusion>
-            	<exclusion>
-            		<groupId>javax.annotation</groupId>
-    				<artifactId>javax.annotation-api</artifactId>
-            	</exclusion>
-            	<exclusion>
-            	    <groupId>javax.ws.rs</groupId>
-    				<artifactId>javax.ws.rs-api</artifactId>
-            	</exclusion>
-            	<exclusion>
-            		<groupId>org.javassist</groupId>
-            		<artifactId>javassist</artifactId>
-            	</exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
-            <version>1.9.13</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>2.15</version>
-            <scope>test</scope>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.glassfish.hk2.external</groupId>
-    				<artifactId>javax.inject</artifactId>
-            	</exclusion>
-            	<exclusion>
-            		 <groupId>javax.validation</groupId>
-    				 <artifactId>validation-api</artifactId>
-            	</exclusion>
-            	<exclusion>
-            		<groupId>org.glassfish.hk2.external</groupId>
-    				<artifactId>aopalliance-repackaged</artifactId>
-            	</exclusion>
-            	<exclusion>
-            	    <groupId>javax.ws.rs</groupId>
-    				<artifactId>javax.ws.rs-api</artifactId>
-            	</exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.8.7</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.8.7</version>
-            <scope>test</scope>
-        </dependency>
 		<dependency>
 			<groupId>fish.focus.uvms.maven</groupId>
 			<artifactId>uvms-pom-monitoring-deps</artifactId>
 			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>fish.focus.uvms.maven</groupId>
-			<artifactId>uvms-pom-arquillian-deps</artifactId>
-			<type>pom</type>
-			<scope>test</scope>
 		</dependency>
     </dependencies>
 
