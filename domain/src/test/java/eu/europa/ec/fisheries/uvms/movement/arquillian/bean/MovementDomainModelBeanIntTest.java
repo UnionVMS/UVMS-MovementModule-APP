@@ -18,6 +18,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
@@ -34,32 +36,15 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelExcepti
  */
 
 @RunWith(Arquillian.class)
-public class MovementDomainModelBeanIntTest extends BuildMovementTestDeployment {
+public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
     Random rnd = new Random();
 
     private final static String TEST_USER_NAME = "Arquillian";
 
-    @Inject
-    UserTransaction userTransaction;
-
     @EJB
     private MovementDomainModelBean movementDomainModelBean;
 
-
-    /******************************************************************************************************************
-     *   SETUP FUNCTIONS
-     ******************************************************************************************************************/
-
-    @Before
-    public void before() throws SystemException, NotSupportedException {
-        userTransaction.begin();
-    }
-
-    @After
-    public void after() throws SystemException {
-        userTransaction.rollback();
-    }
 
     /******************************************************************************************************************
      *   TEST FUNCTIONS

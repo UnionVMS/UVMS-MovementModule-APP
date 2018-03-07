@@ -30,34 +30,12 @@ import java.util.List;
  */
 
 @RunWith(Arquillian.class)
-public class TempMovementDaoIntTest extends BuildMovementTestDeployment {
+public class TempMovementDaoIntTest extends TransactionalTests {
 
     final static Logger LOG = LoggerFactory.getLogger(TempMovementDaoIntTest.class);
 
-    @Inject
-    UserTransaction userTransaction;
-
     @EJB
     private TempMovementDao tempMovementDao;
-
-
-    @PersistenceContext
-    private EntityManager em;
-
-
-    /******************************************************************************************************************
-     *   SETUP FUNCTIONS
-     ******************************************************************************************************************/
-
-    @Before
-    public void before() throws SystemException, NotSupportedException {
-        userTransaction.begin();
-    }
-
-    @After
-    public void after() throws SystemException {
-        userTransaction.rollback();
-    }
 
     /******************************************************************************************************************
      *   TEST FUNCTIONS

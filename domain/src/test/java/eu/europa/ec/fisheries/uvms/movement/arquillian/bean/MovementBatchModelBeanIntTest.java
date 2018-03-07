@@ -20,6 +20,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+
 import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
@@ -42,32 +44,16 @@ import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
  */
 
 @RunWith(Arquillian.class)
-public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
+public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     Random rnd = new Random();
 
     private final static String TEST_USER_NAME = "Arquillian";
 
-    @Inject
-    UserTransaction userTransaction;
 
     @EJB
     private MovementBatchModelBean movementBatchModelBean;
 
-
-    /******************************************************************************************************************
-     *   SETUP FUNCTIONS
-     ******************************************************************************************************************/
-
-    @Before
-    public void before() throws SystemException, NotSupportedException {
-        userTransaction.begin();
-    }
-
-    @After
-    public void after() throws SystemException {
-            userTransaction.rollback();
-    }
 
     /******************************************************************************************************************
      *   TEST FUNCTIONS
