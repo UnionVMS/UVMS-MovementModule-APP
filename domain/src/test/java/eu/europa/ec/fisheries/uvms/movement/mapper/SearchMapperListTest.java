@@ -11,12 +11,19 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
@@ -32,7 +39,8 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 
 /**
  **/
-public class SearchMapperListTest extends Assert {
+@RunWith(Arquillian.class)
+public class SearchMapperListTest extends TransactionalTests {
 
     private static final String GLOBAL_ID = "1";
     private static final String INITIAL_SELECT = "SELECT DISTINCT  m FROM Movement m ";
