@@ -35,42 +35,13 @@ public class DateUtil {
     final static org.slf4j.Logger LOG = LoggerFactory.getLogger(DateUtil.class);
 
     public static java.sql.Timestamp getDateFromString(String inDate) throws ParseException {
-        Date date = parseToUTCDate(inDate);
-        return new java.sql.Timestamp(date.getTime());
+    	Date date = convertDateTimeInUTC(inDate);
+    	return new java.sql.Timestamp(date.getTime());
+
     }
 
     public static Date parseToUTCDate(String dateTimeInUTC){
-        for (DateFormats format : DateFormats.values()) {
-            DateTimeFormatter formatter = DateTimeFormat.forPattern(format.getFormat());
-            DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateTimeInUTC);
-            if (dateTime != null) {
-                return dateTime.toLocalDateTime().toDate();
-            }
-        }
-        LOG.error("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern any defined pattern.");
-        return null;
-    }
-
-    public static Date parseToUTCDate_a_more_stable_if_you_want_to_work_like_this(String dateTimeInUTC) {
-        try {
-            for (DateFormats format : DateFormats.values()) {
-                try {
-                    DateTimeFormatter formatter = DateTimeFormat.forPattern(format.getFormat());
-                    DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateTimeInUTC);
-                    if (dateTime != null) {
-                        return dateTime.toLocalDateTime().toDate();
-                    }
-                } catch (RuntimeException e) {
-                    LOG.error("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern any defined pattern.");
-                    continue;
-                }
-            }
-        } catch (RuntimeException e) {
-            LOG.error("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern any defined pattern.");
-            return null;
-        }
-        LOG.error("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern any defined pattern.");
-        return null;
+    	return convertDateTimeInUTC(dateTimeInUTC);
     }
 
 
@@ -78,6 +49,7 @@ public class DateUtil {
         String dateString = null;
         if (date != null) {
             DateFormat df = new SimpleDateFormat(DateFormats.FORMAT.getFormat());
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
             dateString = df.format(date);
         }
         return dateString;
@@ -85,9 +57,10 @@ public class DateUtil {
 
     public static XMLGregorianCalendar addSecondsToDate(XMLGregorianCalendar inDate, int seconds) {
         Date date = DateUtil.parsePositionTime(inDate);
-        DateTime newDateTime = new DateTime(date);
-        DateTime plusSeconds = newDateTime.plusSeconds(1);
-        return parsePositionTime(plusSeconds.toDate());
+        //DateTime newDateTime = new DateTime(date);
+        //DateTime plusSeconds = newDateTime.plusSeconds(1);
+        Date plusSeconds = new Date(date.getTime() + 1000L); //add one second
+        return parsePositionTime(plusSeconds);
     }
 
     public static Date addSecondsToDate(Date inDate, int seconds) {
@@ -96,7 +69,7 @@ public class DateUtil {
         return plusSeconds.toDate();
     }
 
-    public static Date parsePositionTime(XMLGregorianCalendar positionTime) {
+    public static Date parsePositionTime(XMLGregorianCalendar positionTime) { //TODO REWORK SO THAT IT DOES NOT INVOLVE BLOODY TIMEZONES
         if (positionTime != null) {
             DateTimeZone localTZ = DateTimeZone.getDefault();
             long eventMillsInUTCTimeZone = localTZ.convertLocalToUTC(positionTime.toGregorianCalendar().getTime().getTime(), false);
@@ -139,12 +112,10 @@ public class DateUtil {
     public static Date convertDateTimeInUTC(String dateTimeInUTC, String pattern){
         if (dateTimeInUTC != null) {
             SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             try {
-                Date theDate = sdf.parse(dateTimeInUTC);
-                DateTimeZone localTZ = DateTimeZone.getDefault();
-                long eventMillsInUTCTimeZone = localTZ.convertLocalToUTC(theDate.getTime(), false);
-                DateTime evenDateTimeInUTCTimeZone = new DateTime(eventMillsInUTCTimeZone);
-                return evenDateTimeInUTCTimeZone.toDate();
+                Date date = sdf.parse(dateTimeInUTC);
+                return date;
             } catch (java.text.ParseException e) {
                 LOG.info("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern: " + pattern + ". Trying next pattern");
             }
