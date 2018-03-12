@@ -127,6 +127,23 @@ public class SearchMapperListTest extends TransactionalTests {
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
         assertEquals("SELECT DISTINCT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra  LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg  LEFT JOIN FETCH m.metadata mmd  LEFT JOIN FETCH m.movementareaList marea  LEFT JOIN FETCH marea.movareaAreaId area  LEFT JOIN FETCH area.areaType mareatype  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
     }
-        
+    
+    
+    @Test
+    public void testCreateMinimalSelectSearchSql() throws MovementDaoMappingException, SearchMapperException, ParseException {
+    	List<ListCriteria> listCriterias = new ArrayList<>();
+
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CATEGORY);
+        criteria.setValue(SegmentCategoryType.ANCHORED.name());
+        listCriterias.add(criteria);
+
+        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
+
+        assertTrue(mapSearchField.size() == 1);
+
+        String data = SearchFieldMapper.createMinimalSelectSearchSql(mapSearchField, true);
+        System.out.println(data);
+    }
 
 }

@@ -5,23 +5,17 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
-
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -199,6 +193,69 @@ public class DateUtilTest extends TransactionalTests {
 		}
 		
 		
+	}
+	
+	@Test
+	public void testAddSecondsToDateWithDateInput() throws DatatypeConfigurationException { //Almost a carbon copy of the one above
+		GregorianCalendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 59);
+		Date input = testDate.getTime();
+		//This method will add one second to the calendar no mater what you give as the second input
+		Date output = DateUtil.addSecondsToDate(input, 0);
+		assertEquals(input.getTime() + 1000L, output.getTime());
+		
+		testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 32);
+		input = testDate.getTime();
+		output = DateUtil.addSecondsToDate(input, 52);
+		assertEquals(input.getTime() + 1000L, output.getTime());
+		
+		Date n = null;
+		
+		try {
+			output = DateUtil.addSecondsToDate(n, 8);
+			fail();
+		} catch (NullPointerException e) {
+			assertTrue(true);
+		}
+		
+		
+		
+		
+	}
+	
+	@Test
+	public void testParsePositionTimeWithDateInput() {
+		GregorianCalendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 59);
+		Date input = testDate.getTime();
+		
+		XMLGregorianCalendar output = DateUtil.parsePositionTime(input);
+		
+		assertEquals(input.getTime(), output.toGregorianCalendar().getTime().getTime());
+		
+		input = null;
+		output = DateUtil.parsePositionTime(input);
+		assertNull(output);
+	}
+	
+	@Test
+	public void testNowUTC() {
+		Date now = new Date();
+		
+		Date output = DateUtil.nowUTC();
+		
+		assertEquals(now.getTime(), output.getTime());
+	}
+	
+	@Test
+	public void testGetXMLGregorianCalendarInUTC() {
+		GregorianCalendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 59);
+		Date input = testDate.getTime();
+		
+		XMLGregorianCalendar output = DateUtil.getXMLGregorianCalendarInUTC(input);
+		assertEquals(input.getTime(), output.toGregorianCalendar().getTime().getTime());
+		
+		input = null;
+		output = DateUtil.getXMLGregorianCalendarInUTC(input);
+		assertNull(output);
 	}
 	
 	
