@@ -125,7 +125,7 @@ public class SearchMapperListTest extends TransactionalTests {
         assertTrue(mapSearchField.size() == 1);
 
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
-        assertEquals("SELECT DISTINCT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra  LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg  LEFT JOIN FETCH m.metadata mmd  LEFT JOIN FETCH m.movementareaList marea  LEFT JOIN FETCH marea.movareaAreaId area  LEFT JOIN FETCH area.areaType mareatype  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
+        assertEquals("SELECT DISTINCT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra  LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg  LEFT JOIN FETCH m.metadata mmd  LEFT JOIN FETCH m.movementareaList marea  LEFT JOIN FETCH marea.movareaAreaId area  LEFT JOIN FETCH area.areaType mareatype  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data); 
     }
     
     
@@ -143,7 +143,55 @@ public class SearchMapperListTest extends TransactionalTests {
         assertTrue(mapSearchField.size() == 1);
 
         String data = SearchFieldMapper.createMinimalSelectSearchSql(mapSearchField, true);
+        assertEquals("SELECT DISTINCT  m FROM MinimalMovement m INNER JOIN FETCH m.movementConnect mc  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ", data);
+    }
+    
+    
+    @Test
+    public void testMultipleSearchFieldCategorys() throws MovementDaoMappingException, SearchMapperException, ParseException {
+    	List<ListCriteria> listCriterias = new ArrayList<>();
+
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CATEGORY);
+        criteria.setValue(SegmentCategoryType.ANCHORED.name());
+        listCriterias.add(criteria);
+        
+        criteria = new ListCriteria();
+        criteria.setKey(SearchKey.SOURCE);
+        criteria.setValue(MovementSourceType.MANUAL.name());
+        listCriterias.add(criteria);
+
+        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
+
+        assertTrue(mapSearchField.size() == 2);
+
+        String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, false);
         System.out.println(data);
+        String correctOutput = "SELECT DISTINCT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra "
+        		+ " LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg  LEFT JOIN FETCH m.metadata mmd  LEFT JOIN FETCH m.movementareaList marea "
+        		+ " LEFT JOIN FETCH marea.movareaAreaId area  LEFT JOIN FETCH area.areaType mareatype  WHERE m.movementSource = 3 OR  ( toSeg.segmentCategory = 6 OR"
+        		+ " fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC "; 
+        assertEquals(correctOutput, data);
+    }
+    
+    @Test
+    public void testCreateCountSearchSql() throws MovementDaoMappingException, SearchMapperException, ParseException {
+    	List<ListCriteria> listCriterias = new ArrayList<>();
+
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.SOURCE);
+        criteria.setValue(MovementSourceType.MANUAL.name());
+        listCriterias.add(criteria);
+
+        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
+
+        assertTrue(mapSearchField.size() == 1);
+
+        String data = SearchFieldMapper.createCountSearchSql(mapSearchField, true);
+        String correctOutput = "SELECT COUNT(DISTINCT m) FROM Movement m  INNER JOIN m.movementConnect mc  LEFT JOIN m.activity act  LEFT JOIN m.track tra "
+        		+ " LEFT JOIN m.fromSegment fromSeg  LEFT JOIN m.toSegment toSeg  LEFT JOIN m.metadata mmd  LEFT JOIN m.movementareaList marea "
+        		+ " LEFT JOIN marea.movareaAreaId area  LEFT JOIN area.areaType mareatype  WHERE m.movementSource = 3 AND  m.duplicate = false ";
+        assertEquals(correctOutput, data);
     }
 
 }

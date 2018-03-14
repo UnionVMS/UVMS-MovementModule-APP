@@ -120,17 +120,17 @@ public class GeometryUtilTest extends TransactionalTests {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		
-		List<Movement> varbergFishingTourReverse = movementHelpers.createVarbergGrenaMovements(2, 100, connectId);
-		LineString output = GeometryUtil.getLineStringFromMovments(varbergFishingTourReverse);
-		List<Movement> varbergFishingTourOrdered = movementHelpers.createVarbergGrenaMovements(1, 100, connectId);
-		System.out.println(varbergFishingTourOrdered.size() + " " + output.getNumPoints());
-		for(int i = 0 ; i < varbergFishingTourOrdered.size() ; i++) {
-			assertEquals(varbergFishingTourOrdered.get(i).getLocation().getX(), output.getCoordinateN(i).x, 0);
-			assertEquals(varbergFishingTourOrdered.get(i).getLocation().getY(), output.getCoordinateN(i).y, 0);
+		List<Movement> varbergGrenaTourReverse = movementHelpers.createVarbergGrenaMovements(2, 100, connectId);
+		LineString output = GeometryUtil.getLineStringFromMovments(varbergGrenaTourReverse);
+		List<Movement> varbergGrenaTourOrdered = movementHelpers.createVarbergGrenaMovements(1, 100, connectId);
+		System.out.println(varbergGrenaTourOrdered.size() + " " + output.getNumPoints());
+		for(int i = 0 ; i < varbergGrenaTourOrdered.size() ; i++) {
+			assertEquals(varbergGrenaTourOrdered.get(i).getLocation().getX(), output.getCoordinateN(i).x, 0);
+			assertEquals(varbergGrenaTourOrdered.get(i).getLocation().getY(), output.getCoordinateN(i).y, 0);
 		}
-		varbergFishingTourOrdered = null;
+		varbergGrenaTourOrdered = null;
 		try {
-			output = GeometryUtil.getLineStringFromMovments(varbergFishingTourOrdered);
+			output = GeometryUtil.getLineStringFromMovments(varbergGrenaTourOrdered);
 			fail("Null should result in an exception");
 		} catch (NullPointerException e) {
 			assertTrue(true);

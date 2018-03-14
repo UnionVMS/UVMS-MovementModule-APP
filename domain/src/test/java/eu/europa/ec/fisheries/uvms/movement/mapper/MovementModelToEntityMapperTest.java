@@ -9,6 +9,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.UUID;
 
@@ -234,6 +236,13 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
         assertNotNull(areaType);
         assertThat(areaType.getUpdatedUser(), is("UVMS"));
         assertNotNull(areaType.getUpdatedTime());
+        
+        try {
+			areaType = mapToAreaType(null);
+			fail("shpould result in a nullpointer");
+		} catch (NullPointerException e) {
+			assertTrue(true);
+		}
     }
 
     @Test
@@ -247,6 +256,14 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
         assertNotNull(area);
         assertThat(area.getAreaUpuser(), is("UVMS"));
         assertNotNull(area.getAreaUpdattim());
+        
+        try {
+        	area = maptoArea(null, areaType);
+        	fail("should result in a nullpointer");
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+        
     }
 
     @Test

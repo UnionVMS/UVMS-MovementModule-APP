@@ -268,7 +268,7 @@ public class SearchFieldMapper {
     /**
      * Creates the where condition. If the list has more than one value the
      * condition will be 'IN(value1, value2)' If the list has one value the
-     * condition vill be '= value'
+     * condition will be '= value'
      *
      * @param criteria
      * @param builder
