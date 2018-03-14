@@ -11,7 +11,7 @@ import javax.transaction.*;
 public class TransactionalTests extends BuildMovementTestDeployment {
 
     @Inject
-    protected UserTransaction userTransaction;
+    private UserTransaction userTransaction;
 
     @PersistenceContext
     protected EntityManager em;
@@ -22,7 +22,7 @@ public class TransactionalTests extends BuildMovementTestDeployment {
     }
 
     @After
-    public void after() throws SystemException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    public void after() throws SystemException {
         userTransaction.rollback();
     }
 

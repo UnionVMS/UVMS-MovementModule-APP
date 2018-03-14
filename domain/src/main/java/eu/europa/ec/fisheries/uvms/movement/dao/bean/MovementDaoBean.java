@@ -33,6 +33,7 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -85,11 +86,10 @@ public class MovementDaoBean extends Dao implements MovementDao {
     public List<Movement> getLatestMovementsByConnectId(String connectId, Integer amount) throws MovementDaoException {
         try {
             if (amount == 1) {
-                List<Movement> resultList = new ArrayList<>();
-
                 // TODO  not stable
-                resultList.add(getLatestMovement(connectId).getMovement());
-                return resultList;
+                LatestMovement latestMovement = getLatestMovement(connectId);
+                Movement movement = latestMovement.getMovement();
+                return Collections.singletonList(movement);
             }
             TypedQuery<Movement> query = em.createNamedQuery("Movement.findLatestByMovementConnect", Movement.class);
             query.setParameter("connectId", connectId);
@@ -436,9 +436,9 @@ public class MovementDaoBean extends Dao implements MovementDao {
     public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues, int numberOfReports) throws MovementDaoException {
         try {
             List<Movement> movements = new ArrayList<>();
-            long start = System.currentTimeMillis();
-            if (searchKeyValues.isEmpty() || searchKeyValues == null) {
-                LOG.debug("Searchvalues empty or null, getting all vessels and the latest reports for them");
+            // long start = System.currentTimeMillis();
+            if (searchKeyValues == null || searchKeyValues.isEmpty()) {
+                LOG.debug("searchValues empty or null, getting all vessels and the latest reports for them");
                 TypedQuery<MovementConnect> connectQuery = em.createNamedQuery(UvmsConstants.MOVEMENT_CONNECT_GET_ALL, MovementConnect.class);
                 List<MovementConnect> movementConnects = connectQuery.getResultList();
 
@@ -446,7 +446,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
                     List<Movement> latestMovementsByConnectId = getLatestMovementsByConnectId(movementConnect.getValue(), numberOfReports);
                     movements.addAll(latestMovementsByConnectId);
                 }
-
             } else {
                 LOG.debug("Searchvalues is NOT empty, getting latest reports for the query ( TOP( " + numberOfReports + " ) )");
                 Query query = getMovementQuery(sql, searchKeyValues);
@@ -532,14 +531,17 @@ public class MovementDaoBean extends Dao implements MovementDao {
 
     @Override
     public List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementDaoException {
-        List resultList = new ArrayList();
-        Area areaResult = getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
-        if(areaResult!=null){
+
+        List<Movement> resultList = null;
+        try {
+            Area areaResult = getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
             TypedQuery<Movement> query = em.createNamedQuery(UvmsConstants.MOVEMENT_LIST_BY_AREA_TIME_INTERVAL, Movement.class);
             query.setParameter("fromDate", DateUtil.parseToUTCDate(criteria.getFromDate()));
             query.setParameter("toDate", DateUtil.parseToUTCDate(criteria.getToDate()));
             query.setParameter("areaId", areaResult.getAreaId());
             resultList = query.getResultList();
+        } catch (NullPointerException npe) {
+            LOG.error(" [ Error when getting Area ] {}", npe.getMessage());
         }
         return resultList;
     }

@@ -11,16 +11,19 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
+import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
+import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
+import eu.europa.ec.fisheries.schema.movement.v1.*;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.LatLong;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
-import java.util.Arrays;
+import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+
+import java.util.Collections;
 import java.util.List;
 
 public class MockData {
@@ -31,7 +34,7 @@ public class MockData {
         return transition;
     }
 
-    public static Area getArea(String areaCode) {
+    private static Area getArea(String areaCode) {
         Area area = new Area();
         area.setAreaCode(areaCode);
         area.setAreaName(areaCode);
@@ -39,7 +42,7 @@ public class MockData {
         return area;
     }
 
-    public static AreaType getAreaType(String name) {
+    private static AreaType getAreaType(String name) {
         AreaType areaType = new AreaType();
         areaType.setName(name);
         return areaType;
@@ -64,7 +67,7 @@ public class MockData {
         return type;
     }
 
-    public static MovementMetaDataAreaType getMovementMetadataType(String areaCode) {
+    private static MovementMetaDataAreaType getMovementMetadataType(String areaCode) {
         MovementMetaDataAreaType area = new MovementMetaDataAreaType();
         area.setCode(areaCode);
         area.setName(areaCode);
@@ -76,9 +79,9 @@ public class MockData {
         Movement currentMovement = new Movement();
         Movementarea currentMoveArea = new Movementarea();
         Area currentArea = new Area();
-        currentArea.setAreaId(Long.valueOf(areaId));
+        currentArea.setAreaId((long) areaId);
         currentMoveArea.setMovareaAreaId(currentArea);
-        List<Movementarea> currentMoveAreaList = Arrays.asList(currentMoveArea);
+        List<Movementarea> currentMoveAreaList = Collections.singletonList(currentMoveArea);
         currentMovement.setMovementareaList(currentMoveAreaList);
         return currentMovement;
     }
@@ -87,12 +90,63 @@ public class MockData {
         Movement previousMovement = new Movement();
         Areatransition priviousTransition = new Areatransition();
         Area previousArea = new Area();
-        previousArea.setAreaId(Long.valueOf(areaId));
+        previousArea.setAreaId((long) areaId);
         priviousTransition.setAreatranAreaId(previousArea);
         priviousTransition.setMovementType(movementType);
-        List<Areatransition> previousMoveAreaList = Arrays.asList(priviousTransition);
+        List<Areatransition> previousMoveAreaList = Collections.singletonList(priviousTransition);
         previousMovement.setAreatransitionList(previousMoveAreaList);
         return previousMovement;
     }
 
+    public static MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, double reportedCourse) {
+
+        LatLong latLong = new LatLong(latitude, longitude, DateUtil.nowUTC());
+        latLong.bearing = reportedCourse;
+        return createMovementType(latLong, segmentCategoryType, connectId, altitude);
+    }
+
+    public static MovementType createMovementType(LatLong latlong, SegmentCategoryType segmentCategoryType, String connectId, double altitude) {
+
+        MovementActivityType activityType = new MovementActivityType();
+        activityType.setCallback("TEST");
+        activityType.setMessageId("TEST");
+        activityType.setMessageType(MovementActivityTypeType.AUT);
+
+        AssetId assetId = new AssetId();
+        assetId.setAssetType(AssetType.VESSEL);
+        assetId.setIdType(AssetIdType.GUID);
+        assetId.setValue("TEST");
+
+        MovementPoint movementPoint = new MovementPoint();
+        movementPoint.setLongitude(latlong.longitude);
+        movementPoint.setLatitude(latlong.latitude);
+        movementPoint.setAltitude(altitude);
+
+        MovementMetaData movementMetaData = new MovementMetaData();
+        movementMetaData.setFromSegmentType(segmentCategoryType);
+
+        MovementType movementType = new MovementType();
+
+        movementType.setMovementType(MovementTypeType.POS);
+        movementType.setActivity(activityType);
+        movementType.setConnectId(connectId);
+        movementType.setAssetId(assetId);
+        movementType.setDuplicates("false");
+        movementType.setInternalReferenceNumber("TEST");
+        movementType.setPosition(movementPoint);
+        movementType.setReportedCourse(latlong.bearing);
+        movementType.setReportedSpeed(latlong.speed);
+        movementType.setSource(MovementSourceType.NAF);
+        movementType.setStatus("TEST");
+
+        movementType.setPositionTime(latlong.positionTime);
+        movementType.setTripNumber(0d);
+
+        movementType.setCalculatedCourse(0d);
+        movementType.setCalculatedSpeed(0d);
+        movementType.setComChannelType(MovementComChannelType.NAF);
+        movementType.setMetaData(movementMetaData);
+
+        return movementType;
+    }
 }

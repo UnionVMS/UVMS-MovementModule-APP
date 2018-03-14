@@ -1,23 +1,23 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.persistence.PersistenceException;
-
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+
+import javax.ejb.EJB;
+import javax.persistence.PersistenceException;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
@@ -27,42 +27,39 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
     @EJB
     private MovementSearchGroupDomainModelBean movementSearchGroupDomainModelBean;
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Test
     @OperateOnDeployment("normal")
     public void createMovementSearchGroup() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = createSearchGroup();
         MovementSearchGroup movementSearchGroupAfterPersist = movementSearchGroupDomainModelBean.createMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
         em.flush();
-        Assert.assertNotNull(movementSearchGroupAfterPersist.getId());
-        // TODO: This is actually wierd... We are marshalling and unmarshalling back and forth, watch out for this when merging APP and DB
-        Assert.assertNull(movementSearchGroup.getId());
+        assertNotNull(movementSearchGroupAfterPersist.getId());
     }
 
     @Test
     @OperateOnDeployment("normal")
     public void failCreateMovementSearchGroupNoUserName() throws MovementModelException {
+        expectedException.expect(PersistenceException.class);
+        expectedException.expectMessage("could not execute statement");
+
         MovementSearchGroup movementSearchGroup = createSearchGroup();
-        try {
-            movementSearchGroupDomainModelBean.createMovementSearchGroup(movementSearchGroup, null);
-            em.flush();
-            Assert.assertFalse("This should fail, username is null", false);
-        } catch (PersistenceException ex) {
-            Assert.assertTrue(ex.getMessage().contains("ConstraintViolation"));
-        }
+        movementSearchGroupDomainModelBean.createMovementSearchGroup(movementSearchGroup, null);
+        em.flush();
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void failCreateMovementSearchGroupNoName() {
+    public void failCreateMovementSearchGroupNoName() throws MovementModelException {
+        expectedException.expect(MovementModelException.class);
+        expectedException.expectMessage("Could not create movement search group.");
+
         MovementSearchGroup movementSearchGroup = createSearchGroup();
-        try {
-            movementSearchGroup.setName(null);
-            movementSearchGroupDomainModelBean.createMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
-            em.flush();
-            Assert.assertFalse("This should fail, name is null", false);
-        } catch (MovementModelException ex) {
-            Assert.assertTrue(ex.getMessage().contains("Could not create movement search group"));
-        }
+        movementSearchGroup.setName(null);
+        movementSearchGroupDomainModelBean.createMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+        em.flush();
     }
 
     @Test
@@ -70,13 +67,13 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
     public void getMovementSearchGroup() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
-        Assert.assertNotNull(movementSearchGroup.getId());
+        assertNotNull(movementSearchGroup.getId());
 
         MovementSearchGroup tryToFindIt = movementSearchGroupDomainModelBean.getMovementSearchGroup(movementSearchGroup.getId());
-        Assert.assertNotNull(tryToFindIt);
+        assertNotNull(tryToFindIt);
 
-        Assert.assertEquals(movementSearchGroup.getId(), tryToFindIt.getId());
-        Assert.assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
+        assertEquals(movementSearchGroup.getId(), tryToFindIt.getId());
+        assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
     }
 
     @Test
@@ -84,77 +81,71 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
     public void getMovementSearchGroupsByUser() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
-        Assert.assertNotNull(movementSearchGroup.getId());
+        assertNotNull(movementSearchGroup.getId());
 
         List<MovementSearchGroup> movementSearchGroupsByUser = movementSearchGroupDomainModelBean.getMovementSearchGroupsByUser(TEST_USER_NAME);
-        Assert.assertNotNull(movementSearchGroupsByUser);
-        Assert.assertTrue(movementSearchGroupsByUser.size() == 1);
+        assertNotNull(movementSearchGroupsByUser);
+        assertTrue(movementSearchGroupsByUser.size() == 1);
 
         MovementSearchGroup tryToFindIt = movementSearchGroupsByUser.get(0);
 
-        Assert.assertEquals(movementSearchGroup.getId(), tryToFindIt.getId());
-        Assert.assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
+        assertEquals(movementSearchGroup.getId(), tryToFindIt.getId());
+        assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void deleteMovementSearchGroup() throws MovementModelException {
+    public void deleteMovementSearchGroup_then_getById_Exception_Thrown() throws MovementModelException {
+
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
-        Assert.assertNotNull(movementSearchGroup.getId());
+        assertNotNull(movementSearchGroup.getId());
+
+        expectedException.expect(MovementModelException.class);
+        expectedException.expectMessage("Could not get movement search group by group ID:" + movementSearchGroup.getId());
 
         movementSearchGroupDomainModelBean.deleteMovementSearchGroup(movementSearchGroup.getId());
         em.flush();
 
-        try {
-            MovementSearchGroup tryToFindIt = movementSearchGroupDomainModelBean.getMovementSearchGroup(movementSearchGroup.getId());
-            Assert.assertNull(tryToFindIt);
-        } catch(MovementModelException ex) {
-            Assert.assertTrue(ex.getMessage().contains("ID:" + movementSearchGroup.getId()));
-        }
+        movementSearchGroupDomainModelBean.getMovementSearchGroup(movementSearchGroup.getId());
     }
-
-
 
     @Test
     @OperateOnDeployment("normal")
     public void updateMovementSearchGroup() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
-        Assert.assertNotNull(movementSearchGroup.getId());
+        assertNotNull(movementSearchGroup.getId());
 
         MovementSearchGroup tryToFindIt = movementSearchGroupDomainModelBean.getMovementSearchGroup(movementSearchGroup.getId());
-        Assert.assertNotNull(tryToFindIt);
-        Assert.assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
+        assertNotNull(tryToFindIt);
+        assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
 
         movementSearchGroup.setName("CHANGED_IT");
-        movementSearchGroupDomainModelBean.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+        tryToFindIt = movementSearchGroupDomainModelBean.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
 
-        tryToFindIt = movementSearchGroupDomainModelBean.getMovementSearchGroup(movementSearchGroup.getId());
-        Assert.assertNotNull(tryToFindIt);
-        Assert.assertEquals("CHANGED_IT", tryToFindIt.getName());
+        assertNotNull(tryToFindIt);
+        assertEquals("CHANGED_IT", tryToFindIt.getName());
     }
-
 
     @Test
     @OperateOnDeployment("normal")
     public void updateMovementSearchGroupWithExtraCriteria() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
-        Assert.assertNotNull(movementSearchGroup.getId());
+        assertNotNull(movementSearchGroup.getId());
 
         MovementSearchGroup tryToFindIt = movementSearchGroupDomainModelBean.getMovementSearchGroup(movementSearchGroup.getId());
-        Assert.assertNotNull(tryToFindIt);
-        Assert.assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
+        assertNotNull(tryToFindIt);
+        assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
 
         movementSearchGroup.setName("CHANGED_IT");
         movementSearchGroup.getSearchFields().add(createCriteria(SearchKeyType.ASSET, "IRCS", "SLEA2"));
-        movementSearchGroupDomainModelBean.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+        tryToFindIt = movementSearchGroupDomainModelBean.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
 
-        tryToFindIt = movementSearchGroupDomainModelBean.getMovementSearchGroup(movementSearchGroup.getId());
-        Assert.assertNotNull(tryToFindIt);
-        Assert.assertEquals("CHANGED_IT", tryToFindIt.getName());
-        Assert.assertTrue(tryToFindIt.getSearchFields().size() == 4);
+        assertNotNull(tryToFindIt);
+        assertEquals("CHANGED_IT", tryToFindIt.getName());
+        assertEquals(4, tryToFindIt.getSearchFields().size());
     }
 
     @Test
@@ -162,16 +153,15 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
     public void updateMovementSearchGroupRemoveCriterias() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
-        Assert.assertNotNull(movementSearchGroup.getId());
+        assertNotNull(movementSearchGroup.getId());
 
         movementSearchGroup.setName("CHANGED_IT");
         movementSearchGroup.getSearchFields().clear();
-        movementSearchGroupDomainModelBean.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+        MovementSearchGroup tryToFindIt = movementSearchGroupDomainModelBean.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
 
-        MovementSearchGroup tryToFindIt = movementSearchGroupDomainModelBean.getMovementSearchGroup(movementSearchGroup.getId());
-        Assert.assertNotNull(tryToFindIt);
-        Assert.assertEquals("CHANGED_IT", tryToFindIt.getName());
-        Assert.assertTrue(tryToFindIt.getSearchFields().size() == 0);
+        assertNotNull(tryToFindIt);
+        assertEquals("CHANGED_IT", tryToFindIt.getName());
+        assertEquals(0, tryToFindIt.getSearchFields().size());
     }
 
     @Test
@@ -179,22 +169,19 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
     public void updateMovementSearchGroupRemoveCriteriasAddOne() throws MovementModelException {
         MovementSearchGroup movementSearchGroup = movementSearchGroupDomainModelBean.createMovementSearchGroup(createSearchGroup(), TEST_USER_NAME);
         em.flush();
-        Assert.assertNotNull(movementSearchGroup.getId());
+        assertNotNull(movementSearchGroup.getId());
 
         movementSearchGroup.setName("CHANGED_IT");
         movementSearchGroup.getSearchFields().clear();
         movementSearchGroup.getSearchFields().add(createCriteria(SearchKeyType.ASSET, "IRCS", "SLEA2"));
-        movementSearchGroupDomainModelBean.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+        MovementSearchGroup tryToFindIt = movementSearchGroupDomainModelBean.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
 
-        MovementSearchGroup tryToFindIt = movementSearchGroupDomainModelBean.getMovementSearchGroup(movementSearchGroup.getId());
-        Assert.assertNotNull(tryToFindIt);
-        Assert.assertEquals("CHANGED_IT", tryToFindIt.getName());
-        Assert.assertTrue(tryToFindIt.getSearchFields().size() == 1);
+        assertNotNull(tryToFindIt);
+        assertEquals("CHANGED_IT", tryToFindIt.getName());
+        assertEquals(1, tryToFindIt.getSearchFields().size());
         GroupListCriteria criteria = tryToFindIt.getSearchFields().get(0);
-        Assert.assertEquals("SLEA2", criteria.getValue());
+        assertEquals("SLEA2", criteria.getValue());
     }
-
-
 
     private MovementSearchGroup createSearchGroup() {
         MovementSearchGroup movementSearchGroup = new MovementSearchGroup();

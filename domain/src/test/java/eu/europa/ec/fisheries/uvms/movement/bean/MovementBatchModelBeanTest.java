@@ -14,25 +14,22 @@ package eu.europa.ec.fisheries.uvms.movement.bean;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.MockData;
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  **/
 public class MovementBatchModelBeanTest {
 
     @InjectMocks
-    MovementBatchModelBean bean;
-
-    @Mock
-    MovementDaoBean dao;
+    private MovementBatchModelBean bean;
 
     public MovementBatchModelBeanTest() {
         MockitoAnnotations.initMocks(this);
@@ -40,7 +37,7 @@ public class MovementBatchModelBeanTest {
 
     /**
      * Update movement metadata with added transitions that is not yet added to
-     * movemement metadata When the arae is same no addition should be made to
+     * movement metadata When the area is same no addition should be made to
      * the areas in metadata when areas are equal
      */
     @Test
@@ -49,12 +46,12 @@ public class MovementBatchModelBeanTest {
         List<Areatransition> transitions = new ArrayList<>();
         transitions.add(MockData.getAreaTransition("AREA1", MovementTypeType.ENT));
         bean.enrichAreas(mappedMovement, transitions);
-        Assert.assertTrue(" AreaSize should be 2", mappedMovement.getMetaData().getAreas().size() == 2);
+        assertEquals(" AreaSize should be 2", 2, mappedMovement.getMetaData().getAreas().size());
     }
 
     /**
      * Update movement metadata with added transitions that is not yet added to
-     * movemement metadata When the arae is not same an addition should be made
+     * movement metadata When the area is not same an addition should be made
      * to the areas in metadata when areas are not equal
      */
     @Test
@@ -63,7 +60,7 @@ public class MovementBatchModelBeanTest {
         List<Areatransition> transitions = new ArrayList<>();
         transitions.add(MockData.getAreaTransition("AREA3", MovementTypeType.ENT));
         bean.enrichAreas(mappedMovement, transitions);
-        Assert.assertTrue("AreaSize should be 3", mappedMovement.getMetaData().getAreas().size() == 3);
+        assertEquals("AreaSize should be 3", 3,mappedMovement.getMetaData().getAreas().size());
     }
 
 }
