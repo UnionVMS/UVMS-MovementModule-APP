@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.ejb.EJB;
+import javax.transaction.SystemException;
 
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -33,14 +34,17 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
@@ -49,6 +53,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
+import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
@@ -103,6 +108,8 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		MinimalMovement movement = new MinimalMovement();
 		GeometryFactory gf = new GeometryFactory();
 		movement.setLocation(gf.createPoint(new Coordinate(lon, lat)));
+		movement.setMovementSource(MovementSourceType.IRIDIUM);
+		movement.setMovementType(MovementTypeType.POS);
 		//movement.setStatus(status);
 	}
 	@Test
@@ -326,6 +333,33 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
+	}
+	
+	@Test
+	public void testExtractTracks() throws MovementDaoException, MovementDuplicateException, MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException {
+		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		String connectId = UUID.randomUUID().toString();
+		ArrayList<Movement> movementList = new ArrayList(movementHelpers.createFishingTourVarberg(1, connectId));
+		
+		for(Movement move : movementList) {
+			incomingMovementBean.processMovement(move);
+			assertTrue(move.getProcessed());
+		}
+		
+		List<Segment> input = new ArrayList(MovementEntityToModelMapper.extractSegments(movementList, true));
+		List<MovementTrack> output = MovementEntityToModelMapper.extractTracks(input);
+		
+		assertEquals(1, output.size());
+		assertEquals(movementList.get(0).getTrack().getDuration(), output.get(0).getDuration(),0D);
+		assertEquals(movementList.get(0).getTrack().getId().toString(), output.get(0).getId());
+		
+		try {
+			output = MovementEntityToModelMapper.extractTracks(null);
+			fail("Null as invalue");
+		} catch (NullPointerException e) {
+			assertTrue(true);
+		}
+		
 	}
 	
 }
