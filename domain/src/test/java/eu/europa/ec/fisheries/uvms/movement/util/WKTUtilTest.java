@@ -111,7 +111,7 @@ public class WKTUtilTest extends TransactionalTests {
 	@Test
 	public void testGetGeometryFromWKTSrring() throws ParseException {
 		String input = "LINESTRING (12.241 57.107, 12.238 57.104, 12.235 57.101, 12.232 57.098, 12.229 57.095, 12.225999999999999 57.092,"
-				+ " 12.222999999999999 57.089, 12.219999999999999 57.086, 12.216999999999999 57.083, 12.213999999999999 57.08)";;
+				+ " 12.222999999999999 57.089, 12.219999999999999 57.086, 12.216999999999999 57.083, 12.213999999999999 57.08)";
 		Geometry output = WKTUtil.getGeometryFromWKTSrring(input);
 		List<Geometry> geoList = new LinkedList<Geometry>();
 		geoList.add(output);
