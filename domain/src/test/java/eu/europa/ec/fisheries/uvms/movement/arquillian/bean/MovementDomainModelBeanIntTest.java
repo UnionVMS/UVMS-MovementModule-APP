@@ -1,8 +1,13 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import javax.ejb.EJB;
 import javax.inject.Inject;
@@ -19,16 +24,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-
+import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 /**
@@ -217,6 +230,43 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         } catch (Exception e) {
             Assert.fail(e.toString());
         }
+    }
+    
+    @EJB
+    MovementBatchModelBean movementBatchModelBean;
+    
+    @EJB
+    MovementDao movementDao;
+    
+    @Test
+    public void testGetMovementListByQuery() throws MovementModelException, MovementDaoException, MovementDuplicateException {
+    	ListResponseDto output;
+    	try {
+    		output = movementDomainModelBean.getMovementListByQuery(null);
+    		fail("Null as input should result in an exception");
+		} catch (InputArgumentException e) {
+			assertTrue(true);
+		}
+    	
+    	MovementQuery input = new MovementQuery();
+    	input.setExcludeFirstAndLastSegment(true);
+    	
+    	try {
+    		output = movementDomainModelBean.getMovementListByQuery(input);
+    		fail("pagination is not set");
+		} catch (InputArgumentException e) {
+			assertTrue(true);
+		}
+    	ListPagination listPagination = new ListPagination();
+    	listPagination.setListSize(new BigInteger("100"));
+    	listPagination.setPage(new BigInteger("0"));
+    	input.setPagination(listPagination);
+    	String connectID = UUID.randomUUID().toString();
+    	MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+    	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
+    	for(Movement move : varbergGrena) {
+    		
+    	}
     }
 
 

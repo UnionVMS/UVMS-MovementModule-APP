@@ -70,9 +70,6 @@ public class MovementDomainModelBean {
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
             throw new InputArgumentException("Pagination in movementlist query is null");
         }
-        if (query.getMovementSearchCriteria() == null) {
-            throw new InputArgumentException("No search criterias in MovementList query");
-        }
 
         try {
 

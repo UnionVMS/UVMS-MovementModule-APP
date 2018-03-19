@@ -18,6 +18,9 @@ import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
@@ -79,7 +82,13 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
         Assert.assertNotSame(SegmentCategoryType.IN_PORT, segmentCategory);
-
+        
+        //very questionable if this should work this way...... 
+        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(null, fromMovement, toMovement);
+        assertEquals(SegmentCategoryType.ENTER_PORT, segmentCategory);
+        
+        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(null, null, toMovement);
+        assertEquals(SegmentCategoryType.OTHER, segmentCategory);
     }
 
     /**
@@ -134,7 +143,9 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         segCalc.setDistanceBetweenPoints(distance);
         segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
         Assert.assertNotSame(SegmentCategoryType.JUMP, segmentCategory);
-
+        
+        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(null, null, null);
+        assertEquals(SegmentCategoryType.OTHER, segmentCategory);
     }
 
     /**
@@ -207,6 +218,8 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         fromMovement.getMetadata().setClosestPortDistance(distanceToClosestPortFrom);
         toMovement.getMetadata().setClosestPortDistance(distanceToClosestPortTo);
+        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
+        Assert.assertEquals(SegmentCategoryType.ENTER_PORT, segmentCategory);
 
     }
 
