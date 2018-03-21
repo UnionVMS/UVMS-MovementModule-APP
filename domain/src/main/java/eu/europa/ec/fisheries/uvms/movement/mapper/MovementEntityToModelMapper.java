@@ -209,6 +209,8 @@ public class MovementEntityToModelMapper {
             model.setDuplicate(false);
         }
         model.setDuplicates(movement.getDuplicateId());
+        
+        model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
 
         return model;
     }
