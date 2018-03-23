@@ -41,7 +41,7 @@ import static org.junit.Assert.fail;
  * @author roblar
  */
 @RunWith(Arquillian.class)
-public class AreaDaoIntTest extends BuildMovementTestDeployment {
+public class AreaDaoIntTest extends TransactionalTests {
 
     // ToDo: Look at if:
     // ToDo: 1. The AreaDao interface should include a method to create/persist an AreaType entity.
@@ -50,39 +50,9 @@ public class AreaDaoIntTest extends BuildMovementTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(AreaDaoIntTest.class);
 
-    @Inject
-    private UserTransaction userTransaction;
-
-    @PersistenceContext
-    private EntityManager em;
-
     @EJB
     private AreaDao areaDao;
 
-    @Before
-    public void before() {
-
-        try {
-            userTransaction.begin();
-        } catch (NotSupportedException e) {
-            LOG.error(" [ Error when setting up user transaction. ] {}", e.getMessage());
-            throw new RuntimeException(" [ Error when setting up user transaction. ]", e);
-        } catch (SystemException e) {
-            LOG.error(" [ The transaction manager encountered an unexpected error condition that prevents future transaction services from proceeding. ] ", e.getMessage());
-            throw new RuntimeException(" [ The transaction manager encountered an unexpected error condition that prevents future transaction services from proceeding. ] ", e);
-        }
-    }
-
-    @After
-    public void after(){
-
-        try {
-            userTransaction.rollback();
-        } catch (SystemException e) {
-            LOG.error(" [ The transaction manager encountered an unexpected error condition that prevents future transaction services from proceeding. ] ", e.getMessage());
-            throw new RuntimeException(" [ The transaction manager encountered an unexpected error condition that prevents future transaction services from proceeding. ] ", e);
-        }
-    }
 
     @Test
     @OperateOnDeployment("normal")

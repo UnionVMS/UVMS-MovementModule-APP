@@ -88,6 +88,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
 
         List<MovementSearchGroup> movementSearchGroupsByUser = movementSearchGroupDomainModelBean.getMovementSearchGroupsByUser(TEST_USER_NAME);
         Assert.assertNotNull(movementSearchGroupsByUser);
+        System.out.println(movementSearchGroupsByUser.size());
         Assert.assertTrue(movementSearchGroupsByUser.size() == 1);
 
         MovementSearchGroup tryToFindIt = movementSearchGroupsByUser.get(0);

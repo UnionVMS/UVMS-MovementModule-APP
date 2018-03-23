@@ -191,6 +191,7 @@ public class MovementEntityToModelMapper {
             model.setMetaData(mapToMovementMetaData(movement.getMetadata()));
         }
 
+        //Duplicated code from 20 lines above?
         try {
             model.setConnectId(mapToConnectId(movement.getMovementConnect()));
         } catch (MovementDaoException ex) {
@@ -208,6 +209,8 @@ public class MovementEntityToModelMapper {
             model.setDuplicate(false);
         }
         model.setDuplicates(movement.getDuplicateId());
+        
+        model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
 
         return model;
     }

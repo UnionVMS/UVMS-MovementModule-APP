@@ -34,7 +34,7 @@ import javax.transaction.*;
  * Created by thofan on 2017-01-30.
  */
 @RunWith(Arquillian.class)
-public class MovementDaoIntTest extends BuildMovementTestDeployment {
+public class MovementDaoIntTest extends TransactionalTests {
 
 
     private Random rnd = new Random();
@@ -53,26 +53,10 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
      */
     final static Logger LOG = LoggerFactory.getLogger(MovementDaoIntTest.class);
 
-    @Inject
-    UserTransaction userTransaction;
 
     @EJB
     private MovementDao movementDao;
 
-
-    /******************************************************************************************************************
-     *   SETUP FUNCTIONS
-     ******************************************************************************************************************/
-
-    @Before
-    public void before() throws SystemException, NotSupportedException {
-        userTransaction.begin();
-    }
-
-    @After
-    public void after() throws SystemException {
-        userTransaction.rollback();
-    }
 
     /******************************************************************************************************************
      *   TEST FUNCTIONS

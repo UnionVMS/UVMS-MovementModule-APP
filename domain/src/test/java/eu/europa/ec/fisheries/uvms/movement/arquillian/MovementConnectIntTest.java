@@ -23,26 +23,10 @@ import java.util.UUID;
  */
 
 @RunWith(Arquillian.class)
-public class MovementConnectIntTest extends BuildMovementTestDeployment {
+public class MovementConnectIntTest extends TransactionalTests {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementConnectIntTest.class);
 
-
-    @PersistenceContext
-    EntityManager em;
-
-    @Inject
-    UserTransaction userTransaction;
-
-
-    @Before
-    public void before() {
-
-    }
-
-    @After
-    public void after() {
-    }
 
 
     @Test
