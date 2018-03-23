@@ -32,7 +32,10 @@ public class WKTUtil {
     public static String getWktLineString(List<Geometry> geometries) {
         List<Coordinate> coords = new ArrayList<>();
         for (Geometry geom : geometries) {
-            coords.add(geom.getCoordinate());
+        	for(Coordinate verti : geom.getCoordinates()) {
+        		coords.add(verti);
+            //coords.add(geom.getCoordinate());
+        	}
         }
         CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[0]));
         return WKTWriter.toLineString(seq);

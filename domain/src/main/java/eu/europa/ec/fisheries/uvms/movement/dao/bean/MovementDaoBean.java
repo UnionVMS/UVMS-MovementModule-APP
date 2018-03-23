@@ -32,6 +32,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
+import javax.xml.registry.UnsupportedCapabilityException;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,10 +74,11 @@ public class MovementDaoBean extends Dao implements MovementDao {
                 resultList.add(lm.getMovement());
             }
             return resultList;
-        } catch (javax.persistence.NoResultException e) {
+        /*} catch (javax.persistence.NoResultException e) {
             LOG.debug("No result when retrieving movements by GUID");
             // TODO why return null for a empty resultset ????
-            return null;
+            // TODO even more so, what in the above code throws an NoResultException??????? Commenting out to see if something explodes
+            return null;*/
         } catch (Exception e) {
             LOG.error("[ Error when getting movement by GUID ] {} ", e.getMessage());
             throw new MovementDaoException(6, "[ Error when getting Movement by GUID. ]", e);
@@ -311,8 +314,13 @@ public class MovementDaoBean extends Dao implements MovementDao {
         return firstMovememnt;
     }
 
-
+    
     @Override
+    @Deprecated
+    public Movement getEntityById(String id){
+    	return null;
+    }
+   /* @Override   //removed to see if it blows
     public Movement getEntityById(String id) throws NoEntityFoundException, MovementDaoException {
         try {
             long start = System.currentTimeMillis();
@@ -328,7 +336,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             LOG.error("[ Error when getting entity by ID. ] {}", e.getMessage());
             throw new MovementDaoException(6, "[ Error when getting entity by ID. ] ", e);
         }
-    }
+    }*/
 
     @Override
     public List<Movement> getListAll() throws MovementDaoException {
@@ -532,7 +540,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
 
     @Override
     public List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementDaoException {
-        List resultList = new ArrayList();
+        List<Movement> resultList = new ArrayList();
         Area areaResult = getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
         if(areaResult!=null){
             TypedQuery<Movement> query = em.createNamedQuery(UvmsConstants.MOVEMENT_LIST_BY_AREA_TIME_INTERVAL, Movement.class);
