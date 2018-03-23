@@ -6,6 +6,7 @@ import com.peertopark.java.geocalc.EarthCalc;
 import com.peertopark.java.geocalc.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.movement.MockData;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
@@ -13,16 +14,13 @@ import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import org.junit.Assert;
 
 import javax.persistence.EntityManager;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertNotNull;
 
 public class MovementHelpers {
-
-
-    private TestUtil testUtil = new TestUtil();
 
     private final MovementBatchModelBean movementBatchModelBean;
 
@@ -36,44 +34,40 @@ public class MovementHelpers {
         this.movementDao = movementDao;
     }
 
-
-    /*****************************************************************************************************************************************************
+    /******************************************************************************************************************
      *  helpers
-     *****************************************************************************************************************************************************/
+     *****************************************************************************************************************/
 
     /* positiontime is imortant */
-    public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
-        MovementType movementType = testUtil.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, 0);
+    public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType,
+                                   String connectId, String userName, Date positionTime) throws MovementDaoException {
+
+        MovementType movementType = MockData.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, 0);
         movementType.setPositionTime(positionTime);
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
-        Assert.assertNotNull(movementType.getConnectId());
+        assertNotNull(movementType.getConnectId());
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
         List<Movement> movementList = movementConnect.getMovementList();
-        Assert.assertNotNull(movementList);
+        assertNotNull(movementList);
         return movementList.get(movementList.size() - 1);
     }
 
-    public Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId, String userName, Date positionTime) throws MovementModelException, MovementDuplicateException, MovementDaoException {
-        MovementType movementType = testUtil.createMovementType(latlong,  segmentCategoryType, connectId, altitude);
+    private Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId,
+                                    String userName, Date positionTime) throws MovementDaoException {
+
+        MovementType movementType = MockData.createMovementType(latlong,  segmentCategoryType, connectId, altitude);
         movementType.setPositionTime(positionTime);
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
-        Assert.assertNotNull(movementType.getConnectId());
+        assertNotNull(movementType.getConnectId());
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
         List<Movement> movementList = movementConnect.getMovementList();
-        Assert.assertNotNull(movementList);
+        assertNotNull(movementList);
         return movementList.get(movementList.size() - 1);
     }
 
-
-
-
-    /**
-     * create l coordinates for well known routes
-     Collections.shuffle(route);
-
-     */
+    // create l coordinates for well known routes. Collections.shuffle(route);
 
     /**
      *
@@ -87,9 +81,17 @@ public class MovementHelpers {
      * @throws MovementDaoException
      * @throws MovementModelException
      */
-    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, String connectId) throws MovementDuplicateException, MovementDaoException, MovementModelException {
-
+    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, String connectId) throws MovementDaoException {
         List<LatLong> positions = createRuttVarbergGrena(numberPositions);
+        return getMovements(order, connectId, positions);
+    }
+
+    public List<Movement> createFishingTourVarberg(int order,  String connectId) throws MovementDaoException {
+        List<LatLong> positions = createRuttSmallFishingTourFromVarberg();
+        return getMovements(order, connectId, positions);
+    }
+
+    private List<Movement> getMovements(int order, String connectId, List<LatLong> positions) throws MovementDaoException {
         List<Movement> createdRoute = new ArrayList<>();
         String userName = "TEST";
 
@@ -110,10 +112,10 @@ public class MovementHelpers {
                 break;
         }
 
-
         for(LatLong position : positions){
             loopCount++;
-            Movement movement = createMovement(position, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp));
+            Movement movement = createMovement(position, 2,segmentCategoryType, connectId,
+                    userName + "_" + String.valueOf(loopCount), new Date(timeStamp));
             if(firstLoop){
                 firstLoop = false;
                 segmentCategoryType = SegmentCategoryType.GAP;
@@ -121,12 +123,10 @@ public class MovementHelpers {
             timeStamp += timeDelta;
             createdRoute.add(movement);
         }
-
         return createdRoute;
     }
 
-
-    List<LatLong> calculateReportedDataForRoute(List<LatLong>  route){
+    private List<LatLong> calculateReportedDataForRoute(List<LatLong> route){
 
         LatLong previousPosition = null;
         LatLong currentPosition = null;
@@ -143,9 +143,8 @@ public class MovementHelpers {
             double bearing = bearing(previousPosition, currentPosition);
             double distance = distance(previousPosition, currentPosition);
             route.get(i - 1).bearing = bearing;
-            route.get(i - 1).distance= distance;
-            double speed = calcSpeed(previousPosition, currentPosition);
-            route.get(i - 1).speed= speed;
+            route.get(i - 1).distance = distance;
+            route.get(i - 1).speed= calcSpeed(previousPosition, currentPosition);
 
             if(i < n){
                 previousPosition = currentPosition;
@@ -153,23 +152,18 @@ public class MovementHelpers {
             i++;
         }
         double bearing = bearing(previousPosition, currentPosition);
-        double distance = distance(previousPosition, currentPosition);
-        route.get(i - 1).distance= distance;
+        route.get(i - 1).distance = distance(previousPosition, currentPosition);
         route.get(i - 1).bearing = bearing;
         //double speed = calcSpeed(previousPosition, currentPosition);
-        route.get(i - 1).speed= 0d;
+        route.get(i - 1).speed = 0d;
         return route;
     }
-
-
-
 
     private List<LatLong> createRuttVarbergGrena(int numberPositions) {
 
         int movementTimeDeltaInMillis = 30000;
         List<LatLong> rutt = new ArrayList<>();
         long ts = System.currentTimeMillis();
-
 
         double latitude = 57.110 ;
         double longitude = 12.244  ;
@@ -178,7 +172,6 @@ public class MovementHelpers {
         double END_LONGITUDE = 10.926;
 
 		while (true) {
-
             if (latitude >= END_LATITUDE)
                 latitude = latitude - 0.003;
             if (longitude >= END_LONGITUDE)
@@ -187,7 +180,6 @@ public class MovementHelpers {
                 break;
             rutt.add(new LatLong(latitude, longitude, getDate(ts += movementTimeDeltaInMillis)));
         }
-
 
         // now when we have a route we must calculate heading and speed
         rutt = calculateReportedDataForRoute(rutt);
@@ -234,7 +226,8 @@ public class MovementHelpers {
     }
 
     private Random rnd = new Random();
-    public List<LatLong> createRuttSmallFishingTourFromVarberg() {
+
+    private List<LatLong> createRuttSmallFishingTourFromVarberg() {
 
         int movementTimeDeltaInMillis = 30000;
         List<LatLong> rutt = new ArrayList<>();
@@ -280,7 +273,6 @@ public class MovementHelpers {
         return rutt;
     }
 
-
     private Date getDate(Long millis) {
         return new Date(millis);
     }
@@ -295,9 +287,7 @@ public class MovementHelpers {
         Coordinate lngTo = new DegreeCoordinate(dst.longitude);
         Point to = new Point(latTo, lngTo);
 
-        double bearing = EarthCalc.getBearing(from, to); // in decimal degrees
-        return bearing;
-
+        return EarthCalc.getBearing(from, to);
     }
 
     private Double distance(LatLong src, LatLong dst) {
@@ -310,15 +300,12 @@ public class MovementHelpers {
         Coordinate lngTo = new DegreeCoordinate(dst.longitude);
         Point to = new Point(latTo, lngTo);
 
-        double distanceInMeters = EarthCalc.getDistance(from, to);
-        return distanceInMeters;
-
+        return EarthCalc.getDistance(from, to);
     }
 
     private double calcSpeed(LatLong src, LatLong dst) {
 
         try {
-
             if (src.positionTime == null)
                 return 0;
             if (dst.positionTime == null)
@@ -337,7 +324,6 @@ public class MovementHelpers {
         }
     }
 
-
     private double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     }
@@ -345,48 +331,4 @@ public class MovementHelpers {
     private double rad2deg(double rad) {
         return (rad * 180.0 / Math.PI);
     }
-
-
-
-    public List<Movement> createFishingTourVarberg(int order,  String connectId) throws MovementDuplicateException, MovementDaoException, MovementModelException {
-
-        List<LatLong> positions = createRuttSmallFishingTourFromVarberg();
-        List<Movement> createdRoute = new ArrayList<>();
-        String userName = "TEST";
-
-        boolean firstLoop = true;
-        SegmentCategoryType segmentCategoryType = SegmentCategoryType.EXIT_PORT;
-        long timeStamp = System.currentTimeMillis();
-        int loopCount = 0;
-
-        long timeDelta = 300000;
-
-        switch (order) {
-            case 2:
-                Collections.reverse(positions);
-                timeDelta = -300000;
-                break;
-            case 3:
-                Collections.shuffle(positions);
-                break;
-        }
-
-
-        for(LatLong position : positions){
-            loopCount++;
-            Movement movement = createMovement(position, 2,segmentCategoryType, connectId, userName + "_" + String.valueOf(loopCount), new Date(timeStamp));
-            if(firstLoop){
-                firstLoop = false;
-                segmentCategoryType = SegmentCategoryType.GAP;
-            }
-            timeStamp += timeDelta;
-            createdRoute.add(movement);
-        }
-
-        return createdRoute;
-    }
-
-
-
-
 }

@@ -11,13 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
@@ -29,6 +22,12 @@ import eu.europa.ec.fisheries.uvms.movement.exception.SearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  **/
@@ -39,27 +38,14 @@ public class SearchMapperListTest extends Assert {
     private static final String ORDER_BY = " ORDER BY m.timestamp DESC ";
     private static final String NO_DUPLICATE = "WHERE  m.duplicate = false ";
 
-    /**
-     * Helper method
-     *
-     * @param value
-     * @param field
-     * @return
-     */
-    private SearchValue getSearchValue(String value, SearchField field) {
-        return new SearchValue(field, value);
-    }
-
-
     @Test
     public void testCreateSearchSql() throws ParseException, SearchMapperException {
         String data = SearchFieldMapper.createSelectSearchSql(null, true);
         assertEquals(INITIAL_SELECT +NO_DUPLICATE + ORDER_BY, data);
     }
-
     
     @Test
-    public void testGetOrdinalValueFromEnum() throws ParseException, SearchMapperException {
+    public void testGetOrdinalValueFromEnum() throws SearchMapperException {
 
         for (MovementTypeType mt : MovementTypeType.values()) {
             Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mt.name(), SearchField.MOVMENT_TYPE));
@@ -80,10 +66,8 @@ public class SearchMapperListTest extends Assert {
             Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(sct.name(), SearchField.CATEGORY));
             assertTrue(sct.ordinal() == data);
         }
-
     }
 
-    
     @Test
     public void testSearchFieldSegmentId() throws MovementDaoMappingException, ParseException, SearchMapperException {
         List<ListCriteria> listCriterias = new ArrayList<>();
@@ -98,10 +82,18 @@ public class SearchMapperListTest extends Assert {
         assertTrue(mapSearchField.size() == 1);
 
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
-        assertEquals("SELECT DISTINCT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra  LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg  LEFT JOIN FETCH m.metadata mmd  LEFT JOIN FETCH m.movementareaList marea  LEFT JOIN FETCH marea.movareaAreaId area  LEFT JOIN FETCH area.areaType mareatype  WHERE  ( toSeg.id = 1 OR fromSeg.id = 1 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
-
+        assertEquals("SELECT DISTINCT  m FROM Movement m " +
+                "INNER JOIN FETCH m.movementConnect mc  " +
+                "LEFT JOIN FETCH m.activity act  " +
+                "LEFT JOIN FETCH m.track tra  " +
+                "LEFT JOIN FETCH m.fromSegment fromSeg  " +
+                "LEFT JOIN FETCH m.toSegment toSeg  " +
+                "LEFT JOIN FETCH m.metadata mmd  " +
+                "LEFT JOIN FETCH m.movementareaList marea  " +
+                "LEFT JOIN FETCH marea.movareaAreaId area  " +
+                "LEFT JOIN FETCH area.areaType mareatype  " +
+                "WHERE  ( toSeg.id = 1 OR fromSeg.id = 1 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
     }
-
     
     @Test
     public void testSearchFieldCategory() throws MovementDaoMappingException, ParseException, SearchMapperException {
@@ -117,8 +109,21 @@ public class SearchMapperListTest extends Assert {
         assertTrue(mapSearchField.size() == 1);
 
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
-        assertEquals("SELECT DISTINCT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra  LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg  LEFT JOIN FETCH m.metadata mmd  LEFT JOIN FETCH m.movementareaList marea  LEFT JOIN FETCH marea.movareaAreaId area  LEFT JOIN FETCH area.areaType mareatype  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
+        assertEquals("SELECT DISTINCT  m FROM Movement m " +
+                "INNER JOIN FETCH m.movementConnect mc  " +
+                "LEFT JOIN FETCH m.activity act  " +
+                "LEFT JOIN FETCH m.track tra  " +
+                "LEFT JOIN FETCH m.fromSegment fromSeg  " +
+                "LEFT JOIN FETCH m.toSegment toSeg  " +
+                "LEFT JOIN FETCH m.metadata mmd  " +
+                "LEFT JOIN FETCH m.movementareaList marea  " +
+                "LEFT JOIN FETCH marea.movareaAreaId area  " +
+                "LEFT JOIN FETCH area.areaType mareatype  " +
+                "WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
     }
-        
+
+    private SearchValue getSearchValue(String value, SearchField field) {
+        return new SearchValue(field, value);
+    }
 
 }

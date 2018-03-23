@@ -56,7 +56,6 @@ public interface MovementDao {
      * Get entity by internal entity id
      *
      * @param id
-     * @param entityId
      * @return
      * @throws MovementDaoException
      */
@@ -104,7 +103,6 @@ public interface MovementDao {
      * Gets all movements based on a prebuild PSQL query. The prebuild
      * parameters are set in the method
      *
-     * @param listSize
      * @param sql
      * @param searchKeyValues
      * @return
@@ -129,7 +127,8 @@ public interface MovementDao {
 
     /**
      *
-     * @param id
+     * @param movement
+     * @param movementConnect
      * @return
      * @throws MovementDaoException
      */

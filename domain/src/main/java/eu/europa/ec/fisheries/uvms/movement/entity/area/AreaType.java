@@ -107,6 +107,14 @@ public class AreaType implements Serializable {
         this.updatedUser = updatedUser;
     }
 
+    public List<Area> getAreas() {
+        return areas;
+    }
+
+    public void setAreas(List<Area> areas) {
+        this.areas = areas;
+    }
+
     public AreaType() {
     }
 

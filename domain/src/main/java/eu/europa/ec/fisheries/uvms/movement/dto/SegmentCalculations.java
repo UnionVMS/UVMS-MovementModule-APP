@@ -15,10 +15,10 @@ package eu.europa.ec.fisheries.uvms.movement.dto;
  **/
 public class SegmentCalculations {
 
-    double avgSpeed;
-    double durationBetweenPoints;
-    double distanceBetweenPoints;
-    double course;
+    private double avgSpeed;
+    private double durationBetweenPoints;
+    private double distanceBetweenPoints;
+    private double course;
 
     public double getAvgSpeed() {
         return avgSpeed;
@@ -51,7 +51,5 @@ public class SegmentCalculations {
     public void setCourse(double course) {
         this.course = course;
     }
-    
-    
 
 }
