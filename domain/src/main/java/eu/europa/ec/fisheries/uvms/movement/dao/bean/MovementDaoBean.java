@@ -542,13 +542,11 @@ public class MovementDaoBean extends Dao implements MovementDao {
     public List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementDaoException {
         List<Movement> resultList = new ArrayList();
         Area areaResult = getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
-        System.out.println(areaResult);
         if(areaResult!=null){
             TypedQuery<Movement> query = em.createNamedQuery(UvmsConstants.MOVEMENT_LIST_BY_AREA_TIME_INTERVAL, Movement.class);
             query.setParameter("fromDate", DateUtil.parseToUTCDate(criteria.getFromDate()));
             query.setParameter("toDate", DateUtil.parseToUTCDate(criteria.getToDate()));
             query.setParameter("areaId", areaResult.getAreaId());
-            System.out.println(query);
             resultList = query.getResultList();
         }
         return resultList;
