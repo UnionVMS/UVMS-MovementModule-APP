@@ -15,7 +15,6 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import org.hibernate.Hibernate;
 
 /**
  **/
@@ -50,7 +49,9 @@ public class CalculationUtil {
      * @param prevLon
      * @return
      */
-    public static double calculateCourse(double prevLat, double prevLon, double currentLat, double currentLon) {
+    public static Double calculateCourse(double prevLat, double prevLon, double currentLat, double currentLon) {
+        if(prevLat == 0.0 && prevLon == 0.0 && currentLat == 0.0 && currentLon == 0.0)
+            return null;
         return bearing(prevLat, prevLon, currentLat, currentLon);
     }
 
@@ -67,8 +68,8 @@ public class CalculationUtil {
             throw new GeometryUtilException(4, "[ CalculationUtil.getPositionCalculations ] PreviousPosition is null! ");
         }
 
-        Point pointThisPosition = (Point) currentPosition.getLocation();
-        Point pointPreviousPosition = (Point) previousPosition.getLocation();
+        Point pointThisPosition = currentPosition.getLocation();
+        Point pointPreviousPosition = previousPosition.getLocation();
 
         double distanceInMeters = 0;
         double durationInSeconds = 0;
@@ -93,7 +94,6 @@ public class CalculationUtil {
         calculations.setCourse(courseOverGround);
 
         return calculations;
-
     }
 
     public static Double getNauticalMilesFromMeter(Double meters) {
@@ -140,5 +140,4 @@ public class CalculationUtil {
                 * Math.cos(deltaLonRad))
                 * EARTH_RADIUS_METER;
     }
-
 }

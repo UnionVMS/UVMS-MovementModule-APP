@@ -17,14 +17,12 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jboss.arquillian.junit.Arquillian;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 /**
  **/
@@ -59,7 +57,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
 
         //Success
         SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-        Assert.assertEquals(SegmentCategoryType.IN_PORT, segmentCategory);
+        assertEquals(SegmentCategoryType.IN_PORT, segmentCategory);
 
         //Fail
         distanceToClosestPortTo = 1.5;
@@ -67,21 +65,21 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-        Assert.assertNotSame(SegmentCategoryType.IN_PORT, segmentCategory);
+        assertNotSame(SegmentCategoryType.IN_PORT, segmentCategory);
 
         distanceToClosestPortTo = 1.5;
         distanceToClosestPortFrom = 1.4;
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-        Assert.assertNotSame(SegmentCategoryType.IN_PORT, segmentCategory);
+        assertNotSame(SegmentCategoryType.IN_PORT, segmentCategory);
 
         distanceToClosestPortTo = 1.4;
         distanceToClosestPortFrom = 1.5;
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-        Assert.assertNotSame(SegmentCategoryType.IN_PORT, segmentCategory);
+        assertNotSame(SegmentCategoryType.IN_PORT, segmentCategory);
         
         //very questionable if this should work this way...... 
         segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(null, fromMovement, toMovement);
@@ -105,47 +103,51 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         segCalc.setDurationBetweenPoints(duration);
         segCalc.setAvgSpeed(avgSpeed);
         segCalc.setDistanceBetweenPoints(distance);
-        SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
-        Assert.assertEquals(SegmentCategoryType.JUMP, segmentCategory);
+        SegmentCategoryType segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
+        assertEquals(SegmentCategoryType.JUMP, segmentCategoryType);
 
         duration = 11;
         avgSpeed = 49;
         distance = 249;
+
         segCalc.setDurationBetweenPoints(duration);
         segCalc.setAvgSpeed(avgSpeed);
         segCalc.setDistanceBetweenPoints(distance);
-        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
-        Assert.assertNotSame(SegmentCategoryType.JUMP, segmentCategory);
+        segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
+        assertNotSame(SegmentCategoryType.JUMP, segmentCategoryType);
 
         duration = 13;
         avgSpeed = 49;
         distance = 251;
+
         segCalc.setDurationBetweenPoints(duration);
         segCalc.setAvgSpeed(avgSpeed);
         segCalc.setDistanceBetweenPoints(distance);
-        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
-        Assert.assertEquals(SegmentCategoryType.JUMP, segmentCategory);
+        segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
+        assertEquals(SegmentCategoryType.JUMP, segmentCategoryType);
 
         duration = 13;
         avgSpeed = 49;
         distance = 249;
+
         segCalc.setDurationBetweenPoints(duration);
         segCalc.setAvgSpeed(avgSpeed);
         segCalc.setDistanceBetweenPoints(distance);
-        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
-        Assert.assertNotSame(SegmentCategoryType.JUMP, segmentCategory);
+        segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
+        assertNotSame(SegmentCategoryType.JUMP, segmentCategoryType);
 
         duration = 11;
         avgSpeed = 49;
         distance = 251;
+
         segCalc.setDurationBetweenPoints(duration);
         segCalc.setAvgSpeed(avgSpeed);
         segCalc.setDistanceBetweenPoints(distance);
-        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
-        Assert.assertNotSame(SegmentCategoryType.JUMP, segmentCategory);
+        segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
+        assertNotSame(SegmentCategoryType.JUMP, segmentCategoryType);
         
-        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(null, null, null);
-        assertEquals(SegmentCategoryType.OTHER, segmentCategory);
+        segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(null, null, null);
+        assertEquals(SegmentCategoryType.OTHER, segmentCategoryType);
     }
 
     /**
@@ -164,6 +166,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
+        segCat.setDistanceBetweenPoints(distance);
 
         Movement toMovement = new Movement();
         Movementmetadata toMeta = new Movementmetadata();
@@ -176,15 +179,11 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         fromMovement.setMetadata(fromMeta);
 
         SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-
-        Assert.assertEquals(SegmentCategoryType.GAP, segmentCategory);
-
+        assertEquals(SegmentCategoryType.GAP, segmentCategory);
     }
 
     /**
-     * EXIT_PORT = ( From-point < 1.5 from Port ) AND  ( To-point > 1.5 from port
-     * )
-     *
+     * EXIT_PORT = ( From-point < 1.5 from Port ) AND  ( To-point > 1.5 from port )
      */
     @Test
     public void testExitPort() {
@@ -199,6 +198,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
+        segCat.setDistanceBetweenPoints(distance);
 
         Movement toMovement = new Movement();
         Movementmetadata toMeta = new Movementmetadata();
@@ -211,7 +211,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         fromMovement.setMetadata(fromMeta);
 
         SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-        Assert.assertEquals(SegmentCategoryType.EXIT_PORT, segmentCategory);
+        assertEquals(SegmentCategoryType.EXIT_PORT, segmentCategory);
 
         distanceToClosestPortTo = 1.4;
         distanceToClosestPortFrom = 1.6;
@@ -219,7 +219,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         fromMovement.getMetadata().setClosestPortDistance(distanceToClosestPortFrom);
         toMovement.getMetadata().setClosestPortDistance(distanceToClosestPortTo);
         segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-        Assert.assertEquals(SegmentCategoryType.ENTER_PORT, segmentCategory);
+        assertEquals(SegmentCategoryType.ENTER_PORT, segmentCategory);
 
     }
 
@@ -236,6 +236,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
+        segCat.setDistanceBetweenPoints(distance);
 
         Movement toMovement = new Movement();
         Movementmetadata toMeta = new Movementmetadata();
@@ -248,15 +249,11 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         fromMovement.setMetadata(fromMeta);
 
         SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-
-        Assert.assertNotSame(SegmentCategoryType.EXIT_PORT, segmentCategory);
-
+        assertNotSame(SegmentCategoryType.EXIT_PORT, segmentCategory);
     }
 
     /**
-     * ENTER_PORT = ( From-point > 1.5 from Port ) AND ( To-point < 1.5 from
-     * port )
-     *
+     * ENTER_PORT = ( From-point > 1.5 from Port ) AND ( To-point < 1.5 from port )
      */
     @Test
     public void testEnterPort() {
@@ -271,6 +268,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
+        segCat.setDistanceBetweenPoints(distance);
 
         Movement toMovement = new Movement();
         Movementmetadata toMeta = new Movementmetadata();
@@ -283,9 +281,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         fromMovement.setMetadata(fromMeta);
 
         SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-
-        Assert.assertEquals(SegmentCategoryType.ENTER_PORT, segmentCategory);
-
+        assertEquals(SegmentCategoryType.ENTER_PORT, segmentCategory);
     }
 
     /**
@@ -304,6 +300,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
+        segCat.setDistanceBetweenPoints(distance);
 
         Movement toMovement = new Movement();
         Movementmetadata toMeta = new Movementmetadata();
@@ -316,9 +313,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         fromMovement.setMetadata(fromMeta);
 
         SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-
-        Assert.assertEquals(SegmentCategoryType.NULL_DUR, segmentCategory);
-
+        assertEquals(SegmentCategoryType.NULL_DUR, segmentCategory);
     }
 
     /**
@@ -337,6 +332,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         SegmentCalculations segCat = new SegmentCalculations();
         segCat.setDurationBetweenPoints(duration);
         segCat.setAvgSpeed(avgSpeed);
+        segCat.setDistanceBetweenPoints(distance);
 
         Movement toMovement = new Movement();
         Movementmetadata toMeta = new Movementmetadata();
@@ -349,9 +345,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         fromMovement.setMetadata(fromMeta);
 
         SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
-
-        Assert.assertEquals(SegmentCategoryType.ANCHORED, segmentCategory);
-
+        assertEquals(SegmentCategoryType.ANCHORED, segmentCategory);
     }
 
     @Test
@@ -389,7 +383,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
 
         SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
 
-        Assert.assertEquals(SegmentCategoryType.OTHER, segmentCategory);
+        assertEquals(SegmentCategoryType.OTHER, segmentCategory);
 
     }
 

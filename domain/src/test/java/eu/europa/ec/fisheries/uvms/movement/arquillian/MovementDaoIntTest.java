@@ -1,34 +1,40 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
+import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
+import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.exception.SearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.*;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-
+import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
+import javax.inject.Inject;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import java.util.*;
 
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.transaction.*;
+import static org.junit.Assert.*;
 
 /**
  * Created by thofan on 2017-01-30.
@@ -36,23 +42,25 @@ import javax.transaction.*;
 @RunWith(Arquillian.class)
 public class MovementDaoIntTest extends TransactionalTests {
 
-
     private Random rnd = new Random();
-
 
     /*  THIS IS THE 4326 BELOW  =
 
-    http://spatialreference.org/ref/epsg/wgs-84/
+        http://spatialreference.org/ref/epsg/wgs-84/
 
-    GEOGCS["WGS 84",
-       DATUM["WGS_1984", SPHEROID["WGS 84",6378137,298.257223563, AUTHORITY["EPSG","7030"]],
-       AUTHORITY["EPSG","6326"]],
-       PRIMEM["Greenwich",0, AUTHORITY["EPSG","8901"]], UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],
-       AUTHORITY["EPSG","4326"]
-    ]
+        GEOGCS["WGS 84",
+        DATUM["WGS_1984", SPHEROID["WGS 84",6378137,298.257223563, AUTHORITY["EPSG","7030"]],
+        AUTHORITY["EPSG","6326"]],
+        PRIMEM["Greenwich",0, AUTHORITY["EPSG","8901"]], UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],
+        AUTHORITY["EPSG","4326"]]
      */
-    final static Logger LOG = LoggerFactory.getLogger(MovementDaoIntTest.class);
 
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Inject
+    private UserTransaction userTransaction;
 
     @EJB
     private MovementDao movementDao;
@@ -64,612 +72,449 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void create() {
-        try {
+    public void create() throws MovementDaoException {
+
+        MovementConnect movementConnect = createMovementConnectHelper();
+        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
+        movementDao.flush();
+        assertNotNull(createdMovementConnect);
+
+        Movement movement = createMovementHelper();
+        movement.setMovementConnect(createdMovementConnect);
+        Movement createdMovement = movementDao.create(movement);
+        movementDao.flush();
+        assertNotNull(createdMovement);
+
+        Long createdMovementId = createdMovement.getId();
+        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
+        assertNotNull(fetchedMovement);
+        assertEquals(createdMovementId, fetchedMovement.getId());
+
+        Long createdMovementConnectId = createdMovementConnect.getId();
+        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
+        assertNotNull(fetchedMovementConnect);
+        assertEquals(createdMovementConnectId, fetchedMovementConnect.getId());
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void flush() throws MovementDaoException {
+        movementDao.flush();
+        assertTrue("We assume hibernate native functions actually works", true);
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void getFirstMovement() throws MovementDaoException {
+
+        MovementConnect movementConnect = createMovementConnectHelper();
+        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
+        movementDao.flush();
+        assertNotNull(createdMovementConnect);
+
+        Movement movement = createMovementHelper();
+        movement.setMovementConnect(createdMovementConnect);
+        Movement createdMovement = movementDao.create(movement);
+        createdMovement.setProcessed(true);
+        movementDao.flush();
+        assertNotNull(createdMovement);
+
+        Long createdMovementId = createdMovement.getId();
+        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
+
+        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
+        assertNotNull(fetchedMovement);
+        assertEquals(fetchedMovement.getId(), createdMovementId);
+        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
+
+        Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getValue());
+        assertNotNull(firstMovement);
+    }
 
 
+    // There is no value to run these 2 tests
+//    @Test
+//    @OperateOnDeployment("normal")
+//    public void getLatestMovement_tryLatestTable_FALSE() throws MovementDaoException {
+//        Date timeStamp = DateUtil.nowUTC();
+//
+//        MovementConnect movementConnect = createMovementConnectHelper();
+//        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
+//        movementDao.flush();
+//        assertNotNull(createdMovementConnect);
+//
+//        Movement movement = createMovementHelper();
+//        movement.setMovementConnect(createdMovementConnect);
+//        Movement createdMovement = movementDao.create(movement);
+//        movementDao.flush();
+//        assertNotNull(createdMovement);
+//        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
+//
+//        Long createdMovementId = createdMovement.getId();
+//        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
+//
+//        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
+//        assertNotNull(fetchedMovement);
+//        assertEquals(fetchedMovement.getId(), createdMovementId);
+//        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
+//        assertNotNull(fetchedMovementConnect);
+//
+//        Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
+//        // null is not an error
+//        assertTrue(true);
+//    }
+
+//    @Test
+//    @OperateOnDeployment("normal")
+//    public void getLatestMovement_tryLatestTable_TRUE() throws MovementDaoException {
+//        Date timeStamp = DateUtil.nowUTC();
+//
+//        MovementConnect movementConnect = createMovementConnectHelper();
+//        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
+//        movementDao.flush();
+//        assertNotNull(createdMovementConnect);
+//
+//        Movement movement = createMovementHelper();
+//        movement.setMovementConnect(createdMovementConnect);
+//        Movement createdMovement = movementDao.create(movement);
+//        movementDao.flush();
+//        assertNotNull(createdMovement);
+//        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
+//
+//        Long createdMovementId = createdMovement.getId();
+//        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
+//
+//        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
+//        assertNotNull(fetchedMovement);
+//        assertEquals(fetchedMovement.getId(), createdMovementId);
+//        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
+//        assertNotNull(fetchedMovementConnect);
+//
+//        Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
+//        // TODO: Should not return null in contrast with the previous test case but it actually does! Same method body, Not good!
+//        //assertNotNull(latestMovement);
+//    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void getLatestMovements() throws MovementDaoException {
+        List<LatestMovement> all = movementDao.getLatestMovements(10);
+        assertNotNull(all);
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void getListAll() throws MovementDaoException {
+
+        int n = rnd.nextInt(50);
+        for (int i = 0; i < n; i++) {
             MovementConnect movementConnect = createMovementConnectHelper();
             MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
             movementDao.flush();
+            assertNotNull(createdMovementConnect);
 
             Movement movement = createMovementHelper();
             movement.setMovementConnect(createdMovementConnect);
             Movement createdMovement = movementDao.create(movement);
             movementDao.flush();
-
-            Long createdMovementId = createdMovement.getId();
-            Long createdMovementConnectId = createdMovementConnect.getId();
-
-            Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
-            Assert.assertTrue(fetchedMovement != null);
-
-            MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
-            Assert.assertTrue(fetchedMovementConnect != null);
-
-            Assert.assertTrue(createdMovementId.equals(fetchedMovement.getId()));
-            Assert.assertTrue(createdMovementConnectId.equals(fetchedMovementConnect.getId()));
-
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
+            assertNotNull(createdMovement);
         }
+
+        List<Movement> all = movementDao.getListAll();
+        assertNotNull(all);
+        assertTrue(all.size() >= n);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void flush() {
-        try {
-            movementDao.flush();
-            Assert.assertTrue("We assume hibernate native functions actually works", true);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
-    }
+    public void getListAll_NO_PositionalDups() throws MovementDaoException {
 
-    @Test
-    @OperateOnDeployment("normal")
-    public void getFirstMovement() {
+        double longitude = 8.140625D;
+        double latitude = 56.683804D;
 
-        try {
-
+        int n = rnd.nextInt(50);
+        for (int i = 0; i < n; i++) {
             MovementConnect movementConnect = createMovementConnectHelper();
             MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
             movementDao.flush();
+            assertNotNull(createdMovementConnect);
 
-            Movement movement = createMovementHelper();
-            movement.setMovementConnect(createdMovementConnect);
-            Movement createdMovement = movementDao.create(movement);
-            createdMovement.setProcessed(true);
-            movementDao.flush();
-            Assert.assertTrue(createdMovement != null);
-
-            Long createdMovementId = createdMovement.getId();
-            Assert.assertTrue("The created id : " + createdMovementId.toString(), createdMovementId != null);
-
-            Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
-            Assert.assertTrue(fetchedMovement != null);
-            MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
-
-            Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getValue());
-            Assert.assertTrue(firstMovement != null);
-        } catch (RuntimeException e) {
-            Assert.fail(e.toString());
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
-    }
-
-
-    @Test
-    @OperateOnDeployment("normal")
-    public void getLatestMovement_tryLatestTable_FALSE() {
-        Date timeStamp = DateUtil.nowUTC();
-        try {
-
-            MovementConnect movementConnect = createMovementConnectHelper();
-            MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-            movementDao.flush();
-
-            Movement movement = createMovementHelper();
+            Movement movement = createMovementHelper(longitude, latitude);
             movement.setMovementConnect(createdMovementConnect);
             Movement createdMovement = movementDao.create(movement);
             movementDao.flush();
-            Assert.assertTrue(createdMovement != null);
+            assertNotNull(createdMovement);
 
-            Long createdMovementId = createdMovement.getId();
-            Assert.assertTrue("The created id : " + createdMovementId.toString(), createdMovementId != null);
-
-
-            Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
-            Assert.assertTrue(fetchedMovement != null);
-            MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
-
-
-            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
-            // null is not an error
-            Assert.assertTrue(true);
-        } catch (RuntimeException e) {
-            Assert.fail(e.toString());
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
+            longitude += 10;
+            latitude+= 10;
         }
-    }
-
-
-    @Test
-    @OperateOnDeployment("normal")
-    public void getLatestMovement_tryLatestTable_TRUE() {
-
-        Date timeStamp = DateUtil.nowUTC();
-        try {
-
-            MovementConnect movementConnect = createMovementConnectHelper();
-            MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-            movementDao.flush();
-
-            Movement movement = createMovementHelper();
-            movement.setMovementConnect(createdMovementConnect);
-            Movement createdMovement = movementDao.create(movement);
-            movementDao.flush();
-            Assert.assertTrue(createdMovement != null);
-
-            Long createdMovementId = createdMovement.getId();
-            Assert.assertTrue("The created id : " + createdMovementId.toString(), createdMovementId != null);
-
-
-            Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
-            Assert.assertTrue(fetchedMovement != null);
-            MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
-
-
-            Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
-            // TODO unclear what to expect
-            // Assert.assertTrue(latestMovement != null);
-        } catch (RuntimeException e) {
-            Assert.fail(e.toString());
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> all = movementDao.getListAll();
+        assertNotNull(all);
+        assertTrue(all.size() >= n);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getLatestMovements() {
-        try {
-            List<LatestMovement> all = movementDao.getLatestMovements(10);
-            Assert.assertTrue(all != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
-    }
-
-
-    @Test
-    @OperateOnDeployment("normal")
-    public void getListAll() {
-        try {
-
-            int n = rnd.nextInt(50);
-            for (int i = 0; i < n; i++) {
-
-                MovementConnect movementConnect = createMovementConnectHelper();
-                MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-                movementDao.flush();
-
-                Movement movement = createMovementHelper();
-                movement.setMovementConnect(createdMovementConnect);
-                Movement createdMovement = movementDao.create(movement);
-                movementDao.flush();
-            }
-
-            List<Movement> all = movementDao.getListAll();
-            Assert.assertTrue(all != null);
-            Assert.assertTrue(all.size() >= n);
-
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
-    }
-
-    @Test
-    @OperateOnDeployment("normal")
-    public void getListAll_NO_PositionalDups() {
-        try {
-
-            double longitude = 8.140625D;
-            double latitude = 56.683804D;
-
-
-            int n = rnd.nextInt(50);
-            for (int i = 0; i < n; i++) {
-
-                MovementConnect movementConnect = createMovementConnectHelper();
-                MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-                movementDao.flush();
-
-                Movement movement = createMovementHelper(longitude, latitude);
-                movement.setMovementConnect(createdMovementConnect);
-                Movement createdMovement = movementDao.create(movement);
-                movementDao.flush();
-
-
-                longitude += 10;
-                latitude+= 10;
-
-            }
-
-            List<Movement> all = movementDao.getListAll();
-            Assert.assertTrue(all != null);
-            Assert.assertTrue(all.size() >= n);
-
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
-    }
-
-
-
-    @Test
-    @OperateOnDeployment("normal")
-    public void getMinimalMovementListPaginated() {
+    public void getMinimalMovementListPaginated() throws MovementDaoException {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
         Integer page = 1;
         Integer listSize = 10;
         String sql = "select distinct m  from  MinimalMovement m";
 
-        try {
-            List<MinimalMovement> minimalMovementList = movementDao.getMinimalMovementListPaginated(page, listSize, sql, searchKeyValues);
-            Assert.assertTrue(minimalMovementList != null);
-            Assert.assertTrue(minimalMovementList.size() >= 0);
-            Assert.assertTrue(minimalMovementList.size() <= 10);
-        } catch (MovementDaoException e) {
-            LOG.error(e.toString());
-            Assert.fail();
-        }
+        List<MinimalMovement> minimalMovementList = movementDao.getMinimalMovementListPaginated(page, listSize, sql, searchKeyValues);
+        assertNotNull(minimalMovementList);
+        assertTrue(minimalMovementList.size() <= 10);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMinimalMovementListPaginated_NegativeSpeed() {
+    public void getMinimalMovementListPaginated_NegativeSpeed() throws MovementDaoException {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
         Integer page = 1;
         Integer listSize = 10;
         String sql = "select distinct m  from  MinimalMovement m where m.speed < 0";
 
-        try {
-            List<MinimalMovement> minimalMovementList = movementDao.getMinimalMovementListPaginated(page, listSize, sql, searchKeyValues);
-            Assert.assertTrue(minimalMovementList != null);
-            Assert.assertTrue(minimalMovementList.size() == 0);
-        } catch (MovementDaoException e) {
-            LOG.error(e.toString());
-            Assert.fail();
-        }
+        List<MinimalMovement> minimalMovementList = movementDao.getMinimalMovementListPaginated(page, listSize, sql, searchKeyValues);
+        assertNotNull(minimalMovementList);
+        assertEquals(0, minimalMovementList.size());
     }
-
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementById() {
-        try {
+    public void getMovementById() throws MovementDaoException {
 
-            MovementConnect movementConnect = createMovementConnectHelper();
-            MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-            movementDao.flush();
+        MovementConnect movementConnect = createMovementConnectHelper();
+        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
+        movementDao.flush();
+        assertNotNull(createdMovementConnect);
 
-            Movement movement = createMovementHelper();
-            movement.setMovementConnect(createdMovementConnect);
-            Movement createdMovement = movementDao.create(movement);
-            movementDao.flush();
-            Assert.assertTrue(createdMovement != null);
+        Movement movement = createMovementHelper();
+        movement.setMovementConnect(createdMovementConnect);
+        Movement createdMovement = movementDao.create(movement);
+        movementDao.flush();
+        assertNotNull(createdMovement);
+        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
 
-            Long createdMovementId = createdMovement.getId();
-            Assert.assertTrue("The created id : " + createdMovementId.toString(), createdMovementId != null);
+        Long createdMovementId = createdMovement.getId();
+        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
 
-            Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
-            Assert.assertTrue(fetchedMovement != null);
-            Assert.assertTrue(createdMovementId.equals(fetchedMovement.getId()));
-
-
-        } catch (MovementDaoException e) {
-            LOG.info(e.toString());
-            Assert.fail(e.toString());
-        }
+        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
+        assertNotNull(fetchedMovement);
+        assertEquals(fetchedMovement.getId(), createdMovementId);
     }
 
     @Test
     @OperateOnDeployment("normal")
     public void getMovementById_NULL_AS_SearchCriteria() {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage("id to load is required for loading");
 
-        try {
-            movementDao.getMovementById(null);
-            // this is always an error
-            Assert.fail();
-        } catch (RuntimeException e) {
-            String msg = e.toString().toLowerCase();
-            int pos = msg.indexOf("id to load is required for loading");
-            Assert.assertTrue(pos >= 0);
-        }
+        movementDao.getMovementById(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     @OperateOnDeployment("normal")
     public void getMovementById_NonExisting_AS_SearchCriteria() {
-
-        try {
-
-            // assume an Id can never be negative
-            Movement movement = movementDao.getMovementById(-42L);
-            Assert.assertTrue(movement == null);
-        } catch (RuntimeException e) {
-            Assert.fail(e.toString());
-        }
+        Movement movement = movementDao.getMovementById(-42L);
+        movement.setId(42L);
     }
-
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementConnectByConnectId() {
+    public void getMovementConnectByConnectId() throws MovementDaoException {
 
-        try {
+        MovementConnect movementConnect = createMovementConnectHelper();
+        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
+        movementDao.flush();
+        assertNotNull(createdMovementConnect);
 
+        Movement movement = createMovementHelper();
+        movement.setMovementConnect(createdMovementConnect);
+        Movement createdMovement = movementDao.create(movement);
+        movementDao.flush();
+        assertNotNull(createdMovement);
+        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
 
-            MovementConnect movementConnect = createMovementConnectHelper();
-            MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-            movementDao.flush();
+        String createdMovementConnectValue = createdMovementConnect.getValue();
 
-            Movement movement = createMovementHelper();
-            movement.setMovementConnect(createdMovementConnect);
-            movementDao.create(movement);
-            movementDao.flush();
+        MovementConnect fetchedMovementConnect = movementDao.getMovementConnectByConnectId(createdMovementConnectValue);
+        assertNotNull(fetchedMovementConnect);
 
-            String createdMovementConnectValue = createdMovementConnect.getValue();
-
-            MovementConnect fetchedMovementConnect = movementDao.getMovementConnectByConnectId(createdMovementConnectValue);
-            Assert.assertTrue(fetchedMovementConnect != null);
-
-            String fetchedMovementConnectValue = fetchedMovementConnect.getValue();
-            Assert.assertTrue(fetchedMovementConnectValue != null);
-
-            Assert.assertTrue(createdMovementConnectValue.equals(fetchedMovementConnectValue));
-
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
-
-
+        String fetchedMovementConnectValue = fetchedMovementConnect.getValue();
+        assertNotNull(fetchedMovementConnectValue);
+        assertEquals(createdMovementConnectValue, fetchedMovementConnectValue);
     }
-
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_nonpaginated_NullcheckResultsetAtUnlogicQuery() {
+    public void getMovementList_NonPaginated_NullCheckResultSetAtUnlogicQuery() throws MovementDaoException {
 
-        // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
+        // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
         List<SearchValue> searchValues = new ArrayList<>();
-        // SearchValue searchValue = new SearchValue();
-        String sql = "select m from Movement m where m.speed < -42";
+        String sql = "SELECT m FROM Movement m WHERE m.speed < -42";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues);
+        assertNotNull(movements);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_nonpaginated_noSearchValues() {
+    public void getMovementList_NonPaginated_NoSearchValues() throws MovementDaoException {
 
         List<SearchValue> searchValues = new ArrayList<>();
-        // SearchValue searchValue = new SearchValue();
         String sql = "select m from Movement m ";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues);
+        assertNotNull(movements);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_nonpaginated_withSearchValues() {
+    public void getMovementList_NonPaginated_WithSearchValues() throws MovementDaoException {
 
-        // this is not covered in the code BUT it forces that codepath to execute
-        SearchValue searchValue = new SearchValue(SearchField.MOVEMENT_SPEED, "HEPP");
-        List<SearchValue> searchValues = new ArrayList<>();
-        searchValues.add(searchValue);
+        // this is not covered in the code BUT it forces that code path to execute
 
+        List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.MOVEMENT_SPEED, "HEPP"));
         String sql = "select m from Movement m ";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues);
+        assertNotNull(movements);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_nonpaginated_shouldCrash() {
+    public void getMovementList_NonPaginated_ShouldCrash() throws MovementDaoException {
 
-        SearchValue searchValue = new SearchValue(SearchField.AREA, "HEPP");
-        List<SearchValue> searchValues = new ArrayList<>();
-        searchValues.add(searchValue);
-
+        List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.AREA, "HEPP"));
         String sql = "select m from Movement m ";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            String msg = e.toString().toLowerCase();
-            int pos = msg.indexOf("error when getting list");
-            Assert.assertTrue(pos >= 0);
-        }
+        expectedException.expect(MovementDaoException.class);
+        expectedException.expectMessage("[ Error when getting list ]");
+
+        movementDao.getMovementList(sql, searchValues);
     }
 
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_0_noSearchValue() {
+    public void getMovementList_NumberOfReports_0_NoSearchValue() throws MovementDaoException {
 
-        // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
+        // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
         List<SearchValue> searchValues = new ArrayList<>();
-        // SearchValue searchValue = new SearchValue();
-        String sql = "select m from Movement m where m.speed < -42";
+        String sql = "SELECT m FROM Movement m WHERE m.speed < -42";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues, 0);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues, 0);
+        assertNotNull(movements);
     }
 
-    //@Test
-    // unstable servercode see TODO
-    public void getMovementList_NumberOfReports_1_noSearchValue() {
+    // @Test
+    // Unstable ServerCode see TODO
+    public void getMovementList_NumberOfReports_1_NoSearchValue() throws MovementDaoException {
 
-        // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
-        // TODO getLatestMovementsByConnectId in DAO  is  throws exception and crash the entire resultset if a lookup is empty
-
+        // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
+        // TODO getLatestMovementsByConnectId in DAO throws exception and crashes the entire result-set if a lookup is empty
 
         List<SearchValue> searchValues = new ArrayList<>();
-        // SearchValue searchValue = new SearchValue();
-        String sql = "select m from Movement m where m.speed < -42";
+        String sql = "SELECT m FROM Movement m WHERE m.speed < -42";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues, 1);
-            Assert.assertTrue(movements != null);
-
-
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues, 1);
+        assertNotNull(movements);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_5_noSearchValue() {
+    public void getMovementList_NumberOfReports_5_noSearchValue() throws MovementDaoException {
 
-        // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
+        // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
         List<SearchValue> searchValues = new ArrayList<>();
-        // SearchValue searchValue = new SearchValue();
-        String sql = "select m from Movement m where m.speed < -42";
+        String sql = "SELECT m FROM Movement m WHERE m.speed < -42";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues, 5);
-            Assert.assertTrue(movements != null);
-
-
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues, 5);
+        assertNotNull(movements);
     }
-
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_0_withSearchValue() {
+    public void getMovementList_NumberOfReports_0_WithSearchValue() throws MovementDaoException {
 
-        // TODO this test is maybe to optimistic since the queryparameters are given in the test OR they are manufactured in the Service-layer
-        // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
+        // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
+        // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
-        List<SearchValue> searchValues = new ArrayList<>();
         Date timeStamp = DateUtil.nowUTC();
-        SearchValue searchValue = new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString());
-        searchValues.add(searchValue);
-        String sql = "select m from Movement m where m.timestamp >= :fromDate and m.timestamp <= :toDate";
+        List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
+        String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues, 0);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues, 0);
+        assertNotNull(movements);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_1_withSearchValue() {
+    public void getMovementList_NumberOfReports_1_WithSearchValue() throws MovementDaoException {
 
-        // TODO this test is maybe to optimistic since the queryparameters are given in the test OR they are manufactured in the Service-layer
+        // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
+        // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
+
+        Date timeStamp = DateUtil.nowUTC();
+        List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
+        String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
+
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues, 1);
+        assertNotNull(movements);
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void getMovementList_NumberOfReports_1_withSearchValue_NoResult() throws MovementDaoException {
+
+        // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
 
-        List<SearchValue> searchValues = new ArrayList<>();
         Date timeStamp = DateUtil.nowUTC();
-        SearchValue searchValue = new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString());
-        searchValues.add(searchValue);
-        String sql = "select m from Movement m where m.timestamp >= :fromDate and m.timestamp <= :toDate";
+        List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
+        String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.speed = -42";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues, 1);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues, 1);
+        assertNotNull(movements);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_1_withSearchValue_Noresult() {
+    public void getMovementList_NumberOfReports_5_withSearchValue() throws MovementDaoException {
 
-        // TODO this test is maybe to optimistic since the queryparameters are given in the test OR they are manufactured in the Service-layer
+        // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
 
-        List<SearchValue> searchValues = new ArrayList<>();
         Date timeStamp = DateUtil.nowUTC();
-        SearchValue searchValue = new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString());
-        searchValues.add(searchValue);
-        String sql = "select m from Movement m where m.timestamp >= :fromDate and m.timestamp <= :toDate and m.speed = -42";
+        List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
+        String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
 
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues, 1);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues, 5);
+        assertNotNull(movements);
     }
 
-
+    // The value of this test is very limited
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_5_withSearchValue() {
-
-        // TODO this test is maybe to optimistic since the queryparameters are given in the test OR they are manufactured in the Service-layer
-        // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
-
-        List<SearchValue> searchValues = new ArrayList<>();
-        Date timeStamp = DateUtil.nowUTC();
-        SearchValue searchValue = new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString());
-        searchValues.add(searchValue);
-        String sql = "select m from Movement m where m.timestamp >= :fromDate and m.timestamp <= :toDate";
-
-        try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues, 5);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
-    }
-
-
-    // TODO the value of this test is very limited
-    @Test
-    @OperateOnDeployment("normal")
-    public void getMovementListByAreaAndTimeIntervall() {
+    public void getMovementListByAreaAndTimeInterval_Invalid_Null_Parameter() throws MovementDaoException {
 
         // TODO  this one cannot be instantiated using new (probably a soap thing)
-        //MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
-        // TODO getMovementListByAreaAndTimeInterval does not check for null input so it crashes
+        // MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
 
-        try {
-            List<Movement> movements = movementDao.getMovementListByAreaAndTimeInterval(null);
-            Assert.assertTrue(movements != null);
-        } catch (MovementDaoException e) {
-            Assert.assertTrue(e != null);
-        } catch (Exception e) {
-            // TODO OK for now since it crashes on null as input
-            Assert.assertTrue(e != null);
-        }
+        expectedException.expect(EJBTransactionRolledbackException.class);
+
+        List<Movement> movementListByAreaAndTimeInterval = movementDao.getMovementListByAreaAndTimeInterval(null);
     }
 
-
-
-    // dont want to use JodaTime in tests . . .
+    // don't want to use JodaTime in tests . . .
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementListPaginated() {
-
-        List<SearchValue> searchValues = new ArrayList<>();
+    public void getMovementListPaginated() throws MovementDaoException {
 
         long currentTimeMillis = System.currentTimeMillis();
 
@@ -677,207 +522,121 @@ public class MovementDaoIntTest extends TransactionalTests {
         Date nowPlus10 = new Date(currentTimeMillis + 10000);
         String fromDate = DateUtil.parseUTCDateToString(d1980);
         String toDate = DateUtil.parseUTCDateToString(nowPlus10);
-        SearchValue searchValue = new SearchValue(SearchField.DATE, fromDate, toDate);
-        searchValues.add(searchValue);
+        List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, fromDate, toDate));
 
         Integer page = 1;
         Integer listSize = 10;
 
         List<Movement> allMovements = getAllFromMovementHelper();
-        if(allMovements.size() < listSize) listSize = allMovements.size();
+        if(allMovements.size() < listSize)
+            listSize = allMovements.size();
 
-
-
-        String sql = "select m from Movement m where m.timestamp >= :fromDate and m.timestamp <= :toDate";
-        try {
-            List<Movement> rs = movementDao.getMovementListPaginated(page, listSize, sql, searchValues);
-            Assert.assertTrue(rs!= null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+        String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
+        List<Movement> movementList = movementDao.getMovementListPaginated(page, listSize, sql, searchValues);
+        assertNotNull(movementList);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementListSearchCount() {
-        try {
-            List<SearchValue> searchValues = new ArrayList<>();
-            String sql = SearchFieldMapper.createCountSearchSql(searchValues, true);
-            Long searchResult = movementDao.getMovementListSearchCount(sql,searchValues);
-            Assert.assertTrue(searchResult != null);
-            Assert.assertTrue(searchResult >= 0);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        } catch (ParseException e) {
-            Assert.fail(e.toString());
-        } catch (java.text.ParseException e) {
-            Assert.fail(e.toString());
-        } catch (SearchMapperException e) {
-            Assert.fail(e.toString());
-        }
+    public void getMovementListSearchCount() throws java.text.ParseException, SearchMapperException, MovementDaoException, ParseException {
+        List<SearchValue> searchValues = new ArrayList<>();
+        String sql = SearchFieldMapper.createCountSearchSql(searchValues, true);
+        Long searchResult = movementDao.getMovementListSearchCount(sql,searchValues);
+        assertNotNull(searchResult);
+        assertTrue(searchResult >= 0);
     }
     
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementListSearchCount_searchValueNull() {
+    public void getMovementListSearchCount_SearchValueNull_ExceptionThrown() throws java.text.ParseException, SearchMapperException, MovementDaoException, ParseException {
 
-        // TODO setTypedQueryMovementParams crashes on null as input
-        try {
-            String sql = SearchFieldMapper.createCountSearchSql(null, true);
-            Long searchResult = movementDao.getMovementListSearchCount(sql,null);
-            Assert.assertTrue(searchResult != null);
-            Assert.assertTrue(searchResult >= 0);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        } catch (ParseException e) {
-            Assert.fail(e.toString());
-        } catch (java.text.ParseException e) {
-            Assert.fail(e.toString());
-        } catch (SearchMapperException e) {
-            Assert.fail(e.toString());
-        } catch (Exception e) {
-            Assert.assertTrue("setTypedQueryMovementParams gives Exception at null input", e != null);
-        }
+        expectedException.expect(Exception.class);
+
+        String sql = SearchFieldMapper.createCountSearchSql(null, true);
+        movementDao.getMovementListSearchCount(sql,null);
     }
 
     @Test
     @OperateOnDeployment("normal")
     public void getUnprocessedMovementIds() {
 
-        try {
-            List<Long> unprocessedMovementIds = movementDao.getUnprocessedMovementIds();
-            Assert.assertTrue(unprocessedMovementIds != null);
-        } catch (RuntimeException e) {
-            Assert.fail(e.toString());
-        }
+        List<Long> unprocessedMovementIds = movementDao.getUnprocessedMovementIds();
+        assertNotNull(unprocessedMovementIds);
     }
 
     @Test
     @OperateOnDeployment("normal")
     public void getUnprocessedMovements() {
 
-        try {
-            List<Movement> unprocessedMovements = movementDao.getUnprocessedMovements();
-            Assert.assertTrue(unprocessedMovements != null);
-        } catch (RuntimeException e) {
-            Assert.fail(e.toString());
-        }
-    }
-
-
-    @Test
-    @OperateOnDeployment("normal")
-    public void merge() {
-
-        try {
-            movementDao.merge(null);
-            Assert.fail("If we reaches this point hibernate does not work properly");
-        } catch (MovementDaoException e) {
-            Assert.assertTrue("We got an exception and that is excpected", true);
-        }
+        List<Movement> unprocessedMovements = movementDao.getUnprocessedMovements();
+        assertNotNull(unprocessedMovements);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void persist() {
-        try {
-            movementDao.persist(null);
-            Assert.fail("If we reaches this point hibernate does not work properly");
-        } catch (MovementDaoException e) {
-            Assert.assertTrue("We got an exception and that is excpected", true);
-        }
+    public void merge() throws MovementDaoException {
 
+        expectedException.expect(MovementDaoException.class);
+        movementDao.merge(null);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void upsertLatestMovementOnExisting() {
+    public void persist() throws MovementDaoException {
 
+        expectedException.expect(MovementDaoException.class);
+        movementDao.persist(null);
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void upsertLatestMovementOnExisting() throws MovementDaoException {
 
         MovementConnect movementConnect = createMovementConnectHelper();
-        MovementConnect createdMovementConnect = null;
-        try {
-            createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-            movementDao.flush();
+        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
+        movementDao.flush();
 
-            Movement movement = createMovementHelper();
-            movement.setMovementConnect(createdMovementConnect);
-            Movement createdMovement = movementDao.create(movement);
-            movementDao.flush();
+        Movement movement = createMovementHelper();
+        movement.setMovementConnect(createdMovementConnect);
+        Movement createdMovement = movementDao.create(movement);
+        movementDao.flush();
 
-            Long createdMovementId = createdMovement.getId();
+        Long createdMovementId = createdMovement.getId();
 
-            // the upsert creates one if it is not there
-            movementDao.upsertLatestMovement(createdMovement, createdMovementConnect);
-            movementDao.flush();
+        // the upsert creates one if it is not there
+        movementDao.upsertLatestMovement(createdMovement, createdMovementConnect);
+        movementDao.flush();
 
-
-            Boolean found = false;
-            List<LatestMovement> all = movementDao.getLatestMovements(10000);
-
-            for (LatestMovement latesMovement : all) {
-                Movement movementFromLatestMovement = latesMovement.getMovement();
-                Long movementFromLatestMovementId = movementFromLatestMovement.getId();
-                if (movementFromLatestMovementId.equals(createdMovementId)) {
-                    found = true;
-                    break;
-                }
-            }
-            Assert.assertTrue(found);
-        } catch (MovementDaoException e) {
-            LOG.error(e.toString());
-            Assert.fail();
-        }
-
-
+        List<LatestMovement> all = movementDao.getLatestMovements(10000);
+        Boolean found = findLatestMovements(createdMovementId, all);
+        assertTrue(found);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void upsertLatestMovementOnNonExisting() {
-
-
-        // TODO
-        // upsertLatestMovement in the DAO is actually to optimistic on indata
-        // since it assumes that an incoming Movement actually exists in DB
-        // if it doesnt and there is no latestmovent - it tries to persist an
-        // nonExisting movement in latestMovement
-
+    public void upsertLatestMovementOnNonExisting() throws MovementDaoException {
 
         MovementConnect movementConnect = createMovementConnectHelper();
-        MovementConnect createdMovementConnect = null;
-        try {
-            createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-            movementDao.flush();
+        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
+        movementDao.flush();
 
-            Movement DOESNOT_EXIST_IN_DB = createMovementHelper();
-            DOESNOT_EXIST_IN_DB.setMovementConnect(createdMovementConnect);
+        Movement DOES_NOT_EXIST_IN_DB = createMovementHelper();
+        DOES_NOT_EXIST_IN_DB.setMovementConnect(createdMovementConnect);
 
-            Long createdMovementId = DOESNOT_EXIST_IN_DB.getId();
+        Long createdMovementId = DOES_NOT_EXIST_IN_DB.getId();
 
-            // the upser creates one if it is not there
-            movementDao.upsertLatestMovement(DOESNOT_EXIST_IN_DB, createdMovementConnect);
-            movementDao.flush();
+        List<LatestMovement> listBefore = movementDao.getLatestMovements(10000);
 
+        // the upsert creates one if it is not there
+        movementDao.upsertLatestMovement(DOES_NOT_EXIST_IN_DB, createdMovementConnect);
+        movementDao.flush();
 
-            Boolean found = false;
-            List<LatestMovement> all = movementDao.getLatestMovements(10000);
+        List<LatestMovement> listAfter = movementDao.getLatestMovements(10000);
 
-            for (LatestMovement latesMovement : all) {
-                Movement movementFromLatestMovement = latesMovement.getMovement();
-                Long movementFromLatestMovementId = movementFromLatestMovement.getId();
-                if (movementFromLatestMovementId.equals(createdMovementId)) {
-                    found = true;
-                    break;
-                }
-            }
-            Assert.assertTrue(!found);
-        } catch (MovementDaoException e) {
-            LOG.error(e.toString());
-            Assert.fail();
-        }
+        assertNotEquals(listBefore.size(), listAfter.size());
 
-
+        Boolean found = findLatestMovements(createdMovementId, listAfter);
+        assertFalse(found);
     }
 
 
@@ -889,19 +648,20 @@ public class MovementDaoIntTest extends TransactionalTests {
      *
      * @return
      */
-    private Movement createMovementHelper() {
 
-        // delegaate to generic
+    private Movement createMovementHelper() {
+        // delegate to generic
         double longitude = 9.140625D;
         double latitude = 57.683804D;
         return createMovementHelper(longitude, latitude);
     }
 
-    /** this one supports tampering with longitude latitude to simulate real movements
+    /**
+     * This one supports tampering with longitude latitude to simulate real movements
      *
      * @param longitude
      * @param latitude
-     * @return
+     * @return newly created {@code Movement} object.
      */
     private Movement createMovementHelper( double longitude, double latitude  ) {
 
@@ -909,7 +669,6 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         GeometryFactory geometryFactory = new GeometryFactory();
         Date timeStamp = DateUtil.nowUTC();
-
 
         movement.setMovementSource(MovementSourceType.NAF);
         movement.setMovementType(MovementTypeType.MAN);
@@ -926,14 +685,10 @@ public class MovementDaoIntTest extends TransactionalTests {
         point.setSRID(4326);
         movement.setLocation(point);
 
-        Assert.assertTrue(movement.getId() == null);
-
         return movement;
-
     }
 
     private MovementConnect createMovementConnectHelper() {
-
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setValue(UUID.randomUUID().toString());
         movementConnect.setUpdatedBy("Arquillian");
@@ -943,18 +698,24 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     private List<Movement> getAllFromMovementHelper() {
 
-        List<SearchValue> searchValues = new ArrayList<>();
-        // SearchValue searchValue = new SearchValue();
-        String sql = "select m from Movement m ";
+        String sql = "SELECT m FROM Movement m ";
 
         try {
-            List<Movement> movements = movementDao.getMovementList(sql, searchValues);
-           return movements;
+            return movementDao.getMovementList(sql, new ArrayList<SearchValue>());
         } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
+            fail(e.toString());
         }
         return new ArrayList<>();
     }
 
-
+    private Boolean findLatestMovements(Long createdMovementId, List<LatestMovement> all) {
+        for (LatestMovement latestMovement : all) {
+            Movement movementFromLatestMovement = latestMovement.getMovement();
+            Long movementFromLatestMovementId = movementFromLatestMovement.getId();
+            if (movementFromLatestMovementId.equals(createdMovementId)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

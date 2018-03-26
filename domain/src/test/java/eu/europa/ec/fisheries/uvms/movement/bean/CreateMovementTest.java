@@ -17,39 +17,23 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.exception.EntityDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import java.util.Date;
-import javax.persistence.EntityManager;
-import org.junit.Assert;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import static org.mockito.Matchers.any;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
-/**
- **/
+import java.util.Date;
+
+import static org.mockito.Mockito.when;
+
 public class CreateMovementTest {
 
     @Mock
-    EntityManager em;
-
-    @Mock
-    MovementDao dao;
+    private MovementDao dao;
 
     @InjectMocks
     private MovementDomainModelBean model;
@@ -67,36 +51,26 @@ public class CreateMovementTest {
     }
 
     @Test
-    public void createMovementFirstMovememt() throws GeometryUtilException, MovementDaoMappingException {
-        try {
+    public void createMovementFirstMovememt() throws GeometryUtilException, MovementDaoMappingException, MovementDaoException {
 
-            MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
-            IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);
+        MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
+        IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);
 
-            when(dao.create(Matchers.any()))
-                    .thenReturn(getMovementConnect())
-                    .thenReturn(getMovememnt(eu.europa.ec.fisheries.uvms.movement.util.DateUtil.nowUTC(), 1, 2));
+        when(dao.create(Matchers.any()))
+                .thenReturn(getMovementConnect())
+                .thenReturn(getMovement(eu.europa.ec.fisheries.uvms.movement.util.DateUtil.nowUTC(), 1, 2));
 
-            MovementType createMovement = createMovement(eu.europa.ec.fisheries.uvms.movement.util.DateUtil.nowUTC(), 1, 2);
-            MovementType created = test.createMovement(createMovement, "TEST");
+        MovementType createMovement = createMovement(eu.europa.ec.fisheries.uvms.movement.util.DateUtil.nowUTC(), 1, 2);
+        MovementType created = test.createMovement(createMovement, "TEST");
 
-            //verify(model, atLeast(2)).splitSegment(any(Movement.class), any(Movement.class));
-            //verify(model, times(3)).splitSegment(any(Movement.class), any(Movement.class));
-            //verify(test, times(1)).getMovementConnect(any(String.class));
-            //verify(proc, never()).splitSegment(any(Movement.class), any(Movement.class));
-            //verify(proc, never()).addMovementBeforeFirst(any(Movement.class), any(Movement.class));
-
-        } catch (MovementDaoException ex) {
-            Assert.fail("MovementDaoException Exception thrown");
-        }/*
-        catch (GeometryUtilException ex) {
-            Assert.fail("GeometryUtilException Exception thrown");
-        } catch (MovementDaoMappingException ex) {
-            Assert.fail("MovementDaoMappingException Exception thrown");
-        }*/
+        //verify(model, atLeast(2)).splitSegment(any(Movement.class), any(Movement.class));
+        //verify(model, times(3)).splitSegment(any(Movement.class), any(Movement.class));
+        //verify(test, times(1)).getMovementConnect(any(String.class));
+        //verify(proc, never()).splitSegment(any(Movement.class), any(Movement.class));
+        //verify(proc, never()).addMovementBeforeFirst(any(Movement.class), any(Movement.class));
     }
 
-    private Movement getMovememnt(Date timeStamp, double loong, double lat) {
+    private Movement getMovement(Date timeStamp, double loong, double lat) {
         Movement movement = new Movement();
         movement.setTimestamp(timeStamp);
 

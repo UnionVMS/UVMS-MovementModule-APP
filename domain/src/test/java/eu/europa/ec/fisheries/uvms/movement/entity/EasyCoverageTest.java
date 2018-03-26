@@ -1,21 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.tocea.easycoverage.framework.api.IInstanceProvider;
-import com.tocea.easycoverage.framework.checkers.ArrayIndexOutOfBoundExceptionChecker;
-import com.tocea.easycoverage.framework.checkers.BijectiveCompareToChecker;
-import com.tocea.easycoverage.framework.checkers.BijectiveEqualsChecker;
-import com.tocea.easycoverage.framework.checkers.CloneChecker;
-import com.tocea.easycoverage.framework.checkers.NPEConstructorChecker;
-import com.tocea.easycoverage.framework.checkers.NullValueEqualsChecker;
-import com.tocea.easycoverage.framework.checkers.SetterChecker;
-import com.tocea.easycoverage.framework.checkers.ToStringNotNullChecker;
+import com.tocea.easycoverage.framework.checkers.*;
 import com.tocea.easycoverage.framework.junit.JUnitTestSuiteProvider;
 import com.tocea.easycoverage.framework.providers.DefaultInstanceProvider;
 import com.tocea.easycoverage.framework.providers.MultipleInstanceProvider;
@@ -24,15 +10,18 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-
 import junit.framework.TestSuite;
+import org.junit.Assert;
+import org.junit.Test;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EasyCoverageTest extends Assert {
 
 	private static final String EXPECT_CLASSES_IN_PACKAGE = "Expect classes in package";
 	private static final char PACKAGE_SEPARATOR = '.';
-	private static final char CLASS_FILE_DIRECTORY_SEPARATOR = File.separatorChar;
 	private static final String CLASS_SUFFIX = ".class";
 
 	@Test
@@ -80,7 +69,7 @@ public class EasyCoverageTest extends Assert {
 	private static class SimpleInstanceProvider implements IInstanceProvider {
 		private final Object t;
 
-		public SimpleInstanceProvider(Object o) {
+		SimpleInstanceProvider(Object o) {
 			super();
 			this.t = o;
 		}
@@ -94,7 +83,6 @@ public class EasyCoverageTest extends Assert {
 		public <T> boolean canProvide(Class<T> paramClass) {
 			return t.getClass().equals(paramClass);
 		}
-
 	}
 
 	/**
@@ -102,11 +90,11 @@ public class EasyCoverageTest extends Assert {
 	 *
 	 * @param testSuiteProvider
 	 *            the test suite provider
-	 * @param string
+	 * @param packageName
 	 *            the string
 	 */
-	private static boolean checkAllClassesInPackage(JUnitTestSuiteProvider testSuiteProvider, String string) {
-		List<Class<?>> allClasses = getAllClasses(string);
+	private static boolean checkAllClassesInPackage(JUnitTestSuiteProvider testSuiteProvider, String packageName) {
+		List<Class<?>> allClasses = getAllClasses(packageName);
 		for (Class<?> class1 : allClasses) {
 			testSuiteProvider.addClass(class1);
 		}
@@ -116,25 +104,23 @@ public class EasyCoverageTest extends Assert {
 	/**
 	 * Gets the all classes.
 	 *
-	 * @param pckgname
+	 * @param packageName
 	 *            the pckgname
 	 * @return the all classes
 	 */
-	private static List<Class<?>> getAllClasses(String pckgname) {
+	private static List<Class<?>> getAllClasses(String packageName) {
 		final List<Class<?>> classes = new ArrayList<>();
 		File directory = new File(
-				"target" + File.separatorChar + "classes" + File.separatorChar + pckgname.replace(PACKAGE_SEPARATOR, CLASS_FILE_DIRECTORY_SEPARATOR));
+				"target" + File.separatorChar + "classes" + File.separatorChar + packageName.replace(PACKAGE_SEPARATOR, File.separatorChar));
 		if (directory.exists()) {
 			String[] files = directory.list();
 			for (int i = 0; i < files.length; i++) {
 				if (files[i].endsWith(CLASS_SUFFIX)) {
 					try {
-						StringBuilder stringBuilder = new StringBuilder();
-						stringBuilder.append(pckgname);
-						stringBuilder.append(PACKAGE_SEPARATOR);
-						stringBuilder.append(files[i].substring(0, files[i].length() - 6));
-						classes.add(Class.forName(stringBuilder.toString()));
+						String clazz = packageName + PACKAGE_SEPARATOR + files[i].substring(0, files[i].length() - 6);
+						classes.add(Class.forName(clazz));
 					} catch (ClassNotFoundException e) {
+						fail("Error occurred while reading class: " + e.getMessage());
 					}
 				}
 			}

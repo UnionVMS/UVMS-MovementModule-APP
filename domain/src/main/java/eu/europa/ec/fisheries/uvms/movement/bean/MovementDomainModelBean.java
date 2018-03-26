@@ -184,7 +184,7 @@ public class MovementDomainModelBean {
         return numberOfPages;
     }
 
-    public List<MovementMapResponseType> getMovementMapByQuery(MovementQuery query) throws MovementModelException, InputArgumentException {
+    public List<MovementMapResponseType> getMovementMapByQuery(MovementQuery query) throws MovementModelException {
         if (query == null) {
             throw new InputArgumentException("Movement list query is null");
         }
@@ -263,10 +263,12 @@ public class MovementDomainModelBean {
             LOG.error("[ Error when getting movement by query ] {} ", ex.getMessage());
             throw new MovementModelException(ex.getMessage(), ex);
         }
-
     }
 
-    private void getMovementsByConnectedIds(Integer numberOfLatestReports, List<SearchValue> searchKeys, List<Movement> movementEntityList, List<SearchValue> connectedIdsFromSearchKeyValues) throws ParseException, SearchMapperException, MovementDaoException {
+    private void getMovementsByConnectedIds(Integer numberOfLatestReports, List<SearchValue> searchKeys,
+                                            List<Movement> movementEntityList, List<SearchValue> connectedIdsFromSearchKeyValues)
+                                            throws ParseException, SearchMapperException, MovementDaoException {
+
         String sql;
         List<SearchValue> searchValuesWithoutConnectedIds = removeConnectedIdsFromSearchKeyValues(searchKeys);
         for(SearchValue connectedId : connectedIdsFromSearchKeyValues){
@@ -307,15 +309,17 @@ public class MovementDomainModelBean {
      * @param tracks list of tracks to purge
      * @param movements list of movements to look for correct tracks in
      */
-    public void removeTrackMismatches(List<MovementTrack> tracks, List<Movement> movements) {
+    public void removeTrackMismatches(List<MovementTrack> tracks, List<Movement> movements) throws MovementModelException {
+        if(tracks == null || movements == null) {
+            throw new InputArgumentException("MovementTrack list or Movement list is null");
+        }
         Set<MovementTrack> tracksToSave = new HashSet<>();
         for (Movement movement : movements) {
             if (movement.getTrack() == null) {
                 continue;
             }
             Long allowedTrackId = movement.getTrack().getId();
-            for (int i = 0; i < tracks.size(); i++) {
-                MovementTrack track = tracks.get(i);
+            for (MovementTrack track : tracks) {
                 if (Long.valueOf(track.getId()).equals(allowedTrackId)) {
                     tracksToSave.add(track);
                 }
@@ -360,7 +364,7 @@ public class MovementDomainModelBean {
         }
     }
 
-    public ArrayList<MovementSegment> filterSegments(List<MovementSegment> movementSegments, List<SearchValue> searchKeyValuesRange) {
+    public ArrayList<MovementSegment> filterSegments(List<MovementSegment> movementSegments, List<SearchValue> searchKeyValuesRange) throws MovementModelException {
         Set<MovementSegment> segments = new HashSet<>();
         if (movementSegments != null) {
             for (MovementSegment segment : movementSegments) {
@@ -372,33 +376,37 @@ public class MovementDomainModelBean {
         return new ArrayList<>(segments);
     }
 
-    public boolean keepSegment(MovementSegment segment, List<SearchValue> searchKeyValuesRange) {
+    public boolean keepSegment(MovementSegment segment, List<SearchValue> searchKeyValuesRange) throws MovementModelException {
 
-        for (SearchValue searchkey : searchKeyValuesRange) {
+        if (segment == null || searchKeyValuesRange == null) {
+            throw new InputArgumentException("MovementSegment or SearchValue list is null");
+        }
 
-            if (searchkey.isRange() && searchkey.getField().equals(SearchField.SEGMENT_DURATION)) {
-                if (segment.getDuration() < Double.valueOf(searchkey.getFromValue())) {
+        for (SearchValue searchValue : searchKeyValuesRange) {
+
+            if (searchValue.isRange() && searchValue.getField().equals(SearchField.SEGMENT_DURATION)) {
+                if (segment.getDuration() < Double.valueOf(searchValue.getFromValue())) {
                     return false;
                 }
-                if (segment.getDuration() > Double.valueOf(searchkey.getToValue())) {
+                if (segment.getDuration() > Double.valueOf(searchValue.getToValue())) {
                     return false;
                 }
             }
 
-            if (searchkey.isRange() && searchkey.getField().equals(SearchField.SEGMENT_LENGTH)) {
-                if (segment.getDistance() < Double.valueOf(searchkey.getFromValue())) {
+            if (searchValue.isRange() && searchValue.getField().equals(SearchField.SEGMENT_LENGTH)) {
+                if (segment.getDistance() < Double.valueOf(searchValue.getFromValue())) {
                     return false;
                 }
-                if (segment.getDistance() > Double.valueOf(searchkey.getToValue())) {
+                if (segment.getDistance() > Double.valueOf(searchValue.getToValue())) {
                     return false;
                 }
             }
 
-            if (searchkey.isRange() && searchkey.getField().equals(SearchField.SEGMENT_SPEED)) {
-                if (segment.getSpeedOverGround() < Double.valueOf(searchkey.getFromValue())) {
+            if (searchValue.isRange() && searchValue.getField().equals(SearchField.SEGMENT_SPEED)) {
+                if (segment.getSpeedOverGround() < Double.valueOf(searchValue.getFromValue())) {
                     return false;
                 }
-                if (segment.getSpeedOverGround() > Double.valueOf(searchkey.getToValue())) {
+                if (segment.getSpeedOverGround() > Double.valueOf(searchValue.getToValue())) {
                     return false;
                 }
             }
@@ -445,7 +453,7 @@ public class MovementDomainModelBean {
 
     public List<MovementType> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementDaoException {
         List<Movement> movementListByAreaAndTimeInterval = dao.getMovementListByAreaAndTimeInterval(criteria);
-        return MovementEntityToModelMapper.mapToMovementType(movementListByAreaAndTimeInterval);
+        return movementListByAreaAndTimeInterval != null ? MovementEntityToModelMapper.mapToMovementType(movementListByAreaAndTimeInterval) : null;
     }
 
     public List<AreaType> getAreas() throws MovementModelException {

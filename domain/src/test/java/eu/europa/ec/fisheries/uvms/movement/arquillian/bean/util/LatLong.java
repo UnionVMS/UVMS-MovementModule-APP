@@ -25,12 +25,6 @@ public class LatLong {
 		String lo = String.format(formatStr , longitude) ;
 		String be = String.format(formatStr , bearing) ;
 
-		
 		return "[lat=" + la + ", lon=" + lo + ", pos=" + positionTime + ", bearing="+be + ", distance="+distance + ", speed="+speed+"]";
 	}
-	
-	
-	
-	
-
 }

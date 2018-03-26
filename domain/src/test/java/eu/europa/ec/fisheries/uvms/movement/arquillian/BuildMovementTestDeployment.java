@@ -1,8 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.TestUtil;
+import eu.europa.ec.fisheries.uvms.movement.MockData;
 import eu.europa.ec.fisheries.uvms.movement.bean.*;
-
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
@@ -56,7 +55,7 @@ public abstract class BuildMovementTestDeployment {
         
         testWar.addPackages(true, "eu.europa.ec.fisheries.schema");
         testWar.addClass(TransactionalTests.class);
-        testWar.addClass(TestUtil.class);
+        testWar.addClass(MockData.class);
 
 
 

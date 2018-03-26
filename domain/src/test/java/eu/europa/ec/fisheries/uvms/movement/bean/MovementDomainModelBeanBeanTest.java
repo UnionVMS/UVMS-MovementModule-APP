@@ -11,136 +11,117 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
+import eu.europa.ec.fisheries.uvms.movement.util.CalculationUtil;
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import javax.persistence.EntityManager;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import eu.europa.ec.fisheries.uvms.movement.util.CalculationUtil;
-
-
-@RunWith(MockitoJUnitRunner.class)
 public class MovementDomainModelBeanBeanTest {
-
-    @Mock
-    EntityManager em;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void north() {
-        Double expectedResult = 0.0;
+        Double expected = 0.0;
 
         Double prevLon = 0.0;
         Double prevLat = 0.0;
         Double thisLon = 0.0;
         Double thisLat = 1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
 
-        assertEquals(expectedResult, alfa);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void northEast() {
-        Double expectedResult = 44.99563645534488;
+        Double expected = 44.99563645534488;
 
         Double prevLon = 0.0;
         Double prevLat = 0.0;
         Double thisLon = 1.0;
         Double thisLat = 1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
 
-        assertEquals(expectedResult, alfa);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void east() {
-        Double expectedResult = 90.0;
+        Double expected = 90.0;
 
         Double prevLon = 0.0;
         Double prevLat = 0.0;
         Double thisLon = 1.0;
         Double thisLat = 0.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
 
-        assertEquals(expectedResult, alfa);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void southEast() {
-        Double expectedResult = 135.00436354465512;
+        Double expected = 135.00436354465512;
 
         Double prevLon = 0.0;
         Double prevLat = 0.0;
         Double thisLon = 1.0;
         Double thisLat = -1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
 
-        assertEquals(expectedResult, alfa);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void south() {
-        Double expectedResult = 180.0;
+        Double expected = 180.0;
 
         Double prevLon = 0.0;
         Double prevLat = 0.0;
         Double thisLon = 0.0;
         Double thisLat = -1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
-        assertEquals(expectedResult, alfa);
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void southWest() {
-        Double expectedResult = 224.99563645534485;
+        Double expected = 224.99563645534485;
 
         Double prevLon = 0.0;
         Double prevLat = 0.0;
         Double thisLon = -1.0;
         Double thisLat = -1.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
-        assertEquals(expectedResult, alfa);
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        assertEquals(expected, actual);
     }
 
     @Test
     public void west() {
-        Double expectedResult = 270.0;
+        Double expected = 270.0;
 
         Double prevLon = 0.0;
         Double prevLat = 0.0;
         Double thisLon = -1.0;
         Double thisLat = 0.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
-        assertEquals(expectedResult, alfa);
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        assertEquals(expected, actual);
     }
 
+    @Test
     public void noMovement() {
         Double prevLon = 0.0;
         Double prevLat = 0.0;
         Double thisLon = 0.0;
         Double thisLat = 0.0;
 
-        Double alfa = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
-        assertNull(alfa);
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        assertNull(actual);
     }
-
 }

@@ -63,9 +63,9 @@ public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGro
     public MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementSearchGroupDaoException {
         try {
             //Sanity check on id to prevent create operation instead of update operation.
-            if(filterGroup.getId() != null && getMovementFilterGroupById((Integer) filterGroup.getId().intValue()) != null) {
-             em.merge(filterGroup);
-             em.flush();
+            if(filterGroup.getId() != null && getMovementFilterGroupById(filterGroup.getId().intValue()) != null) {
+                filterGroup = em.merge(filterGroup);
+                em.flush();
             } else {
                 throw new MovementSearchGroupDaoException("Missing id or filtergroup with matching id.");
             }

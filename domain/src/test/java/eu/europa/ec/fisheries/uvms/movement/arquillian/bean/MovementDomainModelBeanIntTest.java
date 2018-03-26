@@ -1,32 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
-import javax.ejb.EJB;
-import javax.ejb.EJBTransactionRolledbackException;
-import javax.inject.Inject;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-
-import org.hibernate.cfg.Configuration;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -63,6 +36,31 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateExc
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+
+import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
+import javax.inject.Inject;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+import static org.junit.Assert.*;
+
 /**
  * Created by thofan on 2017-02-25.
  */
@@ -70,176 +68,155 @@ import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 @RunWith(Arquillian.class)
 public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
-    Random rnd = new Random();
+    private Random rnd = new Random();
 
     private final static String TEST_USER_NAME = "Arquillian";
+
+    @Inject
+    private UserTransaction userTransaction;
 
     @EJB
     private MovementDomainModelBean movementDomainModelBean;
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     /******************************************************************************************************************
      *   TEST FUNCTIONS
      ******************************************************************************************************************/
 
-
     @Test
     @OperateOnDeployment("normal")
-    public void filterSegments() {
-        try {
+    public void filterSegments() throws MovementModelException {
 
-            // TODO should every end of ifstatement have a continue instead of checking for something that will never occur ? method keepSegment
+        List<SearchValue> searchKeyValuesRange = new ArrayList<>();
+        searchKeyValuesRange.add(createSearchValueDurationHelper());
+        searchKeyValuesRange.add(createSearchValueLengthHelper());
+        searchKeyValuesRange.add(createSearchValueSpeedHelper());
 
-            List<SearchValue> searchKeyValuesRange = new ArrayList<>();
-            searchKeyValuesRange.add(createSearchValueDurationHelper());
-            searchKeyValuesRange.add(createSearchValueLengthHelper());
-            searchKeyValuesRange.add(createSearchValueSpeedHelper());
+        // just try to satisfy all paths in the filter
+        List<MovementSegment> movementSegments = new ArrayList<>();
+        movementSegments.add(createMovementSegmentDurationHelper(9,900, 90));
+        movementSegments.add(createMovementSegmentDurationHelper(15,1500, 150));
+        movementSegments.add(createMovementSegmentDurationHelper(21,2100, 210));
 
-            // just try to satisfy all paths in the filter
-            List<MovementSegment> movementSegments = new ArrayList<>();
-            movementSegments.add(createMovementSegmentDurationHelper(9,900, 90));
-            movementSegments.add(createMovementSegmentDurationHelper(15,1500, 150));
-            movementSegments.add(createMovementSegmentDurationHelper(21,2100, 210));
-
-            ArrayList<MovementSegment> segments = movementDomainModelBean.filterSegments(movementSegments, searchKeyValuesRange);
-
-            Assert.assertTrue(segments.size() == 1);
-        } catch (Exception e) {
-            Assert.fail(e.toString());
-        }
-    }
-
-
-    @Test
-    @OperateOnDeployment("normal")
-    public void getAreas() {
-        try {
-            List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> areas = movementDomainModelBean.getAreas();
-            Assert.assertTrue(areas != null);
-        } catch (Exception e) {
-            Assert.fail(e.toString());
-        }
+        ArrayList<MovementSegment> segments = movementDomainModelBean.filterSegments(movementSegments, searchKeyValuesRange);
+        assertEquals(1,segments.size());
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getLatestMovements_0() {
-        try {
-            List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(0);
-            Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
-            Assert.fail();
-        }
+    public void getAreas() throws MovementModelException {
+        List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> areas = movementDomainModelBean.getAreas();
+        assertNotNull(areas);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getLatestMovements_5() {
-        try {
-            List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5);
-            Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
-            Assert.fail();
-        }
+    public void getLatestMovements_0() throws MovementModelException {
+        List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(0);
+        assertNotNull(movementTypes);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getLatestMovements_5000000() {
-        try {
-            List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5000000);
-            Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
-            Assert.fail();
-        }
+    public void getLatestMovements_5() throws MovementModelException {
+        List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5);
+        assertNotNull(movementTypes);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getLatestMovements_NULL() {
-        try {
-            List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(null);
-            Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
-            Assert.assertTrue(e != null);
-        }
+    public void getLatestMovements_5000000() throws MovementModelException {
+        List<MovementType> movementTypes =movementDomainModelBean.getLatestMovements(5000000);
+        assertNotNull(movementTypes);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getLatestMovements_neg5() {
-        try {
-            List<MovementType> movementTypes = movementDomainModelBean.getLatestMovements(-5);
-            Assert.assertTrue(movementTypes != null);
-        } catch (MovementModelException e) {
-            Assert.assertTrue(e != null);
-        }
+    public void getLatestMovements_NULL() throws MovementModelException {
+        expectedException.expect(MovementModelException.class);
+
+        movementDomainModelBean.getLatestMovements(null);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getLatestMovementsByConnectIds_crashOnEmpty() {
-        try {
-            List<String> connectIds = new ArrayList<>();
-            List<MovementType> movementTypes = movementDomainModelBean.getLatestMovementsByConnectIds(connectIds);
-            Assert.assertTrue(movementTypes != null);
-        } catch (Exception e) {
-            Assert.assertTrue(e != null);
-        }
+    public void getLatestMovements_neg5() throws MovementModelException {
+        expectedException.expect(MovementModelException.class);
+
+        movementDomainModelBean.getLatestMovements(-5);
     }
 
-    // @Test
-    public void getMinimalMovementListByQuery() {
-        try {
-            movementDomainModelBean.getMinimalMovementListByQuery(null);
-        } catch (MovementModelException e) {
-            Assert.fail(e.toString());
-        }
+    @Test
+    @OperateOnDeployment("normal")
+    public void getLatestMovementsByConnectIds_crashOnEmpty() throws MovementModelException {
+        expectedException.expect(MovementModelException.class);
+        expectedException.expectMessage("[ Error when getting Movement by GUID. ]");
+
+        List<String> connectIds = new ArrayList<>();
+        movementDomainModelBean.getLatestMovementsByConnectIds(connectIds);
     }
 
-    // @Test
-    public void getMovementByGUID() {
-        try {
-            movementDomainModelBean.getMovementByGUID(null);
-        } catch (MovementModelException e) {
-            Assert.fail(e.toString());
-        }
+    @Test
+    @OperateOnDeployment("normal")
+    public void getMinimalMovementListByQuery_NULL() throws MovementModelException {
+        expectedException.expect(InputArgumentException.class);
+        expectedException.expectMessage("Movement list query is null");
+
+        movementDomainModelBean.getMinimalMovementListByQuery(null);
     }
 
-    // @Test
-    public void getMovementListByAreaAndTimeInterval() {
-        try {
-            movementDomainModelBean.getMovementListByAreaAndTimeInterval(null);
-        } catch (MovementDaoException e) {
-            Assert.fail(e.toString());
-        }
+    @Test
+    @OperateOnDeployment("normal")
+    public void getMovementByGUID_NULL() throws MovementModelException {
+        expectedException.expect(EJBTransactionRolledbackException.class);
+
+        movementDomainModelBean.getMovementByGUID(null);
     }
 
-    // @Test
-    public void getMovementListByQuery() {
-        try {
-            movementDomainModelBean.getMovementListByQuery(null);
-        } catch (MovementModelException e) {
-            Assert.fail(e.toString());
-        }
+     @Test
+     @OperateOnDeployment("normal")
+    public void getMovementListByAreaAndTimeInterval_NULL() throws MovementDaoException {
+        expectedException.expect(EJBTransactionRolledbackException.class);
+
+         List<MovementType> movementTypeList = movementDomainModelBean.getMovementListByAreaAndTimeInterval(null);
+     }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void getMovementListByQuery_NULL() throws MovementModelException {
+        expectedException.expect(InputArgumentException.class);
+        expectedException.expectMessage("Movement list query is null");
+
+        movementDomainModelBean.getMovementListByQuery(null);
     }
 
-    // @Test
-    public void getMovementMapByQuery() {
-        try {
-            movementDomainModelBean.getMovementMapByQuery(null);
-        } catch (MovementModelException e) {
-            Assert.fail(e.toString());
-        }
+    @Test
+    @OperateOnDeployment("normal")
+    public void getMovementMapByQuery_NULL() throws MovementModelException {
+        expectedException.expect(InputArgumentException.class);
+        expectedException.expectMessage("Movement list query is null");
+
+        movementDomainModelBean.getMovementMapByQuery(null);
     }
 
-    // @Test
-    public void removeTrackMismatches() {
-        try {
-            movementDomainModelBean.removeTrackMismatches(null, null);
-        } catch (Exception e) {
-            Assert.fail(e.toString());
-        }
+    @Test
+    @OperateOnDeployment("normal")
+    public void keepSegment_NULL() throws MovementModelException {
+        expectedException.expect(InputArgumentException.class);
+        expectedException.expectMessage("MovementSegment or SearchValue list is null");
+
+        movementDomainModelBean.keepSegment(null, null);
+    }
+
+    @Test
+    @OperateOnDeployment("normal")
+    public void removeTrackMismatches_NULL() throws MovementModelException {
+        expectedException.expect(InputArgumentException.class);
+        expectedException.expectMessage("MovementTrack list or Movement list is null");
+
+        movementDomainModelBean.removeTrackMismatches(null, null);
     }
     
     @EJB
@@ -526,7 +503,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	try {
     		movementDomainModelBean.removeTrackMismatches(null, varbergGrena);
     		fail("null as input");
-		} catch (EJBTransactionRolledbackException e) {
+		} catch (InputArgumentException e) {
 			assertTrue(true);
 		}
     }
@@ -686,7 +663,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
 
-
     /******************************************************************************************************************
      *   HELPER FUNCTIONS
      ******************************************************************************************************************/
@@ -705,18 +681,15 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     private SearchValue createSearchValueDurationHelper() {
-        SearchValue searchValue = new SearchValue(SearchField.SEGMENT_DURATION, "10", "20");
-        return searchValue;
+        return new SearchValue(SearchField.SEGMENT_DURATION, "10", "20");
     }
 
     private SearchValue createSearchValueLengthHelper() {
-        SearchValue searchValue = new SearchValue(SearchField.SEGMENT_LENGTH, "1000", "2000");
-        return searchValue;
+        return new SearchValue(SearchField.SEGMENT_LENGTH, "1000", "2000");
     }
 
     private SearchValue createSearchValueSpeedHelper() {
-        SearchValue searchValue = new SearchValue(SearchField.SEGMENT_SPEED, "100", "200");
-        return searchValue;
+        return new SearchValue(SearchField.SEGMENT_SPEED, "100", "200");
     }
     
     private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementDaoException, MovementDuplicateException, MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException{
