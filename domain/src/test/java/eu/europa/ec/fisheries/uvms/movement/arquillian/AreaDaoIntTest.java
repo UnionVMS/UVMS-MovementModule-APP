@@ -16,6 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.List;
@@ -32,6 +34,8 @@ public class AreaDaoIntTest extends TransactionalTests {
     // ToDo: 1. The AreaDao interface should include a method to create/persist an AreaType entity.
     // ToDo: 2. AreaType related operations should be extracted into a separate interface, e.g. AreaTypeDao.
     // ToDo: 3. Neither 1. or 2.
+
+    final static Logger LOG = LoggerFactory.getLogger(AreaDaoIntTest.class);
 
     @EJB
     private AreaDao areaDao;

@@ -11,18 +11,23 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.util;
 
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.jboss.arquillian.junit.Arquillian;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
 /**
  **/
-public class SegmentCalculationUtilTest {
+@RunWith(Arquillian.class)
+public class SegmentCalculationUtilTest extends TransactionalTests {
 
     /**
      * IN_PORT = From-point and To-point < 1.5 NM from port
@@ -75,6 +80,13 @@ public class SegmentCalculationUtilTest {
         fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
         segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
         assertNotSame(SegmentCategoryType.IN_PORT, segmentCategory);
+        
+        //very questionable if this should work this way...... 
+        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(null, fromMovement, toMovement);
+        assertEquals(SegmentCategoryType.ENTER_PORT, segmentCategory);
+        
+        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(null, null, toMovement);
+        assertEquals(SegmentCategoryType.OTHER, segmentCategory);
     }
 
     /**
@@ -133,6 +145,9 @@ public class SegmentCalculationUtilTest {
         segCalc.setDistanceBetweenPoints(distance);
         segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
         assertNotSame(SegmentCategoryType.JUMP, segmentCategoryType);
+        
+        segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(null, null, null);
+        assertEquals(SegmentCategoryType.OTHER, segmentCategoryType);
     }
 
     /**
@@ -203,6 +218,9 @@ public class SegmentCalculationUtilTest {
         toMeta.setClosestPortDistance(distanceToClosestPortTo);
         fromMovement.getMetadata().setClosestPortDistance(distanceToClosestPortFrom);
         toMovement.getMetadata().setClosestPortDistance(distanceToClosestPortTo);
+        segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
+        assertEquals(SegmentCategoryType.ENTER_PORT, segmentCategory);
+
     }
 
     @Test
@@ -267,7 +285,7 @@ public class SegmentCalculationUtilTest {
     }
 
     /**
-     * NULL_DURATION = duration = 0
+     * NULL_DURATION = (duration = 0)
      */
     @Test
     public void testNullDuration() {
@@ -334,4 +352,39 @@ public class SegmentCalculationUtilTest {
     public void testLowSpeed() {
 
     }
+    
+    /**
+     * Should the system allow for negative speed?
+     */
+    
+    @Test
+    public void testNegativeSpeed() {
+
+        double distanceToClosestPortTo = 1.6;
+        double distanceToClosestPortFrom = 1.6;
+
+        double duration = 10;
+        double avgSpeed = -10;
+        double distance = 249;
+
+        SegmentCalculations segCat = new SegmentCalculations();
+        segCat.setDurationBetweenPoints(duration);
+        segCat.setAvgSpeed(avgSpeed);
+
+        Movement toMovement = new Movement();
+        Movementmetadata toMeta = new Movementmetadata();
+        toMeta.setClosestPortDistance(distanceToClosestPortTo);
+        toMovement.setMetadata(toMeta);
+
+        Movement fromMovement = new Movement();
+        Movementmetadata fromMeta = new Movementmetadata();
+        fromMeta.setClosestPortDistance(distanceToClosestPortFrom);
+        fromMovement.setMetadata(fromMeta);
+
+        SegmentCategoryType segmentCategory = SegmentCalculationUtil.getSegmentCategoryType(segCat, fromMovement, toMovement);
+
+        assertEquals(SegmentCategoryType.OTHER, segmentCategory);
+
+    }
+
 }

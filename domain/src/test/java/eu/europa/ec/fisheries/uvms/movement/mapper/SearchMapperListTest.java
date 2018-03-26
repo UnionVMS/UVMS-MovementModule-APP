@@ -11,6 +11,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
@@ -22,8 +24,14 @@ import eu.europa.ec.fisheries.uvms.movement.exception.SearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
+
+import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -31,7 +39,8 @@ import java.util.List;
 
 /**
  **/
-public class SearchMapperListTest extends Assert {
+@RunWith(Arquillian.class)
+public class SearchMapperListTest extends TransactionalTests {
 
     private static final String GLOBAL_ID = "1";
     private static final String INITIAL_SELECT = "SELECT DISTINCT  m FROM Movement m ";
@@ -121,7 +130,74 @@ public class SearchMapperListTest extends Assert {
                 "LEFT JOIN FETCH area.areaType mareatype  " +
                 "WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
     }
+    
+    
+    @Test
+    public void testCreateMinimalSelectSearchSql() throws MovementDaoMappingException, SearchMapperException, ParseException {
+    	List<ListCriteria> listCriterias = new ArrayList<>();
 
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CATEGORY);
+        criteria.setValue(SegmentCategoryType.ANCHORED.name());
+        listCriterias.add(criteria);
+
+        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
+
+        assertTrue(mapSearchField.size() == 1);
+
+        String data = SearchFieldMapper.createMinimalSelectSearchSql(mapSearchField, true);
+        assertEquals("SELECT DISTINCT  m FROM MinimalMovement m INNER JOIN FETCH m.movementConnect mc  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ", data);
+    }
+    
+    
+    @Test
+    public void testMultipleSearchFieldCategorys() throws MovementDaoMappingException, SearchMapperException, ParseException {
+    	List<ListCriteria> listCriterias = new ArrayList<>();
+
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CATEGORY);
+        criteria.setValue(SegmentCategoryType.ANCHORED.name());
+        listCriterias.add(criteria);
+        
+        criteria = new ListCriteria();
+        criteria.setKey(SearchKey.SOURCE);
+        criteria.setValue(MovementSourceType.MANUAL.name());
+        listCriterias.add(criteria);
+
+        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
+
+        assertTrue(mapSearchField.size() == 2);
+
+        String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, false);
+        System.out.println(data);
+        String correctOutput = "SELECT DISTINCT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra "
+        		+ " LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg  LEFT JOIN FETCH m.metadata mmd  LEFT JOIN FETCH m.movementareaList marea "
+        		+ " LEFT JOIN FETCH marea.movareaAreaId area  LEFT JOIN FETCH area.areaType mareatype  WHERE m.movementSource = 3 OR  ( toSeg.segmentCategory = 6 OR"
+        		+ " fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC "; 
+        assertEquals(correctOutput, data);
+    }
+    
+    @Test
+    public void testCreateCountSearchSql() throws MovementDaoMappingException, SearchMapperException, ParseException {
+    	List<ListCriteria> listCriterias = new ArrayList<>();
+
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.SOURCE);
+        criteria.setValue(MovementSourceType.MANUAL.name());
+        listCriterias.add(criteria);
+
+        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
+
+        assertTrue(mapSearchField.size() == 1);
+
+        String data = SearchFieldMapper.createCountSearchSql(mapSearchField, true);
+        String correctOutput = "SELECT COUNT(DISTINCT m) FROM Movement m  INNER JOIN m.movementConnect mc  LEFT JOIN m.activity act  LEFT JOIN m.track tra "
+        		+ " LEFT JOIN m.fromSegment fromSeg  LEFT JOIN m.toSegment toSeg  LEFT JOIN m.metadata mmd  LEFT JOIN m.movementareaList marea "
+        		+ " LEFT JOIN marea.movareaAreaId area  LEFT JOIN area.areaType mareatype  WHERE m.movementSource = 3 AND  m.duplicate = false ";
+        assertEquals(correctOutput, data);
+    }
+    
+    
     private SearchValue getSearchValue(String value, SearchField field) {
         return new SearchValue(field, value);
     }

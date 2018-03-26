@@ -2,24 +2,34 @@ package eu.europa.ec.fisheries.uvms.movement.mapper;
 
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.MockData;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
+
+import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.UUID;
 
 import static eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper.*;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by roblar on 2017-03-31.
  */
-public class MovementModelToEntityMapperTest extends Assert {
+@RunWith(Arquillian.class)
+public class MovementModelToEntityMapperTest extends TransactionalTests {
 
     @Test
     public void testMapNewMovementEntity_reportedSpeedIsNull() throws MovementDaoMappingException {
@@ -35,6 +45,7 @@ public class MovementModelToEntityMapperTest extends Assert {
 
         //Then
         assertNull(movement.getSpeed());
+        
     }
 
     @Test
@@ -83,6 +94,7 @@ public class MovementModelToEntityMapperTest extends Assert {
 
         //Then
         assertThat(movement.getMovementSource(), is(MovementSourceType.INMARSAT_C));
+        
     }
 
     @Test
@@ -115,6 +127,7 @@ public class MovementModelToEntityMapperTest extends Assert {
 
         //Then
         assertNotNull(movement.getTimestamp());
+        
     }
 
     @Test
@@ -201,6 +214,13 @@ public class MovementModelToEntityMapperTest extends Assert {
         assertNotNull(areaType);
         assertThat(areaType.getUpdatedUser(), is("UVMS"));
         assertNotNull(areaType.getUpdatedTime());
+        
+        try {
+			areaType = mapToAreaType(null);
+			fail("shpould result in a nullpointer");
+		} catch (NullPointerException e) {
+			assertTrue(true);
+		}
     }
 
     @Test
@@ -214,6 +234,14 @@ public class MovementModelToEntityMapperTest extends Assert {
         assertNotNull(area);
         assertThat(area.getAreaUpuser(), is("UVMS"));
         assertNotNull(area.getAreaUpdattim());
+        
+        try {
+        	area = maptoArea(null, areaType);
+        	fail("should result in a nullpointer");
+		} catch (Exception e) {
+			assertTrue(true);
+		}
+        
     }
 
     @Test

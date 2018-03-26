@@ -24,6 +24,7 @@ public class TransactionalTests extends BuildMovementTestDeployment {
     @After
     public void after() throws SystemException {
         userTransaction.rollback();
+        //userTransaction.commit();
     }
 
 }

@@ -11,6 +11,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.Date;
@@ -24,6 +26,8 @@ import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class TempMovementDaoIntTest extends TransactionalTests {
+
+    final static Logger LOG = LoggerFactory.getLogger(TempMovementDaoIntTest.class);
 
     @EJB
     private TempMovementDao tempMovementDao;

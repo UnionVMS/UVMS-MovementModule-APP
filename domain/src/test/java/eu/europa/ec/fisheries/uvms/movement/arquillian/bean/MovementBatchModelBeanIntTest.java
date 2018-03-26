@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
@@ -32,7 +33,7 @@ import static org.junit.Assert.*;
  */
 
 @RunWith(Arquillian.class)
-public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
+public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     private Random rnd = new Random();
 
@@ -47,20 +48,6 @@ public class MovementBatchModelBeanIntTest extends BuildMovementTestDeployment {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-
-    /******************************************************************************************************************
-     *   SETUP FUNCTIONS
-     ******************************************************************************************************************/
-
-    @Before
-    public void before() throws SystemException, NotSupportedException {
-        userTransaction.begin();
-    }
-
-    @After
-    public void after() throws SystemException {
-            userTransaction.rollback();
-    }
 
     /******************************************************************************************************************
      *   TEST FUNCTIONS

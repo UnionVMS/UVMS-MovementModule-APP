@@ -76,6 +76,7 @@ public class GeometryUtil {
      */
     public static LineString getLineStringFromMovments(List<Movement> movements) throws GeometryUtilException {
 
+    	
         Collections.sort(movements, MovementComparator.MOVEMENT);
 
         LinkedList<Coordinate> coordinates = new LinkedList<>();

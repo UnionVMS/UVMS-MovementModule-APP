@@ -70,8 +70,10 @@ public class MovementDomainModelBean {
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
             throw new InputArgumentException("Pagination in movementlist query is null");
         }
-        if (query.getMovementSearchCriteria() == null) {
+        if (query.getMovementSearchCriteria().isEmpty()) {
+
             throw new InputArgumentException("No search criterias in MovementList query");
+
         }
 
         try {
@@ -92,6 +94,7 @@ public class MovementDomainModelBean {
             String countSql = SearchFieldMapper.createCountSearchSql(searchKeyValues, true);
             String sql = SearchFieldMapper.createSelectSearchSql(searchKeyValues, true);
 
+            
             Long numberMatches = dao.getMovementListSearchCount(countSql, searchKeyValues);
             List<Movement> movementEntityList = dao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
             //List<Movement> movementEntityList = dao.getMovementList(sql, searchKeyValues);
@@ -109,6 +112,7 @@ public class MovementDomainModelBean {
             //} catch (com.vividsolutions.jts.io.ParseException | MovementDaoMappingException | MovementDaoException | ParseException ex) {
         } catch (MovementDaoMappingException | MovementDaoException | ParseException ex) {
             LOG.error("[ Error when getting movement by query ] {} ", ex);
+            System.out.println(ex);
             throw new MovementModelException(ex.getMessage(), ex);
         } catch (com.vividsolutions.jts.io.ParseException e) {
             LOG.error("[ Error when getting movement by query, parse exception ] {} ", e);
@@ -126,7 +130,7 @@ public class MovementDomainModelBean {
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
             throw new InputArgumentException("Pagination in movementlist query is null");
         }
-        if (query.getMovementSearchCriteria() == null) {
+        if (query.getMovementSearchCriteria().isEmpty()) {
             throw new InputArgumentException("No search criterias in MovementList query");
         }
 
@@ -184,7 +188,7 @@ public class MovementDomainModelBean {
         if (query == null) {
             throw new InputArgumentException("Movement list query is null");
         }
-        if (query.getMovementSearchCriteria() == null) {
+        if (query.getMovementSearchCriteria().isEmpty()) {
             throw new InputArgumentException("No search criterias in MovementList query");
         }
         if (query.getPagination() != null) {
@@ -299,6 +303,9 @@ public class MovementDomainModelBean {
     /**
      * This method removes track mismatches. These can occur during movement creation but are easier to remove on
      * read than write.
+     * 
+     * In the rare event of segments that are attached to two different tracks, the track that is not
+       connected to the any relevant Movement should be removed from the input list.
      * @param tracks list of tracks to purge
      * @param movements list of movements to look for correct tracks in
      */

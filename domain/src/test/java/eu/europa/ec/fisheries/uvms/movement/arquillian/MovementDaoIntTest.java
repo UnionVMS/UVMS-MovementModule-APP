@@ -27,6 +27,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
@@ -39,7 +40,7 @@ import static org.junit.Assert.*;
  * Created by thofan on 2017-01-30.
  */
 @RunWith(Arquillian.class)
-public class MovementDaoIntTest extends BuildMovementTestDeployment {
+public class MovementDaoIntTest extends TransactionalTests {
 
     private Random rnd = new Random();
 
@@ -64,15 +65,10 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
     @EJB
     private MovementDao movementDao;
 
-    @Before
-    public void before() throws SystemException, NotSupportedException {
-        userTransaction.begin();
-    }
 
-    @After
-    public void after() throws SystemException {
-        userTransaction.rollback();
-    }
+    /******************************************************************************************************************
+     *   TEST FUNCTIONS
+     ******************************************************************************************************************/
 
     @Test
     @OperateOnDeployment("normal")
@@ -510,10 +506,9 @@ public class MovementDaoIntTest extends BuildMovementTestDeployment {
         // TODO  this one cannot be instantiated using new (probably a soap thing)
         // MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
 
-        expectedException.expect(NullPointerException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
 
         List<Movement> movementListByAreaAndTimeInterval = movementDao.getMovementListByAreaAndTimeInterval(null);
-        movementListByAreaAndTimeInterval.get(0);
     }
 
     // don't want to use JodaTime in tests . . .

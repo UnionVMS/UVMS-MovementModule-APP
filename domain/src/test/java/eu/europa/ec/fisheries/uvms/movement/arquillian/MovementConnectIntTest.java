@@ -7,6 +7,8 @@ import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -16,6 +18,10 @@ import java.util.UUID;
 
 @RunWith(Arquillian.class)
 public class MovementConnectIntTest extends TransactionalTests {
+
+    final static Logger LOG = LoggerFactory.getLogger(MovementConnectIntTest.class);
+
+
 
     @Test
     @OperateOnDeployment("normal")
