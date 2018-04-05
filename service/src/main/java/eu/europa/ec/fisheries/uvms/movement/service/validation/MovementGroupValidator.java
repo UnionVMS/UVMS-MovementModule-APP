@@ -15,14 +15,9 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- **/
+
 public class MovementGroupValidator {
-
-    final static Logger LOG = LoggerFactory.getLogger(MovementGroupValidator.class);
 
     public static final String ALLOWED_FIELD_VALUES = getAllowedValues();
 

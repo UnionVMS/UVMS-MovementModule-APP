@@ -17,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.CreateMovementBean;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MessageConsumerBean;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementConsumerBean;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 
 /**
@@ -59,8 +59,8 @@ public abstract class BuildMovementServiceTestDeployment {
     public static Archive<?> createMovementSearchDeployment() {
         WebArchive archive = createArchive("movementmessage");
 
-        archive.addClass(MessageConsumerBean.class);
         archive.addClass(MovementMessageConsumerBean.class);
+        archive.addClass(MovementConsumerBean.class);
         archive.addClass(MessageProducerBean.class);
         archive.addClass(CreateMovementBean.class);
 

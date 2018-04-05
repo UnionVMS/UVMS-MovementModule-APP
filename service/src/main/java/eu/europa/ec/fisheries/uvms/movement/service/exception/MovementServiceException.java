@@ -15,8 +15,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.exception;
  **/
 public class MovementServiceException extends Exception {
 
-    public MovementServiceException() {
-    }
+    public MovementServiceException() {}
 
     public MovementServiceException(String message) {
         super(message);

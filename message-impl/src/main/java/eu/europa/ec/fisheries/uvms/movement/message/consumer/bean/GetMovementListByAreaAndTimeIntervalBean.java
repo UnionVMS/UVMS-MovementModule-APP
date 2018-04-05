@@ -1,16 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.jms.TextMessage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByAreaAndTimeIntervalRequest;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
@@ -22,6 +11,15 @@ import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.jms.TextMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by thofan on 2017-04-24.
@@ -41,8 +39,7 @@ public class GetMovementListByAreaAndTimeIntervalBean {
 
     @Inject
     @ErrorEvent
-    Event<EventMessage> errorEvent;
-
+    private Event<EventMessage> errorEvent;
 
     public void getMovementListByAreaAndTimeInterval(TextMessage textMessage) {
         LOG.debug("Get Movement By Query Received.. processing request in GetMovementListByAreaAndTimeIntervalBean");
@@ -58,9 +55,4 @@ public class GetMovementListByAreaAndTimeIntervalBean {
             throw new EJBException(ex);
         }
     }
-
-
-
-
-
 }

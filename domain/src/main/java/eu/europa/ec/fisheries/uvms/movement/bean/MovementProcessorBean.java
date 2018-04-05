@@ -12,34 +12,24 @@
 
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
-import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.ejb.*;
-import javax.transaction.NotSupportedException;
-import javax.transaction.Status;
+import javax.ejb.EJB;
+import javax.ejb.EJBContext;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import javax.validation.ConstraintViolationException;
-import java.util.*;
-import java.util.concurrent.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by osdjup on 2016-12-19.
@@ -54,10 +44,10 @@ public class MovementProcessorBean {
     private ScheduledExecutorService executor;
 
     @EJB
-    MovementDaoBean dao;
+    private MovementDaoBean dao;
 
     @EJB
-    IncomingMovementBean incomingMovementBean;
+    private IncomingMovementBean incomingMovementBean;
 
     @Resource
     private EJBContext context;

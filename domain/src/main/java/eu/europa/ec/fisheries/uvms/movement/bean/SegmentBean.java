@@ -9,20 +9,18 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.GeometryUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.SegmentCalculationUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by andreasw on 2017-03-08.
@@ -33,9 +31,8 @@ public class SegmentBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(SegmentBean.class);
 
-
     @EJB
-    MovementDaoBean dao;
+    private MovementDaoBean dao;
 
     /**
      *

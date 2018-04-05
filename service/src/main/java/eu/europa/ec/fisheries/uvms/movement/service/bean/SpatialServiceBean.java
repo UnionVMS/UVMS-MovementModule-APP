@@ -11,27 +11,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
-
-import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.exception.SpatialModelMapperException;
@@ -42,47 +29,46 @@ import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.PointType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.UnitType;
+import java.util.Arrays;
+import java.util.List;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  **/
 @LocalBean
 @Stateless
-public class SpatialServiceBean implements SpatialService{
+public class SpatialServiceBean implements SpatialService {
 
     final static Logger LOG = LoggerFactory.getLogger(SpatialServiceBean.class);
 
     @EJB
-    MessageConsumer consumer;
+    private MessageConsumer consumer;
 
     @EJB
-    MessageProducer producer;
-
-    //TODO FIX AS PARAMETER
-    private static final Long TIMEOUT = 60000L;
+    private MessageProducer producer;
 
     public MovementType enrichMovementWithSpatialData(MovementBaseType movement) throws MovementServiceException {
-
         try {
             LOG.debug("Enrich movement with spatial data envoked in SpatialServiceBean");
             PointType point = new PointType();
             point.setCrs(4326);
             point.setLatitude(movement.getPosition().getLatitude());
             point.setLongitude(movement.getPosition().getLongitude());
-
             List<LocationType> locationTypes = Arrays.asList(LocationType.PORT);
             List<AreaType> areaTypes = Arrays.asList(AreaType.COUNTRY);
-
             String spatialRequest = SpatialModuleRequestMapper.mapToCreateSpatialEnrichmentRequest(point, UnitType.NAUTICAL_MILES, locationTypes, areaTypes);
             String spatialMessageId = producer.sendModuleMessage(spatialRequest, ModuleQueue.SPATIAL);
-            TextMessage spatialResponse = consumer.getMessage(spatialMessageId, TextMessage.class, TIMEOUT);
-
+            TextMessage spatialResponse = consumer.getMessage(spatialMessageId, TextMessage.class);
             LOG.debug("Got response from Spatial " + spatialResponse.getText());
-
             SpatialEnrichmentRS enrichment = SpatialModuleResponseMapper.mapToSpatialEnrichmentRSFromResponse(spatialResponse, spatialMessageId);
-
             return MovementMapper.enrichAndMapToMovementType(movement, enrichment);
-
-        } catch (JMSException | SpatialModelMapperException | MovementMessageException ex) {
+        } catch (JMSException | SpatialModelMapperException | MovementMessageException | MessageException ex) {
             throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex);
         }
     }

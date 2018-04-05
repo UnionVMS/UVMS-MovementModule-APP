@@ -53,10 +53,10 @@ import java.util.*;
 public class MovementDomainModelBean {
 
     @EJB
-    MovementDaoBean dao;
+    private MovementDaoBean dao;
 
     @EJB
-    AreaDaoBean areaDao;
+    private AreaDaoBean areaDao;
 
     final static Logger LOG = LoggerFactory.getLogger(MovementDomainModelBean.class);
 

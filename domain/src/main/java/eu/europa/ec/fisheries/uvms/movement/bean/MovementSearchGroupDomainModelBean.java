@@ -35,7 +35,7 @@ public class MovementSearchGroupDomainModelBean {
     private static final Logger LOG = LoggerFactory.getLogger(MovementSearchGroupDomainModelBean.class);
 
     @EJB
-    MovementSearchGroupDao dao;
+    private MovementSearchGroupDao dao;
 
     public MovementSearchGroup createMovementSearchGroup(MovementSearchGroup movementGroup, String username) throws MovementModelException {
         try {

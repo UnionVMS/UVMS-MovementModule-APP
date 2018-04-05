@@ -39,7 +39,7 @@ public class AreaRestResource {
     final static Logger LOG = LoggerFactory.getLogger(MovementRestResource.class);
 
     @EJB
-    MovementService movementService;
+    private MovementService movementService;
 
     @GET
     @Produces(value = {MediaType.APPLICATION_JSON})
