@@ -51,10 +51,10 @@ public class MovementRestResource {
     final static Logger LOG = LoggerFactory.getLogger(MovementRestResource.class);
 
     @EJB
-    MovementService serviceLayer;
+    private MovementService serviceLayer;
     
     @EJB
-    UserServiceBean userService;
+    private UserServiceBean userService;
 
     @Context 
     private HttpServletRequest request;

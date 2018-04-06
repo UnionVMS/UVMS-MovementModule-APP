@@ -13,18 +13,16 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementSearchGroupDomainModelBean;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import java.math.BigInteger;
 import java.util.List;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 public class MovementSearchGroupServiceBean implements MovementSearchGroupService {
@@ -32,13 +30,10 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     private final static Logger LOG = LoggerFactory.getLogger(MovementSearchGroupServiceBean.class);
 
     @EJB
-    MovementSearchGroupDomainModelBean movementSearchGroupDomainModelBean;
-
-    //TODO SET AS PARAMETER
-    private static final Long CREATE_MOVEMENT_TIMEOUT = 10000L;
+    private MovementSearchGroupDomainModelBean movementSearchGroupDomainModelBean;
 
     @Override
-    public MovementSearchGroup createMovementSearchGroup(MovementSearchGroup searchGroup, String username) throws MovementServiceException, MovementDuplicateException {
+    public MovementSearchGroup createMovementSearchGroup(MovementSearchGroup searchGroup, String username) throws MovementServiceException {
         try {
             if(searchGroup.getName() == null || searchGroup.getName().isEmpty()){
                 LOG.error("[ Error when creating movement search group. Search group must have a name]");
@@ -60,7 +55,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     }
 
     @Override
-    public MovementSearchGroup getMovementSearchGroup(Long id) throws MovementServiceException, MovementDuplicateException {
+    public MovementSearchGroup getMovementSearchGroup(Long id) throws MovementServiceException {
         try {
             return movementSearchGroupDomainModelBean.getMovementSearchGroup(BigInteger.valueOf(id));
         } catch (MovementModelException e) {
@@ -70,7 +65,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     }
 
     @Override
-    public List<MovementSearchGroup> getMovementSearchGroupsByUser(String user) throws MovementServiceException, MovementDuplicateException {
+    public List<MovementSearchGroup> getMovementSearchGroupsByUser(String user) throws MovementServiceException {
         try {
             return movementSearchGroupDomainModelBean.getMovementSearchGroupsByUser(user);
         } catch (MovementModelException e) {
@@ -80,7 +75,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     }
 
     @Override
-    public MovementSearchGroup updateMovementSearchGroup(MovementSearchGroup searchGroup, String username) throws MovementServiceException, MovementDuplicateException {
+    public MovementSearchGroup updateMovementSearchGroup(MovementSearchGroup searchGroup, String username) throws MovementServiceException {
         if(searchGroup.getId() == null || username == null){
             LOG.error("[Cannot update the MovementSearchGroup when it has no id set or username is null]");
             throw new MovementServiceException("Error when updating movement search group. MovementSearchGroup has no id set or the username is null");
@@ -94,7 +89,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     }
 
     @Override
-    public MovementSearchGroup deleteMovementSearchGroup(Long id) throws MovementServiceException, MovementDuplicateException {
+    public MovementSearchGroup deleteMovementSearchGroup(Long id) throws MovementServiceException {
         try {
             return movementSearchGroupDomainModelBean.deleteMovementSearchGroup(BigInteger.valueOf(id));
         } catch (MovementModelException e) {

@@ -11,8 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.consumer;
 
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import javax.ejb.Local;
 
 /**
@@ -20,6 +19,7 @@ import javax.ejb.Local;
 @Local
 public interface MessageConsumer {
 
-    public <T> T getMessage(String correlationId, Class type, Long timeout) throws MovementMessageException;
+    <T> T getMessage(String correlationId, Class type, Long timeout) throws MessageException;
+    <T> T getMessage(String correlationId, Class type) throws MessageException;
 
 }

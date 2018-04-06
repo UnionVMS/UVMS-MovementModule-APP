@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -38,22 +39,22 @@ public class UserServiceBean {
     private static final Long JMS_TIMEOUT = 60000L;
 
     @EJB
-    MessageConsumer consumer;
+    private MessageConsumer consumer;
 
     @EJB
-    MessageProducer producer;
+    private MessageProducer producer;
 
     public String getUserNationality(String username) throws MovementServiceException {
         try {
             String organizationName = getUserOrganizationName(username);
             return getOrganizationNation(organizationName);
-        } catch (ModelMarshallException | MovementMessageException e) {
+        } catch (ModelMarshallException | MovementMessageException | MessageException e) {
             LOG.error("[ Error when getting user nationality. ] {}", e);
             throw new MovementServiceException("[ Error when getting user nationality. ]", e);
         }
     }
 
-    private String getUserOrganizationName(String username) throws ModelMarshallException, MovementMessageException {
+    private String getUserOrganizationName(String username) throws ModelMarshallException, MovementMessageException, MessageException {
         String request = UserModuleRequestMapper.mapToGetContactDetailsRequest(username);
         String messageId = producer.sendModuleMessage(request, ModuleQueue.USER);
         TextMessage response = consumer.getMessage(messageId, TextMessage.class, JMS_TIMEOUT);
@@ -61,7 +62,7 @@ public class UserServiceBean {
         return contactDetails.getContactDetails().getOrganisationName();
     }
 
-    private String getOrganizationNation(String organizationName) throws eu.europa.ec.fisheries.uvms.user.model.exception.ModelMarshallException, MovementMessageException {
+    private String getOrganizationNation(String organizationName) throws eu.europa.ec.fisheries.uvms.user.model.exception.ModelMarshallException, MovementMessageException, MessageException {
         String request = UserModuleRequestMapper.mapToGetOrganisationRequest(organizationName);
         String messageId = producer.sendModuleMessage(request, ModuleQueue.USER);
         TextMessage response = consumer.getMessage(messageId, TextMessage.class, JMS_TIMEOUT);

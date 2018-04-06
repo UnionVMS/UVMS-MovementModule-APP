@@ -15,17 +15,6 @@ import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
-
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
-import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
-import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
@@ -36,28 +25,33 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.*;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @LocalBean
 @Stateless
@@ -66,22 +60,20 @@ public class MovementServiceBean implements MovementService {
     final static Logger LOG = LoggerFactory.getLogger(MovementServiceBean.class);
 
     @EJB
-    MessageProducer producer;
+    private MessageProducer producer;
 
     @EJB
-    SpatialService spatial;
+    private SpatialService spatial;
 
-    //@EJB(lookup = LookupConstant.BATCH_MODEL_BEAN)
     @EJB
-    MovementBatchModelBean movementBatch;
+    private MovementBatchModelBean movementBatch;
 
-    //@EJB(lookup = LookupConstant.DOMAIN_MODEL_BEAN)
     @EJB
-    MovementDomainModelBean model;
+    private MovementDomainModelBean model;
 
     @Inject
     @CreatedMovement
-    Event<NotificationMessage> createdMovementEvent;
+    private Event<NotificationMessage> createdMovementEvent;
 
     /**
      * {@inheritDoc}
@@ -92,11 +84,9 @@ public class MovementServiceBean implements MovementService {
     @Override
     public MovementType createMovement(MovementBaseType data, String username) {
         try {
-
             MovementType enrichedMovement = spatial.enrichMovementWithSpatialData(data);
             MovementType createdMovement = movementBatch.createMovement(enrichedMovement, username);
             fireMovementEvent(createdMovement);
-
             try {
                 String auditData;
                 if (MovementTypeType.MAN.equals(enrichedMovement.getMovementType())) {
@@ -115,7 +105,7 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
+    public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException {
         try {
             List<MovementMapResponseType> mapResponse = model.getMovementMapByQuery(query);
             if (mapResponse == null) {
@@ -136,7 +126,7 @@ public class MovementServiceBean implements MovementService {
      * @throws MovementServiceException
      */
     @Override
-    public GetMovementListByQueryResponse getList(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
+    public GetMovementListByQueryResponse getList(MovementQuery query) throws MovementServiceException {
         try {
             LOG.debug("Get list invoked in service layer");
             ListResponseDto response = model.getMovementListByQuery(query);
@@ -158,7 +148,7 @@ public class MovementServiceBean implements MovementService {
      * @throws MovementServiceException
      */
     @Override
-    public GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
+    public GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException {
         try {
             LOG.debug("Get list invoked in service layer");
             ListResponseDto response = model.getMinimalMovementListByQuery(query);
@@ -238,7 +228,7 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    public List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementServiceException, MovementDuplicateException {
+    public List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementServiceException {
         LOG.debug("GetLatestMovementsByConnectIds invoked in service layer");
         try {
             List<MovementType> latestMovements = model.getLatestMovementsByConnectIds(connectIds);
@@ -249,7 +239,7 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    public List<MovementDto> getLatestMovements(Integer numberOfMovements) throws MovementServiceException, MovementDuplicateException {
+    public List<MovementDto> getLatestMovements(Integer numberOfMovements) throws MovementServiceException {
         LOG.debug("getLatestMovements invoked in service layer");
         try {
             List<MovementType> latestMovements = model.getLatestMovements(numberOfMovements);
@@ -260,7 +250,7 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    public GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementServiceException, MovementDuplicateException {
+    public GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementServiceException {
         try {
             LOG.debug("Get list invoked in service layer");
             List<MovementType> movementListByAreaAndTimeInterval = model.getMovementListByAreaAndTimeInterval(criteria);
@@ -276,7 +266,7 @@ public class MovementServiceBean implements MovementService {
     }
 
 	@Override
-	public List<AreaType> getAreas() throws MovementServiceException, MovementDuplicateException {
+	public List<AreaType> getAreas() throws MovementServiceException {
 		try {
 			return model.getAreas();
 		} catch (MovementModelException e) {

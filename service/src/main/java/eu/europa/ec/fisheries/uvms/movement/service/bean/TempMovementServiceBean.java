@@ -17,6 +17,7 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListRespo
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
@@ -28,22 +29,20 @@ import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMap
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.TextMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 public class TempMovementServiceBean implements TempMovementService {
@@ -51,20 +50,18 @@ public class TempMovementServiceBean implements TempMovementService {
     private final static Logger LOG = LoggerFactory.getLogger(TempMovementServiceBean.class);
 
     @EJB
-    MessageConsumer consumer;
+    private MessageConsumer consumer;
 
     @EJB
-    MessageProducer producer;
+    private MessageProducer producer;
 
     @Inject
     @CreatedManualMovement
-    Event<NotificationMessage> createdManualMovement;
+    private Event<NotificationMessage> createdManualMovement;
 
     @EJB
-    TempMovementDomainModelBean tempMovementModel;
+    private TempMovementDomainModelBean tempMovementModel;
 
-    //TODO SET AS PARAMETER
-    private static final Long CREATE_MOVEMENT_TIMEOUT = 5000L;
     private static final Long CREATE_TEMP_MOVEMENT_TIMEOUT = 30000L;
 
     @Override
@@ -74,16 +71,13 @@ public class TempMovementServiceBean implements TempMovementService {
         validatePosition(tempMovementType.getPosition());
         try {
             TempMovementType createdMovement = tempMovementModel.createTempMovement(tempMovementType, username);
-
             fireMovementEvent(createdMovement);
-
             // this should not roll back,  so we just log it
             try {
                 producer.sendModuleMessage(AuditModuleRequestMapper.mapAuditLogTempMovementCreated(createdMovement.getGuid(), username), ModuleQueue.AUDIT);
             } catch (AuditModelMarshallException | MovementMessageException ignore) {
                 LOG.error("Failed to send audit log message! Temp Movement with guid {} was created ", createdMovement.getGuid());
             }
-
             return createdMovement;
         } catch (MovementModelException e) {
             LOG.error("[ Error when creating temp movement. ] {}", e.getMessage());
@@ -114,7 +108,7 @@ public class TempMovementServiceBean implements TempMovementService {
     }
 
     @Override
-    public GetTempMovementListResponse getTempMovements(MovementQuery query) throws MovementServiceException, MovementDuplicateException {
+    public GetTempMovementListResponse getTempMovements(MovementQuery query) throws MovementServiceException {
         try {
             TempMovementsListResponseDto tempMovements = tempMovementModel.getTempMovementList(query);
             return MovementDataSourceResponseMapper.tempMovementListResponse(tempMovements);
@@ -131,14 +125,12 @@ public class TempMovementServiceBean implements TempMovementService {
             LOG.debug("Getting tempMovement from db");
             TempMovementType movement = tempMovementModel.sendTempMovement(guid, username);
             LOG.debug("Sending temp movement to Exchange");
-
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username);
             String exchangeMessageId = producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
             consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
-
             return movement;
-        }catch ( MovementModelException | MovementMessageException  e) {
+        }catch ( MovementModelException | MovementMessageException | MessageException e) {
             LOG.error("[ Error when sending temp movement status. ] {}", e.getMessage());
             throw new MovementServiceException("Error when sending temp movement status", e);
         } catch (ExchangeModelMarshallException ex) {

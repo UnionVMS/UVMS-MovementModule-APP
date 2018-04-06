@@ -35,7 +35,6 @@ public class MovementConfigHelper implements ConfigHelper {
         for (ParameterKey parameterKey : ParameterKey.values()) {
             keys.add(parameterKey.getKey());
         }
-
         return keys;
     }
 

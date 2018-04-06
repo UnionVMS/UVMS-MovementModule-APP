@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TempMovementListResponseDto {
 
     @XmlElement(required = true)
-    List<String> tempMovements;
+    private List<String> tempMovements;
     @XmlElement(required = true)
-    protected BigInteger totalNumberOfPages;
+    private  BigInteger totalNumberOfPages;
     @XmlElement(required = true)
-    protected BigInteger currentPage;
+    private  BigInteger currentPage;
 
     public List<String> getTempMovements() {
         return tempMovements;

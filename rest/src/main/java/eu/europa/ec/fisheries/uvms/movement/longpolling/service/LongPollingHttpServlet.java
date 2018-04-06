@@ -11,36 +11,33 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.longpolling.service;
 
+import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
+import eu.europa.ec.fisheries.uvms.movement.longpolling.constants.LongPollingConstants;
+import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import java.io.IOException;
-
+import javax.ejb.EJB;
 import javax.enterprise.event.Observes;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import eu.europa.ec.fisheries.uvms.movement.longpolling.constants.LongPollingConstants;
-import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
-import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
-import javax.ejb.EJB;
-
-@WebServlet(asyncSupported = true, urlPatterns = { LongPollingConstants.MOVEMENT_PATH, LongPollingConstants.MANUAL_MOVEMENT_PATH })
+@WebServlet(asyncSupported = true, urlPatterns = {LongPollingConstants.MOVEMENT_PATH, LongPollingConstants.MANUAL_MOVEMENT_PATH})
 public class LongPollingHttpServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
     @EJB
-    LongPollingContextHelper asyncContexts;
+    private LongPollingContextHelper asyncContexts;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         AsyncContext ctx = req.startAsync(req, resp);
         ctx.setTimeout(LongPollingConstants.ASYNC_TIMEOUT);
         ctx.addListener(new LongPollingAsyncListener() {

@@ -14,14 +14,8 @@ package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.dozer.DozerBeanMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- **/
 public class Mapper {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Mapper.class);
 
     private static final DozerBeanMapper mapper = new DozerBeanMapper();
     private static final Mapper INSTANCE = new Mapper();

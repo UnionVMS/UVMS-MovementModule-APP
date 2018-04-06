@@ -1,86 +1,108 @@
 /*
-﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
-© European Union, 2015-2016.
+ ﻿Developed with the contribution of the European Commission - Directorate General for Maritime Affairs and Fisheries
+ © European Union, 2015-2016.
 
-This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
-redistribute it and/or modify it under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
-the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
-copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
+ This file is part of the Integrated Fisheries Data Management (IFDM) Suite. The IFDM Suite is free software: you can
+ redistribute it and/or modify it under the terms of the GNU General Public License as published by the
+ Free Software Foundation, either version 3 of the License, or any later version. The IFDM Suite is distributed in
+ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
+ copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Stateless;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Queue;
-import javax.jms.Session;
-
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
+import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.EJB;
+import javax.ejb.MessageDriven;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.uvms.commons.message.impl.JMSUtils;
-import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
-import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageConsumer;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
+@MessageDriven(mappedName = MessageConstants.QUEUE_MODULE_MOVEMENT, activationConfig = {
+        @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR, propertyValue = MessageConstants.CONNECTION_TYPE),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR, propertyValue = MessageConstants.DESTINATION_TYPE_QUEUE),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR, propertyValue = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE_NAME),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_JNDI_NAME, propertyValue = MessageConstants.QUEUE_MODULE_MOVEMENT),
+        @ActivationConfigProperty(propertyName = MessageConstants.CONNECTION_FACTORY_JNDI_NAME, propertyValue = MessageConstants.CONNECTION_FACTORY)
 
-@Stateless
-public class MovementMessageConsumerBean implements MessageConsumer, ConfigMessageConsumer {
+})
+public class MovementMessageConsumerBean implements MessageListener {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementMessageConsumerBean.class);
 
-    private static final long TIMEOUT = 30000;
+    @EJB
+    private CreateMovementBean createMovementBean;
 
-    private Queue responseQueue;
+    @EJB
+    private GetMovementListByQueryBean getMovementListByQueryBean;
 
-    private ConnectionFactory connectionFactory;
+    @EJB
+    private CreateMovementBatchBean createMovementBatchBean;
 
-    @PostConstruct
-    private void init() {
-       connectionFactory = JMSUtils.lookupConnectionFactory();
-       responseQueue = JMSUtils.lookupQueue(MessageConstants.COMPONENT_RESPONSE_QUEUE);
-    }
+    @EJB
+    private GetMovementMapByQueryBean getMovementMapByQueryBean;
 
-    @Override
-    public <T> T getMessage(String correlationId, Class type, Long timeout) throws MovementMessageException {
-    	if (correlationId == null || correlationId.isEmpty()) {
-    		LOG.error("[ No CorrelationID provided when listening to JMS message, aborting ]");
-    		throw new MovementMessageException("No CorrelationID provided!");
-    	}
-    	
-      	Connection connection=null;
-    	try {
-    		            
-            connection = connectionFactory.createConnection();
-            final Session session = JMSUtils.connectToQueue(connection);
+    @EJB
+    private GetMovementListByAreaAndTimeIntervalBean getMovementListByAreaAndTimeIntervalBean;
 
-            LOG.debug(" Movement module created listener and listens to JMS message with CorrelationID: " + correlationId);
-            T response = (T) session.createConsumer(responseQueue, "JMSCorrelationID='" + correlationId + "'").receive(timeout);
-            if (response == null) {
-                throw new MovementMessageException("[ Timeout reached or message null in MovementMessageConsumerBean. ]");
-            }
+    @EJB
+    private PingBean pingBean;
 
-            return response;
-        } catch (Exception e) {
-            LOG.error("[ Error when getting message ] {}", e.getMessage());
-            throw new MovementMessageException("Error when retrieving message: ", e);
-        } finally {
-        	JMSUtils.disconnectQueue(connection);
-        }
-    }
+    @Inject
+    @ErrorEvent
+    private Event<EventMessage> errorEvent;
 
     @Override
-    public <T> T getConfigMessage(String correlationId, Class type) throws ConfigMessageException {
+    public void onMessage(Message message) {
+        TextMessage textMessage = null;
         try {
-            return getMessage(correlationId, type, TIMEOUT);
-        } catch (MovementMessageException e) {
-            LOG.error("[ Error when getting message ] {}", e.getMessage());
-            throw new ConfigMessageException("Error when retrieving message: ");
-        } 
+            textMessage = (TextMessage) message;
+            LOG.debug("Message received in movement");
+            MovementBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, MovementBaseRequest.class);
+            if (request.getMethod() == null) {
+                LOG.error("[ Request method is null ]");
+                errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: "));
+                return;
+            }
+            switch (request.getMethod()) {
+                case MOVEMENT_LIST:
+                    getMovementListByQueryBean.getMovementListByQuery(textMessage);
+                    break;
+                case CREATE:
+                    createMovementBean.createMovement(textMessage);
+                    break;
+                case CREATE_BATCH:
+                    createMovementBatchBean.createMovementBatch(textMessage);
+                    break;
+                case MOVEMENT_MAP:
+                    getMovementMapByQueryBean.getMovementMapByQuery(textMessage);
+                    break;
+                case PING:
+                    pingBean.ping(textMessage);
+                    break;
+                case MOVEMENT_LIST_BY_AREA_TIME_INTERVAL:
+                    getMovementListByAreaAndTimeIntervalBean.getMovementListByAreaAndTimeInterval(textMessage);
+                    break;
+                case GET_SEGMENT_BY_ID:
+                case GET_TRIP_BY_ID:
+                default:
+                    LOG.error("[ Request method {} is not implemented ]", request.getMethod().name());
+                    errorEvent.fire(new EventMessage(textMessage, "[ Request method " + request.getMethod().name() + "  is not implemented ]"));
+            }
+        } catch (ModelMapperException | NullPointerException | ClassCastException e) {
+            LOG.error("[ Error when receiving message in movement: ] {}", e);
+            errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: " + e.getMessage()));
+        }
     }
 
 }

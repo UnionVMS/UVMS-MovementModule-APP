@@ -42,12 +42,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- **/
+
 public class MovementMapper {
-    
+
     final static Logger LOG = LoggerFactory.getLogger(MovementMapper.class);
-    
+
     public static List<MovementDto> mapToMovementDtoList(List<MovementType> movmements) {
         List<MovementDto> mappedMovements = new ArrayList<>();
         for (MovementType mappedMovement : movmements) {
@@ -55,17 +54,17 @@ public class MovementMapper {
         }
         return mappedMovements;
     }
-    
-    public static MovementDto mapTomovementDto(MovementType movement) {
+
+    private static MovementDto mapTomovementDto(MovementType movement) {
         MovementDto dto = new MovementDto();
         dto.setCalculatedSpeed(movement.getCalculatedSpeed());
         dto.setCourse(movement.getCalculatedCourse());
-        
+
         if (movement.getPosition() != null) {
             dto.setLatitude(movement.getPosition().getLatitude());
             dto.setLongitude(movement.getPosition().getLongitude());
         }
-        
+
         dto.setMeasuredSpeed(movement.getReportedSpeed());
         dto.setMovementType(movement.getMovementType());
         dto.setSource(movement.getSource());
@@ -75,49 +74,49 @@ public class MovementMapper {
         dto.setMovementGUID(movement.getGuid());
         return dto;
     }
-    
+
     public static MovementListResponseDto mapToMovementListDto(GetMovementListByQueryResponse response) {
         MovementListResponseDto dto = new MovementListResponseDto();
         dto.setCurrentPage(response.getCurrentPage());
         dto.setTotalNumberOfPages(response.getTotalNumberOfPages());
-        
+
         List<MovementDto> movmements = new ArrayList<>();
         for (MovementBaseType movement : response.getMovement()) {
             movmements.add(mapTomovementDto((MovementType) movement));
         }
-        
+
         dto.setMovement(movmements);
         return dto;
     }
-    
+
     public static MovementType enrichAndMapToMovementType(MovementBaseType movement, SpatialEnrichmentRS enrichment) {
-        
+
         MovementType movementType = Mapper.getInstance().getMapper().map(movement, MovementType.class);
         MovementMetaData movementMeta = new MovementMetaData();
-        
+
         if (enrichment.getClosestLocations() != null) {
             enrichWithPortData(enrichment.getClosestLocations().getClosestLocations(), LocationType.PORT, movementMeta);
         } else {
             LOG.error("NO CLOSEST LOCATIONS FOUND IN RESPONSE FROM SPATIAL ");
         }
-        
+
         if (enrichment.getClosestAreas() != null) {
             enrichWithCountryData(enrichment.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, movementMeta);
         } else {
             LOG.error("NO CLOSEST AREAS FOUND IN RESPONSE FROM SPATIAL ");
         }
-        
+
         if (enrichment.getAreasByLocation() != null) {
             movementMeta.getAreas().addAll(mapToAreas(enrichment.getAreasByLocation().getAreas()));
         } else {
             LOG.error("NO AREAS FOUND IN RESPONSE FROM SPATIAL ");
         }
-        
+
         movementType.setMetaData(movementMeta);
         return movementType;
     }
-    
-    public static List<MovementMetaDataAreaType> mapToAreas(List<AreaExtendedIdentifierType> areas) {
+
+    private static List<MovementMetaDataAreaType> mapToAreas(List<AreaExtendedIdentifierType> areas) {
         List<MovementMetaDataAreaType> mappedAreas = new ArrayList<>();
         for (AreaExtendedIdentifierType area : areas) {
             MovementMetaDataAreaType areaType = new MovementMetaDataAreaType();
@@ -131,8 +130,8 @@ public class MovementMapper {
         }
         return mappedAreas;
     }
-    
-    public static void enrichWithPortData(List<Location> locations, LocationType type, MovementMetaData meta) {
+
+    private static void enrichWithPortData(List<Location> locations, LocationType type, MovementMetaData meta) {
         for (Location location : locations) {
             if (location.getLocationType().equals(type)) {
                 ClosestLocationType locationType = new ClosestLocationType();
@@ -144,8 +143,8 @@ public class MovementMapper {
             }
         }
     }
-    
-    public static void enrichWithCountryData(List<Area> locations, AreaType areaType, MovementMetaData meta) {
+
+    private static void enrichWithCountryData(List<Area> locations, AreaType areaType, MovementMetaData meta) {
         for (Area location : locations) {
             if (location.getAreaType() != null &&
                     location.getAreaType().equals(areaType)) {
@@ -158,39 +157,39 @@ public class MovementMapper {
             }
         }
     }
-    
+
     public static SetReportMovementType mapToSetReportMovementType(TempMovementType movement) {
-        
+
         SetReportMovementType report = new SetReportMovementType();
         report.setPluginName("ManualMovement");
         report.setPluginType(PluginType.MANUAL);
         report.setTimestamp(DateUtil.nowUTC());
-        
+
         eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType exchangeMovementBaseType = new eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType();
         eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId exchangeAssetId = new eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId();
-        
+
         exchangeAssetId.setAssetType(AssetType.VESSEL);
-        
+
         AssetIdList cfr = new AssetIdList();
         cfr.setIdType(AssetIdType.CFR);
         cfr.setValue(movement.getAsset().getCfr());
-        
+
         AssetIdList ircs = new AssetIdList();
         ircs.setIdType(AssetIdType.IRCS);
         ircs.setValue(movement.getAsset().getIrcs());
-        
+
         exchangeAssetId.getAssetIdList().add(cfr);
         exchangeAssetId.getAssetIdList().add(ircs);
-        
+
         exchangeMovementBaseType.setAssetId(exchangeAssetId);
-        
+
         eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint exchangeMovementPoint = new MovementPoint();
         if (movement.getPosition() != null) {
             exchangeMovementPoint.setLatitude(movement.getPosition().getLatitude());
             exchangeMovementPoint.setLongitude(movement.getPosition().getLongitude());
         }
         exchangeMovementBaseType.setPosition(exchangeMovementPoint);
-        
+
         exchangeMovementBaseType.setReportedCourse(movement.getCourse());
         exchangeMovementBaseType.setReportedSpeed(movement.getSpeed());
         exchangeMovementBaseType.setStatus(movement.getStatus());
@@ -200,20 +199,20 @@ public class MovementMapper {
         exchangeMovementBaseType.setExternalMarking(movement.getAsset().getExtMarking());
         exchangeMovementBaseType.setMovementType(MovementTypeType.MAN);
         exchangeMovementBaseType.setSource(MovementSourceType.MANUAL);
-        
+
         try {
             Date date = DateUtil.parseToUTCDate(movement.getTime());
             exchangeMovementBaseType.setPositionTime(date);
         } catch (Exception e) {
             LOG.error("Error when parsing position date for temp movement continuing ");
         }
-        
+
         exchangeMovementBaseType.setComChannelType(MovementComChannelType.MANUAL);
-        
+
         report.setMovement(exchangeMovementBaseType);
-        
+
         return report;
-        
+
     }
-    
+
 }

@@ -17,7 +17,7 @@ public enum ParameterKey {
 
     private final String key;
 
-    private ParameterKey(String key) {
+    ParameterKey(String key) {
         this.key = key;
     }
 

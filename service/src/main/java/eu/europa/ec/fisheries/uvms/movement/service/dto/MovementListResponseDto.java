@@ -25,11 +25,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class MovementListResponseDto {
 
     @XmlElement(required = true)
-    List<MovementDto> movement;
+    private List<MovementDto> movement;
     @XmlElement(required = true)
-    protected BigInteger totalNumberOfPages;
+    private BigInteger totalNumberOfPages;
     @XmlElement(required = true)
-    protected BigInteger currentPage;
+    private BigInteger currentPage;
 
     public List<MovementDto> getMovement() {
         return movement;
