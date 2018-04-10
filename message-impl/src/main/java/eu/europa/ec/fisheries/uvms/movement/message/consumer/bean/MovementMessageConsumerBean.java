@@ -20,6 +20,8 @@ import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.Message;
@@ -63,6 +65,7 @@ public class MovementMessageConsumerBean implements MessageListener {
     private Event<EventMessage> errorEvent;
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onMessage(Message message) {
         TextMessage textMessage = null;
         try {

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.CreateMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementConsumerBean;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MovementMessageProducerBean;
 
 /**
  * Created by andreasw on 2017-02-13.
@@ -61,7 +61,7 @@ public abstract class BuildMovementServiceTestDeployment {
 
         archive.addClass(MovementMessageConsumerBean.class);
         archive.addClass(MovementConsumerBean.class);
-        archive.addClass(MessageProducerBean.class);
+        archive.addClass(MovementMessageProducerBean.class);
         archive.addClass(CreateMovementBean.class);
 
 

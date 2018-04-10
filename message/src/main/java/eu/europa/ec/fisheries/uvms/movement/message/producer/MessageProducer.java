@@ -24,10 +24,10 @@ import javax.jms.TextMessage;
 @Local
 public interface MessageProducer {
     
-    public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException;
+    String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException;
 
-    public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException;
+    void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException;
 
-    public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) throws MovementMessageException;
+    void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) throws MovementMessageException;
 
 }

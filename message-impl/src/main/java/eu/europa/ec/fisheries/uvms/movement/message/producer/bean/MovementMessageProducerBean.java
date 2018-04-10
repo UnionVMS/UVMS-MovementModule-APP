@@ -27,6 +27,8 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallExcepti
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Observes;
 import javax.jms.Destination;
 import javax.jms.Queue;
@@ -35,9 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Stateless
-public class MessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
+public class MovementMessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
 
-    final static Logger LOG = LoggerFactory.getLogger(MessageProducerBean.class);
+    final static Logger LOG = LoggerFactory.getLogger(MovementMessageProducerBean.class);
 
     private Queue auditQueue;
     private Queue spatialQueue;
@@ -55,6 +57,7 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
     }
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException {
         try {
             String corrId;
@@ -85,6 +88,7 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
         }
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException {
         try {
             ExceptionType exception = new ExceptionType();
@@ -105,6 +109,7 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
     }
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) throws MovementMessageException {
         try {
             sendResponseMessageToSender(requestMessage, returnMessage);
@@ -115,6 +120,7 @@ public class MessageProducerBean extends AbstractProducer implements MessageProd
     }
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendConfigMessage(String text) throws ConfigMessageException {
         try {
             return sendModuleMessage(text, ModuleQueue.CONFIG);
