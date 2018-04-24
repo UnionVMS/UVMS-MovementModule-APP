@@ -189,43 +189,6 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getMinimalList() {
-
-        MovementQuery query = createMovementQuery(true);
-        try {
-            GetMovementListByQueryResponse getMovementListByQueryResponse = movementService.getMinimalList(query);
-            //Assert.assertTrue(getMovementListByQueryResponse != null); //changes to the error handling a few functions down means that the above call will throw an exception
-            Assert.fail("The above call should throw an exception since query is incomplete");
-        } catch (MovementServiceException e) {
-            //Assert.fail();
-        	Assert.assertTrue(true);
-        } catch (MovementDuplicateException e) {
-            Assert.fail();
-        }
-
-    }
-
-
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getMapByQuery() {
-
-        MovementQuery query = createMovementQuery(false);
-        try {
-            GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
-            //Assert.assertTrue(response != null); //changes to the error handling a few functions down means that the above call will throw an exception
-            Assert.fail("The above call should throw an exception since query is incomplete");
-        } catch (MovementServiceException e) {
-            //Assert.fail();
-        	Assert.assertTrue(true);
-        } catch (MovementDuplicateException e) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
     public void getMapByQuery_LATEST() {
 
         MovementQuery query = createMovementQuery(false);
