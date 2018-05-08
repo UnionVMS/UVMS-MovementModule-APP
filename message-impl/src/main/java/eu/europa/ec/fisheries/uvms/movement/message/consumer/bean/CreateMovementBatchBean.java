@@ -42,6 +42,7 @@ public class CreateMovementBatchBean {
     private Event<EventMessage> errorEvent;
 
     public void createMovementBatch(TextMessage textMessage) {
+    // silly
         LOG.debug("createMovementBatch Received.. processing request in CreateMovementBatchBean");
         try {
             CreateMovementBatchRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, CreateMovementBatchRequest.class);
