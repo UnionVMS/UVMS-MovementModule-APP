@@ -22,6 +22,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
@@ -223,6 +224,7 @@ public class MovementEntityToModelMapper {
             type.setRemoteId(area.getMovareaAreaId().getRemoteId());
             type.setCode(area.getMovareaAreaId().getAreaCode());
             type.setName(area.getMovareaAreaId().getAreaName());
+            type.setTransitionType(MovementTypeType.POS);
             areaList.add(type);
         }
         return areaList;

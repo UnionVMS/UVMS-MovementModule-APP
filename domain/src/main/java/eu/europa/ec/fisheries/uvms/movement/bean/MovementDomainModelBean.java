@@ -117,7 +117,6 @@ public class MovementDomainModelBean {
             //} catch (com.vividsolutions.jts.io.ParseException | MovementDaoMappingException | MovementDaoException | ParseException ex) {
         } catch (MovementDaoMappingException | MovementDaoException | ParseException ex) {
             LOG.error("[ Error when getting movement by query ] {} ", ex);
-            System.out.println(ex);
             throw new MovementModelException(ex.getMessage(), ex);
         } catch (com.vividsolutions.jts.io.ParseException e) {
             LOG.error("[ Error when getting movement by query, parse exception ] {} ", e);
