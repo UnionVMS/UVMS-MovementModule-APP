@@ -422,13 +422,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	input.setPagination(null);
     	
-    	try {
-    		output = movementDomainModelBean.getMovementMapByQuery(input);
-    		fail("No searchcriteria in input");
-		} catch (InputArgumentException e) {
-			assertTrue(true);
-		}
-    	
     	String connectID = UUID.randomUUID().toString();
     	String connectID2 = UUID.randomUUID().toString();
     	createAndProcess10MovementsFromVarbergGrena(connectID);
