@@ -11,6 +11,18 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.math.BigInteger;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
@@ -22,11 +34,9 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
@@ -37,16 +47,11 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.math.BigInteger;
-import java.text.ParseException;
-import java.util.*;
 
 @LocalBean
 @Stateless
@@ -187,7 +192,7 @@ public class MovementDomainModelBean {
         if (query == null) {
             throw new InputArgumentException("Movement list query is null");
         }
-        if (query.getMovementSearchCriteria().isEmpty()) {
+        if (query.getMovementSearchCriteria() == null) {
             throw new InputArgumentException("No search criterias in MovementList query");
         }
         if (query.getPagination() != null) {
