@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>fish.focus.uvms.maven</groupId>
 		<artifactId>uvms-pom</artifactId>
-		<version>1.17</version>
+		<version>1.18</version>
 	</parent>
 
 	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
@@ -15,15 +15,15 @@
 
 	<properties>
 		<movement.api.check.against.version>4.0.0</movement.api.check.against.version>
-		<docker.dev.version>3.22.0</docker.dev.version>
+		<docker.dev.version>3.25.0</docker.dev.version>
 		<usm4uvms.version>4.0.6</usm4uvms.version>
 		<uvms.common.version>3.0.18</uvms.common.version>
 		<uvms.config.version>4.0.0</uvms.config.version>
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.0.8</user.model.version>
-		<spatial.model.version>1.0.8</spatial.model.version>
-		<audit.model.version>4.0.6</audit.model.version>
-		<exchange.model.version>4.0.11</exchange.model.version>
+		<spatial.model.version>1.0.11</spatial.model.version>
+		<audit.model.version>4.0.8</audit.model.version>
+		<exchange.model.version>4.0.17</exchange.model.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -43,31 +43,31 @@
 			<dependency>
 				<groupId>fish.focus.uvms.maven</groupId>
 				<artifactId>uvms-pom-gis-deps</artifactId>
-				<version>1.16</version>
+				<version>1.18</version>
 				<type>pom</type>
 			</dependency>
 			<dependency>
 				<groupId>fish.focus.uvms.maven</groupId>
 				<artifactId>uvms-pom-logging-deps</artifactId>
-				<version>1.16</version>
+				<version>1.18</version>
 				<type>pom</type>
 			</dependency>
 			<dependency>
 				<groupId>fish.focus.uvms.maven</groupId>
 				<artifactId>uvms-pom-monitoring-deps</artifactId>
-				<version>1.16</version>
+				<version>1.18</version>
 				<type>pom</type>
 			</dependency>
 			<dependency>
 				<groupId>fish.focus.uvms.maven</groupId>
 				<artifactId>uvms-pom-test-deps</artifactId>
-				<version>1.16</version>
+				<version>1.18</version>
 				<type>pom</type>
 			</dependency>
 			<dependency>
 				<groupId>fish.focus.uvms.maven</groupId>
 				<artifactId>uvms-pom-arquillian-deps</artifactId>
-				<version>1.16</version>
+				<version>1.18</version>
 				<type>pom</type>
 			</dependency>
     		<dependency>
