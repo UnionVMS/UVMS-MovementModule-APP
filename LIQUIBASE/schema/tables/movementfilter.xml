@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 
     <changeSet author="davijo" id="movefilt-01">
         
@@ -37,6 +37,34 @@
             <dropTable tableName="movementfilter"/>
         </rollback>
         
+    </changeSet>
+
+    <changeSet author="stihft" id="addIndexOnTableMovementfilterAndColumnMovefilt_movefiltgrp_id">
+        <createIndex
+                indexName="movementfilter_i_1"
+                tableName="movementfilter">
+            <column name="movefilt_movefiltgrp_id" type="bigint"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex
+                    indexName="movementfilter_i_1"
+                    tableName="movementfilter"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="stihft" id="addIndexOnTableMovementfilterAndColumnMovefilt_movefilttyp_id">
+        <createIndex
+                indexName="movementfilter_i_2"
+                tableName="movementfilter">
+            <column name="movefilt_movefilttyp_id" type="bigint"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex
+                    indexName="movementfilter_i_2"
+                    tableName="movementfilter"/>
+        </rollback>
     </changeSet>
     
 </databaseChangeLog>

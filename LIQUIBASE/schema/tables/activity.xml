@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 
     <changeSet author="davijo" id="act-01">
         
@@ -28,6 +28,20 @@
             <dropTable tableName="activity"/>
         </rollback>
         
+    </changeSet>
+
+    <changeSet author="stihft" id="addIndexOnTableActivityAndColumnAct_acttyp_id">
+        <createIndex
+                indexName="activity_i_1"
+                tableName="activity">
+            <column name="act_acttyp_id" type="bigint"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex
+                    indexName="activity_i_1"
+                    tableName="activity"/>
+        </rollback>
     </changeSet>
         
 </databaseChangeLog>
