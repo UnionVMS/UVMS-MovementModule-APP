@@ -84,6 +84,7 @@ public class MovementServiceBean implements MovementService {
     @Override
     public MovementType createMovement(MovementBaseType data, String username) {
         try {
+            //enrich with closest port, closest country and area transitions
             MovementType enrichedMovement = spatial.enrichMovementWithSpatialData(data);
             MovementType createdMovement = movementBatch.createMovement(enrichedMovement, username);
             fireMovementEvent(createdMovement);

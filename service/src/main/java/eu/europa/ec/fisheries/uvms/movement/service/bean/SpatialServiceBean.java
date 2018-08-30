@@ -57,7 +57,7 @@ public class SpatialServiceBean implements SpatialService {
         try {
             LOG.debug("Enrich movement with spatial data envoked in SpatialServiceBean");
             PointType point = new PointType();
-            point.setCrs(4326);
+            point.setCrs(4326); //this magical int is the World Geodetic System 1984, aka EPSG:4326. See: https://en.wikipedia.org/wiki/World_Geodetic_System or http://spatialreference.org/ref/epsg/wgs-84/
             point.setLatitude(movement.getPosition().getLatitude());
             point.setLongitude(movement.getPosition().getLongitude());
             List<LocationType> locationTypes = Arrays.asList(LocationType.PORT);

@@ -225,12 +225,12 @@ public class MovementDaoBean extends Dao implements MovementDao {
         // TODO no nullcheck on latestMovement ???
         LatestMovement latestMovement = null;
         try {
-            latestMovement = getLatestMovement(movementConnect.getValue());
-            if (latestMovement.getTimestamp().after(movement.getTimestamp())) {
+            latestMovement = getLatestMovement(movementConnect.getValue());     //get the latest movement in the table LatestMovement
+            if (latestMovement.getTimestamp().after(movement.getTimestamp())) { //if it is in the middle of things
                 LOG.debug("CURRENT MOVEMENT BEFORE LATEST MOVEMENT. NO CHANGE.");
                 return;
             }
-        } catch (javax.persistence.NoResultException e) {
+        } catch (javax.persistence.NoResultException e) {       //if there is no latestMovement connected to this connectID, create one. Should this really be in a catch statement?
             latestMovement = new LatestMovement();
             latestMovement.setMovementConnect(movementConnect);
             latestMovement.setMovement(movement);
@@ -240,6 +240,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
         latestMovement.setMovement(movement);
         latestMovement.setTimestamp(movement.getTimestamp());
+        //dont you need a create or persist here?
     }
 
     private LatestMovement getLatestMovement(String connectId) throws javax.persistence.NoResultException {
