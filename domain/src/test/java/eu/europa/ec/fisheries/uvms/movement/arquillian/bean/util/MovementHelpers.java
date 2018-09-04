@@ -16,6 +16,10 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateExc
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 import javax.persistence.EntityManager;
+
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 import static org.junit.Assert.assertNotNull;
@@ -40,10 +44,10 @@ public class MovementHelpers {
 
     /* positiontime is imortant */
     public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType,
-                                   String connectId, String userName, Date positionTime) throws MovementDaoException {
+                                   String connectId, String userName, OffsetDateTime positionTime) throws MovementDaoException {
 
         MovementType movementType = MockData.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, 0);
-        movementType.setPositionTime(positionTime);
+        movementType.setPositionTime(Date.from(positionTime.toInstant()));
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
         assertNotNull(movementType.getConnectId());
@@ -54,10 +58,10 @@ public class MovementHelpers {
     }
 
     private Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId,
-                                    String userName, Date positionTime) throws MovementDaoException {
+                                    String userName, OffsetDateTime positionTime) throws MovementDaoException {
 
         MovementType movementType = MockData.createMovementType(latlong,  segmentCategoryType, connectId, altitude);
-        movementType.setPositionTime(positionTime);
+        movementType.setPositionTime(Date.from(positionTime.toInstant()));
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
         assertNotNull(movementType.getConnectId());
@@ -115,7 +119,7 @@ public class MovementHelpers {
         for(LatLong position : positions){
             loopCount++;
             Movement movement = createMovement(position, 2,segmentCategoryType, connectId,
-                    userName + "_" + String.valueOf(loopCount), new Date(timeStamp));
+                    userName + "_" + String.valueOf(loopCount), OffsetDateTime.ofInstant(Instant.ofEpochMilli(timeStamp), ZoneId.of("UTC")));
             if(firstLoop){
                 firstLoop = false;
                 segmentCategoryType = SegmentCategoryType.GAP;

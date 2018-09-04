@@ -10,7 +10,7 @@
  copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package eu.europa.ec.fisheries.uvms.movement.util;
+package eu.europa.ec.fisheries.uvms.movement.model.util;
 
 /**
  * Created by osdjup on 2016-10-06.

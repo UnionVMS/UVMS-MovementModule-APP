@@ -11,15 +11,19 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import com.vividsolutions.jts.geom.Point;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +38,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -42,9 +45,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -168,17 +168,17 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Enumerated(EnumType.ORDINAL)
     private MovementTypeType movementType;
 
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @Column(name = "move_timestamp")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    private OffsetDateTime timestamp;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @NotNull
     @Column(name = "move_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
+    private OffsetDateTime updated;
 
-    @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 60)
     @Column(name = "move_upuser")
@@ -321,11 +321,11 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.activity = activity;
     }
 
-    public Date getTimestamp() {
+    public OffsetDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(OffsetDateTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -345,11 +345,11 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.toSegment = toSegment;
     }
 
-    public Date getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(OffsetDateTime updated) {
         this.updated = updated;
     }
 

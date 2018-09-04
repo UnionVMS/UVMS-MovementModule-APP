@@ -11,9 +11,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import com.vividsolutions.jts.geom.LineString;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import javax.persistence.*;
@@ -21,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
@@ -55,7 +59,6 @@ public class Track implements Serializable {
     @Column(name = "trac_distance")
     private double distance;
 
-    @Basic(optional = false)
     @NotNull
     @Column(name = "trac_duration")
     private double duration;
@@ -70,11 +73,11 @@ public class Track implements Serializable {
     @Column(name = "trac_avgspeed")
     private double averageSpeed;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @NotNull
     @Column(name = "trac_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
+    private OffsetDateTime updated;
 
     @Basic(optional = false)
     @NotNull
@@ -117,11 +120,11 @@ public class Track implements Serializable {
         this.duration = duration;
     }
 
-    public Date getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(OffsetDateTime updated) {
         this.updated = updated;
     }
 

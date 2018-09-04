@@ -14,8 +14,6 @@ package eu.europa.ec.fisheries.uvms.movement.mapper;
 import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -25,7 +23,7 @@ import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilter;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 
 public class MovementGroupMapper {
 

@@ -11,11 +11,10 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
-import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import org.hibernate.annotations.*;
 
@@ -26,13 +25,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "latestmovement")
@@ -67,9 +62,10 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     @OneToOne(cascade = CascadeType.PERSIST)
     private Movement movement;
 
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @Column(name = "movelate_timestamp")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    private OffsetDateTime timestamp;
 
     public Long getId() {
         return id;
@@ -95,11 +91,11 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
         this.movement = movement;
     }
 
-    public Date getTimestamp() {
+    public OffsetDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(OffsetDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

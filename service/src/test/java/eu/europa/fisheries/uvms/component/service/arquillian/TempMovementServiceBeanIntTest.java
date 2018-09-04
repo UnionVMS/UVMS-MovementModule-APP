@@ -20,8 +20,9 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -169,7 +170,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         movementPoint.setLatitude(0.0);
         movementPoint.setLongitude(0.0);
 
-        Date d = Calendar.getInstance().getTime();
+        OffsetDateTime d = OffsetDateTime.now(ZoneId.of("UTC"));
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 

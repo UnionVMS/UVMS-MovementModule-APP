@@ -11,12 +11,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -60,11 +64,11 @@ public class Area implements Serializable {
     @Column(name = "area_remoteid")
     private String remoteId;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @NotNull
     @Column(name = "area_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date areaUpdattim;
+    private OffsetDateTime areaUpdattim;
 
     @Basic(optional = false)
     @NotNull
@@ -103,11 +107,11 @@ public class Area implements Serializable {
         this.remoteId = remoteId;
     }
 
-    public Date getAreaUpdattim() {
+    public OffsetDateTime getAreaUpdattim() {
         return areaUpdattim;
     }
 
-    public void setAreaUpdattim(Date areaUpdattim) {
+    public void setAreaUpdattim(OffsetDateTime areaUpdattim) {
         this.areaUpdattim = areaUpdattim;
     }
 

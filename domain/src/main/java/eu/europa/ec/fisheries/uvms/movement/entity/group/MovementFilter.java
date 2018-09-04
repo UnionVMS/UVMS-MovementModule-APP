@@ -11,12 +11,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.group;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import javax.persistence.*;
 
@@ -46,8 +50,10 @@ public class MovementFilter implements Serializable {
     @Column(name = "movefilt_value")
     private String value;
 
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @Column(name = "movefilt_updattim")
-    private Date updated;
+    private OffsetDateTime updated;
 
     @ManyToOne
     @JoinColumn(name="movefilt_movefiltgrp_id")
@@ -92,11 +98,11 @@ public class MovementFilter implements Serializable {
         this.value = value;
     }
 
-    public Date getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(OffsetDateTime updated) {
         this.updated = updated;
     }
 

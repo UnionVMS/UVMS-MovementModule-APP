@@ -11,10 +11,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import java.io.Serializable;
-import java.util.Date;
-import javax.persistence.Basic;
+import java.time.OffsetDateTime;
+
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,12 +30,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
@@ -52,17 +55,15 @@ public class Movementarea implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Basic(optional = false)
     @Column(name = "movarea_id")
     private Long movareaId;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @NotNull
     @Column(name = "movarea_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date movareaUpdattim;
+    private OffsetDateTime movareaUpdattim;
 
-    @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 60)
     @Column(name = "movarea_upuser")
@@ -85,7 +86,7 @@ public class Movementarea implements Serializable {
         this.movareaId = movareaId;
     }
 
-    public Movementarea(Long movareaId, Date movareaUpdattim, String movareaUpuser) {
+    public Movementarea(Long movareaId, OffsetDateTime movareaUpdattim, String movareaUpuser) {
         this.movareaId = movareaId;
         this.movareaUpdattim = movareaUpdattim;
         this.movareaUpuser = movareaUpuser;
@@ -99,11 +100,11 @@ public class Movementarea implements Serializable {
         this.movareaId = movareaId;
     }
 
-    public Date getMovareaUpdattim() {
+    public OffsetDateTime getMovareaUpdattim() {
         return movareaUpdattim;
     }
 
-    public void setMovareaUpdattim(Date movareaUpdattim) {
+    public void setMovareaUpdattim(OffsetDateTime movareaUpdattim) {
         this.movareaUpdattim = movareaUpdattim;
     }
 

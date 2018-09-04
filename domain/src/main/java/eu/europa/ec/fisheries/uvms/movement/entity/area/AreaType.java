@@ -11,11 +11,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -29,8 +33,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -60,11 +62,11 @@ public class AreaType implements Serializable {
     @Column(name = "areatype_name")
     private String name;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @NotNull
     @Column(name = "areatype_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedTime;
+    private OffsetDateTime updatedTime;
 
     @Basic(optional = false)
     @NotNull
@@ -91,11 +93,11 @@ public class AreaType implements Serializable {
         this.name = name;
     }
 
-    public Date getUpdatedTime() {
+    public OffsetDateTime getUpdatedTime() {
         return updatedTime;
     }
 
-    public void setUpdatedTime(Date updatedTime) {
+    public void setUpdatedTime(OffsetDateTime updatedTime) {
         this.updatedTime = updatedTime;
     }
 

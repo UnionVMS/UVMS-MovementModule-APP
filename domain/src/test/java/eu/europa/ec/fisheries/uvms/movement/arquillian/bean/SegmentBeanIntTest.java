@@ -13,7 +13,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -21,8 +20,8 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import javax.persistence.TypedQuery;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,9 +48,9 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Calendar cal = Calendar.getInstance();
         cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        OffsetDateTime date1 = cal.getTime();
         cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        OffsetDateTime date2 = cal.getTime();
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
         Movement toMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);

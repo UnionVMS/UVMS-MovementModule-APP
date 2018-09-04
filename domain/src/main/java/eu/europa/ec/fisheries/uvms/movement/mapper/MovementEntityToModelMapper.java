@@ -26,7 +26,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
 import java.util.ArrayList;

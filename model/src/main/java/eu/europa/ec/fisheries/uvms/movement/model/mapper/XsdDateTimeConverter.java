@@ -12,11 +12,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.model.mapper;
 
 import javax.xml.bind.DatatypeConverter;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
 
 public class XsdDateTimeConverter {
-    public static Date unmarshal(String dateTime) {
+    /*public static Date unmarshal(String dateTime) {
         return DatatypeConverter.parseDate(dateTime).getTime();
     }
 
@@ -30,5 +31,20 @@ public class XsdDateTimeConverter {
         final GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(dateTime);
         return DatatypeConverter.printDateTime(calendar);
+    }*/
+    public static LocalDate unmarshalDate(String v) {
+        return LocalDate.parse(v);
+    }
+
+    public static OffsetDateTime unmarshalDateTime(String v) {
+        return OffsetDateTime.parse(v);
+    }
+
+    public static String marshalDate(LocalDate v) {
+        return v.toString();
+    }
+
+    public static String marshalDateTime(OffsetDateTime v) {
+        return v.toString();
     }
 }

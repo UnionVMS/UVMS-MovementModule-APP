@@ -11,11 +11,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -71,11 +75,11 @@ public class MovementSource implements Serializable {
     @Column(name = "movesour_desc")
     private String description;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @NotNull
     @Column(name = "movesour_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
+    private OffsetDateTime updated;
 
     @Basic(optional = false)
     @NotNull
@@ -93,7 +97,7 @@ public class MovementSource implements Serializable {
         this.id = id;
     }
 
-    public MovementSource(Long id, String name, String description, Date updated, String updatedBy) {
+    public MovementSource(Long id, String name, String description, OffsetDateTime updated, String updatedBy) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -125,11 +129,11 @@ public class MovementSource implements Serializable {
         this.description = description;
     }
 
-    public Date getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(OffsetDateTime updated) {
         this.updated = updated;
     }
 

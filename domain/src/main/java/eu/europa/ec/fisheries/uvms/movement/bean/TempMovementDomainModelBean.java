@@ -22,7 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseD
 import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;

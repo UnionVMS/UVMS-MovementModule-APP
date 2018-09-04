@@ -30,7 +30,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 
 public class MovementModelToEntityMapper {
 

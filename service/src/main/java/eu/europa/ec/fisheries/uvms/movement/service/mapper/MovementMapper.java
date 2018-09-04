@@ -36,8 +36,11 @@ import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
+
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Date;  //leave be for now
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +72,7 @@ public class MovementMapper {
         dto.setMovementType(movement.getMovementType());
         dto.setSource(movement.getSource());
         dto.setStatus(movement.getStatus());
-        dto.setTime(movement.getPositionTime());
+        dto.setTime(OffsetDateTime.ofInstant(movement.getPositionTime().toInstant(), ZoneId.of("UTC")));
         dto.setConnectId(movement.getConnectId());
         dto.setMovementGUID(movement.getGuid());
         return dto;
@@ -163,7 +166,7 @@ public class MovementMapper {
         SetReportMovementType report = new SetReportMovementType();
         report.setPluginName("ManualMovement");
         report.setPluginType(PluginType.MANUAL);
-        report.setTimestamp(DateUtil.nowUTC());
+        report.setTimestamp(Date.from(DateUtil.nowUTC().toInstant()));
 
         eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType exchangeMovementBaseType = new eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType();
         eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId exchangeAssetId = new eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId();
@@ -201,7 +204,7 @@ public class MovementMapper {
         exchangeMovementBaseType.setSource(MovementSourceType.MANUAL);
 
         try {
-            Date date = DateUtil.parseToUTCDate(movement.getTime());
+            Date date = Date.from(DateUtil.parseToUTCDate(movement.getTime()).toInstant());
             exchangeMovementBaseType.setPositionTime(date);
         } catch (Exception e) {
             LOG.error("Error when parsing position date for temp movement continuing ");

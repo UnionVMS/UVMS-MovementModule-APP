@@ -11,10 +11,13 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -38,6 +41,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import org.hibernate.annotations.*;
 
 /**
@@ -83,11 +87,12 @@ public class Segment implements Serializable {
     @Column(name = "seg_cog")
     private Double courseOverGround;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @NotNull
     @Column(name = "seg_updattim")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
+    private OffsetDateTime updated;
 
     @Basic(optional = false)
     @NotNull
@@ -162,11 +167,11 @@ public class Segment implements Serializable {
         this.courseOverGround = courseOverGround;
     }
 
-    public Date getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(OffsetDateTime updated) {
         this.updated = updated;
     }
 

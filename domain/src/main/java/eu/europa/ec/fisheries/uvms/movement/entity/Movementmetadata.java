@@ -11,11 +11,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -76,11 +80,12 @@ public class Movementmetadata implements Serializable {
     @Column(name = "movemet_closecounty_dist")
     private Double closestCountryDistance;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @NotNull
     @Column(name = "movemet_updattim")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date movemetUpdattim;
+    private OffsetDateTime movemetUpdattim;
 
     @Basic(optional = false)
     @NotNull
@@ -166,11 +171,11 @@ public class Movementmetadata implements Serializable {
         this.closestCountryName = closestCountryName;
     }
 
-    public Date getMovemetUpdattim() {
+    public OffsetDateTime getMovemetUpdattim() {
         return movemetUpdattim;
     }
 
-    public void setMovemetUpdattim(Date movemetUpdattim) {
+    public void setMovemetUpdattim(OffsetDateTime movemetUpdattim) {
         this.movemetUpdattim = movemetUpdattim;
     }
 

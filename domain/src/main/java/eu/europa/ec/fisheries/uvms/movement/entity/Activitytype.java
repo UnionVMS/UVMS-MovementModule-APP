@@ -11,13 +11,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
+import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.time.OffsetDateTime;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -73,11 +76,12 @@ public class Activitytype implements Serializable {
     @Column(name = "acttyp_desc")
     private String acttypDesc;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = OffsetDateTimeSerializer.class)
+    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
     @NotNull
     @Column(name = "acttyp_updattim")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date acttypUpdattim;
+    private OffsetDateTime acttypUpdattim;
 
     @Basic(optional = false)
     @NotNull
@@ -111,11 +115,11 @@ public class Activitytype implements Serializable {
         this.acttypDesc = acttypDesc;
     }
 
-    public Date getActtypUpdattim() {
+    public OffsetDateTime getActtypUpdattim() {
         return acttypUpdattim;
     }
 
-    public void setActtypUpdattim(Date acttypUpdattim) {
+    public void setActtypUpdattim(OffsetDateTime acttypUpdattim) {
         this.acttypUpdattim = acttypUpdattim;
     }
 
