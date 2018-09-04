@@ -12,27 +12,23 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.util;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- **/
 public class GeometryUtil {
 
-    final static Logger LOG = LoggerFactory.getLogger(GeometryUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GeometryUtil.class);
 
     private static final GeometryFactory FACTORY = new GeometryFactory();
-    public static final int SRID = 4326;
+    static final int SRID = 4326;
 
     /**
      * Returns a LineString for insertion in database
@@ -46,14 +42,14 @@ public class GeometryUtil {
         return lineString;
     }
 
-    public static Coordinate[] getCoordinateSequenceFromMovements(Movement previousPosition, Movement currentPosition) throws GeometryUtilException {
+    public static Coordinate[] getCoordinateSequenceFromMovements(Movement previousPosition, Movement currentPosition) {
         Coordinate[] corSeq = new Coordinate[2];
 
         if (previousPosition.getLocation() == null) {
-            throw new GeometryUtilException(5, "[ GeometryUtil.getCoordinateSequenceFromMovements ] Previous location is null");
+            throw new MovementDomainRuntimeException("Previous location is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (currentPosition.getLocation() == null) {
-            throw new GeometryUtilException(5, "[ GeometryUtil.getCoordinateSequenceFromMovements ] Current location is null");
+            throw new MovementDomainRuntimeException("Current location is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
 
         corSeq[0] = previousPosition.getLocation().getCoordinate();
@@ -61,23 +57,21 @@ public class GeometryUtil {
         return corSeq;
     }
 
-    public static LineString getLineStringFromMovments(Movement previousPosition, Movement currentPosition) throws GeometryUtilException {
+    public static LineString getLineStringFromMovements(Movement previousPosition, Movement currentPosition) {
         Coordinate[] corSeq = getCoordinateSequenceFromMovements(previousPosition, currentPosition);
         return getLineString(corSeq);
     }
 
     /**
      * Creates a new Linestring with the points ordered by the dates of the
-     * movememnts
+     * movements
      *
      * @param movements
-     * @return
-     * @throws GeometryUtilException
+     * @return LineString instance
      */
-    public static LineString getLineStringFromMovments(List<Movement> movements) throws GeometryUtilException {
+    public static LineString getLineStringFromMovements(List<Movement> movements) {
 
-    	
-        Collections.sort(movements, MovementComparator.MOVEMENT);
+        movements.sort(MovementComparator.MOVEMENT);
 
         LinkedList<Coordinate> coordinates = new LinkedList<>();
         for (Movement movement : movements) {
@@ -87,7 +81,7 @@ public class GeometryUtil {
         Coordinate[] coordinateArray = coordinates.toArray(new Coordinate[coordinates.size()]);
         LineString lineString = getLineString(coordinateArray);
 
-        LOG.debug("LINESTERING FROM MOVEMENT LIST {}", WKTUtil.getWktLineStringFromMovementList(movements));
+        LOG.debug("LineString From Movement List {}", WKTUtil.getWktLineStringFromMovementList(movements));
 
         return lineString;
     }

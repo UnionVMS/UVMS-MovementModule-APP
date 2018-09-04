@@ -17,11 +17,8 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -45,15 +42,13 @@ import java.util.*;
 @RunWith(Arquillian.class)
 public class MovementServiceIntTest extends TransactionalTests {
 
-    Random rnd = new Random();
+    private Random rnd = new Random();
     private static int NumberOfMovements = 3;
 
     private final static String TEST_USER_NAME = "MovementServiceIntTestTestUser";
 
     @EJB
     MovementService movementService;
-
-
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -64,7 +59,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.assertTrue(list != null);
         } catch (MovementServiceException e) {
             Assert.fail();
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             Assert.fail();
         }
     }
@@ -94,7 +89,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.assertTrue(list != null);
         } catch (MovementServiceException e) {
             Assert.fail();
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             Assert.fail();
         }
     }
@@ -124,7 +119,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.assertTrue(list != null);
         } catch (MovementServiceException e) {
             Assert.fail();
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             Assert.fail();
         }
     }
@@ -162,7 +157,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.fail();
         } catch (MovementServiceException e) {
             Assert.assertTrue(e != null);
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -180,7 +175,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         } catch (MovementServiceException e) {
             //Assert.fail();
         	Assert.assertTrue(true);
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             Assert.fail();
         }
 
@@ -203,7 +198,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.assertTrue(response != null);
         } catch (MovementServiceException e) {
             Assert.fail();
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             Assert.fail();
         }
     }
@@ -224,7 +219,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.fail();
         } catch (MovementServiceException e) {
             Assert.assertTrue(e != null);
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -232,7 +227,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createMovementBatch() {
+    public void createMovementBatch() throws MovementServiceException {
 
         List<MovementBaseType> query = createBaseTypeList();
         SimpleResponse response = movementService.createMovementBatch(query);
@@ -242,7 +237,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createBatch() throws JMSException, ModelMarshallException {
+    public void createBatch() throws MovementServiceException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         Double longitude = rnd.nextDouble();
@@ -261,7 +256,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void triggerBatchEventWithBrokenJMS() throws JMSException, ModelMarshallException {
+    public void triggerBatchEventWithBrokenJMS() throws MovementServiceException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
         Double longitude = rnd.nextDouble();
@@ -278,8 +273,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         } catch (EJBException ignore) {}
     }
 
-
-
     @Test
     @OperateOnDeployment("movementservice")
     public void getAreas() {
@@ -289,11 +282,10 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.assertTrue(response != null);
         } catch (MovementServiceException e) {
             Assert.fail();
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             Assert.fail();
         }
     }
-
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -329,7 +321,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
     }
 
-
     @Test
     @OperateOnDeployment("movementservice")
     public void getById_Null_ID() {
@@ -353,9 +344,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         try {
             List<MovementDto> listMovementDto = movementService.getLatestMovements(5);
             Assert.assertTrue(listMovementDto != null);
-        } catch (MovementDuplicateException e) {
-            Assert.fail();
         } catch (MovementServiceException e) {
+            Assert.fail();
+        } catch (Exception e) {
             Assert.fail();
         }
 
@@ -368,9 +359,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         try {
             List<MovementDto> listMovementDto = movementService.getLatestMovements(null);
             Assert.fail();
-        } catch  (MovementDuplicateException e) {
+        } catch  (MovementServiceException e) {
             Assert.assertTrue(e != null);
-        } catch (MovementServiceException e) {
+        } catch (Exception e) {
             Assert.assertTrue(e != null);
         } catch (Throwable e) {
             Assert.assertTrue(e != null);
@@ -384,9 +375,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         try {
             List<MovementDto> listMovementDto = movementService.getLatestMovements(-3);
             Assert.fail();
-        } catch  (MovementDuplicateException e) {
+        } catch  (MovementServiceException e) {
             Assert.assertTrue(e != null);
-        } catch (MovementServiceException e) {
+        } catch (Exception e) {
             Assert.assertTrue(e != null);
         } catch (Throwable e) {
             Assert.assertTrue(e != null);
@@ -447,7 +438,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         return movementType;
     }
     
-    
     private MovementType createMovementTypeHelper(Date timeStamp, double longitude, double latitude, double tripNumber) {
         MovementType movementType = new MovementType();
         movementType.setPositionTime(timeStamp);
@@ -462,7 +452,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType.setMovementType(MovementTypeType.POS);
         return movementType;
     }
-
 
     public static MovementMetaData getMappedMovementHelper(int numberOfAreas) {
         MovementMetaData metaData = new MovementMetaData();
@@ -479,7 +468,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         area.setAreaType(areaCode);
         return area;
     }
-
 
     private List<MovementBaseType> createBaseTypeList() {
         List<MovementBaseType> query = new ArrayList<>();
@@ -510,7 +498,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         return movementPoint;
     }
 
-
     private MovementQuery createMovementQuery(boolean usePagination) {
 
         MovementQuery query = new MovementQuery();
@@ -524,6 +511,4 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
         return query;
     }
-
-
 }

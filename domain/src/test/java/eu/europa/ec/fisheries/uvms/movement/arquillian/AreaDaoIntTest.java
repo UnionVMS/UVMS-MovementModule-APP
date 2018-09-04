@@ -6,9 +6,9 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
 import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -35,7 +35,7 @@ public class AreaDaoIntTest extends TransactionalTests {
     // ToDo: 2. AreaType related operations should be extracted into a separate interface, e.g. AreaTypeDao.
     // ToDo: 3. Neither 1. or 2.
 
-    final static Logger LOG = LoggerFactory.getLogger(AreaDaoIntTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AreaDaoIntTest.class);
 
     @EJB
     private AreaDao areaDao;
@@ -45,7 +45,7 @@ public class AreaDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void testCreateArea() throws AreaDaoException {
+    public void testCreateArea() throws MovementDomainException {
 
         AreaType areaType = createAreaTypeHelper();
         areaType.setName("testCreateArea");
@@ -65,7 +65,7 @@ public class AreaDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void testGetArea() throws AreaDaoException {
+    public void testGetArea() throws MovementDomainException {
 
         AreaType areaType = createAreaTypeHelper();
         areaType.setName("testGetArea");
@@ -86,7 +86,7 @@ public class AreaDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void testGetAllAreas() throws AreaDaoException {
+    public void testGetAllAreas() throws MovementDomainException {
 
         List<Area> readAllAreasFromDatabase;
 
@@ -236,7 +236,7 @@ public class AreaDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void failGetArea() throws AreaDaoException {
+    public void failGetArea() throws MovementDomainException {
         Area failingAreaRead = areaDao.readMovementAreaById(-42L);
         assertNull(failingAreaRead);
     }

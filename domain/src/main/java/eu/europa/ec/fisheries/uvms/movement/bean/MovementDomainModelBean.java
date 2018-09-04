@@ -33,22 +33,20 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.exception.SearchMapperException;
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.AreaMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,26 +61,23 @@ public class MovementDomainModelBean {
     @EJB
     private AreaDaoBean areaDao;
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementDomainModelBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementDomainModelBean.class);
 
-    public ListResponseDto getMovementListByQuery(MovementQuery query) throws MovementModelException {
+    public ListResponseDto getMovementListByQuery(MovementQuery query) throws MovementDomainException, ParseException {
 
         LOG.debug("Get list of movement from query.");
 
         if (query == null) {
-            throw new InputArgumentException("Movement list query is null");
+            throw new MovementDomainRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
-            throw new InputArgumentException("Pagination in movementlist query is null");
+            throw new MovementDomainRuntimeException("Pagination in movementlist query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (query.getMovementSearchCriteria().isEmpty()) {
-
-            throw new InputArgumentException("No search criterias in MovementList query");
-
+            throw new MovementDomainRuntimeException("No search criterias in MovementList query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
 
         try {
-
             ListResponseDto response = new ListResponseDto();
             List<MovementType> movementList = new ArrayList<>();
 
@@ -99,7 +94,6 @@ public class MovementDomainModelBean {
             String countSql = SearchFieldMapper.createCountSearchSql(searchKeyValues, true);
             String sql = SearchFieldMapper.createSelectSearchSql(searchKeyValues, true);
 
-            
             Long numberMatches = dao.getMovementListSearchCount(countSql, searchKeyValues);
             List<Movement> movementEntityList = dao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
             //List<Movement> movementEntityList = dao.getMovementList(sql, searchKeyValues);
@@ -114,28 +108,24 @@ public class MovementDomainModelBean {
             response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
 
             return response;
-            //} catch (com.vividsolutions.jts.io.ParseException | MovementDaoMappingException | MovementDaoException | ParseException ex) {
-        } catch (MovementDaoMappingException | MovementDaoException | ParseException ex) {
+        } catch (MovementDomainException | com.vividsolutions.jts.io.ParseException ex) {
             LOG.error("[ Error when getting movement by query ] {} ", ex);
-            throw new MovementModelException(ex.getMessage(), ex);
-        } catch (com.vividsolutions.jts.io.ParseException e) {
-            LOG.error("[ Error when getting movement by query, parse exception ] {} ", e);
-            throw new MovementModelException(e.getMessage(), e);
+            throw new MovementDomainException("Error when getting movement by query", ex, ErrorCode.PARSING_ERROR);
         }
     }
 
-    public ListResponseDto getMinimalMovementListByQuery(MovementQuery query) throws MovementModelException {
+    public ListResponseDto getMinimalMovementListByQuery(MovementQuery query) throws MovementModelException, MovementDomainException {
 
         LOG.debug("Get list of movement from query.");
 
         if (query == null) {
-            throw new InputArgumentException("Movement list query is null");
+            throw new MovementDomainRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
-            throw new InputArgumentException("Pagination in movementlist query is null");
+            throw new MovementDomainRuntimeException("Pagination in movementList query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (query.getMovementSearchCriteria() == null) {
-            throw new InputArgumentException("No search criterias in MovementList query");
+            throw new MovementDomainRuntimeException("No search criterias in MovementList query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
 
         try {
@@ -170,15 +160,14 @@ public class MovementDomainModelBean {
             response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
 
             return response;
-        } catch (MovementDaoMappingException | MovementDaoException | ParseException ex) {
+        } catch (ParseException ex) {
             LOG.error("[ Error when getting movement by query ] {} ", ex.getMessage());
-            throw new MovementModelException(ex.getMessage(), ex);
-        } catch (com.vividsolutions.jts.io.ParseException e) {
-            LOG.error("[ Error when getting movement by query, parse esxception ] {} ", e.getMessage());
-            throw new MovementModelException(e.getMessage(), e);
+            throw new MovementDomainException("Error when getting movement by query, ParseException", ex, ErrorCode.PARSING_ERROR);
+        } catch (com.vividsolutions.jts.io.ParseException ex) {
+            LOG.error("[ Error when getting movement by query, ParseException ] {} ", ex.getMessage());
+            throw new MovementDomainException("Error when getting movement by query, ParseException", ex, ErrorCode.PARSING_ERROR);
         }
     }
-
 
     private int getNumberOfPages(Long numberOfMovements, int listSize){
         int numberOfPages = (int) (numberOfMovements / listSize);
@@ -188,15 +177,15 @@ public class MovementDomainModelBean {
         return numberOfPages;
     }
 
-    public List<MovementMapResponseType> getMovementMapByQuery(MovementQuery query) throws MovementModelException {
+    public List<MovementMapResponseType> getMovementMapByQuery(MovementQuery query) throws MovementDomainException {
         if (query == null) {
-            throw new InputArgumentException("Movement list query is null");
+            throw new MovementDomainRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (query.getMovementSearchCriteria() == null) {
-            throw new InputArgumentException("No search criterias in MovementList query");
+            throw new MovementDomainRuntimeException("No search criterias in MovementList query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (query.getPagination() != null) {
-            throw new InputArgumentException("Pagination not supported in get movement map by query");
+            throw new MovementDomainRuntimeException("Pagination not supported in get movement map by query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
 
         boolean getLatestReports = SearchFieldMapper.containsCriteria(query.getMovementSearchCriteria(), SearchKey.NR_OF_LATEST_REPORTS);
@@ -207,7 +196,8 @@ public class MovementDomainModelBean {
             if (value != null) {
                 numberOfLatestReports = Integer.valueOf(value);
             } else {
-                throw new InputArgumentException(SearchKey.NR_OF_LATEST_REPORTS.name() + " Is in the query but no value could be found!, VALUE = null");
+                throw new MovementDomainRuntimeException(SearchKey.NR_OF_LATEST_REPORTS.name()
+                        + " Is in the query but no value could be found!, VALUE = null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
         }
 
@@ -263,15 +253,15 @@ public class MovementDomainModelBean {
 
             }
             return response;
-        } catch (MovementDaoMappingException | MovementDaoException | ParseException ex) {
+        } catch (ParseException ex) {
             LOG.error("[ Error when getting movement by query ] {} ", ex.getMessage());
-            throw new MovementModelException(ex.getMessage(), ex);
+            throw new MovementDomainException("Error when getting movement by query", ex, ErrorCode.PARSING_ERROR);
         }
     }
 
     private void getMovementsByConnectedIds(Integer numberOfLatestReports, List<SearchValue> searchKeys,
                                             List<Movement> movementEntityList, List<SearchValue> connectedIdsFromSearchKeyValues)
-                                            throws ParseException, SearchMapperException, MovementDaoException {
+            throws ParseException, MovementDomainException {
 
         String sql;
         List<SearchValue> searchValuesWithoutConnectedIds = removeConnectedIdsFromSearchKeyValues(searchKeys);
@@ -313,9 +303,9 @@ public class MovementDomainModelBean {
      * @param tracks list of tracks to purge
      * @param movements list of movements to look for correct tracks in
      */
-    public void removeTrackMismatches(List<MovementTrack> tracks, List<Movement> movements) throws MovementModelException {
+    public void removeTrackMismatches(List<MovementTrack> tracks, List<Movement> movements) {
         if(tracks == null || movements == null) {
-            throw new InputArgumentException("MovementTrack list or Movement list is null");
+            throw new MovementDomainRuntimeException("MovementTrack list or Movement list is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         Set<MovementTrack> tracksToSave = new HashSet<>();
         for (Movement movement : movements) {
@@ -329,46 +319,25 @@ public class MovementDomainModelBean {
                 }
             }
         }
-
-        Iterator<MovementTrack> tracksIterator = tracks.iterator();
-        while (tracksIterator.hasNext()) {
-            MovementTrack track = tracksIterator.next();
-            if (!tracksToSave.contains(track)) {
-                tracksIterator.remove();
-            }
-        }
+        tracks.removeIf(track -> !tracksToSave.contains(track));
     }
 
-    public List<MovementType> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementModelException {
-        try {
-            List<Movement> movements = dao.getLatestMovementsByConnectIdList(connectIds);
-
-            return MovementEntityToModelMapper.mapToMovementType(movements);
-        } catch (MovementDaoException e) {
-            throw new MovementModelException(e.getMessage());
-        }
+    public List<MovementType> getLatestMovementsByConnectIds(List<String> connectIds) {
+        List<Movement> movements = dao.getLatestMovementsByConnectIdList(connectIds);
+        return MovementEntityToModelMapper.mapToMovementType(movements);
     }
 
-    public List<MovementType> getLatestMovements(Integer numberOfMovements) throws MovementModelException {
-        try {
-            List<LatestMovement> movements = dao.getLatestMovements(numberOfMovements);
-
-            return MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
-        } catch (MovementDaoException e) {
-            throw new MovementModelException(e.getMessage());
-        }
+    public List<MovementType> getLatestMovements(Integer numberOfMovements) {
+        List<LatestMovement> movements = dao.getLatestMovements(numberOfMovements);
+        return MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
     }
 
-    public MovementType getMovementByGUID(String guid) throws MovementModelException {
-        try {
-            Movement latestMovements = dao.getMovementsByGUID(guid);
-            return MovementEntityToModelMapper.mapToMovementType(latestMovements);
-        } catch (MovementDaoException e) {
-            throw new MovementModelException(e.getMessage());
-        }
+    public MovementType getMovementByGUID(String guid)  {
+        Movement latestMovements = dao.getMovementByGUID(guid);
+        return MovementEntityToModelMapper.mapToMovementType(latestMovements);
     }
 
-    public ArrayList<MovementSegment> filterSegments(List<MovementSegment> movementSegments, List<SearchValue> searchKeyValuesRange) throws MovementModelException {
+    public ArrayList<MovementSegment> filterSegments(List<MovementSegment> movementSegments, List<SearchValue> searchKeyValuesRange) {
         Set<MovementSegment> segments = new HashSet<>();
         if (movementSegments != null) {
             for (MovementSegment segment : movementSegments) {
@@ -380,10 +349,10 @@ public class MovementDomainModelBean {
         return new ArrayList<>(segments);
     }
 
-    public boolean keepSegment(MovementSegment segment, List<SearchValue> searchKeyValuesRange) throws MovementModelException {
+    public boolean keepSegment(MovementSegment segment, List<SearchValue> searchKeyValuesRange) {
 
         if (segment == null || searchKeyValuesRange == null) {
-            throw new InputArgumentException("MovementSegment or SearchValue list is null");
+            throw new MovementDomainRuntimeException("MovementSegment or SearchValue list is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
 
         for (SearchValue searchValue : searchKeyValuesRange) {
@@ -414,12 +383,9 @@ public class MovementDomainModelBean {
                     return false;
                 }
             }
-
         }
-
         return true;
     }
-
 
     /* suggestion for filterimpl . . .
     public boolean keepSegment2(MovementSegment segment, List<SearchValue> searchKeyValuesRange) {
@@ -453,21 +419,13 @@ public class MovementDomainModelBean {
     }
     */
 
-
-
-    public List<MovementType> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementDaoException {
+    public List<MovementType> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) {
         List<Movement> movementListByAreaAndTimeInterval = dao.getMovementListByAreaAndTimeInterval(criteria);
         return movementListByAreaAndTimeInterval != null ? MovementEntityToModelMapper.mapToMovementType(movementListByAreaAndTimeInterval) : null;
     }
 
-    public List<AreaType> getAreas() throws MovementModelException {
-        try {
-            List<Area> areas = areaDao.getAreas();
-            return AreaMapper.mapToAreaTypes(areas);
-        } catch (AreaDaoException e) {
-            LOG.error("[ Error when getting areas. ] {}", e.getMessage());
-            throw new MovementModelException("[ Error when getting areas. ]", e);
-        }
+    public List<AreaType> getAreas() {
+        List<Area> areas = areaDao.getAreas();
+        return AreaMapper.mapToAreaTypes(areas);
     }
-
 }

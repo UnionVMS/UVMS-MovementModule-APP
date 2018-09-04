@@ -6,8 +6,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
@@ -25,13 +24,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by thofan on 2017-04-21.
  */
-
-
 @Stateless
 @LocalBean
 public class GetMovementListByQueryBean {
 
-    final static Logger LOG = LoggerFactory.getLogger(GetMovementListByQueryBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetMovementListByQueryBean.class);
 
     @EJB
     private MovementService movementService;
@@ -43,7 +40,6 @@ public class GetMovementListByQueryBean {
     @ErrorEvent
     private Event<EventMessage> errorEvent;
 
-
     public void getMovementListByQuery(TextMessage textMessage) {
         LOG.debug("getMovementListByQuery Received.. processing request in GetMovementListByQueryBean");
         try {
@@ -51,13 +47,11 @@ public class GetMovementListByQueryBean {
             GetMovementListByQueryResponse movementList = movementService.getList(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapTogetMovementListByQueryResponse(movementList.getMovement());
             messageProducer.sendMessageBackToRecipient(textMessage, responseString);
-        } catch (MovementDuplicateException | ModelMarshallException | MovementMessageException | MovementServiceException ex) {
-            LOG.error("[ Error on getMovmementListByQuery ] ", ex);
+        } catch (MovementMessageException | MovementServiceException | MovementModelException ex) {
+            LOG.error("[ Error on getMovementListByQuery ] ", ex);
             EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
             errorEvent.fire(eventMessage);
             throw new EJBException(ex);
         }
     }
-
-
 }

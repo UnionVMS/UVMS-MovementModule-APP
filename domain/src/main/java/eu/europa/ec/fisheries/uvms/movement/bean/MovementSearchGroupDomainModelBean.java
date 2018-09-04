@@ -13,11 +13,11 @@ package eu.europa.ec.fisheries.uvms.movement.bean;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementSearchGroupDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchGroupDaoException;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementGroupMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,34 +37,35 @@ public class MovementSearchGroupDomainModelBean {
     @EJB
     private MovementSearchGroupDao dao;
 
-    public MovementSearchGroup createMovementSearchGroup(MovementSearchGroup movementGroup, String username) throws MovementModelException {
+    public MovementSearchGroup createMovementSearchGroup(MovementSearchGroup movementGroup, String username) throws MovementDomainException {
         try {
             LOG.debug("Create movement group.");
             MovementFilterGroup filterGroup = MovementGroupMapper.toGroupEntity(movementGroup, username);
             filterGroup = dao.createMovementFilterGroup(filterGroup);
             return MovementGroupMapper.toMovementSearchGroup(filterGroup);
-        } catch (MovementSearchMapperException | MovementSearchGroupDaoException e) {
-            LOG.error("[ Error when creating new movement group. ] {}", e.getMessage());
-            throw new MovementModelException("Could not create movement search group.", e);
+        } catch (MovementDomainException e) {
+            LOG.error("[ Cannot create movement search group. Error occurred while trying. ] ");
+            throw new MovementDomainException("Could not create movement search groups", ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
-    public MovementSearchGroup getMovementSearchGroup(BigInteger id) throws MovementModelException {
+    public MovementSearchGroup getMovementSearchGroup(BigInteger id) throws MovementDomainException {
         try {
             LOG.debug("Get movement search group by ID.");
             MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(id.intValue());
-            if(filterGroup == null){
+            if (filterGroup == null) {
                 LOG.error(" Error when getting movement search group by ID: {}", id.intValue());
-                throw new MovementModelException("Could not get movement search group by group ID:" + id.intValue());
+                throw new MovementDomainRuntimeException("Could not get movement search group by group ID:"
+                        + id.intValue(), ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
             return MovementGroupMapper.toMovementSearchGroup(filterGroup);
-        } catch (MovementSearchGroupDaoException e) {
-            LOG.error("Error when getting movement search group by ID: {}", e.getMessage());
-            throw new MovementModelException("Could not get movement search group by group ID.", e);
+        } catch (MovementDomainException e) {
+            LOG.error("[ Cannot get movement search group by ID. Error occurred while trying. ] ");
+            throw new MovementDomainException("Could not get movement search groups by ID", ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
-    public List<MovementSearchGroup> getMovementSearchGroupsByUser(String user) throws MovementModelException {
+    public List<MovementSearchGroup> getMovementSearchGroupsByUser(String user) throws MovementDomainException {
         try {
             LOG.debug("Get movement search groups by user.");
             List<MovementFilterGroup> filterGroups = dao.getMovementFilterGroupsByUser(user);
@@ -72,40 +73,39 @@ public class MovementSearchGroupDomainModelBean {
             for (MovementFilterGroup filterGroup : filterGroups) {
                 searchGroups.add(MovementGroupMapper.toMovementSearchGroup(filterGroup));
             }
-
             return searchGroups;
-        } catch (MovementSearchGroupDaoException e) {
-            LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage());
-            throw new MovementModelException("Could not get movement search groups by user.", e);
+        } catch (MovementDomainException e) {
+            LOG.error("[ Cannot get movement search group. Error occurred while trying. ] ");
+            throw new MovementDomainException("Could not get movement search groups", ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
-    public MovementSearchGroup updateMovementSearchGroup(MovementSearchGroup searchGroup, String username) throws MovementModelException {
+    public MovementSearchGroup updateMovementSearchGroup(MovementSearchGroup searchGroup, String username) throws MovementDomainException {
         try {
             MovementFilterGroup currentGroup = dao.getMovementFilterGroupById(searchGroup.getId().intValue());
             if(!currentGroup.getUser().equalsIgnoreCase(searchGroup.getUser())){
                 LOG.error("[ Cannot update movement search group because it doesn't belong to this user]");
-                throw new MovementModelException("Could not update movement search groups");
+                throw new MovementDomainException("Could not update movement search groups", ErrorCode.UNSUCCESSFUL_DB_OPERATION);
             }
 
             currentGroup = MovementGroupMapper.toGroupEntity(currentGroup, searchGroup, username);
             MovementFilterGroup updatedGroup = dao.updateMovementFilterGroup(currentGroup);
             return MovementGroupMapper.toMovementSearchGroup(updatedGroup);
-        } catch (MovementSearchGroupDaoException | MovementSearchMapperException e) {
+        } catch (MovementDomainException e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage());
-            throw new MovementModelException("Could not get movement search groups by user.", e);
+            throw new MovementDomainException("Could not get movement search groups by user.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
-    public MovementSearchGroup deleteMovementSearchGroup(BigInteger groupId) throws MovementModelException {
+    public MovementSearchGroup deleteMovementSearchGroup(BigInteger groupId) throws MovementDomainException {
         try {
             LOG.debug("Delete movement search group.");
             MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(groupId.intValue());
             filterGroup = dao.deleteMovementFilterGroup(filterGroup);
             return MovementGroupMapper.toMovementSearchGroup(filterGroup);
-        } catch (MovementSearchGroupDaoException e) {
+        } catch (MovementDomainException e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage());
-            throw new MovementModelException("Could not delete movement search group.", e);
+            throw new MovementDomainException("Could not delete movement search group.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 }

@@ -2,14 +2,12 @@ package eu.europa.ec.fisheries.uvms.movement.bean;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
@@ -20,7 +18,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.SystemException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,9 +41,10 @@ public class IncomingMovementBean {
     @PersistenceContext
     EntityManager em;
 
-    public void processMovement(Movement currentMovement) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException, MovementModelException, SystemException {
-        LOG.debug("Processing movement {}", currentMovement.getId());
+    public void processMovement(Movement currentMovement) throws MovementDomainException {
+
         if (currentMovement != null && !currentMovement.getProcessed()) {
+            LOG.debug("Processing movement {}", currentMovement.getId());
             String connectId = currentMovement.getMovementConnect().getValue();
             Date timeStamp = currentMovement.getTimestamp();
 
@@ -113,14 +111,12 @@ public class IncomingMovementBean {
             } else {                                                                //both first and previous exist, so current movement is in the middle of a track, according to the logic at line 80
                 segmentBean.splitSegment(previousMovement, currentMovement);
             }
-
             currentMovement.setProcessed(true);
             em.flush();
         }
     }
 
-
-    public void processMovement(Long id) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException, MovementModelException, SystemException {
+    public void processMovement(Long id) throws MovementDomainException {
         Movement currentMovement = dao.getMovementById(id);
         processMovement(currentMovement);
     }
@@ -184,7 +180,6 @@ public class IncomingMovementBean {
                     default:
                         transition.setMovementType(MovementTypeType.POS);
                 }
-
             } else {
                 transition.setMovementType(MovementTypeType.ENT);
             }

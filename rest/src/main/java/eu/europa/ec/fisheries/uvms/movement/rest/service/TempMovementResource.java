@@ -24,7 +24,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +82,7 @@ public class TempMovementResource {
         } catch (MovementServiceException | NullPointerException e) {
             LOG.error("[ Error when getting temp movement with GUID. ] {} ", e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -109,7 +108,7 @@ public class TempMovementResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when archiving temp movement. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -134,7 +133,7 @@ public class TempMovementResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when updating temp movement. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -160,7 +159,7 @@ public class TempMovementResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when listing active temp movements. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -183,13 +182,12 @@ public class TempMovementResource {
         LOG.debug("Send temp movement invoked in rest layer");
         try {
             return new ResponseDto(service.sendTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
-        } catch (MovementDuplicateException e) {
-            LOG.error("[ Error: Cannot create duplicate movement] {} ", e.getStackTrace());
-            return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when sending temp movement. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+        } catch (Exception e) {
+            LOG.error("[ Error: Cannot create duplicate movement] {} ", e.getStackTrace());
+            return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
-
 }

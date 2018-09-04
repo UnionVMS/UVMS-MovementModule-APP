@@ -25,7 +25,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,13 +41,11 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
-/**
- **/
 @Path("/movement")
 @Stateless
 public class MovementRestResource {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementRestResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementRestResource.class);
 
     @EJB
     private MovementService serviceLayer;
@@ -75,13 +72,12 @@ public class MovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<MovementListResponseDto> getListByQuery(MovementQuery query) {
         try {
-            ResponseDto response = new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
-            return response;
+            return new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. {}] {}",query, ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
-            LOG.error("[ Error when getting list. {}] {}",query, ex);
+        } catch (Exception ex) {
+            LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -111,7 +107,7 @@ public class MovementRestResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -141,7 +137,7 @@ public class MovementRestResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -175,7 +171,7 @@ public class MovementRestResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -193,7 +189,7 @@ public class MovementRestResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting by id. ] ", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when getting by id. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -218,10 +214,9 @@ public class MovementRestResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
-
 }

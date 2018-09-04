@@ -13,7 +13,8 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
 
-import org.hibernate.exception.ConstraintViolationException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,14 +27,9 @@ import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 @RunWith(Arquillian.class)
@@ -52,8 +48,8 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	MovementDaoBean movementDaoBean;
 	
 	@Test
-	public void testGetMovementsByGUID() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
-		Movement output = movementDaoBean.getMovementsByGUID(""); 
+	public void testGetMovementsByGUID() throws MovementDomainException {
+		Movement output = movementDaoBean.getMovementByGUID("");
 		assertNull(output);
 		
 		String connectId = UUID.randomUUID().toString();
@@ -63,13 +59,13 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		incomingMovementBean.processMovement(move);
 		em.flush();
 		
-		output = movementDaoBean.getMovementsByGUID(move.getGuid());
+		output = movementDaoBean.getMovementByGUID(move.getGuid());
 		System.out.println(output);
 		assertEquals(move.getGuid(), output.getGuid());
 	}
 	
 	@Test
-	public void testGetLatestMovementByConnectIdList() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
+	public void testGetLatestMovementByConnectIdList() throws MovementDomainException {
 		String connectID = UUID.randomUUID().toString();
 		String connectID2 = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
@@ -84,7 +80,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		incomingMovementBean.processMovement(move3);
 		em.flush();
 		
-		List<String> input = new ArrayList<String>();
+		List<String> input = new ArrayList<>();
 		input.add(connectID);
 		List<Movement> output = movementDaoBean.getLatestMovementsByConnectIdList(input);
 		assertEquals(1, output.size());
@@ -111,7 +107,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementsByConnectID() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
+	public void testGetLatestMovementsByConnectID() throws MovementDomainException {
 		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis()));
@@ -136,7 +132,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		try {
 			output = movementDaoBean.getLatestMovementsByConnectId(connectID, -3);
 			fail("negative value as input should result in an exception");
-		} catch (MovementDaoException e) {
+		} catch (MovementDomainRuntimeException e) {
 			assertTrue(true);
 		}
 		//should result in a no result output akka null
@@ -149,7 +145,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetAreaTypeByCode() throws MovementDaoException {
+	public void testGetAreaTypeByCode() {
 		AreaType areaType = new AreaType();
 		areaType.setName("TestAreaType");
 		areaType.setUpdatedTime(new Date(System.currentTimeMillis()));
@@ -163,7 +159,6 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		output = movementDaoBean.getAreaTypeByCode("TestAreaType2");// should result in a null return
 		assertNull(output);
 		
-		
 		try {
 			//trying to create a duplicate
 			AreaType areaTypeDuplicate = new AreaType();
@@ -176,15 +171,13 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		} catch (Exception e) {
 			assertTrue(true);
 		}
-		
-		
 	}
 	
 	@EJB
     private AreaDao areaDao;
 	
 	@Test
-	public void testGetAreaByRemoteIDAndCode() throws MovementDaoException, AreaDaoException {
+	public void testGetAreaByRemoteIDAndCode() throws MovementDomainException {
 		AreaType areaType = new AreaType();
 		String input = "TestAreaType";
 		areaType.setName(input);
@@ -204,7 +197,6 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		Area createdArea = areaDao.createMovementArea(area);
         areaDao.flushMovementAreas();
 
-		
 		Area output = movementDaoBean.getAreaByRemoteIdAndCode(input, null); //remoteId is not used at all  TestAreaCode
 		assertEquals(area.getAreaId(), output.getAreaId());
 		

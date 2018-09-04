@@ -16,20 +16,19 @@ import java.util.List;
 import javax.ejb.Local;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @Local
 public interface MovementSearchGroupService {
 
-    MovementSearchGroup createMovementSearchGroup(MovementSearchGroup data, String username) throws MovementServiceException, MovementDuplicateException;
+    MovementSearchGroup createMovementSearchGroup(MovementSearchGroup data, String username) throws MovementServiceException;
 
-    MovementSearchGroup getMovementSearchGroup(Long id) throws MovementServiceException, MovementDuplicateException;
+    MovementSearchGroup getMovementSearchGroup(Long id) throws MovementServiceException;
 
-    List<MovementSearchGroup> getMovementSearchGroupsByUser(String user) throws MovementServiceException, MovementDuplicateException;
+    List<MovementSearchGroup> getMovementSearchGroupsByUser(String user) throws MovementServiceException;
 
-    MovementSearchGroup updateMovementSearchGroup(MovementSearchGroup searchGroup, String username) throws MovementServiceException, MovementDuplicateException;
+    MovementSearchGroup updateMovementSearchGroup(MovementSearchGroup searchGroup, String username) throws MovementServiceException;
 
-    MovementSearchGroup deleteMovementSearchGroup(Long id) throws MovementServiceException, MovementDuplicateException;
+    MovementSearchGroup deleteMovementSearchGroup(Long id) throws MovementServiceException;
 
 }

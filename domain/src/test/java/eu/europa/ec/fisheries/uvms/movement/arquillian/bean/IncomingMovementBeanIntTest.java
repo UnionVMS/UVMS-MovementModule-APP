@@ -8,14 +8,12 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -52,11 +50,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @EJB
     private MovementDaoBean movementDao;
 
-//    private TestUtil testUtil = new TestUtil();
-
     @Test
     @OperateOnDeployment("normal")
-    public void testCreatingMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException {
+    public void testCreatingMovement() throws MovementDomainException {
         String uuid = UUID.randomUUID().toString();
 
         MovementType movementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid,0);
@@ -79,7 +75,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void testProcessingMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException {
+    public void testProcessingMovement() throws MovementDomainException {
 
         // Given: Get the id for a persisted movement entity.
 
@@ -107,7 +103,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void testProcessingMovement_NoDuplicateMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException {
+    public void testProcessingMovement_NoDuplicateMovement() throws MovementDomainException {
 
         // Given: Get the id for a persisted movement entity.
 
@@ -134,8 +130,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void testDuplicateMovementsInProcessingMovementMethod_sameTimeStamp_duplicationFlagSetToFalse_sameMovementType()
-            throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException {
+    public void testDuplicateMovementsInProcessingMovementMethod_sameTimeStamp_duplicationFlagSetToFalse_sameMovementType() throws MovementDomainException {
 
         // Given: Create a movement with the exact same timestamp as a movement that exists in the database.
         String firstUuid = UUID.randomUUID().toString();

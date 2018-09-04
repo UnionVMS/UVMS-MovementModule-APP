@@ -3,15 +3,14 @@ package eu.europa.ec.fisheries.uvms.movement.mapper;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.MockData;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,7 +31,7 @@ import static org.junit.Assert.fail;
 public class MovementModelToEntityMapperTest extends TransactionalTests {
 
     @Test
-    public void testMapNewMovementEntity_reportedSpeedIsNull() throws MovementDaoMappingException {
+    public void testMapNewMovementEntity_reportedSpeedIsNull() throws MovementDomainException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -49,7 +48,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_reportedCourseIsNull() throws MovementDaoMappingException {
+    public void testMapNewMovementEntity_reportedCourseIsNull() throws MovementDomainException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -65,7 +64,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_positionIsNull() throws MovementDaoMappingException {
+    public void testMapNewMovementEntity_positionIsNull() throws MovementDomainException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -81,7 +80,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_ifSourceIsNullThenMovementSourceTypeIs_INMARSATC() throws MovementDaoMappingException {
+    public void testMapNewMovementEntity_ifSourceIsNullThenMovementSourceTypeIs_INMARSATC() throws MovementDomainException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -98,7 +97,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_ifMovementTypeIsNullThenMovementTypeTypeIs_POS() throws MovementDaoMappingException {
+    public void testMapNewMovementEntity_ifMovementTypeIsNullThenMovementTypeTypeIs_POS() throws MovementDomainException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -114,7 +113,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_ifPositionTimeIsNullThenTimeStampIsSet() throws MovementDaoMappingException {
+    public void testMapNewMovementEntity_ifPositionTimeIsNullThenTimeStampIsSet() throws MovementDomainException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -131,7 +130,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_activityIsNull() throws MovementDaoMappingException {
+    public void testMapNewMovementEntity_activityIsNull() throws MovementDomainException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -147,7 +146,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_metaDataIsNull() throws MovementDaoMappingException  {
+    public void testMapNewMovementEntity_metaDataIsNull() throws MovementDomainException  {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -245,7 +244,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testCreateActivity_mapFromMovementBaseTypeToActivity() throws MovementDaoMappingException {
+    public void testCreateActivity_mapFromMovementBaseTypeToActivity() throws MovementDomainException {
 
         //Given
         String uuid = UUID.randomUUID().toString();

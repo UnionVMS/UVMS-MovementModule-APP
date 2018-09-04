@@ -14,40 +14,25 @@ package eu.europa.ec.fisheries.uvms.movement.util;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 
-/**
- **/
 public class CalculationUtil {
 
-    public static final double NAUTICAL_MILE_ONE_METER = 0.000539956803;
-    private static int EARTH_RADIUS_METER = 6371000;
-    public static final double FACTOR_METER_PER_SECOND_TO_KNOTS = 1.9438444924574;
+    private static final double NAUTICAL_MILE_ONE_METER = 0.000539956803;
+    private static final int EARTH_RADIUS_METER = 6371000;
+    private static final double FACTOR_METER_PER_SECOND_TO_KNOTS = 1.9438444924574;
 
     /**
-     *
-     * Calculated the distance between 2 points and returns the distance in
-     * meters
-     *
-     * @param prevLat
-     * @param prevLon
-     * @param currentLat
-     * @param currentLon
-     * @return distance
+     * Calculated the distance between 2 points and returns the distance in meters
      */
-    public static Double calculateDistance(Double prevLat, Double prevLon, Double currentLat, Double currentLon) {
+    public static double calculateDistance(Double prevLat, Double prevLon, Double currentLat, Double currentLon) {
         return distanceMeter(prevLat, prevLon, currentLat, currentLon);
     }
 
     /**
      *
      * Calculates the course between 2 Points
-     *
-     * @param currentLat
-     * @param currentLon
-     * @param prevLat
-     * @param prevLon
-     * @return
      */
     public static Double calculateCourse(double prevLat, double prevLon, double currentLat, double currentLon) {
         if(prevLat == 0.0 && prevLon == 0.0 && currentLat == 0.0 && currentLon == 0.0)
@@ -55,17 +40,19 @@ public class CalculationUtil {
         return bearing(prevLat, prevLon, currentLat, currentLon);
     }
 
-    public static SegmentCalculations getPositionCalculations(Movement previousPosition, Movement currentPosition) throws GeometryUtilException {
-        // TODO no nullchecks on incoming
+    public static SegmentCalculations getPositionCalculations(Movement previousPosition, Movement currentPosition) {
+        // TODO no null checks on incoming
 
         SegmentCalculations calculations = new SegmentCalculations();
 
         if (currentPosition.getLocation() == null) {
-            throw new GeometryUtilException(4, "[ CalculationUtil.getPositionCalculations ] CurrentPosition is null! ");
+            throw new MovementDomainRuntimeException("CalculationUtil.getPositionCalculations. CurrentPosition is null! ",
+                    ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
 
         if (previousPosition.getLocation() == null) {
-            throw new GeometryUtilException(4, "[ CalculationUtil.getPositionCalculations ] PreviousPosition is null! ");
+            throw new MovementDomainRuntimeException("CalculationUtil.getPositionCalculations. PreviousPosition is null! ",
+                    ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
 
         Point pointThisPosition = currentPosition.getLocation();

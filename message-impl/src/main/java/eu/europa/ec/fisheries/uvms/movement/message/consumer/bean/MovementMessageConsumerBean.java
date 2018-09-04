@@ -15,7 +15,7 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -99,10 +99,9 @@ public class MovementMessageConsumerBean implements MessageListener {
                     LOG.error("[ Request method {} is not implemented ]", request.getMethod().name());
                     errorEvent.fire(new EventMessage(textMessage, "[ Request method " + request.getMethod().name() + "  is not implemented ]"));
             }
-        } catch (ModelMapperException | NullPointerException | ClassCastException e) {
+        } catch (NullPointerException | ClassCastException | MovementModelException e) {
             LOG.error("[ Error when receiving message in movement: ] {}", e);
             errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: " + e.getMessage()));
         }
     }
-
 }

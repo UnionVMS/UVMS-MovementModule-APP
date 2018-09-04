@@ -11,16 +11,13 @@ import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.exception.SearchMapperException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -28,10 +25,6 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
-import javax.inject.Inject;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -41,8 +34,6 @@ import static org.junit.Assert.*;
  */
 @RunWith(Arquillian.class)
 public class MovementDaoIntTest extends TransactionalTests {
-
-    private Random rnd = new Random();
 
     /*  THIS IS THE 4326 BELOW  =
 
@@ -55,12 +46,10 @@ public class MovementDaoIntTest extends TransactionalTests {
         AUTHORITY["EPSG","4326"]]
      */
 
+    private Random rnd = new Random();
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-
-    @Inject
-    private UserTransaction userTransaction;
 
     @EJB
     private MovementDao movementDao;
@@ -72,7 +61,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void create() throws MovementDaoException {
+    public void create() throws MovementDomainException {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -98,14 +87,14 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void flush() throws MovementDaoException {
+    public void flush() throws MovementDomainException {
         movementDao.flush();
         assertTrue("We assume hibernate native functions actually works", true);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getFirstMovement() throws MovementDaoException {
+    public void getFirstMovement() throws MovementDomainException {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -148,7 +137,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 //        Movement createdMovement = movementDao.create(movement);
 //        movementDao.flush();
 //        assertNotNull(createdMovement);
-//        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
+//        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnectByConnectId().getId());
 //
 //        Long createdMovementId = createdMovement.getId();
 //        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
@@ -156,7 +145,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 //        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
 //        assertNotNull(fetchedMovement);
 //        assertEquals(fetchedMovement.getId(), createdMovementId);
-//        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
+//        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnectByConnectId();
 //        assertNotNull(fetchedMovementConnect);
 //
 //        Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
@@ -179,7 +168,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 //        Movement createdMovement = movementDao.create(movement);
 //        movementDao.flush();
 //        assertNotNull(createdMovement);
-//        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
+//        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnectByConnectId().getId());
 //
 //        Long createdMovementId = createdMovement.getId();
 //        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
@@ -187,7 +176,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 //        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
 //        assertNotNull(fetchedMovement);
 //        assertEquals(fetchedMovement.getId(), createdMovementId);
-//        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
+//        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnectByConnectId();
 //        assertNotNull(fetchedMovementConnect);
 //
 //        Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
@@ -197,14 +186,14 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getLatestMovements() throws MovementDaoException {
+    public void getLatestMovements() throws MovementDomainException {
         List<LatestMovement> all = movementDao.getLatestMovements(10);
         assertNotNull(all);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void getListAll() throws MovementDaoException {
+    public void getListAll() throws MovementDomainException {
 
         int n = rnd.nextInt(50);
         for (int i = 0; i < n; i++) {
@@ -227,7 +216,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getListAll_NO_PositionalDups() throws MovementDaoException {
+    public void getListAll_NO_PositionalDups() throws MovementDomainException {
 
         double longitude = 8.140625D;
         double latitude = 56.683804D;
@@ -255,7 +244,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMinimalMovementListPaginated() throws MovementDaoException {
+    public void getMinimalMovementListPaginated() throws MovementDomainException {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
         Integer page = 1;
@@ -269,7 +258,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMinimalMovementListPaginated_NegativeSpeed() throws MovementDaoException {
+    public void getMinimalMovementListPaginated_NegativeSpeed() throws MovementDomainException {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
         Integer page = 1;
@@ -283,7 +272,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementById() throws MovementDaoException {
+    public void getMovementById() throws MovementDomainException {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -323,7 +312,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementConnectByConnectId() throws MovementDaoException {
+    public void getMovementConnectByConnectId() throws MovementDomainException {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -349,7 +338,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NonPaginated_NullCheckResultSetAtUnlogicQuery() throws MovementDaoException {
+    public void getMovementList_NonPaginated_NullCheckResultSetAtUnlogicQuery() throws MovementDomainException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
@@ -362,7 +351,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NonPaginated_NoSearchValues() throws MovementDaoException {
+    public void getMovementList_NonPaginated_NoSearchValues() throws MovementDomainException {
 
         List<SearchValue> searchValues = new ArrayList<>();
         String sql = "select m from Movement m ";
@@ -373,7 +362,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NonPaginated_WithSearchValues() throws MovementDaoException {
+    public void getMovementList_NonPaginated_WithSearchValues() throws MovementDomainException {
 
         // this is not covered in the code BUT it forces that code path to execute
 
@@ -386,12 +375,12 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NonPaginated_ShouldCrash() throws MovementDaoException {
+    public void getMovementList_NonPaginated_ShouldCrash() throws MovementDomainException {
 
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.AREA, "HEPP"));
         String sql = "select m from Movement m ";
 
-        expectedException.expect(MovementDaoException.class);
+        expectedException.expect(MovementDomainException.class);
         expectedException.expectMessage("[ Error when getting list ]");
 
         movementDao.getMovementList(sql, searchValues);
@@ -400,7 +389,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_0_NoSearchValue() throws MovementDaoException {
+    public void getMovementList_NumberOfReports_0_NoSearchValue() throws MovementDomainException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
@@ -413,7 +402,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     // @Test
     // Unstable ServerCode see TODO
-    public void getMovementList_NumberOfReports_1_NoSearchValue() throws MovementDaoException {
+    public void getMovementList_NumberOfReports_1_NoSearchValue() throws MovementDomainException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
         // TODO getLatestMovementsByConnectId in DAO throws exception and crashes the entire result-set if a lookup is empty
@@ -427,7 +416,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_5_noSearchValue() throws MovementDaoException {
+    public void getMovementList_NumberOfReports_5_noSearchValue() throws MovementDomainException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
@@ -440,7 +429,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_0_WithSearchValue() throws MovementDaoException {
+    public void getMovementList_NumberOfReports_0_WithSearchValue() throws MovementDomainException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
@@ -455,7 +444,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_1_WithSearchValue() throws MovementDaoException {
+    public void getMovementList_NumberOfReports_1_WithSearchValue() throws MovementDomainException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
@@ -470,7 +459,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_1_withSearchValue_NoResult() throws MovementDaoException {
+    public void getMovementList_NumberOfReports_1_withSearchValue_NoResult() throws MovementDomainException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
@@ -485,7 +474,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementList_NumberOfReports_5_withSearchValue() throws MovementDaoException {
+    public void getMovementList_NumberOfReports_5_withSearchValue() throws MovementDomainException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
@@ -501,7 +490,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     // The value of this test is very limited
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementListByAreaAndTimeInterval_Invalid_Null_Parameter() throws MovementDaoException {
+    public void getMovementListByAreaAndTimeInterval_Invalid_Null_Parameter() throws MovementDomainException {
 
         // TODO  this one cannot be instantiated using new (probably a soap thing)
         // MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
@@ -514,7 +503,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     // don't want to use JodaTime in tests . . .
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementListPaginated() throws MovementDaoException {
+    public void getMovementListPaginated() throws MovementDomainException {
 
         long currentTimeMillis = System.currentTimeMillis();
 
@@ -538,7 +527,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementListSearchCount() throws java.text.ParseException, SearchMapperException, MovementDaoException, ParseException {
+    public void getMovementListSearchCount() throws java.text.ParseException, ParseException, MovementDomainException {
         List<SearchValue> searchValues = new ArrayList<>();
         String sql = SearchFieldMapper.createCountSearchSql(searchValues, true);
         Long searchResult = movementDao.getMovementListSearchCount(sql,searchValues);
@@ -548,7 +537,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementListSearchCount_SearchValueNull_ExceptionThrown() throws java.text.ParseException, SearchMapperException, MovementDaoException, ParseException {
+    public void getMovementListSearchCount_SearchValueNull_ExceptionThrown() throws java.text.ParseException, ParseException, MovementDomainException {
 
         expectedException.expect(Exception.class);
 
@@ -574,23 +563,23 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void merge() throws MovementDaoException {
+    public void merge() throws MovementDomainException {
 
-        expectedException.expect(MovementDaoException.class);
+        expectedException.expect(MovementDomainException.class);
         movementDao.merge(null);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void persist() throws MovementDaoException {
+    public void persist() throws MovementDomainException {
 
-        expectedException.expect(MovementDaoException.class);
+        expectedException.expect(MovementDomainException.class);
         movementDao.persist(null);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void upsertLatestMovementOnExisting() throws MovementDaoException {
+    public void upsertLatestMovementOnExisting() throws MovementDomainException {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -614,7 +603,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void upsertLatestMovementOnNonExisting() throws MovementDaoException {
+    public void upsertLatestMovementOnNonExisting() throws MovementDomainException {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -701,8 +690,8 @@ public class MovementDaoIntTest extends TransactionalTests {
         String sql = "SELECT m FROM Movement m ";
 
         try {
-            return movementDao.getMovementList(sql, new ArrayList<SearchValue>());
-        } catch (MovementDaoException e) {
+            return movementDao.getMovementList(sql, new ArrayList<>());
+        } catch (MovementDomainException e) {
             fail(e.toString());
         }
         return new ArrayList<>();

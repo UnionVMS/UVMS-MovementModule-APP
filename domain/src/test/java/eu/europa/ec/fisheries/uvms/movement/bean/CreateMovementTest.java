@@ -17,11 +17,9 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
@@ -39,19 +37,19 @@ public class CreateMovementTest {
     private MovementDomainModelBean model;
 
     @Before
-    public void setup() throws MovementDaoException {
+    public void setup() {
         MockitoAnnotations.initMocks(this);
 
         Movement prevMovement = new Movement();
         Movement currentMovement = new Movement();
 
         //when(dao.getLatestMovement(any(String.class), any(Date.class))).thenReturn(prevMovement);
-        //when(dao.getMovementConnectByConnectId(any(String.class))).thenReturn(getMovementConnect());
-        //when(dao.craete(currentMovement)).thenReturn(currentMovement);
+        //when(dao.getMovementConnectByConnectId(any(String.class))).thenReturn(getMovementConnectByConnectId());
+        //when(dao.create(currentMovement)).thenReturn(currentMovement);
     }
 
     @Test
-    public void createMovementFirstMovememt() throws GeometryUtilException, MovementDaoMappingException, MovementDaoException {
+    public void createMovementFirstMovement() throws MovementDomainException {
 
         MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
         IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);
@@ -65,7 +63,7 @@ public class CreateMovementTest {
 
         //verify(model, atLeast(2)).splitSegment(any(Movement.class), any(Movement.class));
         //verify(model, times(3)).splitSegment(any(Movement.class), any(Movement.class));
-        //verify(test, times(1)).getMovementConnect(any(String.class));
+        //verify(test, times(1)).getMovementConnectByConnectId(any(String.class));
         //verify(proc, never()).splitSegment(any(Movement.class), any(Movement.class));
         //verify(proc, never()).addMovementBeforeFirst(any(Movement.class), any(Movement.class));
     }
@@ -98,5 +96,4 @@ public class CreateMovementTest {
         mock.setPosition(point);
         return mock;
     }
-
 }

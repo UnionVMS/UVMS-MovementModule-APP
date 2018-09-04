@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
-
 import org.junit.After;
 import org.junit.Before;
 import javax.inject.Inject;
@@ -26,5 +25,4 @@ public class TransactionalTests extends BuildMovementTestDeployment {
         userTransaction.rollback();
         //userTransaction.commit();
     }
-
 }

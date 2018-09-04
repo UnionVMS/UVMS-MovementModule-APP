@@ -15,8 +15,9 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 @Local
 public interface TempMovementDao {
@@ -25,28 +26,26 @@ public interface TempMovementDao {
      * @param tempMovement
      * @return
      */
-    TempMovement createTempMovementEntity(TempMovement tempMovement);
+    TempMovement createTempMovementEntity(TempMovement tempMovement) throws MovementDomainException;
 
     /**
      * @param guid
      * @return The temp movement
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public TempMovement getTempMovementByGuid(String guid) throws MovementDaoException;
+    TempMovement getTempMovementByGuid(String guid) throws MovementDomainException;
 
     /**
      * @param page
      * @param listSize
      * @return All active temp movements
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public List<TempMovement> getTempMovementListPaginated(Integer page, Integer listSize) throws MovementDaoException;
+    List<TempMovement> getTempMovementListPaginated(Integer page, Integer listSize) throws MovementDomainException;
 
     /**
      * @return Number of active temp movements
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public Long getTempMovementListCount() throws MovementDaoException;
-
-
-    }
+    Long getTempMovementListCount() throws MovementDomainException;
+}

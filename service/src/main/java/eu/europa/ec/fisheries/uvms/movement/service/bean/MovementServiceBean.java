@@ -26,22 +26,24 @@ import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallExcep
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -57,7 +59,7 @@ import org.slf4j.LoggerFactory;
 @Stateless
 public class MovementServiceBean implements MovementService {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementServiceBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementServiceBean.class);
 
     @EJB
     private MessageProducer producer;
@@ -100,7 +102,7 @@ public class MovementServiceBean implements MovementService {
                 LOG.error("Failed to send audit log message! Movement with guid {} was created ", createdMovement.getGuid());
             }
             return createdMovement;
-        } catch (MovementServiceException | MovementMessageException  ex) {
+        } catch (MovementServiceException | MovementMessageException | MovementDomainException ex) {
             throw new EJBException(ex);
         }
     }
@@ -111,12 +113,12 @@ public class MovementServiceBean implements MovementService {
             List<MovementMapResponseType> mapResponse = model.getMovementMapByQuery(query);
             if (mapResponse == null) {
                 LOG.error("[ Error when getting map, response from JMS Queue is null ]");
-                throw new MovementServiceException("[ Error when getting map, response from JMS Queue is null ]");
+                throw new MovementServiceRuntimeException("Error when getting map, response from JMS Queue is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
             return MovementDataSourceResponseMapper.createMovementMapResponse(mapResponse);
-        } catch (ModelMarshallException | MovementModelException ex) {
+        } catch (Exception  ex) {
             LOG.error("[ Error when getting movement map by query {}] {}", query,ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement map by query ]", ex);
+            throw new MovementServiceException("Error when getting movement map by query", ex, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -133,12 +135,14 @@ public class MovementServiceBean implements MovementService {
             ListResponseDto response = model.getMovementListByQuery(query);
             if (response == null) {
                 LOG.error("[ Error when getting list, response from JMS Queue is null ]");
-                throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
+                throw new MovementServiceRuntimeException("Error when getting list, response from JMS Queue is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
             return MovementDataSourceResponseMapper.createMovementListResponse(response);
-        } catch (MovementModelException | ModelMapperException ex) {
+        } catch (ParseException e) {
+            throw new MovementServiceException("Error when getting movement list by query: ParseException", e, ErrorCode.PARSING_ERROR);
+        } catch (MovementDomainException ex) {
             LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
+            throw new MovementServiceException("Error when getting movement list by query", ex, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -155,12 +159,12 @@ public class MovementServiceBean implements MovementService {
             ListResponseDto response = model.getMinimalMovementListByQuery(query);
             if (response == null) {
                 LOG.error("[ Error when getting list, response from JMS Queue is null ]");
-                throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
+                throw new MovementServiceRuntimeException("Error when getting list, response from JMS Queue is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
             return MovementDataSourceResponseMapper.createMovementListResponse(response);
-        } catch (MovementModelException | ModelMapperException ex) {
+        } catch (MovementModelException | MovementDomainException ex) {
             LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
+            throw new MovementServiceException("Error when getting movement list by query", ex, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -173,21 +177,15 @@ public class MovementServiceBean implements MovementService {
      * @throws MovementServiceException
      */
     @Override
-    public MovementType getById(String id) throws MovementServiceException {
-        try {
-            LOG.debug("Get list invoked in service layer");
-            MovementType response = model.getMovementByGUID(id);
+    public MovementType getById(String id) {
+        LOG.debug("Get list invoked in service layer");
+        MovementType response = model.getMovementByGUID(id);
 
-            if (response == null) {
-                LOG.error("[ Error when getting list, response from JMS Queue is null ]");
-                throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
-            }
-
-            return response;
-        } catch (MovementModelException ex) {
-            LOG.error("[ Error when getting movement by guid ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement by guid]", ex);
+        if (response == null) {
+            LOG.error("[ Error when getting list, response from JMS Queue is null ]");
+            throw new MovementServiceRuntimeException("Error when getting list, response from JMS Queue is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
+        return response;
     }
 
 
@@ -200,7 +198,7 @@ public class MovementServiceBean implements MovementService {
     }
 
     @Override
-    public SimpleResponse createMovementBatch(List<MovementBaseType> query) {
+    public SimpleResponse createMovementBatch(List<MovementBaseType> query) throws MovementServiceException {
         LOG.debug("Create invoked in service layer");
         try {
 
@@ -223,56 +221,38 @@ public class MovementServiceBean implements MovementService {
             producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
 
             return createdMovement;
-        } catch (MovementServiceException | AuditModelMarshallException | MovementMessageException ex) {
+        } catch (MovementDomainException | AuditModelMarshallException | MovementMessageException ex) {
             throw new EJBException("createMovementBatch failed", ex);
         }
     }
 
     @Override
-    public List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementServiceException {
+    public List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) {
         LOG.debug("GetLatestMovementsByConnectIds invoked in service layer");
-        try {
-            List<MovementType> latestMovements = model.getLatestMovementsByConnectIds(connectIds);
-            return MovementMapper.mapToMovementDtoList(latestMovements);
-        } catch (MovementModelException ex) {
-            throw new MovementServiceException(ex.getMessage(), ex);
-        }
+        List<MovementType> latestMovements = model.getLatestMovementsByConnectIds(connectIds);
+        return MovementMapper.mapToMovementDtoList(latestMovements);
     }
 
     @Override
-    public List<MovementDto> getLatestMovements(Integer numberOfMovements) throws MovementServiceException {
+    public List<MovementDto> getLatestMovements(Integer numberOfMovements) {
         LOG.debug("getLatestMovements invoked in service layer");
-        try {
-            List<MovementType> latestMovements = model.getLatestMovements(numberOfMovements);
-            return MovementMapper.mapToMovementDtoList(latestMovements);
-        } catch (MovementModelException ex) {
-            throw new MovementServiceException(ex.getMessage(), ex);
-        }
+        List<MovementType> latestMovements = model.getLatestMovements(numberOfMovements);
+        return MovementMapper.mapToMovementDtoList(latestMovements);
     }
 
     @Override
-    public GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementServiceException {
-        try {
-            LOG.debug("Get list invoked in service layer");
-            List<MovementType> movementListByAreaAndTimeInterval = model.getMovementListByAreaAndTimeInterval(criteria);
-            if (movementListByAreaAndTimeInterval == null) {
-                LOG.error("[ Error when getting list, response from JMS Queue is null ]");
-                throw new MovementServiceException("[ Error when getting list, response from JMS Queue is null ]");
-            }
-            return MovementDataSourceResponseMapper.mapMovementListAreaAndTimeIntervalResponse(movementListByAreaAndTimeInterval);
-        } catch (MovementDaoException | ModelMarshallException ex) {
-            LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
-            throw new MovementServiceException("[ Error when getting movement list by query ]", ex);
+    public GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) {
+        LOG.debug("Get list invoked in service layer");
+        List<MovementType> movementListByAreaAndTimeInterval = model.getMovementListByAreaAndTimeInterval(criteria);
+        if (movementListByAreaAndTimeInterval == null) {
+            LOG.error("[ Error when getting list, response from JMS Queue is null ]");
+            throw new MovementServiceRuntimeException("Error when getting list, response from JMS Queue is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
+        return MovementDataSourceResponseMapper.mapMovementListAreaAndTimeIntervalResponse(movementListByAreaAndTimeInterval);
     }
 
 	@Override
-	public List<AreaType> getAreas() throws MovementServiceException {
-		try {
-			return model.getAreas();
-		} catch (MovementModelException e) {
-			LOG.error("[ Error when getting areas. ] {}", e.getMessage());
-			throw new MovementServiceException("[ Error when getting areas. ]", e);
-		}
+	public List<AreaType> getAreas() {
+        return model.getAreas();
 	}
 }

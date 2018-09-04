@@ -6,20 +6,16 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
-import javax.transaction.SystemException;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -43,7 +39,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createThreeMovementTrackInOrder() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, SystemException {
+    public void createThreeMovementTrackInOrder() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -78,7 +74,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createFourMovementTrackInOrder() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, SystemException {
+    public void createFourMovementTrackInOrder() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -120,7 +116,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createFourMovementTrackOutOfOrder() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, SystemException {
+    public void createFourMovementTrackOutOfOrder() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -164,7 +160,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createVarbergGrenaNormal() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, SystemException {
+    public void createVarbergGrenaNormal() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
@@ -179,17 +175,17 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createVarbergGrenaBasedOnReversedOrder() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, SystemException {
+    public void createVarbergGrenaBasedOnReversedOrder() throws MovementDomainException {
         testVarbergGrenaBasedOnOrdering(ORDER_REVERSED);
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void createVarbergGrenaBasedOnRandomOrder() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, SystemException {
+    public void createVarbergGrenaBasedOnRandomOrder() throws MovementDomainException {
         testVarbergGrenaBasedOnOrdering(ORDER_RANDOM);
     }
 
-    private void testVarbergGrenaBasedOnOrdering(int order) throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, SystemException {
+    private void testVarbergGrenaBasedOnOrdering(int order) throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
@@ -229,7 +225,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createFishingTourVarberg() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException, SystemException {
+    public void createFishingTourVarberg() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
@@ -238,7 +234,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
             incomingMovementBean.processMovement(movement.getId());
             em.flush();
         }
-
         assertSegmentMovementIds(movementList);
     }
 
@@ -263,5 +258,4 @@ public class MovementSegmentIntTest extends TransactionalTests {
         }
         assertEquals(movementList.size(), i);
     }
-
 }

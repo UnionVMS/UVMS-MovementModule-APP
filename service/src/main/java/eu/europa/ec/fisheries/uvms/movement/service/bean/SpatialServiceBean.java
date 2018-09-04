@@ -19,6 +19,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.exception.SpatialModelMapperException;
@@ -39,8 +40,6 @@ import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- **/
 @LocalBean
 @Stateless
 public class SpatialServiceBean implements SpatialService {
@@ -69,8 +68,7 @@ public class SpatialServiceBean implements SpatialService {
             SpatialEnrichmentRS enrichment = SpatialModuleResponseMapper.mapToSpatialEnrichmentRSFromResponse(spatialResponse, spatialMessageId);
             return MovementMapper.enrichAndMapToMovementType(movement, enrichment);
         } catch (JMSException | SpatialModelMapperException | MovementMessageException | MessageException ex) {
-            throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex);
+            throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
-
 }

@@ -13,8 +13,9 @@ package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementSearchGroupDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchGroupDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,15 +29,9 @@ public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGro
     private static final Logger LOG = LoggerFactory.getLogger(MovementSearchGroupDaoBean.class);
 
     @Override
-    public MovementFilterGroup createMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementSearchGroupDaoException {
-        try {
-            em.persist(filterGroup);
-            return filterGroup;
-        }
-        catch (Exception e) {
-            LOG.error("[ Error when creating movement search filter group. ] {}", e.getMessage());
-            throw new MovementSearchGroupDaoException("Could not persist movement search filter group.", e);
-        }
+    public MovementFilterGroup createMovementFilterGroup(MovementFilterGroup filterGroup) {
+        em.persist(filterGroup);
+        return filterGroup;
     }
 
     @Override
@@ -46,45 +41,28 @@ public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGro
     }
 
     @Override
-    public List<MovementFilterGroup> getMovementFilterGroupsByUser(String user) throws MovementSearchGroupDaoException {
-        try {
-            LOG.debug("Get movement groups by user.");
-            TypedQuery<MovementFilterGroup> query = em.createNamedQuery(UvmsConstants.GROUP_VESSEL_BY_USER, MovementFilterGroup.class);
-            query.setParameter("user", user);
-            List<MovementFilterGroup> resultList = query.getResultList();
-            return resultList;
-        }
-        catch (Exception e) {
-            LOG.error("[ Error when getting movement filter groups by user. ] {}", e.getMessage());
-            throw new MovementSearchGroupDaoException("Could not get movement filter groups by user.", e);
-        }
-    }
-
-    public MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementSearchGroupDaoException {
-        try {
-            //Sanity check on id to prevent create operation instead of update operation.
-            if(filterGroup.getId() != null && getMovementFilterGroupById(filterGroup.getId().intValue()) != null) {
-                filterGroup = em.merge(filterGroup);
-                em.flush();
-            } else {
-                throw new MovementSearchGroupDaoException("Missing id or filtergroup with matching id.");
-            }
-            return filterGroup;
-        } catch (Exception e) {
-            LOG.error("[ Error when updating entity ] {}", e.getMessage());
-            throw new MovementSearchGroupDaoException("[ Error when updating entity ]", e);
-        }
+    public List<MovementFilterGroup> getMovementFilterGroupsByUser(String user) {
+        LOG.debug("Get movement groups by user.");
+        TypedQuery<MovementFilterGroup> query = em.createNamedQuery(UvmsConstants.GROUP_VESSEL_BY_USER, MovementFilterGroup.class);
+        query.setParameter("user", user);
+        return query.getResultList();
     }
 
     @Override
-    public MovementFilterGroup deleteMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementSearchGroupDaoException {
-        try {
-            em.remove(filterGroup);
-            return filterGroup;
+    public MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementDomainException {
+        //Sanity check on id to prevent create operation instead of update operation.
+        if(filterGroup.getId() != null && getMovementFilterGroupById(filterGroup.getId().intValue()) != null) {
+            filterGroup = em.merge(filterGroup);
+            em.flush();
+        } else {
+            throw new MovementDomainException("Missing ID or filterGroup with matching ID.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
-        catch (Exception e) {
-            LOG.error("[ Error when deleting filter group. ] {}", e.getMessage());
-            throw new MovementSearchGroupDaoException("Could not delete movement filter group.", e);
-        }
+        return filterGroup;
+    }
+
+    @Override
+    public MovementFilterGroup deleteMovementFilterGroup(MovementFilterGroup filterGroup) {
+        em.remove(filterGroup);
+        return filterGroup;
     }
 }

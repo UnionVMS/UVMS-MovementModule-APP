@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import javax.ejb.EJB;
 
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,21 +22,24 @@ import com.vividsolutions.jts.geom.LineString;
 
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.LatLong;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 @RunWith(Arquillian.class)
 public class GeometryUtilTest extends TransactionalTests {
 
-	
+	@EJB
+	private MovementBatchModelBean movementBatchModelBean;
+
+	@EJB
+	private MovementDao movementDao;
+
+	@EJB
+	private IncomingMovementBean incomingMovementBean;
+
 	@Test
 	public void testGetLineString() {
 		Coordinate[] input = new Coordinate[5];
@@ -70,27 +74,14 @@ public class GeometryUtilTest extends TransactionalTests {
 			 
 		}
 		
-		
 		input = null;
 		output = GeometryUtil.getLineString(input);
 		
 		assertTrue(output.isEmpty());
-		
 	}
-	
-	
-	@EJB
-    private MovementBatchModelBean movementBatchModelBean;
 
-    @EJB
-    private MovementDao movementDao;
-
-    @EJB
-    private IncomingMovementBean incomingMovementBean;
-	
-	
 	@Test
-	public void testGetCoordinateSequenceFromMovements() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException {
+	public void testGetCoordinateSequenceFromMovements() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -116,12 +107,12 @@ public class GeometryUtilTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLineStringFromMovments() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException {
+	public void testGetLineStringFromMovments() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		
 		List<Movement> varbergGrenaTourReverse = movementHelpers.createVarbergGrenaMovements(2, 100, connectId);
-		LineString output = GeometryUtil.getLineStringFromMovments(varbergGrenaTourReverse);
+		LineString output = GeometryUtil.getLineStringFromMovements(varbergGrenaTourReverse);
 		List<Movement> varbergGrenaTourOrdered = movementHelpers.createVarbergGrenaMovements(1, 100, connectId);
 		System.out.println(varbergGrenaTourOrdered.size() + " " + output.getNumPoints());
 		for(int i = 0 ; i < varbergGrenaTourOrdered.size() ; i++) {
@@ -130,12 +121,10 @@ public class GeometryUtilTest extends TransactionalTests {
 		}
 		varbergGrenaTourOrdered = null;
 		try {
-			output = GeometryUtil.getLineStringFromMovments(varbergGrenaTourOrdered);
+			output = GeometryUtil.getLineStringFromMovements(varbergGrenaTourOrdered);
 			fail("Null should result in an exception");
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
-		
 	}
-	
 }

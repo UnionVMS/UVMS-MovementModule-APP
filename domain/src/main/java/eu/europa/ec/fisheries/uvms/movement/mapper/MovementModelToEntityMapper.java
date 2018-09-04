@@ -15,6 +15,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +26,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
@@ -34,9 +35,9 @@ import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 
 public class MovementModelToEntityMapper {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementModelToEntityMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementModelToEntityMapper.class);
 
-    public static Movement mapNewMovementEntity(MovementType movement, String username) throws MovementDaoMappingException {
+    public static Movement mapNewMovementEntity(MovementType movement, String username) throws MovementDomainException {
         try {
             Movement entity = new Movement();
 
@@ -97,7 +98,7 @@ public class MovementModelToEntityMapper {
             return entity;
         } catch (Exception e) {
             LOG.error("[ ERROR when mapping to Movement entity: < mapNewMovementEntity > ]");
-            throw new MovementDaoMappingException("Error when mapping to Movement Entity ", e);
+            throw new MovementDomainException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
     }
 
@@ -124,7 +125,7 @@ public class MovementModelToEntityMapper {
         return meta;
     }
 
-    public static Activity createActivity(MovementBaseType movement) throws MovementDaoMappingException {
+    public static Activity createActivity(MovementBaseType movement) throws MovementDomainException {
         try {
             Activity activity = new Activity();
             activity.setActivityType(movement.getActivity().getMessageType());
@@ -135,7 +136,7 @@ public class MovementModelToEntityMapper {
             return activity;
         } catch (Exception e) {
             LOG.error("[ ERROR when mapping to Activity entity: < createActivity > ]");
-            throw new MovementDaoMappingException("ERROR when mapping to Activity entity ", e);
+            throw new MovementDomainException("ERROR when mapping to Activity entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
     }
 
@@ -157,5 +158,4 @@ public class MovementModelToEntityMapper {
         newArea.setAreaUpdattim(DateUtil.nowUTC());
         return newArea;
     }
-
 }

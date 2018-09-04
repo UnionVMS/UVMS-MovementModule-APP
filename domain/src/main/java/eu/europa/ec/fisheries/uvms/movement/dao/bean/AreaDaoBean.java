@@ -14,8 +14,7 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
@@ -23,45 +22,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 
 @LocalBean
 @Stateless
 public class AreaDaoBean extends Dao implements AreaDao {
 
-    final static Logger LOG = LoggerFactory.getLogger(AreaDaoBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AreaDaoBean.class);
 
     @Override
-    public List<Area> getAreas() throws AreaDaoException {
-        try {
-            return em.createNamedQuery(UvmsConstants.AREA_FIND_ALL, Area.class).getResultList();
-        } catch (Exception e) {
-            LOG.error(" [ Error when getting areas. ] {}", e.getMessage());
-            throw new AreaDaoException(" [ Error when getting areas. ]", e);
-        }
+    public List<Area> getAreas() {
+        TypedQuery<Area> namedQuery = em.createNamedQuery(UvmsConstants.AREA_FIND_ALL, Area.class);
+        return namedQuery.getResultList();
     }
 
     @Override
-    public Area createMovementArea(Area area) throws AreaDaoException {
-        try {
-            em.persist(area);
-            return area;
-        } catch (Exception e) {
-            LOG.error("[ Error when creating movement area. ] {}", e.getMessage());
-            throw new AreaDaoException(" [ Error when creating movement area. ] ", e);
-        }
+    public Area createMovementArea(Area area) {
+        em.persist(area);
+        return area;
     }
 
     @Override
-    public void flushMovementAreas() throws AreaDaoException {
-
-        try {
-            em.flush();
-        } catch (Exception e) {
-            LOG.error(" [ Error when flushing movement area. ] ");
-            throw new AreaDaoException(" [ Error when flushing movement area. ] ", e);
-        }
+    public void flushMovementAreas() {
+        em.flush();
     }
 
     @Override

@@ -15,8 +15,8 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchGroupDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 
 @Local
 public interface MovementSearchGroupDao {
@@ -26,39 +26,39 @@ public interface MovementSearchGroupDao {
      * 
      * @param filterGroup a filter group
      * @return the created filter group
-     * @throws MovementSearchGroupDaoException if unable to successfully create the filter group
+     * @throws MovementDomainException if unable to successfully create the filter group
      */
-    MovementFilterGroup createMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementSearchGroupDaoException;
+    MovementFilterGroup createMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementDomainException;
 
     /**
      * @param groupId a group ID of a filter group
      * @return a filter group
-     * @throws MovementSearchGroupDaoException if unable to successfully load the filter group from the database
+     * @throws MovementDomainException if unable to successfully load the filter group from the database
      */
-    MovementFilterGroup getMovementFilterGroupById(Integer groupId) throws MovementSearchGroupDaoException;
+    MovementFilterGroup getMovementFilterGroupById(Integer groupId) throws MovementDomainException;
 
     /**
      * @param user a user
      * @return all filter groups belonging to the user
-     * @throws MovementSearchGroupDaoException if unable to successfully load list of filter groups from the database
+     * @throws MovementDomainException if unable to successfully load list of filter groups from the database
      */
-    List<MovementFilterGroup> getMovementFilterGroupsByUser(String user) throws MovementSearchGroupDaoException;
+    List<MovementFilterGroup> getMovementFilterGroupsByUser(String user) throws MovementDomainException;
 
     /**
      * Updates the filter group with the same ID.
      * 
      * @param filterGroup a filter group
      * @return the updated filter group
-     * @throws MovementSearchGroupDaoException if unable to successfully update the filter group
+     * @throws MovementDomainException if unable to successfully update the filter group
      */
-    MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementSearchGroupDaoException;
+    MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementDomainException;
 
     /**
      * 
      * @param filterGroup a filter group
      * @return the filter group deleted from the database
-     * @throws MovementSearchGroupDaoException if unable to successfully delete the filter group from the database
+     * @throws MovementDomainException if unable to successfully delete the filter group from the database
      */
-    MovementFilterGroup deleteMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementSearchGroupDaoException;
+    MovementFilterGroup deleteMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementDomainException;
 
 }

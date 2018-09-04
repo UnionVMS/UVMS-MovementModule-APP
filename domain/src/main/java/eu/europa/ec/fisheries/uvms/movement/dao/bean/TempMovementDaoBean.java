@@ -12,8 +12,9 @@ package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.dao.TempMovementDao;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,42 +34,38 @@ public class TempMovementDaoBean extends Dao implements TempMovementDao {
     }
 
     @Override
-    public TempMovement getTempMovementByGuid(String guid) throws MovementDaoException {
+    public TempMovement getTempMovementByGuid(String guid) {
         try {
             TypedQuery<TempMovement> query = em.createNamedQuery("TempMovement.findByGuidId", TempMovement.class);
             query.setParameter("guid", guid);
-            TempMovement tempMovement = query.getSingleResult();
-            return tempMovement;
+            return query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException e) {
             LOG.error("[ Error when fetching temp movement. ] {}", e.getMessage());
-            throw new MovementDaoException(13, "[ Error when fetching temp movement. ]", e);
+            throw new MovementDomainRuntimeException("Error when fetching temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
     @Override
-    public List<TempMovement> getTempMovementListPaginated(Integer page, Integer listSize) throws MovementDaoException {
+    public List<TempMovement> getTempMovementListPaginated(Integer page, Integer listSize) {
         try {
             TypedQuery<TempMovement> query = em.createNamedQuery("TempMovement.findAllOrdered", TempMovement.class);
             query.setFirstResult(listSize * (page - 1));
             query.setMaxResults(listSize);
-            List<TempMovement> resultList = query.getResultList();
-            return resultList;
-        } catch (NoResultException | NonUniqueResultException e) {
-            LOG.error("[ Error when fetching temp movment list. ] {}", e.getMessage());
-            throw new MovementDaoException(13, "[ Error when fetching temp movement list. ]", e);
+            return query.getResultList();
+        } catch (RuntimeException e) {
+            LOG.error("[ Error when fetching temp movement list. ] {}", e.getMessage());
+            throw new MovementDomainRuntimeException("[ Error when fetching temp movement list. ]", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
     @Override
-    public Long getTempMovementListCount() throws MovementDaoException {
+    public Long getTempMovementListCount() {
         try {
             TypedQuery<Long> query = em.createNamedQuery("TempMovement.count", Long.class);
-            Long singleResult = query.getSingleResult();
-            return singleResult;
+            return query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException e) {
-            LOG.error("[ Error when fetching temp movment list count. ] {}", e.getMessage());
-            throw new MovementDaoException(13, "[ Error when fetching temp movement list count. ]", e);
+            LOG.error("[ Error when fetching temp movement list count. ] {}", e.getMessage());
+            throw new MovementDomainRuntimeException("Error when fetching temp movement list count. ]", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
-
 }

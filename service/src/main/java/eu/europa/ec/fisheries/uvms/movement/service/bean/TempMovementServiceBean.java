@@ -22,18 +22,19 @@ import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshal
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.bean.TempMovementDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -79,7 +80,7 @@ public class TempMovementServiceBean implements TempMovementService {
                 LOG.error("Failed to send audit log message! Temp Movement with guid {} was created ", createdMovement.getGuid());
             }
             return createdMovement;
-        } catch (MovementModelException e) {
+        } catch (MovementDomainException e) {
             LOG.error("[ Error when creating temp movement. ] {}", e.getMessage());
             throw new EJBException("Error when creating temp movement: " + e.getMessage(), e);
         }
@@ -90,9 +91,9 @@ public class TempMovementServiceBean implements TempMovementService {
         checkUsernameProvided(username);
         try {
             return tempMovementModel.archiveTempMovement(guid, username);
-        } catch (MovementModelException e) {
+        } catch (MovementDomainException e) {
             LOG.error("[ Error when updating temp movement status. ] {}", e.getMessage());
-            throw new MovementServiceException("Error when updating temp movement status", e);
+            throw new MovementServiceException("Error when updating temp movement status", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -101,9 +102,9 @@ public class TempMovementServiceBean implements TempMovementService {
         checkUsernameProvided(username);
         try {
             return tempMovementModel.updateTempMovement(tempMovementType, username);
-        } catch (MovementModelException e) {
+        } catch (MovementDomainException e) {
             LOG.error("[ Error when updating temp movement. ] {}", e.getMessage());
-            throw new MovementServiceException("Error when updating temp movement", e);
+            throw new MovementServiceException("Error when updating temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -112,9 +113,9 @@ public class TempMovementServiceBean implements TempMovementService {
         try {
             TempMovementsListResponseDto tempMovements = tempMovementModel.getTempMovementList(query);
             return MovementDataSourceResponseMapper.tempMovementListResponse(tempMovements);
-        } catch (MovementModelException | ModelMarshallException e) {
+        } catch (MovementDomainException e) {
             LOG.error("[ Error when updating temp movement. ] {}", e.getMessage());
-            throw new MovementServiceException("Error when updating temp movement", e);
+            throw new MovementServiceException("Error when updating temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -130,12 +131,12 @@ public class TempMovementServiceBean implements TempMovementService {
             String exchangeMessageId = producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
             consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
             return movement;
-        }catch ( MovementModelException | MovementMessageException | MessageException e) {
+        }catch ( MovementDomainException | MovementMessageException | MessageException e) {
             LOG.error("[ Error when sending temp movement status. ] {}", e.getMessage());
-            throw new MovementServiceException("Error when sending temp movement status", e);
+            throw new MovementServiceException("Error when sending temp movement status", e, ErrorCode.JMS_SENDING_ERROR);
         } catch (ExchangeModelMarshallException ex) {
             LOG.error("[ Error when marshaling exchange request. ] {}", ex.getMessage());
-            throw new MovementServiceException("Error when marshaling exchange request.", ex);
+            throw new MovementServiceException("Error when marshaling exchange request.", ex, ErrorCode.EXCHANGE_MARSHALLING_ERROR);
         }
     }
 
@@ -143,8 +144,8 @@ public class TempMovementServiceBean implements TempMovementService {
     public TempMovementType getTempMovement(String guid) throws MovementServiceException {
         try {
             return tempMovementModel.getTempMovement(guid);
-        } catch (MovementModelException e) {
-            throw new MovementServiceException("Error when getting temp movement", e);
+        } catch (MovementDomainException e) {
+            throw new MovementServiceException("Error when getting temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -156,21 +157,21 @@ public class TempMovementServiceBean implements TempMovementService {
         }
     }
 
-    private void checkUsernameProvided(String username) throws MovementServiceException {
+    private void checkUsernameProvided(String username) {
         if(username == null || username.isEmpty()){
-            throw new MovementServiceException("Username in TempMovementRequest cannot be empty");
+            throw new MovementServiceRuntimeException("Username in TempMovementRequest cannot be empty", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
     }
 
     private void validatePosition(MovementPoint point) throws MovementServiceException {
         if (point.getLongitude() == null || point.getLatitude() == null) {
-            throw new MovementServiceException("Longitude and/or latitude is missing.");
+            throw new MovementServiceRuntimeException("Longitude and/or latitude is missing.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (Math.abs(point.getLatitude()) > 90) {
-            throw new MovementServiceException("Latitude is outside range.");
+            throw new MovementServiceException("Latitude is outside range.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (Math.abs(point.getLongitude()) > 180) {
-            throw new MovementServiceException("Longitude is outside range.");
+            throw new MovementServiceException("Longitude is outside range.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
     }
 }

@@ -14,7 +14,6 @@ package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 import java.util.HashMap;
@@ -41,8 +40,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
-/**
- **/
 public class MessageConsumerBeanTest {
 /*
     @Mock

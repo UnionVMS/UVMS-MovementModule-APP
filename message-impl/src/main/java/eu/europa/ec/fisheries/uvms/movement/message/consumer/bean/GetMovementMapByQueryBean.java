@@ -6,8 +6,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
@@ -26,7 +25,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class GetMovementMapByQueryBean {
 
-    final static Logger LOG = LoggerFactory.getLogger(GetMovementMapByQueryBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetMovementMapByQueryBean.class);
 
     @Inject
     @ErrorEvent
@@ -45,12 +44,11 @@ public class GetMovementMapByQueryBean {
             GetMovementMapByQueryResponse movementList = movementService.getMapByQuery(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapToMovementMapResponse(movementList.getMovementMap());
             messageProducer.sendMessageBackToRecipient(textMessage, responseString);
-        } catch (MovementDuplicateException | ModelMarshallException | MovementMessageException | MovementServiceException ex) {
+        } catch (MovementMessageException | MovementServiceException | MovementModelException ex) {
             LOG.error("[ Error when creating getMovementMapByQuery ] ", ex);
             EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
             errorEvent.fire(eventMessage);
             throw new EJBException(ex);
         }
     }
-
 }

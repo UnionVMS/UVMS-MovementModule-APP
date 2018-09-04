@@ -26,5 +26,4 @@ public enum AuditObjectTypeEnum {
     public String getValue() {
         return value;
     }
-
 }

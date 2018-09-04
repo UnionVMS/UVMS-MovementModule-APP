@@ -15,22 +15,21 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 
 @Local
 public interface AreaDao {
 
     /**
      * @return list of all areas
-     * @throws AreaDaoException if unsuccessful
+     * @throws MovementDomainException if unsuccessful
      */
-    List<Area> getAreas() throws AreaDaoException;
+    List<Area> getAreas() throws MovementDomainException;
 
-    Area createMovementArea(Area area) throws AreaDaoException;
+    Area createMovementArea(Area area) throws MovementDomainException;
 
-    void flushMovementAreas() throws AreaDaoException;
+    void flushMovementAreas() throws MovementDomainException;
 
-    Area readMovementAreaById(Long id) throws AreaDaoException;
-
+    Area readMovementAreaById(Long id) throws MovementDomainException;
 }

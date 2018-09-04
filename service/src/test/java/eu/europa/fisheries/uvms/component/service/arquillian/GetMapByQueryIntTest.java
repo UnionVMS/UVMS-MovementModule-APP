@@ -2,8 +2,6 @@ package eu.europa.fisheries.uvms.component.service.arquillian;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -27,7 +25,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
 
     @Test(expected = MovementServiceException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryIsNotAllowed() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
+    public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryIsNotAllowed() throws MovementServiceException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(true, false, false);
@@ -36,7 +34,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
 
     @Test(expected = MovementServiceException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryThrowsMovementServiceException() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
+    public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryThrowsMovementServiceException() throws MovementServiceException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(true, false, false);
@@ -47,7 +45,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
     //ToDo: This enum is mapped by the SearchField enum toward the MovementTypeType enum. One solution could be to remove the setValue() method in the ListCriteria class.
     @Test(expected = EJBException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementMapByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() throws JMSException, ModelMarshallException, MovementServiceException, MovementDuplicateException {
+    public void getMovementMapByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() throws MovementServiceException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 

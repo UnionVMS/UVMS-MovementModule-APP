@@ -20,7 +20,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,13 +46,9 @@ public class AreaRestResource {
         try {
             List<AreaType> areas = movementService.getAreas();
             return new ResponseDto(areas, ResponseCode.OK);
-        } catch (MovementDuplicateException ex) {
-            LOG.error("[ Error when getting areas. ] {}", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         } catch (Exception e) {
             LOG.error("[ Error when getting areas. ] {}", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
     }
-
 }

@@ -5,7 +5,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -17,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -42,7 +40,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void create() throws MovementServiceException, MovementDuplicateException {
+    public void create() throws MovementServiceException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
         em.flush();
@@ -62,7 +60,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createWithGivenId() throws MovementDuplicateException {
+    public void createWithGivenId() {
         String id = UUID.randomUUID().toString();
         TempMovementType tempMovementType = createTempMovement();
         tempMovementType.setGuid(id);
@@ -78,7 +76,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getTempMovement() throws MovementServiceException, MovementDuplicateException {
+    public void getTempMovement() throws MovementServiceException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
         em.flush();
@@ -97,7 +95,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
             tt = tempMovementService.getTempMovement("TEST");
         } catch (MovementServiceException e) {
             Assert.assertTrue(e.getMessage().contains("Error when getting temp movement"));
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             Assert.assertTrue("This should not be happening", false);
         }
         Assert.assertNull(tt);
@@ -105,7 +103,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void updateTempMovement() throws MovementServiceException, MovementDuplicateException {
+    public void updateTempMovement() throws MovementServiceException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
         em.flush();
@@ -129,7 +127,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void archiveTempMovement() throws MovementServiceException, MovementDuplicateException {
+    public void archiveTempMovement() throws MovementServiceException {
         TempMovementType tempMovementType = createTempMovement();
         TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
         em.flush();
@@ -146,7 +144,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void archiveTempMovementWithBogusId() throws MovementDuplicateException {
+    public void archiveTempMovementWithBogusId() {
         String id = "BOGUS";
 
         try {
@@ -184,5 +182,4 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         //tempMovementType.setUpdatedTime();
         return tempMovementType;
     }
-
 }

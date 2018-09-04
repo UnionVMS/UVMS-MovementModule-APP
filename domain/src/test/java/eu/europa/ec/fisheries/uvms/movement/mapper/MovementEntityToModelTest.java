@@ -4,35 +4,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
 
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequenceFactory;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
@@ -44,20 +37,13 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
 
 @RunWith(Arquillian.class)
 public class MovementEntityToModelTest extends TransactionalTests {
@@ -72,7 +58,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
     private IncomingMovementBean incomingMovementBean;
 	
 	@Test
-	public void testMovementBaseType() throws MovementDaoException, MovementModelException, MovementDuplicateException {
+	public void testMovementBaseType() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -99,7 +85,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test //TODO make this into an actual test, just need to understand minimal movement first
-	public void testMapToMovementTypeWithMinimalMovementInput() throws MovementDaoException, MovementModelException, MovementDuplicateException {
+	public void testMapToMovementTypeWithMinimalMovementInput() {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -113,7 +99,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		//movement.setStatus(status);
 	}
 	@Test
-	public void testMapToMovementTypeWithMovementInput() throws MovementDaoException, MovementModelException, MovementDuplicateException {
+	public void testMapToMovementTypeWithMovementInput() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -179,7 +165,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testMapToMovementTypeWithAListOfMovements() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testMapToMovementTypeWithAListOfMovements() throws MovementDomainException {
 		//Most of the method is tested by testMapToMovementType
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
@@ -198,11 +184,10 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		} catch (Exception e) {
 			assertTrue(true);
 		}
-		
 	}
 	
 	@Test
-	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -230,7 +215,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testMapToMovementSegment() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testMapToMovementSegment() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -262,7 +247,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testOrderMovementsByConnectId() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testOrderMovementsByConnectId() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		List<String> connectId = new ArrayList();
 		List<Movement> input = new ArrayList();
@@ -286,11 +271,10 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
-		
 	}
 	
 	@Test
-	public void testExtractSegments() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testExtractSegments() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
@@ -336,7 +320,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testExtractTracks() throws MovementDaoException, MovementDuplicateException, MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException {
+	public void testExtractTracks() throws MovementModelException, MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		ArrayList<Movement> movementList = new ArrayList(movementHelpers.createFishingTourVarberg(1, connectId));
@@ -359,7 +343,5 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
-		
 	}
-	
 }

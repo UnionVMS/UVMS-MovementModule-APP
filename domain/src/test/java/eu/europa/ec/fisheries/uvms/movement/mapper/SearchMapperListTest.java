@@ -19,14 +19,12 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
-import eu.europa.ec.fisheries.uvms.movement.exception.SearchMapperException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -48,13 +46,13 @@ public class SearchMapperListTest extends TransactionalTests {
     private static final String NO_DUPLICATE = "WHERE  m.duplicate = false ";
 
     @Test
-    public void testCreateSearchSql() throws ParseException, SearchMapperException {
+    public void testCreateSearchSql() throws ParseException, MovementDomainException {
         String data = SearchFieldMapper.createSelectSearchSql(null, true);
         assertEquals(INITIAL_SELECT +NO_DUPLICATE + ORDER_BY, data);
     }
     
     @Test
-    public void testGetOrdinalValueFromEnum() throws SearchMapperException {
+    public void testGetOrdinalValueFromEnum() throws MovementDomainException {
 
         for (MovementTypeType mt : MovementTypeType.values()) {
             Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mt.name(), SearchField.MOVMENT_TYPE));
@@ -78,7 +76,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
 
     @Test
-    public void testSearchFieldSegmentId() throws MovementDaoMappingException, ParseException, SearchMapperException {
+    public void testSearchFieldSegmentId() throws ParseException, MovementDomainException {
         List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -105,7 +103,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
     
     @Test
-    public void testSearchFieldCategory() throws MovementDaoMappingException, ParseException, SearchMapperException {
+    public void testSearchFieldCategory() throws ParseException, MovementDomainException {
         List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -131,9 +129,8 @@ public class SearchMapperListTest extends TransactionalTests {
                 "WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
     }
     
-    
     @Test
-    public void testCreateMinimalSelectSearchSql() throws MovementDaoMappingException, SearchMapperException, ParseException {
+    public void testCreateMinimalSelectSearchSql() throws ParseException, MovementDomainException {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -148,10 +145,9 @@ public class SearchMapperListTest extends TransactionalTests {
         String data = SearchFieldMapper.createMinimalSelectSearchSql(mapSearchField, true);
         assertEquals("SELECT DISTINCT  m FROM MinimalMovement m INNER JOIN FETCH m.movementConnect mc  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ", data);
     }
-    
-    
+
     @Test
-    public void testMultipleSearchFieldCategorys() throws MovementDaoMappingException, SearchMapperException, ParseException {
+    public void testMultipleSearchFieldCategorys() throws ParseException, MovementDomainException {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -178,7 +174,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
     
     @Test
-    public void testCreateCountSearchSql() throws MovementDaoMappingException, SearchMapperException, ParseException {
+    public void testCreateCountSearchSql() throws ParseException, MovementDomainException {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -196,10 +192,8 @@ public class SearchMapperListTest extends TransactionalTests {
         		+ " LEFT JOIN marea.movareaAreaId area  LEFT JOIN area.areaType mareatype  WHERE m.movementSource = 3 AND  m.duplicate = false ";
         assertEquals(correctOutput, data);
     }
-    
-    
+
     private SearchValue getSearchValue(String value, SearchField field) {
         return new SearchValue(field, value);
     }
-
 }

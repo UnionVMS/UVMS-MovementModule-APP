@@ -6,12 +6,10 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.SegmentBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -42,7 +40,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createSegmentOnFirstMovement() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException {
+    public void createSegmentOnFirstMovement() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -85,7 +83,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException {
+    public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -128,7 +126,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void splitSegment() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException, MovementModelException {
+    public void splitSegment() throws MovementDomainException, MovementModelException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         // TODO nothing indicates that this splitFunction actually works
@@ -190,7 +188,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createNewTrack() throws MovementDaoMappingException, MovementDaoException, GeometryUtilException {
+    public void createNewTrack() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -246,7 +244,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createNewTrack_onSegmentMovement() throws MovementDaoException, MovementDaoMappingException, GeometryUtilException {
+    public void createNewTrack_onSegmentMovement() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -269,7 +267,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void upsertTrack() throws MovementDaoException, MovementDaoMappingException, GeometryUtilException {
+    public void upsertTrack() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         Calendar cal = Calendar.getInstance();
@@ -312,7 +310,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void upsertTrack5() throws MovementDaoException, MovementDaoMappingException, GeometryUtilException {
+    public void upsertTrack5() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         Calendar cal = Calendar.getInstance();
@@ -373,7 +371,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void updateTrack() throws MovementDaoException, MovementDaoMappingException, GeometryUtilException {
+    public void updateTrack() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         Calendar cal = Calendar.getInstance();
@@ -411,7 +409,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void addMovementBeforeFirst() throws MovementDaoException, MovementModelException, MovementDaoMappingException, GeometryUtilException {
+    public void addMovementBeforeFirst() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         // TODO better evaluation of results
@@ -475,5 +473,4 @@ public class SegmentBeanIntTest extends TransactionalTests {
         assertEquals(id3, firstMovement.getId());
         assertEquals(id4, secondMovement.getId());
     }
-    
 }

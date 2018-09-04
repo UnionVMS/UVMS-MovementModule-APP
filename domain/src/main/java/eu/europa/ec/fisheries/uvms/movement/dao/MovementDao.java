@@ -18,7 +18,7 @@ import javax.ejb.Local;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import java.util.Date;
 
@@ -30,45 +30,45 @@ public interface MovementDao {
      * @param <T>
      * @param entity
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public <T> T create(T entity) throws MovementDaoException;
+    public <T> T create(T entity) throws MovementDomainException;
 
     /**
      *
      * @param <T>
      * @param entity
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public <T> T merge(T entity) throws MovementDaoException;
+    public <T> T merge(T entity) throws MovementDomainException;
 
     /**
      *
      * @param <T>
      * @param entity
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    <T> T persist(T entity) throws MovementDaoException;
+    <T> T persist(T entity) throws MovementDomainException;
 
     /**
      * Get entity by internal entity id
      *
      * @param id
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
     @Deprecated
-    public Movement getEntityById(String id) throws MovementDaoException;
+    public Movement getEntityById(String id) throws MovementDomainException;
 
     /**
      * Get all entities (FIND_ALL)
      *
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public List<Movement> getListAll() throws MovementDaoException;
+    public List<Movement> getListAll() throws MovementDomainException;
 
     /**
      *
@@ -80,9 +80,9 @@ public interface MovementDao {
      * @param sql
      * @param searchKeyValues
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public List<Movement> getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDaoException;
+    public List getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException;
 
     /**
      *
@@ -94,9 +94,9 @@ public interface MovementDao {
      * @param sql
      * @param searchKeyValues
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public List<MinimalMovement> getMinimalMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDaoException;
+    public List<MinimalMovement> getMinimalMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException;
 
     /**
      *
@@ -106,11 +106,11 @@ public interface MovementDao {
      * @param sql
      * @param searchKeyValues
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues) throws MovementDaoException;
+    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues) throws MovementDomainException;
 
-    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues, int numberOfReports) throws MovementDaoException;
+    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues, int numberOfReports) throws MovementDomainException;
 
     /**
      *
@@ -120,60 +120,57 @@ public interface MovementDao {
      * @param countSql
      * @param searchKeyValues
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      * @throws com.vividsolutions.jts.io.ParseException
      */
-    public Long getMovementListSearchCount(String countSql, List<SearchValue> searchKeyValues) throws MovementDaoException, ParseException;
+    public Long getMovementListSearchCount(String countSql, List<SearchValue> searchKeyValues) throws MovementDomainException, ParseException;
 
     /**
      *
      * @param movement
      * @param movementConnect
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public void upsertLatestMovement(Movement movement, MovementConnect movementConnect) throws MovementDaoException;
+    public void upsertLatestMovement(Movement movement, MovementConnect movementConnect) throws MovementDomainException;
 
     /**
      *
      * @param movementConnectValue
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
 
-    public Movement getFirstMovement(String movementConnectValue) throws MovementDaoException;
+    public Movement getFirstMovement(String movementConnectValue) throws MovementDomainException;
 
 
     /**
      *
      * @param id
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    public MovementConnect getMovementConnectByConnectId(String id) throws MovementDaoException;
+    public MovementConnect getMovementConnectByConnectId(String id) throws MovementDomainException;
 
     /**
      *
      * @param criteria
      * @return
-     * @throws MovementDaoException
+     * @throws MovementDomainException
      */
-    List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementDaoException;
+    List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementDomainException;
 
-    List<LatestMovement> getLatestMovements(Integer numberOfMovements) throws MovementDaoException;
+    List<LatestMovement> getLatestMovements(Integer numberOfMovements) throws MovementDomainException;
 
-    List<Movement> getUnprocessedMovements() throws javax.persistence.NoResultException;
+    List<Movement> getUnprocessedMovements();
 
-    List<Long> getUnprocessedMovementIds() throws javax.persistence.NoResultException;
+    List<Long> getUnprocessedMovementIds();
 
     Movement getLatestMovement(String id, Date date);
 
     Movement getMovementById(Long id);
 
-    void flush() throws MovementDaoException;
+    void flush() throws MovementDomainException;
 
-    public MovementConnect createMovementConnect(MovementConnect movementConnect) throws MovementDaoException ;
-
-
-
-    }
+    public MovementConnect createMovementConnect(MovementConnect movementConnect) throws MovementDomainException ;
+}

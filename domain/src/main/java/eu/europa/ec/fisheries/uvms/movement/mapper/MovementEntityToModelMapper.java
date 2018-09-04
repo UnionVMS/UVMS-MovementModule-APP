@@ -24,9 +24,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
 import java.util.ArrayList;
@@ -43,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 public class MovementEntityToModelMapper {
 
-    static Logger LOG = LoggerFactory.getLogger(MovementEntityToModelMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementEntityToModelMapper.class);
 
     public static MovementBaseType mapToMovementBaseType(Movement movement) {
 
@@ -71,20 +69,13 @@ public class MovementEntityToModelMapper {
         model.setActivity(model.getActivity());
 
         MovementPoint movementPoint = new MovementPoint();
-        Point point = (Point) movement.getLocation();
+        Point point = movement.getLocation();
         movementPoint.setLatitude(point.getY());
         movementPoint.setLongitude(point.getX());
         model.setPosition(movementPoint);
-
-        try {
-            model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
-            LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
-        }
-
+        model.setConnectId(mapToConnectId(movement.getMovementConnect()));
         return model;
     }
-
 
     public static MovementType mapToMovementType(MinimalMovement movement) {
 
@@ -119,11 +110,7 @@ public class MovementEntityToModelMapper {
         movementPoint.setLongitude(point.getX());
         model.setPosition(movementPoint);
 
-        try {
-            model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
-            LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
-        }
+        model.setConnectId(mapToConnectId(movement.getMovementConnect()));
 
         if (movement.getFromSegment() != null) {
         	model.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
@@ -164,17 +151,13 @@ public class MovementEntityToModelMapper {
         model.setMovementType(movement.getMovementType());
 
         MovementPoint movementPoint = new MovementPoint();
-        Point point = (Point) movement.getLocation();
+        Point point = movement.getLocation();
 
         movementPoint.setLatitude(point.getY());
         movementPoint.setLongitude(point.getX());
         model.setPosition(movementPoint);
 
-        try {
-            model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
-            LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
-        }
+        model.setConnectId(mapToConnectId(movement.getMovementConnect()));
 
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
 
@@ -193,11 +176,8 @@ public class MovementEntityToModelMapper {
         }
 
         //Duplicated code from 20 lines above?
-        try {
-            model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-        } catch (MovementDaoException ex) {
-            LOG.debug("Error when mapping to carrier {} ", ex.getMessage());
-        }
+
+        model.setConnectId(mapToConnectId(movement.getMovementConnect()));
 
         if (model.getMetaData() != null) {
             model.getMetaData().getAreas().addAll(mapToMovementMetaDataAreaTypeList(movement.getMovementareaList()));
@@ -280,7 +260,7 @@ public class MovementEntityToModelMapper {
         return mappedMovements;
     }
 
-    public static String mapToConnectId(MovementConnect connect) throws MovementDaoException {
+    private static String mapToConnectId(MovementConnect connect) {
         if (connect != null) {
             return connect.getValue();
         }
@@ -326,7 +306,7 @@ public class MovementEntityToModelMapper {
         long start = System.currentTimeMillis();
         for (Movement movement : movements) {
             if (orderedMovements.get(movement.getMovementConnect().getValue()) == null) {
-                orderedMovements.put(movement.getMovementConnect().getValue(), new ArrayList<>(Arrays.asList(movement)));
+                orderedMovements.put(movement.getMovementConnect().getValue(), new ArrayList<>(Collections.singletonList(movement)));
             } else {
                 orderedMovements.get(movement.getMovementConnect().getValue()).add(movement);
             }
@@ -359,7 +339,7 @@ public class MovementEntityToModelMapper {
             return new ArrayList<>(segments);
         }
 
-        Collections.sort(movements, MovementComparator.MOVEMENT);
+        movements.sort(MovementComparator.MOVEMENT);
 
         for (int i = 0; i < movements.size(); i++) {
 
@@ -394,6 +374,4 @@ public class MovementEntityToModelMapper {
         LOG.debug("extractSegments: " + " ---- TIME ---- " + diff +"ms" );
         return new ArrayList<>(segments);
     }
-    
-
 }

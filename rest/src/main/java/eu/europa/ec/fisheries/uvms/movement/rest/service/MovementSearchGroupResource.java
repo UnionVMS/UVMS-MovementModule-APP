@@ -28,7 +28,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +43,7 @@ import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 @Stateless
 public class MovementSearchGroupResource {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementSearchGroupResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementSearchGroupResource.class);
 
     @EJB
     MovementSearchGroupService service;
@@ -70,7 +69,7 @@ public class MovementSearchGroupResource {
         } catch (MovementServiceException e) {
             LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -94,7 +93,7 @@ public class MovementSearchGroupResource {
         } catch (MovementServiceException e) {
             LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage() + ": " + e.getCause().getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -118,7 +117,7 @@ public class MovementSearchGroupResource {
         } catch (MovementServiceException e) {
             LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -142,7 +141,7 @@ public class MovementSearchGroupResource {
         } catch (MovementServiceException e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -165,7 +164,7 @@ public class MovementSearchGroupResource {
         } catch (MovementServiceException e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException e) {
+        } catch (Exception e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }

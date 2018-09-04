@@ -6,7 +6,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
@@ -47,7 +47,7 @@ public class CreateMovementBean {
             MovementType createdMovement = movementService.createMovement(createMovementRequest.getMovement(), createMovementRequest.getUsername());
             String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(createdMovement);
             messageProducer.sendMessageBackToRecipient(textMessage, responseString);
-        } catch (EJBException | MovementMessageException | ModelMarshallException ex) {
+        } catch (EJBException | MovementMessageException | MovementModelException ex) {
             LOG.error("[ Error when creating movement ] ", ex);
             EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
             errorEvent.fire(eventMessage);

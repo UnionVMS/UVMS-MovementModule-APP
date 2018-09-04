@@ -3,14 +3,12 @@ package eu.europa.ec.fisheries.uvms.movement.bean;
 import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.GeometryUtil;
@@ -34,15 +32,7 @@ public class SegmentBean {
     @EJB
     private MovementDaoBean dao;
 
-    /**
-     *
-     * @param fromMovement
-     * @param toMovement
-     * @throws MovementDaoException
-     * @throws GeometryUtilException
-     * @throws MovementDaoMappingException
-     */
-    public Segment createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementDaoException, GeometryUtilException, MovementDaoMappingException {
+    public Segment createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementDomainException {
         Segment segment = createSegment(fromMovement, toMovement);
         Track track = upsertTrack(fromMovement.getTrack(), segment, toMovement);
         fromMovement.setTrack(track);
@@ -55,15 +45,14 @@ public class SegmentBean {
      * @param fromMovement
      * @param toMovement
      * @return
-     * @throws GeometryUtilException
-     * @throws MovementDaoMappingException
+     * @throws MovementDomainException
      */
-    public Segment createSegment(Movement fromMovement, Movement toMovement) throws GeometryUtilException, MovementDaoMappingException {
+    public Segment createSegment(Movement fromMovement, Movement toMovement) throws MovementDomainException {
         Segment segment = new Segment();
 
         if (toMovement == null && fromMovement == null) {
             LOG.error("[ ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null <createSegment> ]");
-            throw new MovementDaoMappingException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null");
+            throw new MovementDomainException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null", ErrorCode.DAO_MAPPING_ERROR);
         }
         //calculations for segment
         SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
@@ -82,7 +71,7 @@ public class SegmentBean {
         segment.setUpdated(DateUtil.nowUTC());
         segment.setUpdatedBy("UVMS");
 
-        LineString segmentLineString = GeometryUtil.getLineStringFromMovments(fromMovement, toMovement);
+        LineString segmentLineString = GeometryUtil.getLineStringFromMovements(fromMovement, toMovement);
         segment.setLocation(segmentLineString);
         
         fromMovement.setToSegment(segment);
@@ -91,18 +80,16 @@ public class SegmentBean {
         return segment;
     }
 
-
     /**
      *
      * @param track
      * @param segment
      * @param newMovement
      * @return
-     * @throws MovementDaoMappingException
-     * @throws MovementDaoException
-     * @throws GeometryUtilException
+     *
+     * @throws MovementDomainException
      */
-    public Track upsertTrack(Track track, Segment segment, Movement newMovement) throws MovementDaoMappingException, MovementDaoException, GeometryUtilException {
+    public Track upsertTrack(Track track, Segment segment, Movement newMovement) throws MovementDomainException {
         if (track == null) {        //if there is no tracks
         	Track newTrack = createNewTrack(segment);
             dao.persist(newMovement);
@@ -124,27 +111,24 @@ public class SegmentBean {
                     updateTrack(track, newMovement, segment);
                     break;
                 default:
-                    throw new MovementDaoMappingException("SEGMENT CATEGORY " + segment.getSegmentCategory().name() + " IS NOT MAPPED");
+                    throw new MovementDomainException("SEGMENT CATEGORY " + segment.getSegmentCategory().name() + " IS NOT MAPPED", ErrorCode.DAO_MAPPING_ERROR);
             }
         }
         return track;
     }
-
 
     /**
      *
      * @param track
      * @param newMovement
      * @param segment
-     * @throws MovementDaoException
-     * @throws GeometryUtilException
      */
-    public void updateTrack(Track track, Movement newMovement, Segment segment) throws MovementDaoException, GeometryUtilException {
+    public void updateTrack(Track track, Movement newMovement, Segment segment)  {
         //TODO: This needs som serious overlooking
         LOG.debug("UPDATING TRACK ");
 
         if (track.getMovementList() == null) {
-            track.setMovementList(new ArrayList<Movement>());
+            track.setMovementList(new ArrayList<>());
         }
 
         //add things to each other
@@ -160,7 +144,7 @@ public class SegmentBean {
         track.setDuration(calculatedDurationInSeconds);
 
         if(track.getMovementList().size() > 1) {    //if there is more then one movement, create a string of movements, aka a string of positions
-            LineString updatedTrackLineString = GeometryUtil.getLineStringFromMovments(track.getMovementList());
+            LineString updatedTrackLineString = GeometryUtil.getLineStringFromMovements(track.getMovementList());
             track.setLocation(updatedTrackLineString);
         }
 
@@ -196,12 +180,10 @@ public class SegmentBean {
     /**
      * @param previousMovement
      * @param currentMovement
-     * @throws GeometryUtilException
-     * @throws MovementDaoException
-     * @throws MovementDaoMappingException
-     * @throws MovementModelException
+     *
+     * @throws MovementDomainException
      */
-    public void splitSegment(Movement previousMovement, Movement currentMovement) throws GeometryUtilException, MovementDaoException, MovementDaoMappingException, MovementModelException {
+    public void splitSegment(Movement previousMovement, Movement currentMovement) throws MovementDomainException {
 
         Segment theSegmentToBeBroken = dao.findByFromMovement(previousMovement);
 
@@ -209,7 +191,8 @@ public class SegmentBean {
 
             theSegmentToBeBroken = dao.findByToMovement(previousMovement);
             if (theSegmentToBeBroken == null) {     //if there also is no segment with the previous movement as To
-                throw new MovementModelException("PREVIOS MOVEMENT MUST HAVE A SEGMENT BUT IT DONT, SOME LOGICAL ERROR HAS OCCURED");
+                throw new MovementDomainException("PREVIOUS MOVEMENT MUST HAVE A SEGMENT BUT IT DOESN'T, SOME LOGICAL ERROR HAS OCCURRED",
+                        ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             } else {
                 Segment segment = createSegment(theSegmentToBeBroken.getToMovement(), currentMovement); //create a new segment and fill it
                 upsertTrack(theSegmentToBeBroken.getTrack(), segment, currentMovement);                 //connect to track
@@ -217,14 +200,15 @@ public class SegmentBean {
             }
         }
 
-        //if we are here then it means that current movement is not the youngest movement there is for this connectID, but that it is somewhere in the middle and that we need to rearange two segments to incorporate this new movement
+        // If we are here then it means that current movement is not the youngest movement there is for this connectID,
+        // but that it is somewhere in the middle and that we need to rearange two segments to incorporate this new movement
         LOG.debug("Splitting segment {}", theSegmentToBeBroken.getId());
 
         Movement oldToMovement = theSegmentToBeBroken.getToMovement();
 
         if (currentMovement == null && previousMovement == null) {
             LOG.error("[ ERROR when updating Segment entity: currentPosition AND previous Position cannot be null <updateSegment> ]");
-            throw new MovementDaoMappingException("ERROR when updating Segment entity: currentPosition AND previous Position cannot be null");
+            throw new MovementDomainException("ERROR when updating Segment entity: currentPosition AND previous Position cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         //calculating and setting new segment values
         SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, currentMovement);
@@ -246,7 +230,7 @@ public class SegmentBean {
         previousMovement.setToSegment(theSegmentToBeBroken);
         currentMovement.setFromSegment(theSegmentToBeBroken);
 
-        LineString segmentLineString = GeometryUtil.getLineStringFromMovments(previousMovement, currentMovement);
+        LineString segmentLineString = GeometryUtil.getLineStringFromMovements(previousMovement, currentMovement);
         theSegmentToBeBroken.setLocation(segmentLineString);
 
         theSegmentToBeBroken = dao.persist(theSegmentToBeBroken);
@@ -263,17 +247,14 @@ public class SegmentBean {
         upsertTrack(theSegmentToBeBroken.getTrack(), segment, currentMovement);
     }
 
-
     /**
      *
      * @param firstMovement
      * @param currentMovement
-     * @throws MovementDaoMappingException
-     * @throws MovementModelException
-     * @throws MovementDaoException
-     * @throws GeometryUtilException
+     *
+     * @throws MovementDomainException
      */
-    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementDaoMappingException, MovementModelException, MovementDaoException, GeometryUtilException {
+    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementDomainException {
         Segment segment = firstMovement.getFromSegment();
         if (segment == null) {
             segment = createSegment(currentMovement, firstMovement);
@@ -286,5 +267,4 @@ public class SegmentBean {
             dao.persist(firstMovement);
         }
     }
-
 }

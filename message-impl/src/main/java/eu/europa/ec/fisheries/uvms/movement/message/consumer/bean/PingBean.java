@@ -5,7 +5,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class PingBean {
 
-    final static Logger LOG = LoggerFactory.getLogger(PingBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PingBean.class);
 
     @EJB
     private MessageProducer messageProducer;
@@ -37,11 +37,9 @@ public class PingBean {
             PingResponse pingResponse = new PingResponse();
             pingResponse.setResponse("pong");
             messageProducer.sendMessageBackToRecipient(message, JAXBMarshaller.marshallJaxBObjectToString(pingResponse));
-        } catch (ModelMarshallException | MovementMessageException e) {
+        } catch (MovementMessageException | MovementModelException e) {
             LOG.error("[ Error when responding to ping. ] ", e);
             errorEvent.fire(new EventMessage(message, "Error when responding to ping CD ..SSS: " + e.getMessage()));
         }
     }
-
-
 }

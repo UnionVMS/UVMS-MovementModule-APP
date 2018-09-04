@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import javax.ejb.EJB;
 
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,11 +26,7 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 @RunWith(Arquillian.class)
@@ -46,13 +43,13 @@ public class WKTUtilTest extends TransactionalTests {
 	
 	
 	@Test
-	public void testGetWKTLineString() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testGetWKTLineString() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
 		
 		List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectId);
-		List<Geometry> input = new LinkedList<Geometry>();
+		List<Geometry> input = new LinkedList<>();
 		String correct = "LINESTRING (";
 		for(Movement mov : varbergGrena) {
 			input.add(mov.getLocation());
@@ -80,7 +77,7 @@ public class WKTUtilTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetWktLineStringFromMovementList() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testGetWktLineStringFromMovementList() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -113,7 +110,7 @@ public class WKTUtilTest extends TransactionalTests {
 		String input = "LINESTRING (12.241 57.107, 12.238 57.104, 12.235 57.101, 12.232 57.098, 12.229 57.095, 12.225999999999999 57.092,"
 				+ " 12.222999999999999 57.089, 12.219999999999999 57.086, 12.216999999999999 57.083, 12.213999999999999 57.08)";
 		Geometry output = WKTUtil.getGeometryFromWKTSrring(input);
-		List<Geometry> geoList = new LinkedList<Geometry>();
+		List<Geometry> geoList = new LinkedList<>();
 		geoList.add(output);
 		String stringOutput = WKTUtil.getWktLineString(geoList);
 		

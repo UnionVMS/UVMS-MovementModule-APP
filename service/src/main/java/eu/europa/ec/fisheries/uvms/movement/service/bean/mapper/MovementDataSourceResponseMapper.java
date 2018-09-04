@@ -19,7 +19,6 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListRespo
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import java.util.List;
 
 
@@ -32,9 +31,8 @@ public class MovementDataSourceResponseMapper {
      *
      * @param responseDto
      * @return
-     * @throws ModelMarshallException
      */
-    public static GetTempMovementListResponse tempMovementListResponse(TempMovementsListResponseDto responseDto) throws ModelMarshallException {
+    public static GetTempMovementListResponse tempMovementListResponse(TempMovementsListResponseDto responseDto) {
         GetTempMovementListResponse response = new GetTempMovementListResponse();
         response.getMovement().addAll(responseDto.getTempMovementList());
         response.setCurrentPage(responseDto.getCurrentPage());
@@ -49,9 +47,8 @@ public class MovementDataSourceResponseMapper {
      *
      * @param mapResponse
      * @return
-     * @throws ModelMarshallException
      */
-    public static GetMovementMapByQueryResponse createMovementMapResponse(List<MovementMapResponseType> mapResponse) throws ModelMarshallException {
+    public static GetMovementMapByQueryResponse createMovementMapResponse(List<MovementMapResponseType> mapResponse) {
         GetMovementMapByQueryResponse response = new GetMovementMapByQueryResponse();
         response.getMovementMap().addAll(mapResponse);
         return response;
@@ -64,9 +61,8 @@ public class MovementDataSourceResponseMapper {
      *
      * @param responseDto
      * @return
-     * @throws ModelMarshallException
      */
-    public static GetMovementListByQueryResponse createMovementListResponse(ListResponseDto responseDto) throws ModelMarshallException {
+    public static GetMovementListByQueryResponse createMovementListResponse(ListResponseDto responseDto) {
         GetMovementListByQueryResponse response = new GetMovementListByQueryResponse();
         response.getMovement().addAll(responseDto.getMovementList());
         response.setCurrentPage(responseDto.getCurrentPage());
@@ -81,12 +77,10 @@ public class MovementDataSourceResponseMapper {
      *
      * @param movementList
      * @return
-     * @throws ModelMarshallException
      */
-    public static GetMovementListByAreaAndTimeIntervalResponse mapMovementListAreaAndTimeIntervalResponse(List<MovementType> movementList) throws ModelMarshallException {
+    public static GetMovementListByAreaAndTimeIntervalResponse mapMovementListAreaAndTimeIntervalResponse(List<MovementType> movementList) {
         GetMovementListByAreaAndTimeIntervalResponse response = new GetMovementListByAreaAndTimeIntervalResponse();
         response.getMovement().addAll(movementList);
         return response;
     }
-
 }

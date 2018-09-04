@@ -20,9 +20,7 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryRe
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import java.util.List;
 import javax.ejb.Local;
@@ -45,7 +43,7 @@ public interface MovementService {
      * @return
      * @throws MovementServiceException
      */
-    GetMovementListByQueryResponse getList(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
+    GetMovementListByQueryResponse getList(MovementQuery query) throws MovementServiceException;
 
     /**
      * Get a list with data
@@ -54,7 +52,7 @@ public interface MovementService {
      * @return
      * @throws MovementServiceException
      */
-    GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
+    GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException;
 
     /**
      * Get a list with data
@@ -63,7 +61,7 @@ public interface MovementService {
      * @return
      * @throws MovementServiceException
      */
-    GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
+    GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException;
 
 
     /**
@@ -71,7 +69,7 @@ public interface MovementService {
      * @param query
      * @return
      */
-    SimpleResponse createMovementBatch(List<MovementBaseType> query);
+    SimpleResponse createMovementBatch(List<MovementBaseType> query) throws MovementServiceException;
 
     /**
      * Get an object by id
@@ -80,7 +78,7 @@ public interface MovementService {
      * @return
      * @throws MovementServiceException
      */
-    MovementType getById(String id) throws MovementServiceException, MovementDuplicateException;
+    MovementType getById(String id) throws MovementServiceException;
 
 
     /**
@@ -89,14 +87,14 @@ public interface MovementService {
      * @return
      * @throws MovementServiceException
      */
-    List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementServiceException, MovementDuplicateException;
+    List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws MovementServiceException;
     /**
      *
      * @param numberOfMovements
      * @return
      * @throws MovementServiceException
      */
-    List<MovementDto> getLatestMovements(Integer numberOfMovements) throws MovementServiceException, MovementDuplicateException;
+    List<MovementDto> getLatestMovements(Integer numberOfMovements) throws MovementServiceException;
 
     /**
      *
@@ -104,12 +102,12 @@ public interface MovementService {
      * @return GetMovementListByAreaAndTimeIntervalResponse
      * @throws MovementServiceException
      */
-    GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementServiceException, MovementDuplicateException;
+    GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) throws MovementServiceException;
 
     /**
      * @return list of existing areas
      * @throws MovementServiceException if unsuccessful
      */
-    List<AreaType> getAreas() throws MovementServiceException, MovementDuplicateException;
+    List<AreaType> getAreas() throws MovementServiceException;
 
 }

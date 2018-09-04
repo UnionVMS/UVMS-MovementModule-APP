@@ -14,22 +14,21 @@ package eu.europa.ec.fisheries.uvms.movement.mapper;
 import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementSearchMapperException;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilter;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 
 public class MovementGroupMapper {
 
-    public static MovementFilterGroup toGroupEntity(MovementFilterGroup filterGroup, MovementSearchGroup searchGroup, String username) throws MovementSearchMapperException {
+    public static MovementFilterGroup toGroupEntity(MovementFilterGroup filterGroup, MovementSearchGroup searchGroup, String username) {
         validateMovementSearchGroup(searchGroup);
 
         filterGroup.setActive(UvmsConstants.TRUE);
@@ -47,14 +46,12 @@ public class MovementGroupMapper {
             for (GroupListCriteria searchField : searchFields) {
                 newFilters.add(toFilterEntity(filterGroup, searchField, username));
             }
-
             filterGroup.getFilters().addAll(newFilters);
         }
-
         return filterGroup;
     }
 
-    public static MovementFilterGroup toGroupEntity(MovementSearchGroup searchGroup, String username) throws MovementSearchMapperException {
+    public static MovementFilterGroup toGroupEntity(MovementSearchGroup searchGroup, String username) {
         MovementFilterGroup filterGroup = new MovementFilterGroup();
         return toGroupEntity(filterGroup, searchGroup, username);
     }
@@ -115,9 +112,9 @@ public class MovementGroupMapper {
         return false;
     }
 
-    private static void validateMovementSearchGroup(MovementSearchGroup searchGroup) throws MovementSearchMapperException {
+    private static void validateMovementSearchGroup(MovementSearchGroup searchGroup) {
         if (searchGroup.getName() == null) {
-            throw new MovementSearchMapperException("MovementSearchGroupName cannot be null");
+            throw new MovementDomainRuntimeException("MovementSearchGroupName cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
     }
 }

@@ -9,44 +9,44 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.movement.model.exception;
+package eu.europa.ec.fisheries.uvms.movement.exception;
 
 import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
 
 /**
- * The MovementModelException wraps all checked standard Java exception and enriches them with a custom error code.
+ * The MovementDomainException wraps all checked standard Java exception and enriches them with a custom error code.
  * You can use this code to retrieve localized error messages from online documentation. (If implemented)
  *
  * @author Kasim Gul
  */
-public class MovementModelException extends Exception {
+public class MovementDomainException extends Exception {
 
     private static final long serialVersionUID = 6413438667115349522L;
 
     private final ErrorCode code;
     private ExceptionType fault;
 
-    public MovementModelException(ErrorCode code) {
+    public MovementDomainException(ErrorCode code) {
         super();
         this.code = code;
     }
 
-    public MovementModelException(String message, Throwable cause, ErrorCode code) {
+    public MovementDomainException(String message, Throwable cause, ErrorCode code) {
         super(message, cause);
         this.code = code;
     }
 
-    public MovementModelException(String message, ErrorCode code) {
+    public MovementDomainException(String message, ErrorCode code) {
         super(message);
         this.code = code;
     }
 
-    public MovementModelException(Throwable cause, ErrorCode code) {
+    public MovementDomainException(Throwable cause, ErrorCode code) {
         super(cause);
         this.code = code;
     }
 
-    public MovementModelException(String message, Throwable cause, ErrorCode code, ExceptionType fault) {
+    public MovementDomainException(String message, Throwable cause, ErrorCode code, ExceptionType fault) {
         super(message, cause);
         this.code = code;
         this.fault = fault;

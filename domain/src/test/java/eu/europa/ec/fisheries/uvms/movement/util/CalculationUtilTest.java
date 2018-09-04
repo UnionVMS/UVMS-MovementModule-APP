@@ -11,12 +11,11 @@ import java.util.UUID;
 
 import javax.ejb.EJB;
 
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import com.peertopark.java.geocalc.Coordinate;
-import com.peertopark.java.geocalc.Point;
 
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
@@ -26,15 +25,18 @@ import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-
 
 @RunWith(Arquillian.class)
 public class CalculationUtilTest extends TransactionalTests {
 
+	@EJB
+	private MovementBatchModelBean movementBatchModelBean;
+
+	@EJB
+	private MovementDao movementDao;
+
+	@EJB
+	private IncomingMovementBean incomingMovementBean;
 	
 	@Test
 	public void testCalculateDistance() {
@@ -88,7 +90,6 @@ public class CalculationUtilTest extends TransactionalTests {
 		catch (NullPointerException e) {
 			assertTrue(true);
 		}
-		
 	}
 	
 	@Test
@@ -104,7 +105,6 @@ public class CalculationUtilTest extends TransactionalTests {
 		assertEquals(176D, course,1D);
 	}
 	
-	
 	@Test
 	public void testGetNauticalMilesFromMeters() {
 		double startLon = 11.695033;
@@ -116,20 +116,10 @@ public class CalculationUtilTest extends TransactionalTests {
 		double distanceNautical = CalculationUtil.getNauticalMilesFromMeter(CalculationUtil.calculateDistance(startLat, startLon, endLat, endLon));
 		
 		assertEquals(4.73, distanceNautical,0.01D);
-		
 	}
 	
-	@EJB
-    private MovementBatchModelBean movementBatchModelBean;
-
-    @EJB
-    private MovementDao movementDao;
-
-    @EJB
-    private IncomingMovementBean incomingMovementBean;
-	
 	@Test
-	public void testGetPositionCalculations () throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException {
+	public void testGetPositionCalculations () throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -160,7 +150,7 @@ public class CalculationUtilTest extends TransactionalTests {
 		try {
 			segmentCalc = CalculationUtil.getPositionCalculations(start, end);
 			fail("Should not work due tu null location");
-		} catch (GeometryUtilException e) {
+		} catch (MovementDomainRuntimeException e) {
 			assertTrue(true);
 		}
 		
@@ -171,6 +161,5 @@ public class CalculationUtilTest extends TransactionalTests {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
-		
 	}
 }

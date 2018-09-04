@@ -1,29 +1,22 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -38,9 +31,6 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     private Random rnd = new Random();
 
     private final static String TEST_USER_NAME = "Arquillian";
-
-    @Inject
-    private UserTransaction userTransaction;
 
     @EJB
     private MovementBatchModelBean movementBatchModelBean;
@@ -57,9 +47,9 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void getMovementConnect() {
 
-        // Note getMovementConnect CREATES one if it does not exists  (probably to force a batchimport to succeed)
+        // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
         String randomUUID = UUID.randomUUID().toString();
-        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(randomUUID);
+        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(randomUUID);
         assertTrue(fetchedMovementConnect != null);
         assertTrue(fetchedMovementConnect.getValue().equals(randomUUID));
     }
@@ -70,8 +60,8 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     public void getMovementConnect_ZEROISH_GUID() {
 
         String guid = "100000-0000-0000-0000-000000000000";
-        // Note getMovementConnect CREATES one if it does not exists  (probably to force a batchimport to succeed)
-        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnect(guid);
+        // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
+        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(guid);
         assertTrue(fetchedMovementConnect != null);
         assertTrue(fetchedMovementConnect.getValue().equals(guid));
     }
@@ -79,12 +69,12 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getMovementConnect_NULL_GUID() {
-        assertNull(movementBatchModelBean.getMovementConnect(null));
+        assertNull(movementBatchModelBean.getMovementConnectByConnectId(null));
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void createMovement() throws MovementDaoException {
+    public void createMovement() throws MovementDomainException {
 
         Date now = DateUtil.nowUTC();
         double longitude = rnd.nextDouble();
@@ -153,7 +143,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getAreaType() throws MovementDaoException {
+    public void getAreaType() {
 
         Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
         areaTransition.setMovementType(MovementTypeType.MAN);
@@ -165,7 +155,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getAreaType_AREATYPE_AS_NULL() throws MovementDaoException {
+    public void getAreaType_AREATYPE_AS_NULL() {
 
         expectedException.expect(Exception.class);
 

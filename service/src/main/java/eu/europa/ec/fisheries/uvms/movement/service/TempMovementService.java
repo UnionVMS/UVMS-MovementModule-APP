@@ -16,7 +16,6 @@ import javax.ejb.Local;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @Local
@@ -24,14 +23,14 @@ public interface TempMovementService {
 
     TempMovementType createTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException;
 
-    TempMovementType getTempMovement(String guid) throws MovementServiceException, MovementDuplicateException;
+    TempMovementType getTempMovement(String guid) throws MovementServiceException;
 
-    TempMovementType archiveTempMovement(String guid, String username) throws MovementServiceException, MovementDuplicateException;
+    TempMovementType archiveTempMovement(String guid, String username) throws MovementServiceException;
 
-    TempMovementType updateTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException, MovementDuplicateException;
+    TempMovementType updateTempMovement(TempMovementType tempMovementType, String username) throws MovementServiceException;
 
-    GetTempMovementListResponse getTempMovements(MovementQuery query) throws MovementServiceException, MovementDuplicateException;
+    GetTempMovementListResponse getTempMovements(MovementQuery query) throws MovementServiceException;
 
-    TempMovementType sendTempMovement(String guid, String username) throws MovementServiceException, MovementDuplicateException;
+    TempMovementType sendTempMovement(String guid, String username) throws MovementServiceException;
 
 }
