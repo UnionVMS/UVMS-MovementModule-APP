@@ -52,7 +52,7 @@ public class MovementProcessorBean {
     @Resource
     private EJBContext context;
 
-    @PostConstruct
+    /*@PostConstruct
     public void init() {
         executor = Executors.newScheduledThreadPool(1);
         executor.scheduleWithFixedDelay(new Runnable() {
@@ -65,14 +65,14 @@ public class MovementProcessorBean {
                 }
             }
         }, 0, 5, TimeUnit.SECONDS);
-    }
+    }*/
 
-    @PreDestroy
+    /*@PreDestroy
     public void destroy() {
         if (executor != null) {
             executor.shutdownNow();
         }
-    }
+    }*/
 
     public void processMovements() throws SystemException {
         UserTransaction utx = context.getUserTransaction();

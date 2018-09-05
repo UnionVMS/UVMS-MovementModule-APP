@@ -23,6 +23,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.exception.EntityDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
@@ -31,10 +32,11 @@ import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.annotation.Resource;
+import javax.ejb.*;
+import javax.inject.Inject;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,12 @@ public class MovementBatchModelBean {
 
     @EJB
     private MovementDaoBean dao;
+
+    @Inject
+    IncomingMovementBean incomingMovementBean;   //for some reason this functionality is not in MovementProcessorBean
+
+    @Resource
+    private EJBContext context;
 
     /**
      *
@@ -117,6 +125,23 @@ public class MovementBatchModelBean {
             }
             moveConnect.getMovementList().add(currentMovement);
             dao.persist(moveConnect);
+
+            //Initiate the processing of movements, This is copied almost straight from MovementProcessorBean
+            //TODO: Move this to MovementServiceBean when we start to refactor the mappings
+//            UserTransaction utx = context.getUserTransaction();
+            try {
+  //              utx.commit();
+    //            utx.begin();
+                incomingMovementBean.processMovement(currentMovement);
+            } catch (Exception e) {
+                LOG.error("Error while processing movement", e);
+        //        try {
+      //              utx.rollback();
+        //        } catch (SystemException el) {
+           //         LOG.error("Error rolling back " + el);
+          //      }
+
+            }
 
             MovementType movementType = mapToMovementType(currentMovement);
             long diff = System.currentTimeMillis() - start;
