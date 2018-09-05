@@ -6,13 +6,6 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAnd
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
@@ -21,7 +14,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallExcepti
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -235,7 +227,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void createMovementBatch() {
 
         List<MovementBaseType> query = createBaseTypeList();
-        SimpleResponse response = movementService.createMovementBatch(query);
+        SimpleResponse response = movementService.createMovementBatch(query, "TEST").getResponse();
         Assert.assertTrue(response != null);
         Assert.assertTrue(response == SimpleResponse.OK);
     }
@@ -254,7 +246,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             latitude = latitude +  0.05;
         }
 
-        SimpleResponse simpleResponse = movementService.createMovementBatch(movementTypeList);
+        SimpleResponse simpleResponse = movementService.createMovementBatch(movementTypeList, "TEST").getResponse();
         Assert.assertNotNull(simpleResponse);
         Assert.assertEquals(SimpleResponse.OK, simpleResponse);
     }
@@ -273,7 +265,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             latitude += 0.05;
         }
         try {
-            movementService.createMovementBatch(movementTypeList);
+            movementService.createMovementBatch(movementTypeList, "TEST").getResponse();
             Assert.fail("This should produce an EJBException and trigger rollback");
         } catch (EJBException ignore) {}
     }

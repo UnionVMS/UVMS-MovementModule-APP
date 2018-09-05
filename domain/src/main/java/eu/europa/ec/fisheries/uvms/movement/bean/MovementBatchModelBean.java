@@ -28,16 +28,17 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -89,39 +90,86 @@ public class MovementBatchModelBean {
 
     /**
      *
-     * @param movement
+     * @param movementTypeList
      * @return
      * @throws MovementModelException
      * @throws
      * EntityDuplicateException
      */
-    public MovementType createMovement(MovementType movement, String username) {
+    public List<MovementType> createMovementBatch(List<MovementType> movementTypeList, String username) {
         long start = System.currentTimeMillis();
         try {
             long before = System.currentTimeMillis();
-            final Movement currentMovement = MovementModelToEntityMapper.mapNewMovementEntity(movement, username);
-            MovementConnect moveConnect = getMovementConnect(movement.getConnectId());
-            currentMovement.setMovementConnect(moveConnect);
-            LOG.debug("Adding movement connect time: {}", (System.currentTimeMillis() - before));
-
-            before = System.currentTimeMillis();
-            List<Movementarea> areas = getAreas(currentMovement, movement);
-            currentMovement.setMovementareaList(areas);
-            LOG.debug("Adding areas time: {}", (System.currentTimeMillis() - before));
-
-            LOG.debug("CREATING MOVEMENT FOR CONNECTID: " + movement.getConnectId() + " MOVEMENT ID: " + currentMovement.getId());
-            dao.create(currentMovement);
-            // TODO: Make sure that relation is correct
-            if(moveConnect.getMovementList() == null) {
-                moveConnect.setMovementList(new ArrayList<Movement>());
+            List<MovementType> createdMovementTypesList = new ArrayList<>();
+            for (MovementType type : movementTypeList) {
+                Movement entity = MovementModelToEntityMapper.mapNewMovementEntity(type, username);
+                MovementConnect connect = getMovementConnect(type.getConnectId());
+                if(connect == null){ // If movConnect is missing for one of the elements of the list we don't save any!
+                    LOG.warn("Couldn't find movement connect for one of movement batch elements! Won't save anything!");
+                    return null;
+                }
+                entity.setMovementConnect(connect);
+                LOG.debug("Adding movementTypeList connect time: {}", (System.currentTimeMillis() - before));
+                before = System.currentTimeMillis();
+                List<Movementarea> areas = getAreas(entity, type);
+                entity.setMovementareaList(areas);
+                LOG.debug("Adding areas time: {}", (System.currentTimeMillis() - before));
+                LOG.debug("CREATING MOVEMENT FOR CONNECTID: " + type.getConnectId() + " MOVEMENT ID: " + entity.getId());
+                dao.create(entity);
+                if(connect.getMovementList() == null) {
+                    connect.setMovementList(new ArrayList<>());
+                }
+                connect.getMovementList().add(entity);
+                dao.persist(connect);
+                createdMovementTypesList.add(mapToMovementType(entity));
+                long diff = System.currentTimeMillis() - start;
+                LOG.debug("Create movementTypeList done: " + " ---- TIME ---- " + diff + "ms" );
             }
-            moveConnect.getMovementList().add(currentMovement);
-            dao.persist(moveConnect);
+            LOG.info("Sucessfully persisted [ {} ] movements in batch!", movementTypeList.size());
+            return createdMovementTypesList;
+        } catch (MovementDaoMappingException | MovementDaoException e) {
+            LOG.error("[ Error when creating movementTypeList. ] {}", e);
+            throw new EJBException("Could not create movementTypeList.", e);
+        }
+    }
 
-            MovementType movementType = mapToMovementType(currentMovement);
-            long diff = System.currentTimeMillis() - start;
-            LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
-            return movementType;
+    /**
+     *
+     * @param receivedMovementType
+     * @return
+     * @throws MovementModelException
+     * @throws
+     * EntityDuplicateException
+     */
+    public MovementType createMovement(MovementType receivedMovementType, String username) {
+        long start = System.currentTimeMillis();
+        try {
+            MovementType createdMovementType = null;
+            long before = System.currentTimeMillis();
+            final Movement currentMovement = MovementModelToEntityMapper.mapNewMovementEntity(receivedMovementType, username);
+            MovementConnect moveConnect = getMovementConnect(receivedMovementType.getConnectId());
+            if(moveConnect != null){
+                currentMovement.setMovementConnect(moveConnect);
+                LOG.debug("Adding movement connect time: {}", (System.currentTimeMillis() - before));
+                before = System.currentTimeMillis();
+                List<Movementarea> areas = getAreas(currentMovement, receivedMovementType);
+                currentMovement.setMovementareaList(areas);
+                LOG.debug("Adding areas time: {}", (System.currentTimeMillis() - before));
+                LOG.debug("CREATING MOVEMENT FOR CONNECTID: " + receivedMovementType.getConnectId() + " MOVEMENT ID: " + currentMovement.getId());
+                dao.create(currentMovement);
+                // TODO: Make sure that relation is correct
+                if(moveConnect.getMovementList() == null) {
+                    moveConnect.setMovementList(new ArrayList<>());
+                }
+                moveConnect.getMovementList().add(currentMovement);
+                dao.persist(moveConnect);
+                createdMovementType = mapToMovementType(currentMovement);
+                long diff = System.currentTimeMillis() - start;
+                LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
+            } else {
+                LOG.warn("Didn't find movement connect for the just received movement so NOT going to save anything!");
+            }
+            return createdMovementType;
         } catch (MovementDaoMappingException | MovementDaoException e) {
             LOG.error("[ Error when creating movement. ] {}", e);
             throw new EJBException("Could not create movement.", e);
