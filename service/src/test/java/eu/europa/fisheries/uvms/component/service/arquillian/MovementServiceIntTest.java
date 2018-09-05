@@ -38,14 +38,13 @@ import java.util.*;
 public class MovementServiceIntTest extends TransactionalTests {
 
     Random rnd = new Random();
+
     private static int NumberOfMovements = 3;
 
     private final static String TEST_USER_NAME = "MovementServiceIntTestTestUser";
 
     @EJB
     MovementService movementService;
-
-
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -234,7 +233,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createBatch() throws JMSException, ModelMarshallException {
+    public void createBatch() {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         Double longitude = rnd.nextDouble();

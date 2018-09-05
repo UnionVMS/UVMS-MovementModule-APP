@@ -3,6 +3,8 @@ package eu.europa.fisheries.uvms.component.service;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import org.apache.commons.collections.CollectionUtils;
+
 import javax.ejb.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,9 +20,9 @@ public class SpatialServiceMockedBean  implements SpatialService {
     }
 
     @Override
-    public List<MovementType> enrichMovementBatchWithSpatialData(List<MovementBaseType> movements) throws MovementServiceException {
+    public List<MovementType> enrichMovementBatchWithSpatialData(List<MovementBaseType> movements) {
         ArrayList<MovementType> movementTypes = new ArrayList<>();
-        movementTypes.add(createSmalletPossibleMovementType(movements.get(0)));
+        movementTypes.add(createSmalletPossibleMovementType(CollectionUtils.isNotEmpty(movements) ? movements.get(0) : null));
         return movementTypes;
     }
 

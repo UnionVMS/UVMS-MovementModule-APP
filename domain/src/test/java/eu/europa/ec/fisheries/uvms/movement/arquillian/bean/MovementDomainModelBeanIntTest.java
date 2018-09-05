@@ -170,9 +170,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getMovementByGUID_NULL() throws MovementModelException {
-        expectedException.expect(EJBTransactionRolledbackException.class);
-
-        movementDomainModelBean.getMovementByGUID(null);
+        assertNull(movementDomainModelBean.getMovementByGUID(null));
     }
 
      @Test
@@ -535,14 +533,9 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	MovementType output = movementDomainModelBean.getMovementByGUID(control.get(5).getGuid());
     	assertEquals(control.get(5).getInternalReferenceNumber(), output.getInternalReferenceNumber());
     	assertEquals(control.get(5).getHeading(), output.getReportedCourse());
-    	
-    	try {
-    		output = movementDomainModelBean.getMovementByGUID("42");
-    		fail("No result");
-		} catch (EJBTransactionRolledbackException e) { //No result results in a nullpointer that is then transformed into this exception
-			assertTrue(true);
-		}
-    	
+
+    	output = movementDomainModelBean.getMovementByGUID("42");
+    	assertNull(output);
     }
     
     @EJB

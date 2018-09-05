@@ -1,9 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,6 +55,8 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateExc
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
 
+import static org.junit.Assert.*;
+
 @RunWith(Arquillian.class)
 public class MovementEntityToModelTest extends TransactionalTests {
 
@@ -113,7 +111,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		//movement.setStatus(status);
 	}
 	@Test
-	public void testMapToMovementTypeWithMovementInput() throws MovementDaoException, MovementModelException, MovementDuplicateException {
+	public void testMapToMovementTypeWithMovementInput() throws MovementDaoException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -135,12 +133,8 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		assertTrue(!output.isDuplicate());
 		
 		movement = null;
-		try {
-			output = MovementEntityToModelMapper.mapToMovementType(movement);
-			fail("null input should result in a nullpointer");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
+		output = MovementEntityToModelMapper.mapToMovementType(movement);
+		assertNull(output);
 	}
 	
 	@Test
