@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>4.0.15-SNAPSHOT</version>
+        <version>4.0.16-SNAPSHOT</version>
     </parent>
 
 	<artifactId>movement-model</artifactId>
@@ -114,36 +114,6 @@
 					    <version>2.4</version>
 					</dependency>
 				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>com.github.siom79.japicmp</groupId>
-				<artifactId>japicmp-maven-plugin</artifactId>
-				<configuration>
-					<oldVersion>
-						<dependency>
-							<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-							<artifactId>movement-model</artifactId>
-							<version>${movement.api.check.against.version}</version>
-							<type>jar</type>
-						</dependency>
-					</oldVersion>
-					<newVersion>
-						<file>
-							<path>${project.build.directory}/${project.artifactId}-${project.version}.jar</path>
-						</file>
-					</newVersion>
-					<parameter>
-						<breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
-					</parameter>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>verify</phase>
-						<goals>
-							<goal>cmp</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

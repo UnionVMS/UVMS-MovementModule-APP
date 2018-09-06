@@ -28,19 +28,15 @@ import javax.jms.TextMessage;
 public class MovementModuleResponseMapper {
 
     private static void validateResponse(TextMessage response, String correlationId) throws ModelMapperException, JMSException, MovementFaultException, MovementDuplicateException {
-
         if (response == null) {
             throw new ModelMapperException("Error when validating response in ResponseMapper: Reesponse is Null");
         }
-
         if (response.getJMSCorrelationID() == null) {
             throw new ModelMapperException("No corelationId in response (Null) . Expected was: " + correlationId);
         }
-
         if (!correlationId.equalsIgnoreCase(response.getJMSCorrelationID())) {
             throw new ModelMapperException("Wrong corelationId in response. Expected was: " + correlationId + "But actual was: " + response.getJMSCorrelationID());
         }
-
         try {
             ExceptionType movementFault = JAXBMarshaller.unmarshallTextMessage(response, ExceptionType.class);
             if (movementFault.getCode() == 409) {
@@ -76,7 +72,18 @@ public class MovementModuleResponseMapper {
         return JAXBMarshaller.marshallJaxBObjectToString(response);
     }
 
-    public static HashMap<String, List<MovementType>> mapToMovementMap(List<MovementMapResponseType> movements) throws ModelMarshallException {
+    public static String mapToCreateMovementBatchResponse(CreateMovementBatchResponse createMovementBatchResponse) throws ModelMarshallException {
+        return JAXBMarshaller.marshallJaxBObjectToString(createMovementBatchResponse);
+    }
+
+    public static String mapToCreateMovementBatchResponse(SimpleResponse value, List<MovementType> movements) throws ModelMarshallException {
+        CreateMovementBatchResponse response = new CreateMovementBatchResponse();
+        response.setResponse(value);
+        response.getMovements().addAll(movements);
+        return JAXBMarshaller.marshallJaxBObjectToString(response);
+    }
+
+    public static HashMap<String, List<MovementType>> mapToMovementMap(List<MovementMapResponseType> movements) {
         HashMap<String, List<MovementType>> movementMap = new HashMap<>();
         for (MovementMapResponseType movement : movements) {
             movementMap.put(movement.getKey(), movement.getMovements());
@@ -84,25 +91,31 @@ public class MovementModuleResponseMapper {
         return movementMap;
     }
 
-    public static List<MovementType> mapToMovementListResponse(TextMessage message) throws ModelMarshallException, JMSException, ModelMapperException, MovementFaultException, MovementDuplicateException {
+    public static List<MovementType> mapToMovementListResponse(TextMessage message) throws JMSException, ModelMapperException, MovementFaultException, MovementDuplicateException {
         validateResponse(message, message.getJMSCorrelationID());
         GetMovementListByQueryResponse response = JAXBMarshaller.unmarshallTextMessage(message, GetMovementListByQueryResponse.class);
         return response.getMovement();
     }
 
-    public static List<MovementMapResponseType> mapToMovementMapResponse(TextMessage message) throws ModelMarshallException, ModelMapperException, JMSException, MovementFaultException, MovementDuplicateException {
+    public static List<MovementMapResponseType> mapToMovementMapResponse(TextMessage message) throws ModelMapperException, JMSException, MovementFaultException, MovementDuplicateException {
         validateResponse(message, message.getJMSCorrelationID());
         GetMovementMapByQueryResponse response = JAXBMarshaller.unmarshallTextMessage(message, GetMovementMapByQueryResponse.class);
         return response.getMovementMap();
     }
 
-    public static SimpleResponse mapToSimpleResponseFromCreateMovementBatch(TextMessage message) throws ModelMarshallException, JMSException, ModelMapperException, MovementFaultException, MovementDuplicateException {
+    public static SimpleResponse mapToSimpleResponseFromCreateMovementBatch(TextMessage message) throws JMSException, ModelMapperException, MovementFaultException, MovementDuplicateException {
         validateResponse(message, message.getJMSCorrelationID());
         CreateMovementBatchResponse response = JAXBMarshaller.unmarshallTextMessage(message, CreateMovementBatchResponse.class);
         return response.getResponse();
     }
 
-    public static CreateMovementResponse mapToCreateMovementResponseFromMovementResponse(TextMessage message) throws ModelMarshallException, JMSException, ModelMapperException, MovementFaultException, MovementDuplicateException {
+    public static CreateMovementBatchResponse mapToCreateMovementBatchResponse(TextMessage message) throws JMSException, ModelMapperException, MovementFaultException, MovementDuplicateException {
+        validateResponse(message, message.getJMSCorrelationID());
+        CreateMovementBatchResponse response = JAXBMarshaller.unmarshallTextMessage(message, CreateMovementBatchResponse.class);
+        return response;
+    }
+
+    public static CreateMovementResponse mapToCreateMovementResponseFromMovementResponse(TextMessage message) throws JMSException, ModelMapperException, MovementFaultException, MovementDuplicateException {
         validateResponse(message, message.getJMSCorrelationID());
         CreateMovementResponse response = JAXBMarshaller.unmarshallTextMessage(message, CreateMovementResponse.class);
         return response;

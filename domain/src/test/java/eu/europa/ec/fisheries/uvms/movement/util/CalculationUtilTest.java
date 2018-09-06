@@ -1,35 +1,26 @@
 package eu.europa.ec.fisheries.uvms.movement.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
-
-import javax.ejb.EJB;
-
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.peertopark.java.geocalc.Coordinate;
-import com.peertopark.java.geocalc.Point;
-
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import javax.ejb.EJB;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 
 @RunWith(Arquillian.class)
@@ -129,7 +120,7 @@ public class CalculationUtilTest extends TransactionalTests {
     private IncomingMovementBean incomingMovementBean;
 	
 	@Test
-	public void testGetPositionCalculations () throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException {
+	public void testGetPositionCalculations () throws MovementDaoException, MissingMovementConnectException, GeometryUtilException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();

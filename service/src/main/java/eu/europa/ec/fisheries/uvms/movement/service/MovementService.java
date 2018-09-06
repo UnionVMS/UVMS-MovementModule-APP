@@ -12,7 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
-import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
+import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
@@ -22,7 +22,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import java.util.List;
 import javax.ejb.Local;
@@ -69,9 +68,10 @@ public interface MovementService {
     /**
      *
      * @param query
+     * @param username
      * @return
      */
-    SimpleResponse createMovementBatch(List<MovementBaseType> query);
+    CreateMovementBatchResponse createMovementBatch(List<MovementBaseType> query, String username);
 
     /**
      * Get an object by id
