@@ -15,7 +15,6 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeInter
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.NoEntityFoundException;
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
@@ -32,8 +31,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
-import javax.xml.registry.UnsupportedCapabilityException;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -149,7 +146,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
     public Area getAreaByRemoteIdAndCode(String code, String remoteId) throws MovementDaoException {
         try {
             long start = System.currentTimeMillis();
-            TypedQuery<Area> query = null;
+            TypedQuery<Area> query;
             if (code != null && !code.isEmpty()) {
                 LOG.debug("Code present in GetAreaQuery: CODE: {}", code);
                 query = em.createNamedQuery("Area.findByCode", Area.class);
@@ -575,7 +572,5 @@ public class MovementDaoBean extends Dao implements MovementDao {
             throw new MovementDaoException(12, "[ Error when creating ] ", e);
         }
     }
-
-
 
 }

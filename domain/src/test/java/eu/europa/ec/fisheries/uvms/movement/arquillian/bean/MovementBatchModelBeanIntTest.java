@@ -1,9 +1,9 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
@@ -12,8 +12,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -21,8 +19,6 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import javax.inject.Inject;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.*;
 
@@ -84,7 +80,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createMovement() throws MovementDaoException {
+    public void createMovement() throws MovementDaoException, MissingMovementConnectException {
 
         Date now = DateUtil.nowUTC();
         double longitude = rnd.nextDouble();

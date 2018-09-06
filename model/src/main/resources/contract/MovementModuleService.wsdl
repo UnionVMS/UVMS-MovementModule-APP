@@ -116,6 +116,7 @@
                 <xsd:complexType>
                     <xsd:sequence>
                         <xsd:element name="response" type="common:SimpleResponse" minOccurs="1" maxOccurs="1"/>
+                        <xsd:element name="movements" type="movement:MovementType" minOccurs="0" maxOccurs="unbounded"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>

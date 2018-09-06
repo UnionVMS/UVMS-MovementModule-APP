@@ -3,7 +3,12 @@ package eu.europa.fisheries.uvms.component.service;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import org.apache.commons.collections.CollectionUtils;
+
 import javax.ejb.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 @LocalBean
@@ -14,9 +19,14 @@ public class SpatialServiceMockedBean  implements SpatialService {
       return  createSmalletPossibleMovementType(movement);
     }
 
+    @Override
+    public List<MovementType> enrichMovementBatchWithSpatialData(List<MovementBaseType> movements) {
+        ArrayList<MovementType> movementTypes = new ArrayList<>();
+        movementTypes.add(createSmalletPossibleMovementType(CollectionUtils.isNotEmpty(movements) ? movements.get(0) : null));
+        return movementTypes;
+    }
 
     private MovementType createSmalletPossibleMovementType(MovementBaseType movement){
-
         MovementType movementType  = new MovementType();
         movementType.setPositionTime(movement.getPositionTime());
         movementType.setPosition(movement.getPosition());
@@ -25,12 +35,7 @@ public class SpatialServiceMockedBean  implements SpatialService {
         movementType.setMovementType(movement.getMovementType());
         movementType.setConnectId(movement.getConnectId());
         movementType.setMetaData(getMappedMovementHelper(1));
-
-
-
         movementType.setSource(MovementSourceType.NAF);
-
-
         return movementType;
     }
 
@@ -49,13 +54,5 @@ public class SpatialServiceMockedBean  implements SpatialService {
         area.setAreaType(areaCode);
         return area;
     }
-
-
-
-
-
-
-
-
 
 }

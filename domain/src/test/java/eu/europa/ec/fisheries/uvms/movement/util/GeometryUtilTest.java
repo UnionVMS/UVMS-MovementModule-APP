@@ -1,36 +1,28 @@
 package eu.europa.ec.fisheries.uvms.movement.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineString;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
+import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
+import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import javax.ejb.EJB;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.ejb.EJB;
-
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.LatLong;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
-import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class GeometryUtilTest extends TransactionalTests {
@@ -90,7 +82,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	
 	
 	@Test
-	public void testGetCoordinateSequenceFromMovements() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException {
+	public void testGetCoordinateSequenceFromMovements() throws MovementDaoException, MissingMovementConnectException, GeometryUtilException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -116,7 +108,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLineStringFromMovments() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException {
+	public void testGetLineStringFromMovments() throws MovementDaoException, MissingMovementConnectException, GeometryUtilException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		

@@ -17,10 +17,9 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +50,7 @@ public class CreateMovementTest {
     }
 
     @Test
-    public void createMovementFirstMovememt() throws GeometryUtilException, MovementDaoMappingException, MovementDaoException {
+    public void createMovementFirstMovememt() throws MissingMovementConnectException, MovementDaoException {
 
         MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
         IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);
