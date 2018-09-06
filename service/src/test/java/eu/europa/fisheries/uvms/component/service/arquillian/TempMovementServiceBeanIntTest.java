@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import java.time.Instant;
-import java.util.TimeZone;
 import java.util.UUID;
 
 /**
