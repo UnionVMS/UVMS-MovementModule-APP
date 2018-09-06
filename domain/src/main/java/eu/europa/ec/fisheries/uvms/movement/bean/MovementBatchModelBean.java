@@ -128,18 +128,12 @@ public class MovementBatchModelBean {
 
             //Initiate the processing of movements, This is copied almost straight from MovementProcessorBean
             //TODO: Move this to MovementServiceBean when we start to refactor the mappings
-//            UserTransaction utx = context.getUserTransaction();
             try {
-  //              utx.commit();
-    //            utx.begin();
+
                 incomingMovementBean.processMovement(currentMovement);
             } catch (Exception e) {
                 LOG.error("Error while processing movement", e);
-        //        try {
-      //              utx.rollback();
-        //        } catch (SystemException el) {
-           //         LOG.error("Error rolling back " + el);
-          //      }
+                throw new RuntimeException("Error while processing movement: " + e);
 
             }
 
