@@ -20,9 +20,6 @@
 		<uvms.common.version>3.0.18</uvms.common.version>
 		<uvms.config.version>4.0.0</uvms.config.version>
 		<longpolling.version>2.0.13</longpolling.version>
-		<uvms.common.version>3.0.18</uvms.common.version>
-		<uvms.config.version>4.0.0</uvms.config.version>
-		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.0.8</user.model.version>
 		<spatial.model.version>1.0.12</spatial.model.version>
 		<audit.model.version>4.0.8</audit.model.version>
