@@ -22,7 +22,9 @@ public class SpatialServiceMockedBean  implements SpatialService {
     @Override
     public List<MovementType> enrichMovementBatchWithSpatialData(List<MovementBaseType> movements) {
         ArrayList<MovementType> movementTypes = new ArrayList<>();
-        movementTypes.add(createSmalletPossibleMovementType(CollectionUtils.isNotEmpty(movements) ? movements.get(0) : null));
+        for(MovementBaseType movement : movements) {
+            movementTypes.add(createSmalletPossibleMovementType(movement));
+        }
         return movementTypes;
     }
 
