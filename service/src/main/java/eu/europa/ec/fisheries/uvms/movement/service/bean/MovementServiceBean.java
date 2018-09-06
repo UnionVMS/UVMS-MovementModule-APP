@@ -27,6 +27,7 @@ import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallExcep
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
@@ -44,6 +45,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -51,6 +53,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +107,7 @@ public class MovementServiceBean implements MovementService {
                 }
             }
             return createdMovement;
-        } catch (MovementServiceException | MovementMessageException  ex) {
+        } catch (MovementServiceException | MovementMessageException | MissingMovementConnectException ex) {
             throw new EJBException(ex);
         }
     }
@@ -114,8 +118,11 @@ public class MovementServiceBean implements MovementService {
         try {
             LOG.debug("ENRICHING MOVEMENTS BATCH WITH SPATIAL DATA");
             List<MovementType> enrichedMovements = spatial.enrichMovementBatchWithSpatialData(movementBaseTypeList);
-            List<MovementType> savedBatchMovements = movementBatch.createMovementBatch(enrichedMovements, username);
-            SimpleResponse simpleResponse = savedBatchMovements != null ? SimpleResponse.OK : SimpleResponse.NOK;
+            List<MovementType> savedBatchMovements = new ArrayList<>();
+            for (MovementType enrichedMovement : enrichedMovements) {
+                savedBatchMovements.add(movementBatch.createMovement(enrichedMovement, username));
+            }
+            SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(savedBatchMovements) ? SimpleResponse.OK : SimpleResponse.NOK;
             String auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(simpleResponse.name(), username);
             producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
@@ -124,6 +131,11 @@ public class MovementServiceBean implements MovementService {
             return createMovementBatchResponse;
         } catch (MovementServiceException | AuditModelMarshallException | MovementMessageException ex) {
             throw new EJBException("createMovementBatch failed", ex);
+        } catch (MissingMovementConnectException mmcex){
+            LOG.warn("Didn't find movement connect for the just received movement so NOT going to save anything!");
+            CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
+            createMovementBatchResponse.setResponse(SimpleResponse.NOK);
+            return createMovementBatchResponse;
         }
     }
 

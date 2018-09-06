@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
 
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	MovementDaoBean movementDaoBean;
 	
 	@Test
-	public void testGetMovementsByGUID() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
+	public void testGetMovementsByGUID() throws MovementDaoException, MovementModelException, MissingMovementConnectException, GeometryUtilException, MovementDaoMappingException, SystemException {
 		Movement output = movementDaoBean.getMovementsByGUID(""); 
 		assertNull(output);
 		
@@ -69,7 +70,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementByConnectIdList() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
+	public void testGetLatestMovementByConnectIdList() throws MovementDaoException, MissingMovementConnectException, MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException {
 		String connectID = UUID.randomUUID().toString();
 		String connectID2 = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
@@ -111,7 +112,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementsByConnectID() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
+	public void testGetLatestMovementsByConnectID() throws MovementDaoException, MovementModelException, MissingMovementConnectException,  GeometryUtilException, MovementDaoMappingException, SystemException {
 		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis()));

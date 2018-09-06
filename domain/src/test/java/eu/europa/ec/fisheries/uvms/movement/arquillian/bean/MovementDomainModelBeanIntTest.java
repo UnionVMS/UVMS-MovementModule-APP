@@ -1,26 +1,19 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.search.v1.*;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.BuildMovementTestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
@@ -35,11 +28,8 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -48,16 +38,10 @@ import org.junit.runner.RunWith;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
-import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -227,7 +211,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     IncomingMovementBean incomingMovementBean;
     
     @Test
-    public void testGetMovementListByQuery() throws MovementModelException, MovementDaoException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
+    public void testGetMovementListByQuery() throws MovementModelException, MovementDaoException, MissingMovementConnectException, GeometryUtilException, MovementDaoMappingException, SystemException {
     	ListResponseDto output;
     	try {
     		output = movementDomainModelBean.getMovementListByQuery(null);
@@ -309,7 +293,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testGetMinimalMovementListByQuery() throws MovementModelException, MovementDaoException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
+    public void testGetMinimalMovementListByQuery() throws MovementModelException, MovementDaoException, MissingMovementConnectException, GeometryUtilException, MovementDaoMappingException, SystemException {
     	ListResponseDto output;
     	try {
     		output = movementDomainModelBean.getMinimalMovementListByQuery(null);
@@ -394,7 +378,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testGetMovementMapByQuery() throws InputArgumentException, MovementModelException, MovementDaoException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
+    public void testGetMovementMapByQuery() throws MissingMovementConnectException, MovementModelException, MovementDaoException, MovementDuplicateException, GeometryUtilException, MovementDaoMappingException, SystemException {
     	List<MovementMapResponseType> output;
     	try {
     		output = movementDomainModelBean.getMovementMapByQuery(null);
@@ -474,7 +458,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testRemoveTrackMismatches() throws MovementDaoException, MovementDuplicateException, MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException {
+    public void testRemoveTrackMismatches() throws MovementDaoException, MissingMovementConnectException , MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException {
     	String connectID = UUID.randomUUID().toString();
     	List<Movement> varbergGrena = createAndProcess10MovementsFromVarbergGrena(connectID);
     	List<MovementTrack> input = new ArrayList<MovementTrack>();
@@ -503,7 +487,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testGetLatestMovementsByConnectID() throws MovementDaoException, GeometryUtilException, MovementDuplicateException, MovementModelException, MovementDaoMappingException, SystemException {
+    public void testGetLatestMovementsByConnectID() throws MovementDaoException, GeometryUtilException, MissingMovementConnectException,  MovementModelException, MovementDaoMappingException, SystemException {
     	String connectID = UUID.randomUUID().toString();
     	String connectID2 = UUID.randomUUID().toString();
     	List<Movement> control = createAndProcess10MovementsFromVarbergGrena(connectID);
@@ -526,7 +510,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void getMovementByGuid() throws MovementDaoException, GeometryUtilException, MovementDuplicateException, MovementModelException, MovementDaoMappingException, SystemException {
+    public void getMovementByGuid() throws MovementDaoException, GeometryUtilException, MissingMovementConnectException, MovementModelException, MovementDaoMappingException, SystemException {
     	String connectID = UUID.randomUUID().toString();
     	List<Movement> control = createAndProcess10MovementsFromVarbergGrena(connectID);
     	
@@ -582,7 +566,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testGetMovementListByAreaAndTimeInterval() throws MovementDaoException, GeometryUtilException, MovementDuplicateException, MovementModelException, MovementDaoMappingException, SystemException, AreaDaoException {
+    public void testGetMovementListByAreaAndTimeInterval() throws MovementDaoException, GeometryUtilException, MissingMovementConnectException,  MovementModelException, MovementDaoMappingException, SystemException, AreaDaoException {
     	String connectID = UUID.randomUUID().toString();
     	
     	MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
@@ -681,7 +665,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         return new SearchValue(SearchField.SEGMENT_SPEED, "100", "200");
     }
     
-    private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementDaoException, MovementDuplicateException, MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException{
+    private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementDaoException, MissingMovementConnectException, MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException{
     	MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
     	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
     	for(Movement move : varbergGrena) {

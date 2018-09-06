@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
 
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +71,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
     private IncomingMovementBean incomingMovementBean;
 	
 	@Test
-	public void testMovementBaseType() throws MovementDaoException, MovementModelException, MovementDuplicateException {
+	public void testMovementBaseType() throws MovementDaoException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -97,7 +98,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test //TODO make this into an actual test, just need to understand minimal movement first
-	public void testMapToMovementTypeWithMinimalMovementInput() throws MovementDaoException, MovementModelException, MovementDuplicateException {
+	public void testMapToMovementTypeWithMinimalMovementInput() {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -111,7 +112,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		//movement.setStatus(status);
 	}
 	@Test
-	public void testMapToMovementTypeWithMovementInput() throws MovementDaoException {
+	public void testMapToMovementTypeWithMovementInput() throws MovementDaoException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -173,7 +174,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testMapToMovementTypeWithAListOfMovements() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testMapToMovementTypeWithAListOfMovements() throws MovementDaoException, MissingMovementConnectException {
 		//Most of the method is tested by testMapToMovementType
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
@@ -196,7 +197,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementDaoException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -224,7 +225,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testMapToMovementSegment() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testMapToMovementSegment() throws MovementDaoException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -256,7 +257,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testOrderMovementsByConnectId() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testOrderMovementsByConnectId() throws MovementDaoException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		List<String> connectId = new ArrayList();
 		List<Movement> input = new ArrayList();
@@ -284,7 +285,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testExtractSegments() throws MovementDaoException, MovementDuplicateException, MovementModelException {
+	public void testExtractSegments() throws MovementDaoException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
@@ -330,7 +331,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testExtractTracks() throws MovementDaoException, MovementDuplicateException, MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException {
+	public void testExtractTracks() throws MovementDaoException, MissingMovementConnectException, MovementModelException, GeometryUtilException, MovementDaoMappingException, SystemException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		ArrayList<Movement> movementList = new ArrayList(movementHelpers.createFishingTourVarberg(1, connectId));
