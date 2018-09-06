@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import javax.ejb.EJB;
@@ -132,7 +132,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	public void testGetPositionCalculations () throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		double startLon = 11.695033;
 		double startLat = 57.678582;

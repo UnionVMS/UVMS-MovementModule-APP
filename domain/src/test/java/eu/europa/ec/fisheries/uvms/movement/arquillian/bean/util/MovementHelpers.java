@@ -18,7 +18,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelExcepti
 import javax.persistence.EntityManager;
 
 import java.time.Instant;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -44,10 +44,10 @@ public class MovementHelpers {
 
     /* positiontime is imortant */
     public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType,
-                                   String connectId, String userName, OffsetDateTime positionTime) throws MovementDaoException {
+                                   String connectId, String userName, Instant positionTime) throws MovementDaoException {
 
         MovementType movementType = MockData.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, 0);
-        movementType.setPositionTime(Date.from(positionTime.toInstant()));
+        movementType.setPositionTime(Date.from(positionTime));
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
         assertNotNull(movementType.getConnectId());
@@ -58,10 +58,10 @@ public class MovementHelpers {
     }
 
     private Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId,
-                                    String userName, OffsetDateTime positionTime) throws MovementDaoException {
+                                    String userName, Instant positionTime) throws MovementDaoException {
 
         MovementType movementType = MockData.createMovementType(latlong,  segmentCategoryType, connectId, altitude);
-        movementType.setPositionTime(Date.from(positionTime.toInstant()));
+        movementType.setPositionTime(Date.from(positionTime));
         movementType = movementBatchModelBean.createMovement(movementType, userName);
         em.flush();
         assertNotNull(movementType.getConnectId());
@@ -119,7 +119,7 @@ public class MovementHelpers {
         for(LatLong position : positions){
             loopCount++;
             Movement movement = createMovement(position, 2,segmentCategoryType, connectId,
-                    userName + "_" + String.valueOf(loopCount), OffsetDateTime.ofInstant(Instant.ofEpochMilli(timeStamp), ZoneId.of("UTC")));
+                    userName + "_" + String.valueOf(loopCount), Instant.ofEpochMilli(timeStamp));
             if(firstLoop){
                 firstLoop = false;
                 segmentCategoryType = SegmentCategoryType.GAP;
@@ -277,8 +277,8 @@ public class MovementHelpers {
         return rutt;
     }
 
-    private Date getDate(Long millis) {
-        return new Date(millis);
+    private Instant getDate(Long millis) {
+        return Instant.ofEpochMilli(millis);
     }
 
     private Double bearing(LatLong src, LatLong dst) {
@@ -318,7 +318,7 @@ public class MovementHelpers {
             // distance to next
             double distanceM = src.distance;
 
-            double durationms = (double) Math.abs(dst.positionTime.getTime() - src.positionTime.getTime());
+            double durationms = (double) Math.abs(dst.positionTime.toEpochMilli() - src.positionTime.toEpochMilli());
             double durationSecs = durationms / 1000;
             double speedMeterPerSecond = (distanceM / durationSecs);
             double speedMPerHour = speedMeterPerSecond * 3600;

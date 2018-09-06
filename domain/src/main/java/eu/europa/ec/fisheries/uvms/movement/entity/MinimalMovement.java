@@ -25,11 +25,11 @@ package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import org.hibernate.annotations.*;
 
@@ -45,7 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serializable;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -115,10 +115,10 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
     @Enumerated(EnumType.ORDINAL)
     private MovementTypeType movementType;
 
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @Column(name = "move_timestamp")
-    private OffsetDateTime timestamp;
+    private Instant timestamp;
 
     @Column(name = "move_processed")
     private Boolean processed;
@@ -238,11 +238,11 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
         this.duplicateId = duplicateId;
     }
 
-    public OffsetDateTime getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(OffsetDateTime timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
     @Override

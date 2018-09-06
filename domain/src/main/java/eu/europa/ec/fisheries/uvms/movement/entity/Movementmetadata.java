@@ -13,13 +13,13 @@ package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
-import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -80,12 +80,11 @@ public class Movementmetadata implements Serializable {
     @Column(name = "movemet_closecounty_dist")
     private Double closestCountryDistance;
 
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "movemet_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private OffsetDateTime movemetUpdattim;
+    private Instant movemetUpdattim;
 
     @Basic(optional = false)
     @NotNull
@@ -171,11 +170,11 @@ public class Movementmetadata implements Serializable {
         this.closestCountryName = closestCountryName;
     }
 
-    public OffsetDateTime getMovemetUpdattim() {
+    public Instant getMovemetUpdattim() {
         return movemetUpdattim;
     }
 
-    public void setMovemetUpdattim(OffsetDateTime movemetUpdattim) {
+    public void setMovemetUpdattim(Instant movemetUpdattim) {
         this.movemetUpdattim = movemetUpdattim;
     }
 

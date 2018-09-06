@@ -13,11 +13,11 @@ package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -41,7 +41,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.*;
 
 /**
@@ -87,12 +87,11 @@ public class Segment implements Serializable {
     @Column(name = "seg_cog")
     private Double courseOverGround;
 
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "seg_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private OffsetDateTime updated;
+    private Instant updated;
 
     @Basic(optional = false)
     @NotNull
@@ -167,11 +166,11 @@ public class Segment implements Serializable {
         this.courseOverGround = courseOverGround;
     }
 
-    public OffsetDateTime getUpdated() {
+    public Instant getUpdated() {
         return updated;
     }
 
-    public void setUpdated(OffsetDateTime updated) {
+    public void setUpdated(Instant updated) {
         this.updated = updated;
     }
 

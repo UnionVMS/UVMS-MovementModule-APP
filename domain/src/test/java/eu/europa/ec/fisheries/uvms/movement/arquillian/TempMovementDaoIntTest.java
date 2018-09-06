@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -161,7 +161,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
 
     private TempMovement createTempMovementEntityHelper(double longitude, double latitude) {
 
-        OffsetDateTime now = DateUtil.nowUTC();
+        Instant now = DateUtil.nowUTC();
 
         TempMovement tempMovement = new TempMovement();
 

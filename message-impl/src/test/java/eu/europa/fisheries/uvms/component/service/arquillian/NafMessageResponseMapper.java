@@ -15,7 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLDecoder;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.Date; //leave be for now
 
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
@@ -199,8 +199,8 @@ public class NafMessageResponseMapper {
         while (timeString.length() < 4) {
             timeString = "0" + timeString;
         }
-        OffsetDateTime date = DateUtil.convertDateTimeInUTC(dateString + " " + timeString + " UTC", DATE_TIME_FORMAT);
-        movement.setPositionTime(Date.from(date.toInstant()));
+        Instant date = DateUtil.convertDateTimeInUTC(dateString + " " + timeString + " UTC", DATE_TIME_FORMAT);
+        movement.setPositionTime(Date.from(date));
     }
 
     static void mapIRCS(String value, MovementBaseType movement) {

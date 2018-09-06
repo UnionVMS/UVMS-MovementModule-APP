@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.awt.Point;
 import java.time.Instant;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -78,7 +78,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMovementBaseType() throws MovementDaoException, MovementModelException, MovementDuplicateException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
 		Movement movement =  movementHelpers.createMovement(lon, lat, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
@@ -105,7 +105,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementTypeWithMinimalMovementInput() throws MovementDaoException, MovementModelException, MovementDuplicateException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
 		MinimalMovement movement = new MinimalMovement();
@@ -119,7 +119,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementTypeWithMovementInput() throws MovementDaoException, MovementModelException, MovementDuplicateException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
 		Movement movement =  movementHelpers.createMovement(lon, lat, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
@@ -186,7 +186,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		//Most of the method is tested by testMapToMovementType
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		List<Movement> input = movementHelpers.createFishingTourVarberg(1, connectId);
 		
@@ -208,7 +208,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementDaoException, MovementDuplicateException, MovementModelException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		List<LatestMovement> input = new ArrayList();
@@ -236,7 +236,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementSegment() throws MovementDaoException, MovementDuplicateException, MovementModelException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		
 		List<Segment> input = new ArrayList<Segment>();
@@ -273,7 +273,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		for(int i = 0 ; i < 20 ; i++) {
 			ID = UUID.randomUUID().toString();
 			connectId.add(ID);
-			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, 0 , SegmentCategoryType.GAP, ID, "ONE", OffsetDateTime.ofInstant(Instant.now().plusMillis((long)(Math.random() * 5000)), ZoneId.of("UTC"))));
+			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, 0 , SegmentCategoryType.GAP, ID, "ONE", Instant.now().plusMillis((long)(Math.random() * 5000))));
 		}
 		
 		Map<String, List<Movement>> output = MovementEntityToModelMapper.orderMovementsByConnectId(input);

@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 /**
  **/
@@ -26,7 +26,7 @@ import java.time.OffsetDateTime;
 public class MovementDto {
 
     @XmlElement(required = true)
-    private OffsetDateTime time;
+    private Instant time;
     @XmlElement(required = true)
     private Double latitude;
     @XmlElement(required = true)
@@ -48,11 +48,11 @@ public class MovementDto {
     @XmlElement(required = true)
     private String movementGUID;
 
-    public OffsetDateTime getTime() {
+    public Instant getTime() {
         return time;
     }
 
-    public void setTime(OffsetDateTime time) {
+    public void setTime(Instant time) {
         this.time = time;
     }
 

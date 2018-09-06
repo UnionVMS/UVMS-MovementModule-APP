@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
 
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;

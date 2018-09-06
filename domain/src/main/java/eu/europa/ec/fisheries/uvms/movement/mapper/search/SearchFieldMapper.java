@@ -13,7 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.mapper.search;
 
 import com.vividsolutions.jts.geom.Geometry;
 import java.text.ParseException;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -482,7 +482,7 @@ public class SearchFieldMapper {
         Class clazz = entry.getField().getClazz();
 
         if (entry.isRange()) {
-            if (clazz.isAssignableFrom(OffsetDateTime.class)) {
+            if (clazz.isAssignableFrom(Instant.class)) {
                 builder.append(" BETWEEN ").append(":fromDate ").append(" AND ").append(":toDate ");
             } else if (clazz.isAssignableFrom(Double.class) || clazz.isAssignableFrom(Integer.class)) {
                 builder.append(" ( ").append(buildTableAliasname(entry.getField()));
@@ -528,7 +528,7 @@ public class SearchFieldMapper {
         Class clazz = entry.getField().getClazz();
 
         if (entry.isRange()) {
-            if (clazz.isAssignableFrom(OffsetDateTime.class)) {
+            if (clazz.isAssignableFrom(Instant.class)) {
                 builder.append(" BETWEEN ").append(":fromDate ").append(" AND ").append(":toDate ").toString();
             } else if (clazz.isAssignableFrom(Double.class) || clazz.isAssignableFrom(Integer.class)) {
                 builder

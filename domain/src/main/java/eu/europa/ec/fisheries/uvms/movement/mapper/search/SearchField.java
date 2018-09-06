@@ -17,7 +17,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 /**
  **/
@@ -50,7 +50,7 @@ public enum SearchField implements SearchFieldType {
     /**
      * The date the movementment was reported
      */
-    DATE("timestamp", SearchTables.MOVEMENT, OffsetDateTime.class),
+    DATE("timestamp", SearchTables.MOVEMENT, Instant.class),
     /**
      * The location ( POINT ) ot the movement
      */

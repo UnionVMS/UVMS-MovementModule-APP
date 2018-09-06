@@ -13,13 +13,13 @@ package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
-import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -33,8 +33,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -75,11 +73,11 @@ public class MovementSource implements Serializable {
     @Column(name = "movesour_desc")
     private String description;
 
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "movesour_updattim")
-    private OffsetDateTime updated;
+    private Instant updated;
 
     @Basic(optional = false)
     @NotNull
@@ -97,7 +95,7 @@ public class MovementSource implements Serializable {
         this.id = id;
     }
 
-    public MovementSource(Long id, String name, String description, OffsetDateTime updated, String updatedBy) {
+    public MovementSource(Long id, String name, String description, Instant updated, String updatedBy) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -129,11 +127,11 @@ public class MovementSource implements Serializable {
         this.description = description;
     }
 
-    public OffsetDateTime getUpdated() {
+    public Instant getUpdated() {
         return updated;
     }
 
-    public void setUpdated(OffsetDateTime updated) {
+    public void setUpdated(Instant updated) {
         this.updated = updated;
     }
 

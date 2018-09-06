@@ -13,15 +13,15 @@ package eu.europa.ec.fisheries.uvms.movement.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
-import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -67,11 +67,11 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     @Column(name = "moveconn_value")
     private String value;
 
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "moveconn_updattim")
-    private OffsetDateTime updated;
+    private Instant updated;
 
     @Basic(optional = false)
     @NotNull
@@ -89,7 +89,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         this.id = id;
     }
 
-    public MovementConnect(Long id, String value, OffsetDateTime updated, String updatedBy) {
+    public MovementConnect(Long id, String value, Instant updated, String updatedBy) {
         this.id = id;
         this.value = value;
         this.updated = updated;
@@ -112,11 +112,11 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         this.value = value;
     }
 
-    public OffsetDateTime getUpdated() {
+    public Instant getUpdated() {
         return updated;
     }
 
-    public void setUpdated(OffsetDateTime updated) {
+    public void setUpdated(Instant updated) {
         this.updated = updated;
     }
 

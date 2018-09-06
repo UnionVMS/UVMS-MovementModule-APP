@@ -13,7 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.dao;
 
 import com.vividsolutions.jts.io.ParseException;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -167,7 +167,7 @@ public interface MovementDao {
 
     List<Long> getUnprocessedMovementIds() throws javax.persistence.NoResultException;
 
-    Movement getLatestMovement(String id, OffsetDateTime date);
+    Movement getLatestMovement(String id, Instant date);
 
     Movement getMovementById(Long id);
 

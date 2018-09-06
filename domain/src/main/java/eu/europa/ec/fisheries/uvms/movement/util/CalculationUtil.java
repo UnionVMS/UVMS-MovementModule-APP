@@ -80,7 +80,7 @@ public class CalculationUtil {
         if ((pointThisPosition.getX() != pointPreviousPosition.getX()) ||  (pointThisPosition.getY() != pointPreviousPosition.getY())) {
 
             distanceInMeters = calculateDistance(pointPreviousPosition.getY(), pointPreviousPosition.getX(), pointThisPosition.getY(), pointThisPosition.getX());
-            durationInSeconds = ((Long) (currentPosition.getTimestamp().getTime() - previousPosition.getTimestamp().getTime())).doubleValue() / 1000;
+            durationInSeconds = ((currentPosition.getTimestamp().getEpochSecond() - previousPosition.getTimestamp().getEpochSecond()));
 
             courseOverGround = calculateCourse(pointPreviousPosition.getY(), pointPreviousPosition.getX(), pointThisPosition.getY(), pointThisPosition.getX());
             distanceBetweenPointsInNauticalMiles = CalculationUtil.getNauticalMilesFromMeter(distanceInMeters);

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -50,7 +50,7 @@ public class WKTUtilTest extends TransactionalTests {
 	public void testGetWKTLineString() throws MovementDaoException, MovementDuplicateException, MovementModelException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = OffsetDateTime.now(ZoneId.of("UTC"));
+		Instant dateStartMovement = Instant.now();
 		
 		List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectId);
 		List<Geometry> input = new LinkedList<Geometry>();
@@ -84,7 +84,7 @@ public class WKTUtilTest extends TransactionalTests {
 	public void testGetWktLineStringFromMovementList() throws MovementDaoException, MovementDuplicateException, MovementModelException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = OffsetDateTime.now(ZoneId.of("UTC"));
+		Instant dateStartMovement = Instant.now();
 		
 		List<Movement> input = movementHelpers.createVarbergGrenaMovements(1, 10, connectId);
 		

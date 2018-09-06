@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,7 +93,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	public void testGetCoordinateSequenceFromMovements() throws MovementDaoException, MovementModelException, MovementDuplicateException, GeometryUtilException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		OffsetDateTime dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		Coordinate[] input = new Coordinate[2];
 		input[0] = new Coordinate(11.641982, 57.632304);

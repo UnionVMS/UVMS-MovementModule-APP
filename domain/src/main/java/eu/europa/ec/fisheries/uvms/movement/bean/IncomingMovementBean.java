@@ -21,7 +21,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.SystemException;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +48,7 @@ public class IncomingMovementBean {
         LOG.debug("Processing movement {}", currentMovement.getId());
         if (currentMovement != null && !currentMovement.getProcessed()) {
             String connectId = currentMovement.getMovementConnect().getValue();
-            OffsetDateTime timeStamp = currentMovement.getTimestamp();
+            Instant timeStamp = currentMovement.getTimestamp();
 
             //is this supposed to be a reference to processed instead of Timestamp? Easy fix is just to default processed to false, if that is the case
             //ToDo: Timestamp will be null in the database if not set actively to a boolean value. This means duplicate timestamp Movements will not be detected by the processMovement method
@@ -57,7 +57,7 @@ public class IncomingMovementBean {
             List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
             if (!duplicateMovements.isEmpty()) {    //if a duplicate date exists
                 if (!currentMovement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {  //if they have different movement types
-                    OffsetDateTime newDate = DateUtil.addSecondsToDate(timeStamp, 1);                             //add a second so that it is marginally different from the previous one and proceed
+                    Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);                             //add a second so that it is marginally different from the previous one and proceed
                     currentMovement.setTimestamp(newDate);
                 } else {                                                                                        //else it is a duplicate of another move and should be ignored
                     LOG.info("Got a duplicate movement. Marking it as such.{}", currentMovement.getId());

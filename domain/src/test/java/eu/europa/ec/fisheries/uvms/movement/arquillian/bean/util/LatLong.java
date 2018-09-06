@@ -1,18 +1,18 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util;
 
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 public class LatLong {
 	
 	public double latitude;
 	public double longitude;
-	public OffsetDateTime positionTime;
+	public Instant positionTime;
 	public double bearing = Double.MIN_NORMAL;
 	public double distance = 0;
 	public double speed = 0;
 
-	public LatLong(double latitude, double longitude, OffsetDateTime positionTime) {
+	public LatLong(double latitude, double longitude, Instant positionTime) {
 		super();
 		this.latitude = latitude;
 		this.longitude = longitude;

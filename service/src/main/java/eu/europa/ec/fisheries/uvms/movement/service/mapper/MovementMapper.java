@@ -37,7 +37,7 @@ import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;  //leave be for now
@@ -72,7 +72,7 @@ public class MovementMapper {
         dto.setMovementType(movement.getMovementType());
         dto.setSource(movement.getSource());
         dto.setStatus(movement.getStatus());
-        dto.setTime(OffsetDateTime.ofInstant(movement.getPositionTime().toInstant(), ZoneId.of("UTC")));
+        dto.setTime(movement.getPositionTime().toInstant());
         dto.setConnectId(movement.getConnectId());
         dto.setMovementGUID(movement.getGuid());
         return dto;
@@ -166,7 +166,7 @@ public class MovementMapper {
         SetReportMovementType report = new SetReportMovementType();
         report.setPluginName("ManualMovement");
         report.setPluginType(PluginType.MANUAL);
-        report.setTimestamp(Date.from(DateUtil.nowUTC().toInstant()));
+        report.setTimestamp(Date.from(DateUtil.nowUTC()));
 
         eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType exchangeMovementBaseType = new eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType();
         eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId exchangeAssetId = new eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId();
@@ -204,7 +204,7 @@ public class MovementMapper {
         exchangeMovementBaseType.setSource(MovementSourceType.MANUAL);
 
         try {
-            Date date = Date.from(DateUtil.parseToUTCDate(movement.getTime()).toInstant());
+            Date date = Date.from(DateUtil.parseToUTCDate(movement.getTime()));
             exchangeMovementBaseType.setPositionTime(date);
         } catch (Exception e) {
             LOG.error("Error when parsing position date for temp movement continuing ");

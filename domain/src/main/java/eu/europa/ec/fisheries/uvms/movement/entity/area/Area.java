@@ -13,14 +13,14 @@ package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
-import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -64,11 +64,11 @@ public class Area implements Serializable {
     @Column(name = "area_remoteid")
     private String remoteId;
 
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "area_updattim")
-    private OffsetDateTime areaUpdattim;
+    private Instant areaUpdattim;
 
     @Basic(optional = false)
     @NotNull
@@ -107,11 +107,11 @@ public class Area implements Serializable {
         this.remoteId = remoteId;
     }
 
-    public OffsetDateTime getAreaUpdattim() {
+    public Instant getAreaUpdattim() {
         return areaUpdattim;
     }
 
-    public void setAreaUpdattim(OffsetDateTime areaUpdattim) {
+    public void setAreaUpdattim(Instant areaUpdattim) {
         this.areaUpdattim = areaUpdattim;
     }
 

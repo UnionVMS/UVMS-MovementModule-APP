@@ -28,14 +28,8 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +55,7 @@ public class MovementEntityToModelMapper {
         }
 
         if (movement.getTimestamp() != null) {
-            model.setPositionTime(movement.getTimestamp());
+            model.setPositionTime(Date.from(movement.getTimestamp()));
         }
 
         model.setStatus(movement.getStatus());
@@ -104,7 +98,7 @@ public class MovementEntityToModelMapper {
         }
 
         if (movement.getTimestamp() != null) {
-            model.setPositionTime(movement.getTimestamp());
+            model.setPositionTime(Date.from(movement.getTimestamp()));
         }
 
         model.setStatus(movement.getStatus());
@@ -153,7 +147,7 @@ public class MovementEntityToModelMapper {
         }
 
         if (movement.getTimestamp() != null) {
-            model.setPositionTime(movement.getTimestamp());
+            model.setPositionTime(Date.from(movement.getTimestamp()));
         }
 
         model.setActivity(mapToActivityType(movement.getActivity()));

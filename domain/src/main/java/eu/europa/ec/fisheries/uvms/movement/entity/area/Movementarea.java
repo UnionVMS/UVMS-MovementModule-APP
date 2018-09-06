@@ -13,10 +13,10 @@ package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 
 import javax.persistence.Column;
@@ -34,7 +34,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import eu.europa.ec.fisheries.uvms.movement.model.OffsetDateTimeDeserializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
@@ -58,11 +58,11 @@ public class Movementarea implements Serializable {
     @Column(name = "movarea_id")
     private Long movareaId;
 
-    @JsonSerialize(using = OffsetDateTimeSerializer.class)
-    @JsonDeserialize(using = OffsetDateTimeDeserializer.class)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "movarea_updattim")
-    private OffsetDateTime movareaUpdattim;
+    private Instant movareaUpdattim;
 
     @NotNull
     @Size(min = 1, max = 60)
@@ -86,7 +86,7 @@ public class Movementarea implements Serializable {
         this.movareaId = movareaId;
     }
 
-    public Movementarea(Long movareaId, OffsetDateTime movareaUpdattim, String movareaUpuser) {
+    public Movementarea(Long movareaId, Instant movareaUpdattim, String movareaUpuser) {
         this.movareaId = movareaId;
         this.movareaUpdattim = movareaUpdattim;
         this.movareaUpuser = movareaUpuser;
@@ -100,11 +100,11 @@ public class Movementarea implements Serializable {
         this.movareaId = movareaId;
     }
 
-    public OffsetDateTime getMovareaUpdattim() {
+    public Instant getMovareaUpdattim() {
         return movareaUpdattim;
     }
 
-    public void setMovareaUpdattim(OffsetDateTime movareaUpdattim) {
+    public void setMovareaUpdattim(Instant movareaUpdattim) {
         this.movareaUpdattim = movareaUpdattim;
     }
 

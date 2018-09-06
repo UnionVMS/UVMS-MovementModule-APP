@@ -19,8 +19,8 @@ public enum DateFormats {
 
     FORMAT("yyyy-MM-dd HH:mm:ss Z"),
     FORMAT_2("EEE MMM dd HH:mm:ss z yyyy"),
-    DATE_TIME_PATTERN("yyyy-MM-dd HH:mm:ss X"),
-    DATE_TIME_PATTERN_UTC("yyyy-MM-dd HH:mm:ss");
+    DATE_TIME_PATTERN("yyyy-MM-dd HH:mm:ss X");
+
 
     String format;
 

@@ -11,6 +11,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.GeometryUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.SegmentCalculationUtil;
