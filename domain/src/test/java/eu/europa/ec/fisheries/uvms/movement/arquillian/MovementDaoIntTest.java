@@ -262,7 +262,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         Integer listSize = 10;
         String sql = "select distinct m  from  MinimalMovement m";
 
-        List<MinimalMovement> minimalMovementList = movementDao.getMinimalMovementListPaginated(page, listSize, sql, searchKeyValues);
+        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
         assertNotNull(minimalMovementList);
         assertTrue(minimalMovementList.size() <= 10);
     }
@@ -276,7 +276,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         Integer listSize = 10;
         String sql = "select distinct m  from  MinimalMovement m where m.speed < 0";
 
-        List<MinimalMovement> minimalMovementList = movementDao.getMinimalMovementListPaginated(page, listSize, sql, searchKeyValues);
+        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
         assertNotNull(minimalMovementList);
         assertEquals(0, minimalMovementList.size());
     }

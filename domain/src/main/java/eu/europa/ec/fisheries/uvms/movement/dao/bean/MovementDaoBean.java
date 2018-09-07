@@ -352,29 +352,12 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     @Override
-    public List<Movement> getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDaoException {
+    public <T> T getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDaoException {
         try {
             Query query = getMovementQuery(sql, searchKeyValues);
             query.setFirstResult(listSize * (page - 1));
             query.setMaxResults(listSize);
-            List resultList = query.getResultList();
-            return resultList;
-        } catch (IllegalArgumentException e) {
-            LOG.error("[ Error getting movement list paginated ] {}", e.getMessage());
-            throw new MovementDaoException(6, "[ Error when getting list ] ", e);
-        } catch (Exception e) {
-            LOG.error("[ Error getting movement list paginated ]  {}", e.getMessage());
-            throw new MovementDaoException(6, "[ Error when getting list ] ", e);
-        }
-    }
-
-    @Override
-    public List<MinimalMovement> getMinimalMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDaoException {
-        try {
-            Query query = getMovementQuery(sql, searchKeyValues);
-            query.setFirstResult(listSize * (page - 1));
-            query.setMaxResults(listSize);
-            List resultList = query.getResultList();
+            T resultList = (T) query.getResultList();
             return resultList;
         } catch (IllegalArgumentException e) {
             LOG.error("[ Error getting movement list paginated ] {}", e.getMessage());
