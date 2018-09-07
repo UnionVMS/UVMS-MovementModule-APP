@@ -27,7 +27,7 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +36,8 @@ import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.ConstraintViolationException;
+
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

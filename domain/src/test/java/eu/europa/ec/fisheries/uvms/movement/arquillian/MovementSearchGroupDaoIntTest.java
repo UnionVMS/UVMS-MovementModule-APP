@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import javax.persistence.PersistenceException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -159,7 +160,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
         movementFilterGroup.setFilters(new ArrayList<MovementFilter>());
         movementFilterGroup.setGlobal("true");
         movementFilterGroup.setUser(TEST_USER_NAME);
-        movementFilterGroup.setUpdated(Calendar.getInstance().getTime());
+        movementFilterGroup.setUpdated(Instant.now());
         movementFilterGroup.setUpdatedBy(TEST_USER_NAME);
 
         return movementFilterGroup;

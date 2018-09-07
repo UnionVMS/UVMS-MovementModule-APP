@@ -5,10 +5,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.awt.Point;
+import java.time.Instant;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +19,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
 
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,7 +78,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMovementBaseType() throws MovementDaoException, MovementModelException, MovementDuplicateException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		Date dateStartMovement = Calendar.getInstance().getTime();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
 		Movement movement =  movementHelpers.createMovement(lon, lat, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
@@ -102,7 +105,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementTypeWithMinimalMovementInput() throws MovementDaoException, MovementModelException, MovementDuplicateException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		Date dateStartMovement = Calendar.getInstance().getTime();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
 		MinimalMovement movement = new MinimalMovement();
@@ -116,7 +119,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementTypeWithMovementInput() throws MovementDaoException, MovementModelException, MovementDuplicateException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		Date dateStartMovement = Calendar.getInstance().getTime();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
 		Movement movement =  movementHelpers.createMovement(lon, lat, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
@@ -183,7 +186,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		//Most of the method is tested by testMapToMovementType
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		Date dateStartMovement = Calendar.getInstance().getTime();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		List<Movement> input = movementHelpers.createFishingTourVarberg(1, connectId);
 		
@@ -205,7 +208,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementDaoException, MovementDuplicateException, MovementModelException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		Date dateStartMovement = Calendar.getInstance().getTime();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		List<LatestMovement> input = new ArrayList();
@@ -233,7 +236,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementSegment() throws MovementDaoException, MovementDuplicateException, MovementModelException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		Date dateStartMovement = Calendar.getInstance().getTime();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		
 		List<Segment> input = new ArrayList<Segment>();
@@ -270,7 +273,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		for(int i = 0 ; i < 20 ; i++) {
 			ID = UUID.randomUUID().toString();
 			connectId.add(ID);
-			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, 0 , SegmentCategoryType.GAP, ID, "ONE", new Date(System.currentTimeMillis() + (long)(Math.random() * 5000) )));
+			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, 0 , SegmentCategoryType.GAP, ID, "ONE", Instant.now().plusMillis((long)(Math.random() * 5000))));
 		}
 		
 		Map<String, List<Movement>> output = MovementEntityToModelMapper.orderMovementsByConnectId(input);

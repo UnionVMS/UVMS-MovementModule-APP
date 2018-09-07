@@ -19,11 +19,10 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
@@ -34,7 +33,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.jms.JMSException;
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 
@@ -75,11 +74,10 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void getMovementListByAreaAndTimeInterval_NoResult_But_RunsTheCode() {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
 
-        Date curDate = DateUtil.nowUTC();
+        Instant curDate = DateUtil.nowUTC();
         String fmt = "yyyy-MM-dd HH:mm:ss Z";
 
-        SimpleDateFormat format = new SimpleDateFormat(fmt);
-       String formattedDate = format.format(curDate);
+       String formattedDate = DateUtil.parseDateToString(curDate, fmt);
 
 
         // areaCode
@@ -105,11 +103,10 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void getMovementListByAreaAndTimeInterval_NoArea_ButDateAdded_NoResult_But_RunsTheCode() {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
 
-        Date curDate = DateUtil.nowUTC();
+        Instant curDate = DateUtil.nowUTC();
         String fmt = "yyyy-MM-dd HH:mm:ss Z";
 
-        SimpleDateFormat format = new SimpleDateFormat(fmt);
-        String formattedDate = format.format(curDate);
+        String formattedDate = DateUtil.parseDateToString(curDate, fmt);
 
 
         // NO areaCode  shpuld make the dates NOT be used
@@ -135,7 +132,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void createMovement() {
 
-        Date now = DateUtil.nowUTC();
+        Instant now = DateUtil.nowUTC();
         double longitude = 9.140625D;
         double latitude = 57.683804D;
 
@@ -301,7 +298,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
         try {
 
-            Date now = DateUtil.nowUTC();
+            Instant now = DateUtil.nowUTC();
             double longitude = 9.140625D;
             double latitude = 57.683804D;
 
@@ -432,9 +429,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         return areaType;
     }
 
-    private MovementType createMovementTypeHelper(Date timeStamp, double longitude, double latitude) {
+    private MovementType createMovementTypeHelper(Instant timeStamp, double longitude, double latitude) {
         MovementType movementType = new MovementType();
-        movementType.setPositionTime(timeStamp);
+        movementType.setPositionTime(Date.from(timeStamp));
         MovementPoint point = new MovementPoint();
         point.setLatitude(latitude);
         point.setLongitude(longitude);

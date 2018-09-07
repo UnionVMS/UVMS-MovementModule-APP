@@ -11,7 +11,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +21,8 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.SystemException;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -48,7 +48,7 @@ public class IncomingMovementBean {
         LOG.debug("Processing movement {}", currentMovement.getId());
         if (currentMovement != null && !currentMovement.getProcessed()) {
             String connectId = currentMovement.getMovementConnect().getValue();
-            Date timeStamp = currentMovement.getTimestamp();
+            Instant timeStamp = currentMovement.getTimestamp();
 
             //is this supposed to be a reference to processed instead of Timestamp? Easy fix is just to default processed to false, if that is the case
             //ToDo: Timestamp will be null in the database if not set actively to a boolean value. This means duplicate timestamp Movements will not be detected by the processMovement method
@@ -57,7 +57,7 @@ public class IncomingMovementBean {
             List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
             if (!duplicateMovements.isEmpty()) {    //if a duplicate date exists
                 if (!currentMovement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {  //if they have different movement types
-                    Date newDate = DateUtil.addSecondsToDate(timeStamp, 1);                             //add a second so that it is marginally different from the previous one and proceed
+                    Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);                             //add a second so that it is marginally different from the previous one and proceed
                     currentMovement.setTimestamp(newDate);
                 } else {                                                                                        //else it is a duplicate of another move and should be ignored
                     LOG.info("Got a duplicate movement. Marking it as such.{}", currentMovement.getId());
@@ -78,7 +78,7 @@ public class IncomingMovementBean {
                 return;
             } else {
                 // Should only be true when a new position reports which is not the latest position. Should not occur often but may occur when the mobile terminal has buffered its positions or inserted a manual position.
-                if (previousMovement.getTimestamp().after(timeStamp)) {    //how is this possible since getLatestMovement returns a position that is as close as possible b4 timestamp? so how can it be after?
+                if (previousMovement.getTimestamp().isAfter(timeStamp)) {    //how is this possible since getLatestMovement returns a position that is as close as possible b4 timestamp? so how can it be after?
                     firstMovement = dao.getFirstMovement(connectId);
                     previousMovement = dao.getLatestMovement(connectId, timeStamp);
                 }

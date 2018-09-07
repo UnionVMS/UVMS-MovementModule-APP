@@ -11,14 +11,17 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.entity.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,11 +64,11 @@ public class Areatransition implements Serializable {
     @Column(name = "areatran_id")
     private Long areatranId;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "areatran_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date areatranUpdattim;
+    private Instant areatranUpdattim;
 
     @Basic(optional = false)
     @NotNull
@@ -92,7 +95,7 @@ public class Areatransition implements Serializable {
         this.areatranId = areatranId;
     }
 
-    public Areatransition(Long areatranId, Date areatranUpdattim, String areatranUpuser) {
+    public Areatransition(Long areatranId, Instant areatranUpdattim, String areatranUpuser) {
         this.areatranId = areatranId;
         this.areatranUpdattim = areatranUpdattim;
         this.areatranUpuser = areatranUpuser;
@@ -106,11 +109,11 @@ public class Areatransition implements Serializable {
         this.areatranId = areatranId;
     }
 
-    public Date getAreatranUpdattim() {
+    public Instant getAreatranUpdattim() {
         return areatranUpdattim;
     }
 
-    public void setAreatranUpdattim(Date areatranUpdattim) {
+    public void setAreatranUpdattim(Instant areatranUpdattim) {
         this.areatranUpdattim = areatranUpdattim;
     }
 

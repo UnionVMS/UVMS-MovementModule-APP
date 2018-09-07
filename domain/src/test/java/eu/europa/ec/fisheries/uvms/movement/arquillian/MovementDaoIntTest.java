@@ -16,11 +16,9 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -29,9 +27,10 @@ import org.junit.runner.RunWith;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -445,7 +444,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
-        Date timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = DateUtil.nowUTC();
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
 
@@ -460,7 +459,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
-        Date timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = DateUtil.nowUTC();
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
 
@@ -475,7 +474,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
 
-        Date timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = DateUtil.nowUTC();
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.speed = -42";
 
@@ -490,7 +489,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
 
-        Date timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = DateUtil.nowUTC();
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
 
@@ -518,8 +517,8 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         long currentTimeMillis = System.currentTimeMillis();
 
-        Date d1980 = new Date(80,3,3);
-        Date nowPlus10 = new Date(currentTimeMillis + 10000);
+        Instant d1980 = OffsetDateTime.of(1980, 3, 3, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant nowPlus10 = Instant.ofEpochMilli(currentTimeMillis + 10000);
         String fromDate = DateUtil.parseUTCDateToString(d1980);
         String toDate = DateUtil.parseUTCDateToString(nowPlus10);
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, fromDate, toDate));
@@ -668,7 +667,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         Movement movement = new Movement();
 
         GeometryFactory geometryFactory = new GeometryFactory();
-        Date timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = DateUtil.nowUTC();
 
         movement.setMovementSource(MovementSourceType.NAF);
         movement.setMovementType(MovementTypeType.MAN);

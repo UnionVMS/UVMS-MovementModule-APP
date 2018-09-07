@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.transaction.SystemException;
-import java.util.Date;
+import java.time.Instant;
+import java.util.Date;    //leave be for now
 import java.util.List;
 import java.util.UUID;
 
@@ -153,7 +154,8 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
 
         /* Setting same timestamp + duplicate flag set to false + same movement type. */
-        firstMovement.setTimestamp(new Date(1490708331790L));
+        //firstMovement.setTimestamp(new Date(1490708331790L));
+        firstMovement.setTimestamp(Instant.ofEpochMilli(1490708331790L));
         // Fields will be null by default in postgres if not set instead of false which means duplicate timestamp Movements
         // will not be found by the processMovement method via the isDateAlreadyInserted method in MovementDaoBean.
         firstMovement.setDuplicate(false);
@@ -355,19 +357,19 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     public void testMovementAndSegmentRelationThreeMovementsNonOrdered() throws Exception {
     	int tenMinutes = 600000;
     	String connectId = UUID.randomUUID().toString();
-    	Date positionTime = new Date();
+    	Instant positionTime = Instant.now();
     	MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
-    	firstMovementType.setPositionTime(positionTime);
+    	firstMovementType.setPositionTime(Date.from(positionTime));
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
         assertNotNull(firstMovementType);
 
         MovementType thirdMovementType = MockData.createMovementType(1d, 2d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        thirdMovementType.setPositionTime(new Date(positionTime.getTime() + 2*tenMinutes));
+        thirdMovementType.setPositionTime(Date.from(positionTime.plusMillis(2*tenMinutes)));
         thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType, "TEST");
         assertNotNull(thirdMovementType);
 
         MovementType secondMovementType = MockData.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        secondMovementType.setPositionTime(new Date(positionTime.getTime() + tenMinutes));
+        secondMovementType.setPositionTime(Date.from(positionTime.plusMillis(tenMinutes)));
         secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
         assertNotNull(secondMovementType);
 

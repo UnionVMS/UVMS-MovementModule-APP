@@ -15,13 +15,12 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeInter
 import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.NoEntityFoundException;
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +29,12 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
-import javax.xml.registry.UnsupportedCapabilityException;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+
 import java.util.List;
 
 /**
@@ -170,7 +168,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
-    public List<Movement> isDateAlreadyInserted(String id, Date date) {
+    public List<Movement> isDateAlreadyInserted(String id, Instant date) {
         try {
             long start = System.currentTimeMillis();
             //ToDo: The named query findExistingDate in the Movement class assumes that the duplicate field is false.
@@ -207,12 +205,12 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     @Override
-    public Movement getLatestMovement(String id, Date date) {
+    public Movement getLatestMovement(String id, Instant date) {
         Movement singleResult = null;
         try {
             TypedQuery<Movement> query = em.createNamedQuery("Movement.findLatest", Movement.class);
             query.setParameter("id", id);
-            query.setParameter("date", date, TemporalType.TIMESTAMP);
+            query.setParameter("date", date);
             singleResult = query.getSingleResult();
         }catch (NoResultException e){
             LOG.debug("No previous movement found for date: " + date.toString() + " and connectedId: " + id );
@@ -226,7 +224,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
         LatestMovement latestMovement = null;
         try {
             latestMovement = getLatestMovement(movementConnect.getValue());     //get the latest movement in the table LatestMovement
-            if (latestMovement.getTimestamp().after(movement.getTimestamp())) { //if it is in the middle of things
+            if (latestMovement.getTimestamp().isAfter(movement.getTimestamp())) { //if it is in the middle of things
                 LOG.debug("CURRENT MOVEMENT BEFORE LATEST MOVEMENT. NO CHANGE.");
                 return;
             }

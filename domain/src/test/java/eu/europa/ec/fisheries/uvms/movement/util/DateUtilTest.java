@@ -7,15 +7,15 @@ import static org.junit.Assert.fail;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,70 +28,54 @@ public class DateUtilTest extends TransactionalTests {
 	
 	@Test
 	public void testGetDateFromString() throws ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss X");
-		Calendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 30); 
-		testDate.setTimeZone(TimeZone.getTimeZone("UTC"));
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss X");
+
+
+		Instant testDate = OffsetDateTime.of(2018, 3, 9, 11, 26, 30, 0, ZoneOffset.ofHours(2)).toInstant();
 		//System.out.println(sdf.format(testDate.getTime()));
 		
 		
 		//Formats are in DateFormats.java
 		//yyyy-MM-dd HH:mm:ss Z      					  2018-03-09 09:26:30 +0100
-		Timestamp timestamp = DateUtil.getDateFromString("2018-03-09 10:26:30 +0100");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		Instant timestamp = DateUtil.getDateFromString("2018-03-09 10:26:30 +0100");
+		assertTrue(testDate.equals(timestamp));
 		
 		timestamp = DateUtil.getDateFromString("2018-03-09 04:26:30 -0500");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		assertTrue(testDate.equals(timestamp));
 		
 		
 		//EEE MMM dd HH:mm:ss z yyyy			Fri Mar 09 08:26:30 CET 2018
 		timestamp = DateUtil.getDateFromString("Fri Mar 09 10:26:30 CET 2018");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		assertTrue(testDate.equals(timestamp));
 		
 		timestamp = DateUtil.getDateFromString("Fri Mar 09 18:26:30 JST 2018");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		assertTrue(testDate.equals(timestamp));
 		
 		
 		//yyyy-MM-dd HH:mm:ss X
 		timestamp = DateUtil.getDateFromString("2018-03-09 10:26:30 +01");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		assertTrue(testDate.equals(timestamp));
 		
 		timestamp = DateUtil.getDateFromString("2018-03-09 12:26:30 +03");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
-		
-		//yyyy-MM-dd HH:mm:ss
-		timestamp = DateUtil.getDateFromString("2018-03-09 9:26:30");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
+		assertTrue(testDate.equals(timestamp));
+
 		
 		//fails to come
-		try {
-			timestamp = DateUtil.getDateFromString("9:26:30");
-			fail("Only time should not work");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-		
-		try {
-			timestamp = DateUtil.getDateFromString("2018-02-31");
-			fail("Only date should not work");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-		
-		try {
-			timestamp = DateUtil.getDateFromString("2018-02-31 10:26");
-			fail("Missing seconds");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-		
-		try {
-			timestamp = DateUtil.getDateFromString(null);
-			fail("Null");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
+
+		timestamp = DateUtil.getDateFromString("9:26:30");
+		assertNull("Only time should not work", timestamp);
+
+
+
+		timestamp = DateUtil.getDateFromString("2018-02-31");
+		assertNull("Only date should not work", timestamp);
+
+		timestamp = DateUtil.getDateFromString("2018-02-31 10:26");
+		assertNull("Missing seconds", timestamp);
+
+		timestamp = DateUtil.getDateFromString(null);
+		assertNull("Null", timestamp);
+
 		
 	}
 	
@@ -100,41 +84,34 @@ public class DateUtilTest extends TransactionalTests {
 	public void testParseToUTCDate() throws ParseException { //To UTC Date is somewhat missleading, the function simply parses a string into a date. 
 		//This test is basicly a carbon copy of testGetDateFromString() since the only difference between them is the output. 
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss X");
-		Calendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 30); 
-		testDate.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Instant testDate = OffsetDateTime.of(2018, 3, 9, 11, 26, 30, 0, ZoneOffset.ofHours(2)).toInstant();
 		//System.out.println(sdf.format(testDate.getTime()));
 		
 		
 		//Formats are in DateFormats.java
 		//yyyy-MM-dd HH:mm:ss Z      					  2018-03-09 09:26:30 +0100
-		Date timestamp = DateUtil.parseToUTCDate("2018-03-09 10:26:30 +0100");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		Instant timestamp = DateUtil.parseToUTCDate("2018-03-09 10:26:30 +0100");
+		assertTrue(testDate.equals( timestamp));
 		
 		timestamp = DateUtil.parseToUTCDate("2018-03-09 04:26:30 -0500");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		assertTrue(testDate.equals( timestamp));
 		
 		
 		//EEE MMM dd HH:mm:ss z yyyy			Fri Mar 09 08:26:30 CET 2018
 		timestamp = DateUtil.parseToUTCDate("Fri Mar 09 10:26:30 CET 2018");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		assertTrue(testDate.equals( timestamp));
 		
 		timestamp = DateUtil.parseToUTCDate("Fri Mar 09 18:26:30 JST 2018");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		assertTrue(testDate.equals( timestamp));
 		
 		
 		//yyyy-MM-dd HH:mm:ss X
 		timestamp = DateUtil.parseToUTCDate("2018-03-09 10:26:30 +01");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
+		assertTrue(testDate.equals( timestamp));
 		
 		timestamp = DateUtil.parseToUTCDate("2018-03-09 12:26:30 +03");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
-		
-		//yyyy-MM-dd HH:mm:ss
-		timestamp = DateUtil.parseToUTCDate("2018-03-09 9:26:30");
-		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
+		assertTrue(testDate.equals( timestamp));
+
 		
 		//fails to come
 		timestamp = DateUtil.parseToUTCDate("9:26:30");
@@ -155,16 +132,17 @@ public class DateUtilTest extends TransactionalTests {
 	
 	@Test
 	public void testParseUTCDateToString() {
-		Calendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 30);
-		testDate.setTimeZone(TimeZone.getTimeZone("UTC"));
-		String formatedDate = DateUtil.parseUTCDateToString(testDate.getTime());
+		Instant testDate = OffsetDateTime.of(2018, 3, 9, 11, 26, 30, 0, ZoneOffset.ofHours(2)).toInstant();
+
+		String formatedDate = DateUtil.parseUTCDateToString(testDate);
 		assertTrue(formatedDate.contentEquals("2018-03-09 09:26:30 +0000"));
-		
-		testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 3, 26, 30);
-		testDate.setTimeZone(TimeZone.getTimeZone("CST")); //UTC -6
-		
-		formatedDate = DateUtil.parseUTCDateToString(testDate.getTime());
-		assertTrue(formatedDate.contentEquals("2018-03-09 09:26:30 +0000"));
+
+		testDate = OffsetDateTime.of(2018,3, 9, 3, 26, 30, 00, ZoneOffset.ofHours(2)).toInstant();
+		ZonedDateTime zonedTestDate = ZonedDateTime.of(2018,3, 9, 10, 26, 30, 00, ZoneId.of("CET"));			//Lets hop that it understand that this is supposed to be summer time internally
+		zonedTestDate = zonedTestDate.withZoneSameInstant(ZoneId.of("CST", ZoneId.SHORT_IDS));
+
+		formatedDate = DateUtil.parseUTCDateToString(zonedTestDate.toInstant());
+		assertTrue(formatedDate, formatedDate.contentEquals("2018-03-09 09:26:30 +0000"));
 		
 		formatedDate = DateUtil.parseUTCDateToString(null);
 		assertNull(formatedDate);
@@ -172,19 +150,16 @@ public class DateUtilTest extends TransactionalTests {
 	
 	@Test
 	public void testAddSecondsToDateWithXMLGregorianCalendarInput() throws DatatypeConfigurationException {
-		GregorianCalendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 59);
-		XMLGregorianCalendar input = DatatypeFactory.newInstance().newXMLGregorianCalendar(testDate);
+		Instant testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 59, 0, ZoneOffset.ofHours(2)).toInstant();
+
+		Instant output = DateUtil.addSecondsToDate(testDate, 1);
+		assertEquals(testDate.plusSeconds(1), output);
 		
-		//This method will add one second to the calendar no mater what you give as the second input
-		XMLGregorianCalendar output = DateUtil.addSecondsToDate(input, 0);
-		assertEquals((input.toGregorianCalendar().getTime().getTime() + 1000L), output.toGregorianCalendar().getTime().getTime());
+		testDate = testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 32, 0, ZoneOffset.ofHours(2)).toInstant();
+		output = DateUtil.addSecondsToDate(testDate, 52);
+		assertEquals(testDate.plusSeconds(52), output);
 		
-		testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 32);
-		input = DatatypeFactory.newInstance().newXMLGregorianCalendar(testDate);
-		output = DateUtil.addSecondsToDate(input, 52);
-		assertEquals((input.toGregorianCalendar().getTime().getTime() + 1000L), output.toGregorianCalendar().getTime().getTime());
-		
-		XMLGregorianCalendar n = null;
+		Instant n = null;
 		try {
 			output = DateUtil.addSecondsToDate(n, 8);
 			fail("Null input");
@@ -197,18 +172,16 @@ public class DateUtilTest extends TransactionalTests {
 	
 	@Test
 	public void testAddSecondsToDateWithDateInput() throws DatatypeConfigurationException { //Almost a carbon copy of the one above
-		GregorianCalendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 59);
-		Date input = testDate.getTime();
-		//This method will add one second to the calendar no mater what you give as the second input
-		Date output = DateUtil.addSecondsToDate(input, 0);
-		assertEquals(input.getTime() + 1000L, output.getTime());
+		Instant testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 59, 0, ZoneOffset.ofHours(2)).toInstant();
+
+		Instant output = DateUtil.addSecondsToDate(testDate, 1);
+		assertEquals(testDate.plusSeconds(1), output);
+
+		testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 32, 0, ZoneOffset.ofHours(2)).toInstant();
+		output = DateUtil.addSecondsToDate(testDate, 52);
+		assertEquals(testDate.plusSeconds(52), output);
 		
-		testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 32);
-		input = testDate.getTime();
-		output = DateUtil.addSecondsToDate(input, 52);
-		assertEquals(input.getTime() + 1000L, output.getTime());
-		
-		Date n = null;
+		Instant n = null;
 		
 		try {
 			output = DateUtil.addSecondsToDate(n, 8);
@@ -223,40 +196,13 @@ public class DateUtilTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testParsePositionTimeWithDateInput() {
-		GregorianCalendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 59);
-		Date input = testDate.getTime();
-		
-		XMLGregorianCalendar output = DateUtil.parsePositionTime(input);
-		
-		assertEquals(input.getTime(), output.toGregorianCalendar().getTime().getTime());
-		
-		input = null;
-		output = DateUtil.parsePositionTime(input);
-		assertNull(output);
-	}
-	
-	@Test
 	public void testNowUTC() {
-		Date now = new Date();
+		Instant now = Instant.now();
 		
-		Date output = DateUtil.nowUTC();
+		Instant output = DateUtil.nowUTC();
 		
-		assertEquals(now.getTime(), output.getTime());
+		assertEquals(now, output);
 	}
-	
-	@Test
-	public void testGetXMLGregorianCalendarInUTC() {
-		GregorianCalendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 59);
-		Date input = testDate.getTime();
-		
-		XMLGregorianCalendar output = DateUtil.getXMLGregorianCalendarInUTC(input);
-		assertEquals(input.getTime(), output.toGregorianCalendar().getTime().getTime());
-		
-		input = null;
-		output = DateUtil.getXMLGregorianCalendarInUTC(input);
-		assertNull(output);
-	}
-	
+
 	
 }

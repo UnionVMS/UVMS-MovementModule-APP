@@ -13,11 +13,11 @@ package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import java.util.Date;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.Instant;
 
 /**
  **/
@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class MovementDto {
 
     @XmlElement(required = true)
-    private Date time;
+    private Instant time;
     @XmlElement(required = true)
     private Double latitude;
     @XmlElement(required = true)
@@ -48,11 +48,11 @@ public class MovementDto {
     @XmlElement(required = true)
     private String movementGUID;
 
-    public Date getTime() {
+    public Instant getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(Instant time) {
         this.time = time;
     }
 

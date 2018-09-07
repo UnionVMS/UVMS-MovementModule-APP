@@ -11,12 +11,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -74,11 +77,11 @@ public class MovementType implements Serializable {
     @Column(name = "movetyp_desc")
     private String description;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "movetyp_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
+    private Instant updated;
 
     @Basic(optional = false)
     @NotNull
@@ -96,7 +99,7 @@ public class MovementType implements Serializable {
         this.id = id;
     }
 
-    public MovementType(Long id, String name, String description, Date updated, String updatedBy) {
+    public MovementType(Long id, String name, String description, Instant updated, String updatedBy) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -128,11 +131,11 @@ public class MovementType implements Serializable {
         this.description = description;
     }
 
-    public Date getUpdated() {
+    public Instant getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(Instant updated) {
         this.updated = updated;
     }
 

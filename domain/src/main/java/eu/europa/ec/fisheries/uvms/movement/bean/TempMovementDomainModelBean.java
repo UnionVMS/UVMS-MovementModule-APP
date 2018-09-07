@@ -22,13 +22,15 @@ import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseD
 import eu.europa.ec.fisheries.uvms.movement.model.exception.InputArgumentException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

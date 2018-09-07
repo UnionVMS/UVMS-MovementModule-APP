@@ -10,7 +10,7 @@
  copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package eu.europa.ec.fisheries.uvms.movement.util;
+package eu.europa.ec.fisheries.uvms.movement.model.util;
 
 /**
  * Created by osdjup on 2016-10-06.
@@ -19,8 +19,8 @@ public enum DateFormats {
 
     FORMAT("yyyy-MM-dd HH:mm:ss Z"),
     FORMAT_2("EEE MMM dd HH:mm:ss z yyyy"),
-    DATE_TIME_PATTERN("yyyy-MM-dd HH:mm:ss X"),
-    DATE_TIME_PATTERN_UTC("yyyy-MM-dd HH:mm:ss");
+    DATE_TIME_PATTERN("yyyy-MM-dd HH:mm:ss X");
+
 
     String format;
 

@@ -9,7 +9,7 @@ import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.AreaDaoException;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;

@@ -11,31 +11,29 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity;
 
-import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.time.Instant;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  **/
@@ -73,11 +71,11 @@ public class Activitytype implements Serializable {
     @Column(name = "acttyp_desc")
     private String acttypDesc;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "acttyp_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date acttypUpdattim;
+    private Instant acttypUpdattim;
 
     @Basic(optional = false)
     @NotNull
@@ -111,11 +109,11 @@ public class Activitytype implements Serializable {
         this.acttypDesc = acttypDesc;
     }
 
-    public Date getActtypUpdattim() {
+    public Instant getActtypUpdattim() {
         return acttypUpdattim;
     }
 
-    public void setActtypUpdattim(Date acttypUpdattim) {
+    public void setActtypUpdattim(Instant acttypUpdattim) {
         this.acttypUpdattim = acttypUpdattim;
     }
 

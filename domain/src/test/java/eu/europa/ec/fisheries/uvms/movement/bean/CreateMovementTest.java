@@ -26,7 +26,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
 
-import java.util.Date;
+
+import java.time.Instant;
+import java.util.Date; //leave be for now
 
 import static org.mockito.Mockito.when;
 
@@ -58,9 +60,9 @@ public class CreateMovementTest {
 
         when(dao.create(Matchers.any()))
                 .thenReturn(getMovementConnect())
-                .thenReturn(getMovement(eu.europa.ec.fisheries.uvms.movement.util.DateUtil.nowUTC(), 1, 2));
+                .thenReturn(getMovement(eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil.nowUTC(), 1, 2));
 
-        MovementType createMovement = createMovement(eu.europa.ec.fisheries.uvms.movement.util.DateUtil.nowUTC(), 1, 2);
+        MovementType createMovement = createMovement(eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil.nowUTC(), 1, 2);
         MovementType created = test.createMovement(createMovement, "TEST");
 
         //verify(model, atLeast(2)).splitSegment(any(Movement.class), any(Movement.class));
@@ -70,7 +72,7 @@ public class CreateMovementTest {
         //verify(proc, never()).addMovementBeforeFirst(any(Movement.class), any(Movement.class));
     }
 
-    private Movement getMovement(Date timeStamp, double loong, double lat) {
+    private Movement getMovement(Instant timeStamp, double loong, double lat) {
         Movement movement = new Movement();
         movement.setTimestamp(timeStamp);
 
@@ -89,9 +91,9 @@ public class CreateMovementTest {
         return connect;
     }
 
-    private MovementType createMovement(Date timeStamp, double loong, double lat) {
+    private MovementType createMovement(Instant timeStamp, double loong, double lat) {
         MovementType mock = new MovementType();
-        mock.setPositionTime(timeStamp);
+        mock.setPositionTime(Date.from(timeStamp));
         MovementPoint point = new MovementPoint();
         point.setLatitude(lat);
         point.setLongitude(loong);

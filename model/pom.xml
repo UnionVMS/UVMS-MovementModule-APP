@@ -28,8 +28,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 
 		<dependency>
@@ -115,7 +115,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			<plugin>
+			<!--plugin>
 				<groupId>com.github.siom79.japicmp</groupId>
 				<artifactId>japicmp-maven-plugin</artifactId>
 				<configuration>
@@ -144,7 +144,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin-->
 		</plugins>
 	</build>
 </project>

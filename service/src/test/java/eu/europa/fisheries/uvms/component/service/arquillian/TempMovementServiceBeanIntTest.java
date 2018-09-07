@@ -6,6 +6,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -17,12 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -169,9 +166,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         movementPoint.setLatitude(0.0);
         movementPoint.setLongitude(0.0);
 
-        Date d = Calendar.getInstance().getTime();
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Instant d = Instant.now();
 
 
         TempMovementType tempMovementType = new TempMovementType();
@@ -180,7 +175,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         tempMovementType.setPosition(movementPoint);
         tempMovementType.setSpeed(0.0);
         tempMovementType.setState(TempMovementStateEnum.SENT);
-        tempMovementType.setTime(sdf.format(d));
+        tempMovementType.setTime(DateUtil.parseDateToString(d, "yyyy-MM-dd HH:mm:ss Z"));
         //tempMovementType.setUpdatedTime();
         return tempMovementType;
     }
