@@ -24,6 +24,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.exception.EntityDuplicateException;
+import eu.europa.ec.fisheries.uvms.movement.exception.GeometryUtilException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDaoException;
@@ -32,10 +33,11 @@ import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+import javax.annotation.Resource;
+import javax.ejb.*;
+import javax.inject.Inject;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +54,12 @@ public class MovementBatchModelBean {
 
     @EJB
     private MovementDaoBean dao;
+
+    @Inject
+    IncomingMovementBean incomingMovementBean;   //for some reason this functionality is not in MovementProcessorBean
+
+    @Resource
+    private EJBContext context;
 
     /**
      *
@@ -117,14 +125,31 @@ public class MovementBatchModelBean {
                 if(moveConnect.getMovementList() == null) {
                     moveConnect.setMovementList(new ArrayList<>());
                 }
-                moveConnect.getMovementList().add(currentMovement);
-                dao.persist(moveConnect);
-                createdMovementType = mapToMovementType(currentMovement);
+                //moveConnect.getMovementList().add(currentMovement);
+                //dao.persist(moveConnect);
+
                 long diff = System.currentTimeMillis() - start;
                 LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
             } else {
                 throw new MissingMovementConnectException("Couldn't find movementConnect!");
             }
+            moveConnect.getMovementList().add(currentMovement);
+            dao.persist(moveConnect);
+
+            //Initiate the processing of movements, This is copied almost straight from MovementProcessorBean
+            //TODO: Move this to MovementServiceBean when we start to refactor the mappings
+            try {
+
+                incomingMovementBean.processMovement(currentMovement);
+            } catch (Exception e) {
+                LOG.error("Error while processing movement", e);
+                throw new RuntimeException("Error while processing movement: " + e);
+
+            }
+
+            createdMovementType = mapToMovementType(currentMovement);
+            long diff = System.currentTimeMillis() - start;
+            LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
             return createdMovementType;
         } catch (MovementDaoMappingException | MovementDaoException e) {
             LOG.error("[ Error when creating movement. ] {}", e);
