@@ -8,6 +8,7 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MovementDaoMappingException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
@@ -57,7 +58,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void testCreatingMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException {
+    public void testCreatingMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException, MissingMovementConnectException {
         String uuid = UUID.randomUUID().toString();
 
         MovementType movementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid,0);
@@ -69,7 +70,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertNotNull("MovementConnect creation was successful.", movementConnect);
         List<Movement> movementList = movementConnect.getMovementList();
         assertNotNull("List of Movement creation was successful.", movementList);
-        assertTrue("The list of Movement contains exactly one Movement object.", movementList.size() == 1);
+        assertTrue("The list of Movement contains exactly one Movement object. It has: " + movementList.size() + " movements", movementList.size() == 1);
         Long id = movementList.get(0).getId();
         incomingMovementBean.processMovement(id);
 
@@ -80,7 +81,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void testProcessingMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException {
+    public void testProcessingMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException, MissingMovementConnectException {
 
         // Given: Get the id for a persisted movement entity.
 
@@ -108,7 +109,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void testProcessingMovement_NoDuplicateMovement() throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException {
+    public void testProcessingMovement_NoDuplicateMovement() throws MovementDaoMappingException, MissingMovementConnectException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException {
 
         // Given: Get the id for a persisted movement entity.
 
@@ -137,7 +138,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @Ignore   //Since we now process stuff as we create them this test falls apart TODO: fix
     @OperateOnDeployment("normal")
     public void testDuplicateMovementsInProcessingMovementMethod_sameTimeStamp_duplicationFlagSetToFalse_sameMovementType()
-            throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException {
+            throws MovementDaoMappingException, MovementModelException, SystemException, GeometryUtilException, MovementDaoException, MissingMovementConnectException {
 
         // Given: Create a movement with the exact same timestamp as a movement that exists in the database.
         String firstUuid = UUID.randomUUID().toString();

@@ -18,6 +18,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class GetMovementListByQueryBean {
 
-    final static Logger LOG = LoggerFactory.getLogger(GetMovementListByQueryBean.class);
+    private final static Logger LOG = LoggerFactory.getLogger(GetMovementListByQueryBean.class);
 
     @EJB
     private MovementService movementService;
@@ -43,17 +44,16 @@ public class GetMovementListByQueryBean {
     @ErrorEvent
     private Event<EventMessage> errorEvent;
 
-
-    public void getMovementListByQuery(TextMessage textMessage) {
-        LOG.debug("getMovementListByQuery Received.. processing request in GetMovementListByQueryBean");
+    public void getMovementListByQuery(TextMessage jmsMessage) {
         try {
-            GetMovementListByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, GetMovementListByQueryRequest.class);
+            GetMovementListByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementListByQueryRequest.class);
             GetMovementListByQueryResponse movementList = movementService.getList(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapTogetMovementListByQueryResponse(movementList.getMovement());
-            messageProducer.sendMessageBackToRecipient(textMessage, responseString);
-        } catch (MovementDuplicateException | ModelMarshallException | MovementMessageException | MovementServiceException ex) {
+            messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
+            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
+        } catch (MovementDuplicateException | ModelMarshallException | MovementMessageException | MovementServiceException | JMSException ex) {
             LOG.error("[ Error on getMovmementListByQuery ] ", ex);
-            EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
+            EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
             errorEvent.fire(eventMessage);
             throw new EJBException(ex);
         }

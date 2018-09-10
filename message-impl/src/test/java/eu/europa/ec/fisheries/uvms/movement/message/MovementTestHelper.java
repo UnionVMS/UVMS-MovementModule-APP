@@ -1,16 +1,14 @@
-package eu.europa.fisheries.uvms.component.service.arquillian;
+package eu.europa.ec.fisheries.uvms.movement.message;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-
+import java.util.UUID;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
-
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
@@ -27,46 +25,39 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 
-/**
- * Created by roblar on 2017-03-08.
- */
-class MovementEventTestHelper {
+public class MovementTestHelper {
 
-    public static final String ZERO_GUID = "00000000-0000-0000-0000-000000000000";
-
-
-    static MovementBaseType createMovementBaseType() {
-        return MovementEventTestHelper.createMovementBaseType(0D,0D);
+    public static MovementBaseType createMovementBaseType() {
+        return MovementTestHelper.createMovementBaseType(0D,0D);
     }
 
-    static MovementBaseType createMovementBaseType(Double longitude , Double latitude) {
+    public static MovementBaseType createMovementBaseType(Double longitude , Double latitude) {
+
+        MovementBaseType movementBaseType = new MovementBaseType();
+        movementBaseType.setMovementType(MovementTypeType.POS);
+        movementBaseType.setConnectId(UUID.randomUUID().toString());
+
+        AssetId assetId = new AssetId();
+        assetId.setAssetType(AssetType.VESSEL);
+        assetId.setIdType(AssetIdType.GUID);
+        assetId.setValue(UUID.randomUUID().toString());
+        movementBaseType.setAssetId(assetId);
+
+        MovementPoint movementPoint = new MovementPoint();
+        movementPoint.setLongitude(longitude);
+        movementPoint.setLatitude(latitude);
+        movementPoint.setAltitude(2D);
+        movementBaseType.setPosition(movementPoint);
 
         MovementActivityType activityType = new MovementActivityType();
         activityType.setCallback("TEST");
         activityType.setMessageId("TEST");
         activityType.setMessageType(MovementActivityTypeType.AUT);
 
-        AssetId assetId = new AssetId();
-        assetId.setAssetType(AssetType.VESSEL);
-        assetId.setIdType(AssetIdType.GUID);
-        assetId.setValue("TEST");
-
-        MovementPoint movementPoint = new MovementPoint();
-        movementPoint.setLongitude(longitude);
-        movementPoint.setLatitude(latitude);
-        movementPoint.setAltitude(2D);
-
-
-
-        MovementBaseType movementBaseType = new MovementBaseType();
-        movementBaseType.setGuid(ZERO_GUID);
-        movementBaseType.setMovementType(MovementTypeType.POS);
         movementBaseType.setActivity(activityType);
-        movementBaseType.setConnectId("TEST");
-        movementBaseType.setAssetId(assetId);
+
         movementBaseType.setDuplicates("false");
         movementBaseType.setInternalReferenceNumber("TEST");
-        movementBaseType.setPosition(movementPoint);
         movementBaseType.setReportedCourse(0d);
         movementBaseType.setReportedSpeed(0d);
         movementBaseType.setSource(MovementSourceType.NAF);
@@ -77,7 +68,7 @@ class MovementEventTestHelper {
         return movementBaseType;
     }
 
-    static MovementQuery createMovementQuery(boolean useListPagination, boolean useListCriteria, boolean useRangeCriteria) {
+    public static MovementQuery createMovementQuery(boolean useListPagination, boolean useListCriteria, boolean useRangeCriteria) {
 
         MovementQuery movementQuery = new MovementQuery();
         movementQuery.setExcludeFirstAndLastSegment(true);
@@ -100,17 +91,17 @@ class MovementEventTestHelper {
         return movementQuery;
     }
 
-    static ListPagination createListPagination() {
+    public static ListPagination createListPagination() {
 
         //Pagination required for list query.
         ListPagination listPagination = new ListPagination();
-        listPagination.setPage(BigInteger.ZERO);
+        listPagination.setPage(BigInteger.ONE);
         listPagination.setListSize(BigInteger.TEN);
 
         return listPagination;
     }
 
-    static List<ListCriteria> createListOfListCriteria() {
+    public static List<ListCriteria> createListOfListCriteria() {
 
         ListCriteria listCriteria1 = new ListCriteria();
         listCriteria1.setKey(SearchKey.MOVEMENT_TYPE);
@@ -125,7 +116,7 @@ class MovementEventTestHelper {
         return Arrays.asList(listCriteria1, listCriteria2);
     }
 
-    static List<RangeCriteria> createListOfRangeCriteria() {
+    public static List<RangeCriteria> createListOfRangeCriteria() {
 
         RangeCriteria rangeCriteria1 = new RangeCriteria();
         rangeCriteria1.setKey(RangeKeyType.SEGMENT_SPEED);
@@ -140,7 +131,7 @@ class MovementEventTestHelper {
         return Arrays.asList(rangeCriteria1, rangeCriteria2);
     }
 
-    static TextMessage createTextMessage(String text) throws JMSException {
+    public static TextMessage createTextMessage(String text) throws JMSException {
         TextMessage textMessage = mock(TextMessage.class);
         when(textMessage.getText()).thenReturn(text);
         return textMessage;

@@ -16,6 +16,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,17 +40,16 @@ public class CreateMovementBean {
     @ErrorEvent
     private Event<EventMessage> errorEvent;
 
-    public void createMovement(TextMessage textMessage) {
-        LOG.debug("createMovement Received.. processing request in CreateMovementBean");
-
+    public void createMovement(TextMessage jmsMessage) {
         try {
-            CreateMovementRequest createMovementRequest = JAXBMarshaller.unmarshallTextMessage(textMessage, CreateMovementRequest.class);
+            CreateMovementRequest createMovementRequest = JAXBMarshaller.unmarshallTextMessage(jmsMessage, CreateMovementRequest.class);
             MovementType createdMovement = movementService.createMovement(createMovementRequest.getMovement(), createMovementRequest.getUsername());
             String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(createdMovement);
-            messageProducer.sendMessageBackToRecipient(textMessage, responseString);
-        } catch (EJBException | MovementMessageException | ModelMarshallException ex) {
+            messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
+            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
+        } catch (EJBException | MovementMessageException | ModelMarshallException  | JMSException ex) {
             LOG.error("[ Error when creating movement ] ", ex);
-            EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
+            EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
             errorEvent.fire(eventMessage);
             throw new EJBException(ex);
         }

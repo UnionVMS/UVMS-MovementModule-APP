@@ -30,12 +30,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -114,6 +110,35 @@ public class MovementMapper {
 
         movementType.setMetaData(movementMeta);
         return movementType;
+    }
+
+    public static List<MovementType> enrichAndMapToMovementTypes(List<MovementBaseType> movements, BatchSpatialEnrichmentRS enrichment) {
+        int index = 0;
+        List<SpatialEnrichmentRSListElement> enrichmentRespLists = enrichment.getEnrichmentRespLists();
+        List<MovementType> enrichedList = new ArrayList<>();
+        for (MovementBaseType movement : movements) {
+            SpatialEnrichmentRSListElement enrichmentRSListElement = enrichmentRespLists.get(index);
+            MovementType movementType = Mapper.getInstance().getMapper().map(movement, MovementType.class);
+            MovementMetaData movementMeta = new MovementMetaData();
+            if (enrichmentRSListElement.getClosestLocations() != null) {
+                enrichWithPortData(enrichmentRSListElement.getClosestLocations().getClosestLocations(), LocationType.PORT, movementMeta);
+            } else {
+                LOG.error("NO CLOSEST LOCATIONS FOUND IN RESPONSE FROM SPATIAL ");
+            }
+            if (enrichmentRSListElement.getClosestAreas() != null) {
+                enrichWithCountryData(enrichmentRSListElement.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, movementMeta);
+            } else {
+                LOG.error("NO CLOSEST AREAS FOUND IN RESPONSE FROM SPATIAL ");
+            }
+            if (enrichmentRSListElement.getAreasByLocation() != null) {
+                movementMeta.getAreas().addAll(mapToAreas(enrichmentRSListElement.getAreasByLocation().getAreas()));
+            } else {
+                LOG.error("NO AREAS FOUND IN RESPONSE FROM SPATIAL ");
+            }
+            movementType.setMetaData(movementMeta);
+            enrichedList.add(movementType);
+        }
+        return enrichedList;
     }
 
     private static List<MovementMetaDataAreaType> mapToAreas(List<AreaExtendedIdentifierType> areas) {
