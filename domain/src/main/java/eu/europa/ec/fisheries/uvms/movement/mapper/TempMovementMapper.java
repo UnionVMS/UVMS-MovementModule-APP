@@ -68,7 +68,7 @@ public class TempMovementMapper {
                 tempMovement.setStatus(tempMovementType.getStatus());
             }
             if (tempMovementType.getTime() != null) {
-                tempMovement.setTimestamp(DateUtil.parseToUTCDate(tempMovementType.getTime()));
+                tempMovement.setTimestamp(DateUtil.convertDateTimeInUTC(tempMovementType.getTime()));
             }
 
             if (tempMovementType.getState() != null) {
@@ -131,7 +131,7 @@ public class TempMovementMapper {
                 currentTempMovement.setStatus(newTempMovement.getStatus());
             }
             if (newTempMovement.getTime() != null && !newTempMovement.getTime().isEmpty()) {
-                currentTempMovement.setTimestamp(DateUtil.parseToUTCDate(newTempMovement.getTime()));
+                currentTempMovement.setTimestamp(DateUtil.convertDateTimeInUTC(newTempMovement.getTime()));
             }
             if (newTempMovement.getState() != null) {
                 currentTempMovement.setState(TempMovementStateEnum.valueOf(newTempMovement.getState().name()));
