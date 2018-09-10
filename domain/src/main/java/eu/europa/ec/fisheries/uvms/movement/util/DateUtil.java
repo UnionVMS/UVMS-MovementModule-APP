@@ -28,22 +28,15 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.LoggerFactory;
 
-/**
- **/
 public class DateUtil {
 
-    final static org.slf4j.Logger LOG = LoggerFactory.getLogger(DateUtil.class);
+    private final static org.slf4j.Logger LOG = LoggerFactory.getLogger(DateUtil.class);
 
-    public static java.sql.Timestamp getDateFromString(String inDate) throws ParseException {
+    public static java.sql.Timestamp getDateFromString(String inDate) {
     	Date date = convertDateTimeInUTC(inDate);
     	return new java.sql.Timestamp(date.getTime());
 
     }
-
-    public static Date parseToUTCDate(String dateTimeInUTC){
-    	return convertDateTimeInUTC(dateTimeInUTC);
-    }
-
 
     public static String parseUTCDateToString(Date date) {
         String dateString = null;
@@ -151,6 +144,4 @@ public class DateUtil {
         }
         return null;
     }
-
-
 }

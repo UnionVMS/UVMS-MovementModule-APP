@@ -25,15 +25,13 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 @RunWith(Arquillian.class)
 public class DateUtilTest extends TransactionalTests {
 
-	
 	@Test
 	public void testGetDateFromString() throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss X");
 		Calendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 30); 
 		testDate.setTimeZone(TimeZone.getTimeZone("UTC"));
 		//System.out.println(sdf.format(testDate.getTime()));
-		
-		
+
 		//Formats are in DateFormats.java
 		//yyyy-MM-dd HH:mm:ss Z      					  2018-03-09 09:26:30 +0100
 		Timestamp timestamp = DateUtil.getDateFromString("2018-03-09 10:26:30 +0100");
@@ -41,28 +39,24 @@ public class DateUtilTest extends TransactionalTests {
 		
 		timestamp = DateUtil.getDateFromString("2018-03-09 04:26:30 -0500");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
-		
+
 		//EEE MMM dd HH:mm:ss z yyyy			Fri Mar 09 08:26:30 CET 2018
 		timestamp = DateUtil.getDateFromString("Fri Mar 09 10:26:30 CET 2018");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
 		
 		timestamp = DateUtil.getDateFromString("Fri Mar 09 18:26:30 JST 2018");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
-		
+
 		//yyyy-MM-dd HH:mm:ss X
 		timestamp = DateUtil.getDateFromString("2018-03-09 10:26:30 +01");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
 		
 		timestamp = DateUtil.getDateFromString("2018-03-09 12:26:30 +03");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
-		
+
 		//yyyy-MM-dd HH:mm:ss
 		timestamp = DateUtil.getDateFromString("2018-03-09 9:26:30");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
 		
 		//fails to come
 		try {
@@ -92,10 +86,8 @@ public class DateUtilTest extends TransactionalTests {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
-		
 	}
-	
-	
+
 	@Test
 	public void testParseToUTCDate() throws ParseException { //To UTC Date is somewhat missleading, the function simply parses a string into a date. 
 		//This test is basicly a carbon copy of testGetDateFromString() since the only difference between them is the output. 
@@ -104,52 +96,44 @@ public class DateUtilTest extends TransactionalTests {
 		Calendar testDate = new GregorianCalendar(2018, Calendar.MARCH, 9, 9, 26, 30); 
 		testDate.setTimeZone(TimeZone.getTimeZone("UTC"));
 		//System.out.println(sdf.format(testDate.getTime()));
-		
-		
+
 		//Formats are in DateFormats.java
 		//yyyy-MM-dd HH:mm:ss Z      					  2018-03-09 09:26:30 +0100
-		Date timestamp = DateUtil.parseToUTCDate("2018-03-09 10:26:30 +0100");
+		Date timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 10:26:30 +0100");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
 		
-		timestamp = DateUtil.parseToUTCDate("2018-03-09 04:26:30 -0500");
+		timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 04:26:30 -0500");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
-		
+
 		//EEE MMM dd HH:mm:ss z yyyy			Fri Mar 09 08:26:30 CET 2018
-		timestamp = DateUtil.parseToUTCDate("Fri Mar 09 10:26:30 CET 2018");
+		timestamp = DateUtil.convertDateTimeInUTC("Fri Mar 09 10:26:30 CET 2018");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
 		
-		timestamp = DateUtil.parseToUTCDate("Fri Mar 09 18:26:30 JST 2018");
+		timestamp = DateUtil.convertDateTimeInUTC("Fri Mar 09 18:26:30 JST 2018");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
-		
+
 		//yyyy-MM-dd HH:mm:ss X
-		timestamp = DateUtil.parseToUTCDate("2018-03-09 10:26:30 +01");
+		timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 10:26:30 +01");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
 		
-		timestamp = DateUtil.parseToUTCDate("2018-03-09 12:26:30 +03");
+		timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 12:26:30 +03");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
-		
+
 		//yyyy-MM-dd HH:mm:ss
-		timestamp = DateUtil.parseToUTCDate("2018-03-09 9:26:30");
+		timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 9:26:30");
 		assertEquals(testDate.getTimeInMillis(), timestamp.getTime());
-		
-		
+
 		//fails to come
-		timestamp = DateUtil.parseToUTCDate("9:26:30");
+		timestamp = DateUtil.convertDateTimeInUTC("9:26:30");
 		assertNull("Only time should not work", timestamp);
-		
-		
-		timestamp = DateUtil.parseToUTCDate("2018-02-31");
+
+		timestamp = DateUtil.convertDateTimeInUTC("2018-02-31");
 		assertNull("Only date should not work", timestamp);
 
-		
-		
-		timestamp = DateUtil.parseToUTCDate("2018-02-31 10:26");
+		timestamp = DateUtil.convertDateTimeInUTC("2018-02-31 10:26");
 		assertNull("Missing seconds", timestamp);
 		
-		timestamp = DateUtil.parseToUTCDate(null);
+		timestamp = DateUtil.convertDateTimeInUTC(null);
 		assertNull("Input = null", timestamp);
 	}
 	
@@ -191,8 +175,6 @@ public class DateUtilTest extends TransactionalTests {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
-		
-		
 	}
 	
 	@Test
@@ -216,10 +198,6 @@ public class DateUtilTest extends TransactionalTests {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
-		
-		
-		
-		
 	}
 	
 	@Test
@@ -239,9 +217,7 @@ public class DateUtilTest extends TransactionalTests {
 	@Test
 	public void testNowUTC() {
 		Date now = new Date();
-		
 		Date output = DateUtil.nowUTC();
-		
 		assertEquals(now.getTime(), output.getTime());
 	}
 	
@@ -257,6 +233,4 @@ public class DateUtilTest extends TransactionalTests {
 		output = DateUtil.getXMLGregorianCalendarInUTC(input);
 		assertNull(output);
 	}
-	
-	
 }
