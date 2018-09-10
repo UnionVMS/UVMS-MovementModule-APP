@@ -20,6 +20,8 @@ import java.io.IOException;
 
 public class AuthenticationFilterMock implements Filter {
     
+    public static final String TEST_USER = "MOCK_USER";
+    
     public AuthenticationFilterMock() {
         super();
     }
@@ -30,7 +32,7 @@ public class AuthenticationFilterMock implements Filter {
         httpResponse.addHeader(AuthConstants.HTTP_HEADER_AUTHORIZATION, "MOCK_TOKEN");
         
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        UserRoleRequestWrapper arequest = new UserRoleRequestWrapper(httpRequest, "MOCK_USER");
+        UserRoleRequestWrapper arequest = new UserRoleRequestWrapper(httpRequest, TEST_USER);
         chain.doFilter(arequest, httpResponse);
     }
     

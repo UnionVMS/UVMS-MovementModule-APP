@@ -13,6 +13,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
+import eu.europa.ec.fisheries.uvms.movement.rest.AuthenticationFilterMock;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 
@@ -42,7 +44,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
         assertThat(createdMovementSearchGroup.getId(), is(notNullValue()));
         assertThat(createdMovementSearchGroup.getName(), is(movementSearchGroup.getName()));
         assertThat(createdMovementSearchGroup.getSearchFields().size(), is(1));
-        assertThat(createdMovementSearchGroup.getName(), is(notNullValue()));
+        assertThat(createdMovementSearchGroup.getUser(), is(notNullValue()));
     }
     
     @Test
@@ -59,6 +61,39 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
         assertThat(fetchedMovementSearchGroup.getId(), is(createdMovementSearchGroup.getId()));
     }
     
+    @Test
+    public void updateMovementSearchGroup() throws Exception {
+        MovementSearchGroup movementSearchGroup = MovementTestHelper.createBasicMovementSearchGroup();
+        GroupListCriteria criteria = new GroupListCriteria();
+        criteria.setType(SearchKeyType.MOVEMENT);
+        criteria.setKey("MOVEMENT_ID");
+        criteria.setValue(UUID.randomUUID().toString());
+        movementSearchGroup.getSearchFields().add(criteria);
+        MovementSearchGroup createdMovementSearchGroup = createMovementSearchGroup(movementSearchGroup);
+        
+        String newName = "Updated" + MovementTestHelper.getRandomIntegers(5);
+        createdMovementSearchGroup.setName(newName);
+        updateMovementSearchGroup(createdMovementSearchGroup);
+        
+        MovementSearchGroup fetchedGroup = getMovementSearchGroup(createdMovementSearchGroup.getId().toString());
+        assertThat(fetchedGroup.getId(), is(createdMovementSearchGroup.getId()));
+        assertThat(fetchedGroup.getName(), is(newName));
+    }
+    
+    @Test
+    public void getMovementSearchGroupByUser() throws Exception {
+        MovementSearchGroup movementSearchGroup = MovementTestHelper.createBasicMovementSearchGroup();
+        GroupListCriteria criteria = new GroupListCriteria();
+        criteria.setType(SearchKeyType.MOVEMENT);
+        criteria.setKey("MOVEMENT_ID");
+        criteria.setValue(UUID.randomUUID().toString());
+        movementSearchGroup.getSearchFields().add(criteria);
+        MovementSearchGroup createdMovementSearchGroup = createMovementSearchGroup(movementSearchGroup);
+        
+        List<MovementSearchGroup> searchGroups = getMovementSearchGroupByUser("TEST");
+        assertThat(searchGroups, CoreMatchers.hasItem(createdMovementSearchGroup));
+    }
+    
     /*
      * Helper functions for REST calls
      */
@@ -69,7 +104,6 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(searchGroup), String.class);
             
-        System.out.println(response);
         return readResponseDto(response, MovementSearchGroup.class);
     }
     
@@ -82,6 +116,27 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
                 .get(String.class);
         
         return readResponseDto(response, MovementSearchGroup.class); 
+    }
+    
+    private MovementSearchGroup updateMovementSearchGroup(MovementSearchGroup searchGroup) throws Exception {
+        String response = getWebTarget()
+                .path("search")
+                .path("group")
+                .request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(searchGroup), String.class);
+            
+        return readResponseDto(response, MovementSearchGroup.class);
+    }
+
+    private List<MovementSearchGroup> getMovementSearchGroupByUser(String user) throws Exception {
+        String response = getWebTarget()
+                .path("search")
+                .path("groups")
+                .queryParam("user", user)
+                .request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+            
+        return readResponseDtoList(response, MovementSearchGroup.class);
     }
     
     private <T> T readResponseDto(String response, Class<T> clazz) throws Exception {

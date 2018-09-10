@@ -42,7 +42,7 @@ public class UserModuleMock implements MessageListener {
     public void onMessage(Message message) {
         try {
         
-        UserContext userContext = getAssetUserContext();
+        UserContext userContext = getUserContext();
         String responseString;
             responseString = UserModuleResponseMapper.mapToGetUserContextResponse(userContext);
 
@@ -53,7 +53,7 @@ public class UserModuleMock implements MessageListener {
         }
     }
     
-    private UserContext getAssetUserContext() {
+    private UserContext getUserContext() {
         UserContext userContext = new UserContext();
         userContext.setContextSet(new ContextSet());
         Context context = new Context();

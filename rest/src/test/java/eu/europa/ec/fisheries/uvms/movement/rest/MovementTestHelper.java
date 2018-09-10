@@ -7,6 +7,7 @@ import java.util.UUID;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
+import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
@@ -16,6 +17,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
+import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 
 public class MovementTestHelper {
 
@@ -63,6 +66,7 @@ public class MovementTestHelper {
     public static MovementSearchGroup createBasicMovementSearchGroup() {
         MovementSearchGroup movementSearchGroup = new MovementSearchGroup();
         movementSearchGroup.setName("Test Group " + getRandomIntegers(5));
+        movementSearchGroup.setUser("TEST");
         return movementSearchGroup;
     }
 
@@ -76,6 +80,24 @@ public class MovementTestHelper {
         movementQuery.setPagination(listPagination);
         
         return movementQuery;
+    }
+    
+    public static TempMovementType createTempMovementType() {
+        TempMovementType tempMovement = new TempMovementType();
+        VesselType asset = new VesselType();
+        asset.setCfr("CFR" + getRandomIntegers(7));
+        asset.setExtMarking("EXT" + getRandomIntegers(2));
+        asset.setIrcs("IRCS" + getRandomIntegers(5));
+        asset.setFlagState("SWE");
+        asset.setName("Ship" + getRandomIntegers(8));
+        tempMovement.setAsset(asset);
+        MovementPoint movementPoint = new MovementPoint();
+        movementPoint.setLongitude(1d);
+        movementPoint.setLatitude(2d);
+        tempMovement.setPosition(movementPoint);
+        tempMovement.setCourse(45d);
+        tempMovement.setState(TempMovementStateEnum.DRAFT);
+        return tempMovement;
     }
     
     public static String getRandomIntegers(int length) {

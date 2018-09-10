@@ -11,6 +11,11 @@
         <artifactId>movement</artifactId>
         <version>4.0.16-SNAPSHOT</version>
     </parent>
+    
+    <properties>
+        <docker.dev.stop.phase>verify</docker.dev.stop.phase>
+        <docker.dev.prestop.phase>install</docker.dev.prestop.phase>        	
+    </properties>
 
     <dependencies>
         <!-- EJB DEPENDENCS -->
