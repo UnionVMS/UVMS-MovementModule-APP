@@ -1,5 +1,4 @@
-package eu.europa.fisheries.uvms.component.service.arquillian;
-
+package eu.europa.ec.fisheries.uvms.movement.message;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -10,7 +9,6 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
 import org.junit.After;
 import org.junit.Before;
 

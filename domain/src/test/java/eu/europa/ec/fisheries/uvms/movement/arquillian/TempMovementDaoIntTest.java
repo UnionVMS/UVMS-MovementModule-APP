@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import java.util.Date;
 import java.util.List;
 
@@ -92,7 +93,8 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void getTempMovementByGuid_ZeroGuid_Exception_Thrown() throws MovementDomainException {
 
-        expectedException.expect(MovementDomainException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
+        expectedException.expectMessage("Error when fetching temp movement");
 
         // we assume that the probability for zero guid exists in db is so low so we consider this safe
         tempMovementDao.getTempMovementByGuid("00000000-0000-0000-0000-000000000000");

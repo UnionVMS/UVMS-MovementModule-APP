@@ -13,6 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.service;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
+import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
@@ -70,6 +71,14 @@ public interface MovementService {
      * @return
      */
     SimpleResponse createMovementBatch(List<MovementBaseType> query) throws MovementServiceException;
+
+    /**
+     *
+     * @param movementBaseTypeList
+     * @param username
+     * @return
+     */
+    CreateMovementBatchResponse createMovementBatch(List<MovementBaseType> movementBaseTypeList, String username) throws MovementServiceException;
 
     /**
      * Get an object by id

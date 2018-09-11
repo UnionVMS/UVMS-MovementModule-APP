@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,10 +41,9 @@ public class WKTUtilTest extends TransactionalTests {
 
     @EJB
     private IncomingMovementBean incomingMovementBean;
-	
-	
+
 	@Test
-	public void testGetWKTLineString() throws MovementDomainException {
+	public void testGetWKTLineString() throws MissingMovementConnectException, MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -77,7 +77,7 @@ public class WKTUtilTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetWktLineStringFromMovementList() throws MovementDomainException {
+	public void testGetWktLineStringFromMovementList() throws MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();

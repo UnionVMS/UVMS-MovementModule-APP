@@ -20,6 +20,7 @@ import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
@@ -49,7 +50,7 @@ public class CreateMovementTest {
     }
 
     @Test
-    public void createMovementFirstMovement() throws MovementDomainException {
+    public void createMovementFirstMovement() throws MovementDomainException, MissingMovementConnectException {
 
         MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
         IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);

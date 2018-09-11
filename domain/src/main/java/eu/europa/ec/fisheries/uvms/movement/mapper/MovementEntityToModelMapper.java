@@ -12,62 +12,31 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
-
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
+import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class MovementEntityToModelMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementEntityToModelMapper.class);
 
     public static MovementBaseType mapToMovementBaseType(Movement movement) {
-
         MovementBaseType model = new MovementBaseType();
-
-        if (movement.getSpeed() != null) {
-            model.setReportedSpeed(movement.getSpeed());
-        }
-
-        if (movement.getHeading() != null) {
-            model.setReportedCourse(movement.getHeading());
-        }
-
-        if (movement.getGuid() != null) {
-            model.setGuid(movement.getGuid());
-        }
-
-        if (movement.getTimestamp() != null) {
-            model.setPositionTime(movement.getTimestamp());
-        }
-
+        model.setReportedSpeed(movement.getSpeed());
+        model.setReportedCourse(movement.getHeading());
+        model.setGuid(movement.getGuid());
+        model.setPositionTime(movement.getTimestamp());
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
         model.setMovementType(movement.getMovementType());
         model.setActivity(model.getActivity());
-
         MovementPoint movementPoint = new MovementPoint();
         Point point = movement.getLocation();
         movementPoint.setLatitude(point.getY());
@@ -81,71 +50,42 @@ public class MovementEntityToModelMapper {
 
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
-
-        if (movement.getSpeed() != null) {
-            model.setReportedSpeed(movement.getSpeed());
-        }
-
-        if (movement.getGuid() != null) {
-            model.setGuid(movement.getGuid());
-        }
-
+        model.setReportedSpeed(movement.getSpeed());
+        model.setGuid(movement.getGuid());
         //TODO Fix this to double or int
-        if (movement.getHeading() != null) {
-            model.setReportedCourse(movement.getHeading());
-        }
-
-        if (movement.getTimestamp() != null) {
-            model.setPositionTime(movement.getTimestamp());
-        }
-
+        model.setReportedCourse(movement.getHeading());
+        model.setPositionTime(movement.getTimestamp());
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
         model.setMovementType(movement.getMovementType());
-
         MovementPoint movementPoint = new MovementPoint();
         Point point = movement.getLocation();
-
         movementPoint.setLatitude(point.getY());
         movementPoint.setLongitude(point.getX());
         model.setPosition(movementPoint);
-
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
 
         if (movement.getFromSegment() != null) {
-        	model.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
-        	model.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
+            model.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
+            model.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
         }
-        
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
-
         return model;
     }
 
     public static MovementType mapToMovementType(Movement movement) {
 
+        if (movement == null) {
+            return null;
+        }
+
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
-
-        if (movement.getSpeed() != null) {
-            model.setReportedSpeed(movement.getSpeed());
-        }
-
-        if (movement.getGuid() != null) {
-            model.setGuid(movement.getGuid());
-        }
-
-        //TODO Fix this to double or int
-        if (movement.getHeading() != null) {
-            model.setReportedCourse(movement.getHeading());
-        }
-
-        if (movement.getTimestamp() != null) {
-            model.setPositionTime(movement.getTimestamp());
-        }
-
+        model.setReportedSpeed(movement.getSpeed());
+        model.setGuid(movement.getGuid());
+        model.setReportedCourse(movement.getHeading());
+        model.setPositionTime(movement.getTimestamp());
         model.setActivity(mapToActivityType(movement.getActivity()));
-
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
         model.setMovementType(movement.getMovementType());
@@ -160,7 +100,6 @@ public class MovementEntityToModelMapper {
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
 
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
-
         if (movement.getFromSegment() != null) {
             model.getSegmentIds().add(movement.getFromSegment().getId().toString());
             model.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
@@ -183,14 +122,14 @@ public class MovementEntityToModelMapper {
             model.getMetaData().getAreas().addAll(mapToMovementMetaDataAreaTypeList(movement.getMovementareaList()));
         }
 
-        model.setProcessed(movement.getProcessed());
+        model.setProcessed(movement.isProcessed());
         if (movement.getDuplicate() != null) {
             model.setDuplicate(movement.getDuplicate());
         } else {
             model.setDuplicate(false);
         }
         model.setDuplicates(movement.getDuplicateId());
-        
+
         model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
 
         return model;
@@ -245,7 +184,7 @@ public class MovementEntityToModelMapper {
             mappedMovements.add(mapToMovementType(movement));
         }
         long diff = System.currentTimeMillis() - start;
-        LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff +"ms" );
+        LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff + "ms");
         return mappedMovements;
     }
 
@@ -256,7 +195,7 @@ public class MovementEntityToModelMapper {
             mappedMovements.add(mapToMovementType(movement.getMovement()));
         }
         long diff = System.currentTimeMillis() - start;
-        LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff +"ms" );
+        LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff + "ms");
         return mappedMovements;
     }
 
@@ -274,7 +213,7 @@ public class MovementEntityToModelMapper {
             mappedSegments.add(mapToMovementSegment(segment));
         }
         long diff = System.currentTimeMillis() - start;
-        LOG.debug("mapToMovementSegment: " + " ---- TIME ---- " + diff +"ms" );
+        LOG.debug("mapToMovementSegment: " + " ---- TIME ---- " + diff + "ms");
         return mappedSegments;
     }
 
@@ -328,7 +267,7 @@ public class MovementEntityToModelMapper {
         }
 
         long diff = System.currentTimeMillis() - start;
-        LOG.debug("extractTracks: " + " ---- TIME ---- " + diff +"ms" );
+        LOG.debug("extractTracks: " + " ---- TIME ---- " + diff + "ms");
         return movementTracks;
     }
 
@@ -371,7 +310,7 @@ public class MovementEntityToModelMapper {
         }
 
         long diff = System.currentTimeMillis() - start;
-        LOG.debug("extractSegments: " + " ---- TIME ---- " + diff +"ms" );
+        LOG.debug("extractSegments: " + " ---- TIME ---- " + diff + "ms");
         return new ArrayList<>(segments);
     }
 }

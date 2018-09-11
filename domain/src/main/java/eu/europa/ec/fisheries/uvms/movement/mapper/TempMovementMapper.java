@@ -24,13 +24,14 @@ import org.slf4j.LoggerFactory;
 
 public class TempMovementMapper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TempMovementMapper.class);
+    private final static Logger LOG = LoggerFactory.getLogger(TempMovementMapper.class);
 
     public static TempMovement toTempMovementEntity(TempMovementType tempMovementType, String username) {
         if (tempMovementType == null || tempMovementType.getPosition() == null) {
             LOG.warn("TempMovementType is null, aborting mapping");
             throw new MovementDomainRuntimeException("TempMovementType is null, aborting mapping", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
+
         TempMovement tempMovement = new TempMovement();
         // Carrier values
         if (tempMovementType.getAsset() != null) {
@@ -67,7 +68,7 @@ public class TempMovementMapper {
             tempMovement.setStatus(tempMovementType.getStatus());
         }
         if (tempMovementType.getTime() != null) {
-            tempMovement.setTimestamp(DateUtil.parseToUTCDate(tempMovementType.getTime()));
+            tempMovement.setTimestamp(DateUtil.convertDateTimeInUTC(tempMovementType.getTime()));
         }
 
         if (tempMovementType.getState() != null) {
@@ -126,7 +127,7 @@ public class TempMovementMapper {
             currentTempMovement.setStatus(newTempMovement.getStatus());
         }
         if (newTempMovement.getTime() != null && !newTempMovement.getTime().isEmpty()) {
-            currentTempMovement.setTimestamp(DateUtil.parseToUTCDate(newTempMovement.getTime()));
+            currentTempMovement.setTimestamp(DateUtil.convertDateTimeInUTC(newTempMovement.getTime()));
         }
         if (newTempMovement.getState() != null) {
             currentTempMovement.setState(TempMovementStateEnum.valueOf(newTempMovement.getState().name()));
@@ -140,14 +141,14 @@ public class TempMovementMapper {
     public static TempMovementType toTempMovement(TempMovement tempMovement)  {
         TempMovementType tempMovementType = new TempMovementType();
 
-        VesselType vesselType = new VesselType();
-        vesselType.setCfr(tempMovement.getCfr());
-        vesselType.setExtMarking(tempMovement.getExternalMarkings());
-        vesselType.setFlagState(tempMovement.getFlag());
-        vesselType.setIrcs(tempMovement.getIrcs());
-        vesselType.setName(tempMovement.getName());
+        VesselType vessleType = new VesselType();
+        vessleType.setCfr(tempMovement.getCfr());
+        vessleType.setExtMarking(tempMovement.getExternalMarkings());
+        vessleType.setFlagState(tempMovement.getFlag());
+        vessleType.setIrcs(tempMovement.getIrcs());
+        vessleType.setName(tempMovement.getName());
 
-        tempMovementType.setAsset(vesselType);
+        tempMovementType.setAsset(vessleType);
 
         if (tempMovement.getCourse() != null) {
             tempMovementType.setCourse(tempMovement.getCourse());
@@ -163,11 +164,11 @@ public class TempMovementMapper {
             tempMovementType.setSpeed(tempMovement.getSpeed());
         }
         tempMovementType.setStatus(tempMovement.getStatus());
+
         tempMovementType.setTime(DateUtil.parseUTCDateToString(tempMovement.getTimestamp()));
         tempMovementType.setUpdatedTime(DateUtil.parseUTCDateToString(tempMovement.getUpdated()));
         tempMovementType.setState(eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum.fromValue(tempMovement.getState().name()));
 
         return tempMovementType;
     }
-
 }

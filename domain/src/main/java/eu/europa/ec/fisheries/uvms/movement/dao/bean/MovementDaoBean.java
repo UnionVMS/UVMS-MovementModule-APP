@@ -34,7 +34,6 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -78,8 +77,13 @@ public class MovementDaoBean extends Dao implements MovementDao {
         } else if (amount == 1) {
             // TODO  not stable
             LatestMovement latestMovement = getLatestMovement(connectId);
+            if(latestMovement == null)
+                return null;
             Movement movement = latestMovement.getMovement();
-            return Collections.singletonList(movement);
+            if(movement != null)
+                return Collections.singletonList(movement);
+            else
+                return null;
         } else {
             TypedQuery<Movement> query = em.createNamedQuery("Movement.findLatestByMovementConnect", Movement.class);
             query.setParameter("connectId", connectId);
@@ -183,13 +187,27 @@ public class MovementDaoBean extends Dao implements MovementDao {
         // TODO db update in catchblock ?
         // TODO no nullcheck on latestMovement ???
         LatestMovement latestMovement = null;
-        try {
+
+
+//        try {
+//            latestMovement = getLatestMovement(movementConnect.getValue());     //get the latest movement in the table LatestMovement
+//            if (latestMovement != null && latestMovement.getTimestamp().after(movement.getTimestamp())) { //if it is in the middle of things
+//                LOG.debug("CURRENT MOVEMENT BEFORE LATEST MOVEMENT. NO CHANGE.");
+//                return;
+//            }
+//        } catch (NoResultException e) {       //if there is no latestMovement connected to this connectID, create one. Should this really be in a catch statement?
+//            latestMovement = new LatestMovement();
+//            latestMovement.setMovementConnect(movementConnect);
+//            latestMovement.setMovement(movement);
+//            latestMovement.setTimestamp(movement.getTimestamp());
+//            em.persist(latestMovement);
+//            return;
+//        }
+
+
             latestMovement = getLatestMovement(movementConnect.getValue());     //get the latest movement in the table LatestMovement
-            if (latestMovement.getTimestamp().after(movement.getTimestamp())) { //if it is in the middle of things
-                LOG.debug("CURRENT MOVEMENT BEFORE LATEST MOVEMENT. NO CHANGE.");
-                return;
-            }
-        } catch (NoResultException e) {       //if there is no latestMovement connected to this connectID, create one. Should this really be in a catch statement?
+            if (latestMovement == null || latestMovement.getTimestamp().after(movement.getTimestamp())) { //if it is in the middle of things
+
             latestMovement = new LatestMovement();
             latestMovement.setMovementConnect(movementConnect);
             latestMovement.setMovement(movement);
@@ -197,15 +215,22 @@ public class MovementDaoBean extends Dao implements MovementDao {
             em.persist(latestMovement);
             return;
         }
+
+
+
         latestMovement.setMovement(movement);
         latestMovement.setTimestamp(movement.getTimestamp());
         //dont you need a create or persist here?
     }
 
     private LatestMovement getLatestMovement(String connectId) throws NoResultException {
-        TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery("LatestMovement.findLatestByMovementConnect", LatestMovement.class);
-        latestMovementQuery.setParameter("connectId", connectId);
-        return latestMovementQuery.getSingleResult();
+        try {
+            TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery("LatestMovement.findLatestByMovementConnect", LatestMovement.class);
+            latestMovementQuery.setParameter("connectId", connectId);
+            return latestMovementQuery.getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 
     public Segment findByFromMovement(Movement movement) {
@@ -291,25 +316,16 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     @Override
-    public List<Movement> getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException {
+    public <T> T getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException {
         try {
             Query query = getMovementQuery(sql, searchKeyValues);
             query.setFirstResult(listSize * (page - 1));
             query.setMaxResults(listSize);
-            return query.getResultList();
-        } catch (Exception e) {
-            LOG.error("[ Error getting movement list paginated ]  {}", e.getMessage());
-            throw new MovementDomainException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
-        }
-    }
-
-    @Override
-    public List<MinimalMovement> getMinimalMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException {
-        try {
-            Query query = getMovementQuery(sql, searchKeyValues);
-            query.setFirstResult(listSize * (page - 1));
-            query.setMaxResults(listSize);
-            return query.getResultList();
+            T resultList = (T) query.getResultList();
+            return resultList;
+        } catch (IllegalArgumentException e) {
+            LOG.error("[ Error getting movement list paginated ] {}", e.getMessage());
+            throw new MovementDomainRuntimeException("Error when getting list", e, ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         } catch (Exception e) {
             LOG.error("[ Error getting movement list paginated ]  {}", e.getMessage());
             throw new MovementDomainException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
@@ -434,8 +450,8 @@ public class MovementDaoBean extends Dao implements MovementDao {
         Area areaResult = getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
         if(areaResult!=null) {
             TypedQuery<Movement> query = em.createNamedQuery(UvmsConstants.MOVEMENT_LIST_BY_AREA_TIME_INTERVAL, Movement.class);
-            query.setParameter("fromDate", DateUtil.parseToUTCDate(criteria.getFromDate()));
-            query.setParameter("toDate", DateUtil.parseToUTCDate(criteria.getToDate()));
+            query.setParameter("fromDate", DateUtil.convertDateTimeInUTC(criteria.getFromDate()));
+            query.setParameter("toDate", DateUtil.convertDateTimeInUTC(criteria.getToDate()));
             query.setParameter("areaId", areaResult.getAreaId());
             resultList = query.getResultList();
         }

@@ -3,6 +3,7 @@ package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
@@ -45,7 +46,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementConnect() {
+    public void getMovementConnect() throws MovementDomainException {
 
         // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
         String randomUUID = UUID.randomUUID().toString();
@@ -57,7 +58,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementConnect_ZEROISH_GUID() {
+    public void getMovementConnect_ZEROISH_GUID() throws MovementDomainException {
 
         String guid = "100000-0000-0000-0000-000000000000";
         // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
@@ -68,13 +69,13 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementConnect_NULL_GUID() {
+    public void getMovementConnect_NULL_GUID() throws MovementDomainException {
         assertNull(movementBatchModelBean.getMovementConnectByConnectId(null));
     }
 
     @Test
     @OperateOnDeployment("normal")
-    public void createMovement() throws MovementDomainException {
+    public void createMovement() throws MovementDomainException, MissingMovementConnectException {
 
         Date now = DateUtil.nowUTC();
         double longitude = rnd.nextDouble();
@@ -143,7 +144,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getAreaType() {
+    public void getAreaType() throws MovementDomainException {
 
         Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
         areaTransition.setMovementType(MovementTypeType.MAN);
@@ -155,7 +156,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getAreaType_AREATYPE_AS_NULL() {
+    public void getAreaType_AREATYPE_AS_NULL() throws MovementDomainException {
 
         expectedException.expect(Exception.class);
 

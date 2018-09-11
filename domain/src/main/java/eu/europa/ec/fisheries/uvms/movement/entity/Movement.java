@@ -402,7 +402,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.areatransitionList = areatransitionList;
     }
 
-    public Boolean getProcessed() {
+    public Boolean isProcessed() {
         return processed;
     }
 

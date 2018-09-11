@@ -17,6 +17,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +38,18 @@ public class GetMovementMapByQueryBean {
     @EJB
     private MessageProducer messageProducer;
 
-    public void getMovementMapByQuery(TextMessage textMessage) {
-        LOG.info("Get Movement By Query Received.. processing request in MovementEventServiceBean:{}", textMessage);
+    public void getMovementMapByQuery(TextMessage jmsMessage) {
         try {
-            GetMovementMapByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, GetMovementMapByQueryRequest.class);
+            LOG.info("Get Movement By Query Received.. processing request in MovementEventServiceBean : {}", jmsMessage.getText());
+            GetMovementMapByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementMapByQueryRequest.class);
             GetMovementMapByQueryResponse movementList = movementService.getMapByQuery(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapToMovementMapResponse(movementList.getMovementMap());
-            messageProducer.sendMessageBackToRecipient(textMessage, responseString);
-        } catch (MovementMessageException | MovementServiceException | MovementModelException ex) {
+
+            messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
+            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
+        } catch (MovementModelException | MovementMessageException | MovementServiceException | JMSException ex) {
             LOG.error("[ Error when creating getMovementMapByQuery ] ", ex);
-            EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
+            EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
             errorEvent.fire(eventMessage);
             throw new EJBException(ex);
         }

@@ -29,21 +29,19 @@ import javax.jms.TextMessage;
 
 public class MovementModuleResponseMapper {
 
-    private static void validateResponse(TextMessage response, String correlationId) throws JMSException, MovementModelException {
+    private static void validateResponse(TextMessage response, String correlationId) throws JMSException {
 
         if (response == null) {
             throw new MovementModelRuntimeException("Error when validating response in ResponseMapper: Response is Null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
-
         if (response.getJMSCorrelationID() == null) {
             throw new MovementModelRuntimeException("No corelationId in response (Null) . Expected was: " + correlationId, ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
-
         if (!correlationId.equalsIgnoreCase(response.getJMSCorrelationID())) {
             throw new MovementModelRuntimeException("Wrong corelationId in response. Expected was: " + correlationId + "But actual was: " + response.getJMSCorrelationID(), ErrorCode.MODEL_MAPPER_ERROR);
         }
 
-        // TODO: Fix this try-catch block last
+        // TODO: Fix this try-catch block last (KASIM)
 //        try {
 //            ExceptionType movementFault = JAXBMarshaller.unmarshallTextMessage(response, ExceptionType.class);
 //            if (movementFault.getCode() == 409) {
@@ -79,6 +77,17 @@ public class MovementModuleResponseMapper {
         return JAXBMarshaller.marshallJaxBObjectToString(response);
     }
 
+    public static String mapToCreateMovementBatchResponse(CreateMovementBatchResponse createMovementBatchResponse) throws MovementModelException {
+        return JAXBMarshaller.marshallJaxBObjectToString(createMovementBatchResponse);
+    }
+
+    public static String mapToCreateMovementBatchResponse(SimpleResponse value, List<MovementType> movements) throws MovementModelException {
+        CreateMovementBatchResponse response = new CreateMovementBatchResponse();
+        response.setResponse(value);
+        response.getMovements().addAll(movements);
+        return JAXBMarshaller.marshallJaxBObjectToString(response);
+    }
+
     public static HashMap<String, List<MovementType>> mapToMovementMap(List<MovementMapResponseType> movements) {
         HashMap<String, List<MovementType>> movementMap = new HashMap<>();
         for (MovementMapResponseType movement : movements) {
@@ -105,7 +114,13 @@ public class MovementModuleResponseMapper {
         return response.getResponse();
     }
 
-    public static CreateMovementResponse mapToCreateMovementResponseFromMovementResponse(TextMessage message) throws MovementModelException, JMSException {
+    public static CreateMovementBatchResponse mapToCreateMovementBatchResponse(TextMessage message) throws JMSException, MovementModelException {
+        validateResponse(message, message.getJMSCorrelationID());
+        CreateMovementBatchResponse response = JAXBMarshaller.unmarshallTextMessage(message, CreateMovementBatchResponse.class);
+        return response;
+    }
+
+    public static CreateMovementResponse mapToCreateMovementResponseFromMovementResponse(TextMessage message) throws JMSException, MovementModelException {
         validateResponse(message, message.getJMSCorrelationID());
         CreateMovementResponse response = JAXBMarshaller.unmarshallTextMessage(message, CreateMovementResponse.class);
         return response;
@@ -125,5 +140,4 @@ public class MovementModuleResponseMapper {
         resp.setResponse(ackType);
         return resp;
     }
-
 }

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class GetMovementListByAreaAndTimeIntervalBean {
 
-    final static Logger LOG = LoggerFactory.getLogger(GetMovementListByAreaAndTimeIntervalBean.class);
+    private final static Logger LOG = LoggerFactory.getLogger(GetMovementListByAreaAndTimeIntervalBean.class);
 
     @EJB
     private MovementService movementService;
@@ -40,16 +40,16 @@ public class GetMovementListByAreaAndTimeIntervalBean {
     @ErrorEvent
     private Event<EventMessage> errorEvent;
 
-    public void getMovementListByAreaAndTimeInterval(TextMessage textMessage) {
-        LOG.debug("Get Movement By Query Received.. processing request in GetMovementListByAreaAndTimeIntervalBean");
+    public void getMovementListByAreaAndTimeInterval(TextMessage jmsMessage) {
         try {
-            GetMovementListByAreaAndTimeIntervalRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, GetMovementListByAreaAndTimeIntervalRequest.class);
+            GetMovementListByAreaAndTimeIntervalRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementListByAreaAndTimeIntervalRequest.class);
             eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse response = movementService.getMovementListByAreaAndTimeInterval(request.getMovementAreaAndTimeIntervalCriteria());
             String responseString = MovementModuleResponseMapper.mapTogetMovementListByAreaAndTimeIntervalResponse(response.getMovement());
-            messageProducer.sendMessageBackToRecipient(textMessage, responseString);
+            messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
         } catch (MovementMessageException | MovementServiceException | MovementModelException ex) {
+
             LOG.error("[ Error in GetMovementListByAreaAndTimeIntervalBean.getMovementListByAreaAndTimeInterval ] ", ex);
-            EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
+            EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
             errorEvent.fire(eventMessage);
             throw new EJBException(ex);
         }

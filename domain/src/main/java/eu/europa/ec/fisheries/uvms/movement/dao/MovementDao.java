@@ -72,20 +72,6 @@ public interface MovementDao {
 
     /**
      *
-     * Gets all movements based on a prebuild PSQL query. The prebuild
-     * parameters are set in the method
-     *
-     * @param page
-     * @param listSize
-     * @param sql
-     * @param searchKeyValues
-     * @return
-     * @throws MovementDomainException
-     */
-    public List getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException;
-
-    /**
-     *
      * Gets all movements with minimal data based on a prebuild PSQL query. The prebuild
      * parameters are set in the method
      *
@@ -96,7 +82,8 @@ public interface MovementDao {
      * @return
      * @throws MovementDomainException
      */
-    public List<MinimalMovement> getMinimalMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException;
+    public <T> T getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException;
+
 
     /**
      *

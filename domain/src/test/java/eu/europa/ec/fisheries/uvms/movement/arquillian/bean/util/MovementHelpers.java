@@ -9,10 +9,10 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.MockData;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 import javax.persistence.EntityManager;
 import java.util.*;
@@ -39,7 +39,7 @@ public class MovementHelpers {
 
     /* positiontime is imortant */
     public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType,
-                                   String connectId, String userName, Date positionTime) throws MovementDomainException {
+                                   String connectId, String userName, Date positionTime) throws MovementDomainException, MissingMovementConnectException {
 
         MovementType movementType = MockData.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, 0);
         movementType.setPositionTime(positionTime);
@@ -53,7 +53,7 @@ public class MovementHelpers {
     }
 
     private Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId,
-                                    String userName, Date positionTime) throws MovementDomainException {
+                                    String userName, Date positionTime) throws MovementDomainException, MissingMovementConnectException {
 
         MovementType movementType = MockData.createMovementType(latlong,  segmentCategoryType, connectId, altitude);
         movementType.setPositionTime(positionTime);
@@ -79,17 +79,17 @@ public class MovementHelpers {
      *
      * @throws MovementDomainException
      */
-    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, String connectId) throws MovementDomainException {
+    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, String connectId) throws MovementDomainException, MissingMovementConnectException {
         List<LatLong> positions = createRuttVarbergGrena(numberPositions);
         return getMovements(order, connectId, positions);
     }
 
-    public List<Movement> createFishingTourVarberg(int order,  String connectId) throws MovementDomainException {
+    public List<Movement> createFishingTourVarberg(int order,  String connectId) throws MovementDomainException, MissingMovementConnectException {
         List<LatLong> positions = createRuttSmallFishingTourFromVarberg();
         return getMovements(order, connectId, positions);
     }
 
-    private List<Movement> getMovements(int order, String connectId, List<LatLong> positions) throws MovementDomainException {
+    private List<Movement> getMovements(int order, String connectId, List<LatLong> positions) throws MovementDomainException, MissingMovementConnectException {
         List<Movement> createdRoute = new ArrayList<>();
         String userName = "TEST";
 

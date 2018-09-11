@@ -33,9 +33,11 @@ public class MovementModuleRequestMapper {
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
 
-    public static String mapToCreateMovementBatchRequest(List<MovementBaseType> baseTypeList) throws MovementModelException {
+
+    public static String mapToCreateMovementBatchRequest(List<MovementBaseType> baseTypeList, String username) throws MovementModelException {
         CreateMovementBatchRequest request = new CreateMovementBatchRequest();
         request.setMethod(MovementModuleMethod.CREATE_BATCH);
+        request.setUsername(username);
         if (baseTypeList != null) {
             request.getMovement().addAll(baseTypeList);
         }

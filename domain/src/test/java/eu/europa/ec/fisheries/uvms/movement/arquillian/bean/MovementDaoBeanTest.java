@@ -11,12 +11,16 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.transaction.SystemException;
 
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
@@ -46,9 +50,12 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@EJB
 	MovementDaoBean movementDaoBean;
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 	
 	@Test
-	public void testGetMovementsByGUID() throws MovementDomainException {
+	public void testGetMovementsByGUID() throws MovementDomainException, MissingMovementConnectException {
 		Movement output = movementDaoBean.getMovementByGUID("");
 		assertNull(output);
 		
@@ -65,7 +72,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementByConnectIdList() throws MovementDomainException {
+	public void testGetLatestMovementByConnectIdList() throws MovementDomainException, MissingMovementConnectException {
 		String connectID = UUID.randomUUID().toString();
 		String connectID2 = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
@@ -100,14 +107,14 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		assertTrue(output.isEmpty());
 			
 		//random input should result in an empty set
-		input = new ArrayList<String>();
+		input = new ArrayList<>();
 		input.add(UUID.randomUUID().toString());
 		output = movementDaoBean.getLatestMovementsByConnectIdList(input);
 		assertTrue(output.isEmpty());
 	}
 	
 	@Test
-	public void testGetLatestMovementsByConnectID() throws MovementDomainException {
+	public void testGetLatestMovementsByConnectID() throws MovementDomainException, MissingMovementConnectException {
 		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis()));
@@ -129,12 +136,12 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		output = movementDaoBean.getLatestMovementsByConnectId(connectID, 3);
 		assertEquals(3, output.size());
 		
-		try {
-			output = movementDaoBean.getLatestMovementsByConnectId(connectID, -3);
-			fail("negative value as input should result in an exception");
-		} catch (MovementDomainRuntimeException e) {
-			assertTrue(true);
-		}
+//		try {
+//			output = movementDaoBean.getLatestMovementsByConnectId(connectID, -3);
+//			fail("negative value as input should result in an exception");
+//		} catch (MovementDomainRuntimeException e) {
+//			assertTrue(true);
+//		}
 		//should result in a no result output akka null
 		output = movementDaoBean.getLatestMovementsByConnectId("0", 1);
 		assertNull(output);
@@ -143,13 +150,36 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		output = movementDaoBean.getLatestMovementsByConnectId("0", 2);
 		assertTrue(output.isEmpty());
 	}
+
+	@Test
+	public void testGetLatestMovementsByConnectID_willFail() throws MovementDomainException, MissingMovementConnectException {
+
+		thrown.expect(EJBTransactionRolledbackException.class);
+
+		String connectID = UUID.randomUUID().toString();
+		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis()));
+		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis() + 100L));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID, "TEST42", new Date(System.currentTimeMillis() + 200L));
+		move1.setGuid();
+		incomingMovementBean.processMovement(move1);
+		move2.setGuid();
+		incomingMovementBean.processMovement(move2);
+		move3.setGuid();
+		incomingMovementBean.processMovement(move3);
+		em.flush();
+
+		System.out.println(connectID);
+		List<Movement> output = movementDaoBean.getLatestMovementsByConnectId(connectID, 1);
+		assertEquals(1, output.size());
+		assertEquals(move3.getGuid(), output.get(0).getGuid());
+
+		movementDaoBean.getLatestMovementsByConnectId(connectID, -3);
+	}
 	
 	@Test
 	public void testGetAreaTypeByCode() {
-		AreaType areaType = new AreaType();
-		areaType.setName("TestAreaType");
-		areaType.setUpdatedTime(new Date(System.currentTimeMillis()));
-		areaType.setUpdatedUser("TestUser");
+		AreaType areaType = createAreaType();
 		em.persist(areaType);
 		em.flush();
 		
@@ -161,10 +191,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		
 		try {
 			//trying to create a duplicate
-			AreaType areaTypeDuplicate = new AreaType();
-			areaTypeDuplicate.setName("TestAreaType");
-			areaTypeDuplicate.setUpdatedTime(new Date(System.currentTimeMillis()));
-			areaTypeDuplicate.setUpdatedUser("TestUser");
+			AreaType areaTypeDuplicate = createAreaType();
 			em.persist(areaTypeDuplicate);
 			em.flush();
 			fail("duplicate namnes should not be allowed"); //thus the catch clause for multiple areas in the method is invalid
@@ -178,33 +205,39 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@Test
 	public void testGetAreaByRemoteIDAndCode() throws MovementDomainException {
-		AreaType areaType = new AreaType();
-		String input = "TestAreaType";
-		areaType.setName(input);
-		areaType.setUpdatedTime(new Date(System.currentTimeMillis()));
-		areaType.setUpdatedUser("TestUser");
+		AreaType areaType = createAreaType();
 		em.persist(areaType);
 		em.flush();
-		
-		Area area = new Area();
-		area.setAreaName("TestArea");
-		area.setAreaCode(input);
-		area.setRemoteId("TestRemoteId");
-		area.setAreaUpdattim(new Date(System.currentTimeMillis()));
-		area.setAreaUpuser("TestUser");
-		area.setAreaType(areaType);
+
+		Area area = createArea(areaType);
 		
 		Area createdArea = areaDao.createMovementArea(area);
         areaDao.flushMovementAreas();
 
-		Area output = movementDaoBean.getAreaByRemoteIdAndCode(input, null); //remoteId is not used at all  TestAreaCode
+		Area output = movementDaoBean.getAreaByRemoteIdAndCode(areaType.getName(), null); //remoteId is not used at all  TestAreaCode
 		assertEquals(area.getAreaId(), output.getAreaId());
 		
 		output = movementDaoBean.getAreaByRemoteIdAndCode("ShouldNotExist", null);
 		assertNull(output);
-		
-		output = movementDaoBean.getAreaByRemoteIdAndCode(null, null);
-		assertNull(output);
+	}
+
+	@Test
+	public void testGetAreaByRemoteIDAndCode_willFail() throws MovementDomainException {
+
+		thrown.expect(EJBTransactionRolledbackException.class);
+		thrown.expectMessage("No valid input parameters to method getAreaByRemoteIdAndCode");
+
+		AreaType areaType = createAreaType();
+
+		em.persist(areaType);
+		em.flush();
+
+		Area area = createArea(areaType);
+
+		areaDao.createMovementArea(area);
+		areaDao.flushMovementAreas();
+
+		movementDaoBean.getAreaByRemoteIdAndCode(null, null);
 	}
 	
 	@Test
@@ -212,5 +245,25 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		//only testing the no result part since the rest of teh function is tested elsewhere
 		List<Movement> output = movementDaoBean.isDateAlreadyInserted("ShouldNotExist", new Date(System.currentTimeMillis()));
 		assertTrue(output.isEmpty());
+	}
+
+	private AreaType createAreaType() {
+		AreaType areaType = new AreaType();
+		String input = "TestAreaType";
+		areaType.setName(input);
+		areaType.setUpdatedTime(new Date(System.currentTimeMillis()));
+		areaType.setUpdatedUser("TestUser");
+		return areaType;
+	}
+
+	private Area createArea(AreaType areaType) {
+		Area area = new Area();
+		area.setAreaName("TestArea");
+		area.setAreaCode(areaType.getName());
+		area.setRemoteId("TestRemoteId");
+		area.setAreaUpdattim(new Date(System.currentTimeMillis()));
+		area.setAreaUpuser("TestUser");
+		area.setAreaType(areaType);
+		return area;
 	}
 }

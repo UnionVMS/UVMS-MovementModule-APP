@@ -9,9 +9,9 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>4.0.16-SNAPSHOT</version>
     </parent>
-
+    
     <properties>
         <docker.dev.stop.phase>verify</docker.dev.stop.phase>
         <docker.dev.prestop.phase>install</docker.dev.prestop.phase>        	
@@ -102,6 +102,24 @@
 			<artifactId>uvms-pom-monitoring-deps</artifactId>
 			<type>pom</type>
 		</dependency>
+		<dependency>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-arquillian-deps</artifactId>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>movement-message-impl</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.9.5</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

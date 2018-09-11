@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.ejb.EJB;
-import javax.transaction.SystemException;
 
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +45,8 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
+import static org.junit.Assert.*;
+
 @RunWith(Arquillian.class)
 public class MovementEntityToModelTest extends TransactionalTests {
 
@@ -58,7 +60,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
     private IncomingMovementBean incomingMovementBean;
 	
 	@Test
-	public void testMovementBaseType() throws MovementDomainException {
+	public void testMovementBaseType() throws MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -99,7 +101,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		//movement.setStatus(status);
 	}
 	@Test
-	public void testMapToMovementTypeWithMovementInput() throws MovementDomainException {
+	public void testMapToMovementTypeWithMovementInput() throws MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -121,12 +123,8 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		assertTrue(!output.isDuplicate());
 		
 		movement = null;
-		try {
-			output = MovementEntityToModelMapper.mapToMovementType(movement);
-			fail("null input should result in a nullpointer");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
+		output = MovementEntityToModelMapper.mapToMovementType(movement);
+		assertNull(output);
 	}
 	
 	@Test
@@ -165,7 +163,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testMapToMovementTypeWithAListOfMovements() throws MovementDomainException {
+	public void testMapToMovementTypeWithAListOfMovements() throws MovementDomainException, MissingMovementConnectException {
 		//Most of the method is tested by testMapToMovementType
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
@@ -187,7 +185,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementDomainException {
+	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -215,7 +213,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testMapToMovementSegment() throws MovementDomainException {
+	public void testMapToMovementSegment() throws MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -247,10 +245,10 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testOrderMovementsByConnectId() throws MovementDomainException {
+	public void testOrderMovementsByConnectId() throws MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
-		List<String> connectId = new ArrayList();
-		List<Movement> input = new ArrayList();
+		List<String> connectId = new ArrayList<>();
+		List<Movement> input = new ArrayList<>();
 		String ID;
 		for(int i = 0 ; i < 20 ; i++) {
 			ID = UUID.randomUUID().toString();
@@ -274,7 +272,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testExtractSegments() throws MovementDomainException {
+	public void testExtractSegments() throws MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
@@ -320,17 +318,17 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testExtractTracks() throws MovementModelException, MovementDomainException {
+	public void testExtractTracks() throws MovementModelException, MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		ArrayList<Movement> movementList = new ArrayList(movementHelpers.createFishingTourVarberg(1, connectId));
+		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));
 		
 		for(Movement move : movementList) {
 			incomingMovementBean.processMovement(move);
-			assertTrue(move.getProcessed());
+			assertTrue(move.isProcessed());
 		}
 		
-		List<Segment> input = new ArrayList(MovementEntityToModelMapper.extractSegments(movementList, true));
+		List<Segment> input = new ArrayList<>(MovementEntityToModelMapper.extractSegments(movementList, true));
 		List<MovementTrack> output = MovementEntityToModelMapper.extractTracks(input);
 		
 		assertEquals(1, output.size());

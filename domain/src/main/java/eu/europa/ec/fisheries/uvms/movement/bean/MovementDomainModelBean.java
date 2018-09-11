@@ -18,7 +18,6 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -148,7 +147,7 @@ public class MovementDomainModelBean {
 
             Long numberMatches = dao.getMovementListSearchCount(countSql, searchKeyValues);
             LOG.debug("Count found {} matches", numberMatches);
-            List<MinimalMovement> movementEntityList = dao.getMinimalMovementListPaginated(page, listSize, sql, searchKeyValues);
+            List<MinimalMovement> movementEntityList = dao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
             LOG.debug("Get got {} matches", movementEntityList.size());
 
             for (MinimalMovement move : movementEntityList){

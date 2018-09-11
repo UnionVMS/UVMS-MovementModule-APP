@@ -1,7 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -19,13 +18,13 @@ import org.junit.runner.RunWith;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
-
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 
 @RunWith(Arquillian.class)
@@ -81,7 +80,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	}
 
 	@Test
-	public void testGetCoordinateSequenceFromMovements() throws MovementDomainException {
+	public void testGetCoordinateSequenceFromMovements() throws MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -107,7 +106,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLineStringFromMovments() throws MovementDomainException {
+	public void testGetLineStringFromMovments() throws MovementDomainException, MissingMovementConnectException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		

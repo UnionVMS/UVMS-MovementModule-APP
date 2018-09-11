@@ -12,6 +12,7 @@
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 })
 public class MovementMessageConsumerBean implements MessageListener {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementMessageConsumerBean.class);
+    private final static Logger LOG = LoggerFactory.getLogger(MovementMessageConsumerBean.class);
 
     @EJB
     private CreateMovementBean createMovementBean;
@@ -67,14 +68,15 @@ public class MovementMessageConsumerBean implements MessageListener {
         TextMessage textMessage = null;
         try {
             textMessage = (TextMessage) message;
-            LOG.debug("Message received in movement");
             MovementBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, MovementBaseRequest.class);
-            if (request.getMethod() == null) {
+            MovementModuleMethod movementMethod = request.getMethod();
+            LOG.info("Message received in movement with method [ {} ]", movementMethod);
+            if (movementMethod == null) {
                 LOG.error("[ Request method is null ]");
                 errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: "));
                 return;
             }
-            switch (request.getMethod()) {
+            switch (movementMethod) {
                 case MOVEMENT_LIST:
                     getMovementListByQueryBean.getMovementListByQuery(textMessage);
                     break;
@@ -96,8 +98,8 @@ public class MovementMessageConsumerBean implements MessageListener {
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:
                 default:
-                    LOG.error("[ Request method {} is not implemented ]", request.getMethod().name());
-                    errorEvent.fire(new EventMessage(textMessage, "[ Request method " + request.getMethod().name() + "  is not implemented ]"));
+                    LOG.error("[ Request method {} is not implemented ]", movementMethod.name());
+                    errorEvent.fire(new EventMessage(textMessage, "[ Request method " + movementMethod.name() + "  is not implemented ]"));
             }
         } catch (NullPointerException | ClassCastException | MovementModelException e) {
             LOG.error("[ Error when receiving message in movement: ] {}", e);

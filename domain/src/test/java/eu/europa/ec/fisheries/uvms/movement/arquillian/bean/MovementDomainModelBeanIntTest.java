@@ -1,24 +1,18 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.search.v1.*;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementDomainModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
@@ -29,7 +23,6 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -39,6 +32,7 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+import javax.management.RuntimeOperationsException;
 
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -121,7 +115,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getLatestMovements_NULL() {
-        expectedException.expect(MovementModelException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
 
         movementDomainModelBean.getLatestMovements(null);
     }
@@ -129,7 +123,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getLatestMovements_neg5() {
-        expectedException.expect(MovementModelException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
 
         movementDomainModelBean.getLatestMovements(-5);
     }
@@ -137,8 +131,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getLatestMovementsByConnectIds_crashOnEmpty() {
-        expectedException.expect(MovementModelException.class);
-        expectedException.expectMessage("[ Error when getting Movement by GUID. ]");
+        expectedException.expect(EJBTransactionRolledbackException.class);
+        expectedException.expectMessage("could not extract ResultSet");
 
         List<String> connectIds = new ArrayList<>();
         movementDomainModelBean.getLatestMovementsByConnectIds(connectIds);
@@ -147,7 +141,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getMinimalMovementListByQuery_NULL() throws MovementModelException, MovementDomainException {
-        expectedException.expect(MovementModelRuntimeException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
         expectedException.expectMessage("Movement list query is null");
 
         movementDomainModelBean.getMinimalMovementListByQuery(null);
@@ -156,23 +150,20 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getMovementByGUID_NULL() {
-        expectedException.expect(EJBTransactionRolledbackException.class);
-
-        movementDomainModelBean.getMovementByGUID(null);
+        assertNull(movementDomainModelBean.getMovementByGUID(null));
     }
 
      @Test
      @OperateOnDeployment("normal")
     public void getMovementListByAreaAndTimeInterval_NULL() {
         expectedException.expect(EJBTransactionRolledbackException.class);
-
-         List<MovementType> movementTypeList = movementDomainModelBean.getMovementListByAreaAndTimeInterval(null);
+        movementDomainModelBean.getMovementListByAreaAndTimeInterval(null);
      }
 
     @Test
     @OperateOnDeployment("normal")
     public void getMovementListByQuery_NULL() throws ParseException, MovementDomainException {
-        expectedException.expect(MovementModelException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
         expectedException.expectMessage("Movement list query is null");
 
         movementDomainModelBean.getMovementListByQuery(null);
@@ -181,7 +172,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void getMovementMapByQuery_NULL() throws MovementDomainException {
-        expectedException.expect(MovementModelException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
         expectedException.expectMessage("Movement list query is null");
 
         movementDomainModelBean.getMovementMapByQuery(null);
@@ -190,7 +181,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void keepSegment_NULL() {
-        expectedException.expect(MovementModelException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
         expectedException.expectMessage("MovementSegment or SearchValue list is null");
 
         movementDomainModelBean.keepSegment(null, null);
@@ -199,7 +190,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void removeTrackMismatches_NULL() {
-        expectedException.expect(MovementModelException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
         expectedException.expectMessage("MovementTrack list or Movement list is null");
 
         movementDomainModelBean.removeTrackMismatches(null, null);
@@ -215,12 +206,12 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     IncomingMovementBean incomingMovementBean;
     
     @Test
-    public void testGetMovementListByQuery() throws ParseException, MovementDomainException {
+    public void testGetMovementListByQuery() throws ParseException, MovementDomainException, MissingMovementConnectException {
     	ListResponseDto output;
     	try {
     		output = movementDomainModelBean.getMovementListByQuery(null);
     		fail("Null as input should result in an exception");
-		} catch (MovementDomainException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
 
@@ -230,7 +221,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	try {
     		output = movementDomainModelBean.getMovementListByQuery(input);
     		fail("pagination is not set");
-		} catch (MovementModelRuntimeException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
     	ListPagination listPagination = new ListPagination();
@@ -241,7 +232,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	try {
     		output = movementDomainModelBean.getMovementListByQuery(input);
     		fail("No searchcriteria in input");
-		} catch (MovementModelRuntimeException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
     	
@@ -296,12 +287,12 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testGetMinimalMovementListByQuery() throws MovementModelException, MovementDomainException {
+    public void testGetMinimalMovementListByQuery() throws MovementModelException, MovementDomainException, MissingMovementConnectException {
     	ListResponseDto output;
     	try {
     		output = movementDomainModelBean.getMinimalMovementListByQuery(null);
     		fail("Null as input should result in an exception");
-		} catch (MovementModelRuntimeException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
     	
@@ -311,7 +302,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	try {
     		output = movementDomainModelBean.getMinimalMovementListByQuery(input);
     		fail("pagination is not set");
-		} catch (MovementModelRuntimeException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
     	ListPagination listPagination = new ListPagination();
@@ -375,18 +366,18 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	try {
     		output = movementDomainModelBean.getMinimalMovementListByQuery(input);
     		fail("crap as input");
-		} catch (EJBTransactionRolledbackException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
     }
     
     @Test
-    public void testGetMovementMapByQuery() throws MovementDomainException {
+    public void testGetMovementMapByQuery() throws MovementDomainException, MissingMovementConnectException {
     	List<MovementMapResponseType> output;
     	try {
     		output = movementDomainModelBean.getMovementMapByQuery(null);
     		fail("Null as input should result in an exception");
-		} catch (MovementModelRuntimeException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
     	
@@ -401,7 +392,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	try {
     		output = movementDomainModelBean.getMovementMapByQuery(input);
     		fail("Pagination not supported on this one");
-		} catch (MovementModelRuntimeException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
     	
@@ -455,13 +446,13 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	try {
     		output = movementDomainModelBean.getMovementMapByQuery(input);
     		fail("crap as input");
-		} catch (EJBTransactionRolledbackException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
     }
     
     @Test
-    public void testRemoveTrackMismatches() throws MovementDomainException {
+    public void testRemoveTrackMismatches() throws MovementDomainException, MissingMovementConnectException {
     	String connectID = UUID.randomUUID().toString();
     	List<Movement> varbergGrena = createAndProcess10MovementsFromVarbergGrena(connectID);
     	List<MovementTrack> input = new ArrayList<>();
@@ -484,13 +475,13 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	try {
     		movementDomainModelBean.removeTrackMismatches(null, varbergGrena);
     		fail("null as input");
-		} catch (MovementModelRuntimeException e) {
+		} catch (RuntimeException e) {
 			assertTrue(true);
 		}
     }
     
     @Test
-    public void testGetLatestMovementsByConnectID() throws MovementDomainException {
+    public void testGetLatestMovementsByConnectID() throws MovementDomainException, MissingMovementConnectException {
     	String connectID = UUID.randomUUID().toString();
     	String connectID2 = UUID.randomUUID().toString();
     	List<Movement> control = createAndProcess10MovementsFromVarbergGrena(connectID);
@@ -513,21 +504,16 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void getMovementByGuid() throws MovementDomainException {
+    public void getMovementByGuid() throws MovementDomainException, MissingMovementConnectException {
     	String connectID = UUID.randomUUID().toString();
     	List<Movement> control = createAndProcess10MovementsFromVarbergGrena(connectID);
     	
     	MovementType output = movementDomainModelBean.getMovementByGUID(control.get(5).getGuid());
     	assertEquals(control.get(5).getInternalReferenceNumber(), output.getInternalReferenceNumber());
     	assertEquals(control.get(5).getHeading(), output.getReportedCourse());
-    	
-    	try {
-    		output = movementDomainModelBean.getMovementByGUID("42");
-    		fail("No result");
-		} catch (EJBTransactionRolledbackException e) { //No result results in a nullpointer that is then transformed into this exception
-			assertTrue(true);
-		}
-    	
+
+    	output = movementDomainModelBean.getMovementByGUID("42");
+    	assertNull(output);
     }
     
     @EJB
@@ -574,14 +560,13 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testGetMovementListByAreaAndTimeInterval() throws MovementDomainException {
+    public void testGetMovementListByAreaAndTimeInterval() throws MovementDomainException, MissingMovementConnectException {
     	String connectID = UUID.randomUUID().toString();
     	
     	MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
     	movementAreaAndTimeIntervalCriteria.setFromDate(DateUtil.parseUTCDateToString(new Date(System.currentTimeMillis())));
     	movementAreaAndTimeIntervalCriteria.setToDate(DateUtil.parseUTCDateToString(new Date(System.currentTimeMillis() + 2100000L))); //2 100 000 is the time for 7 of the movements in the list
-    	
-    	
+
     	AreaType areaType = new AreaType();
 		String input = "TestAreaType";
 		areaType.setName(input);
@@ -618,18 +603,11 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	}
         
     	em.persist(movementarea);
-    	
-    	
     	em.flush();
     	
-		
-    	List<MovementType> output = movementDomainModelBean.getMovementListByAreaAndTimeInterval(movementAreaAndTimeIntervalCriteria);
-    	
-    	assertTrue(output.isEmpty());
-    	
     	movementAreaAndTimeIntervalCriteria.setAreaCode(input);
-    	
-    	output = movementDomainModelBean.getMovementListByAreaAndTimeInterval(movementAreaAndTimeIntervalCriteria);
+
+		List<MovementType> output = movementDomainModelBean.getMovementListByAreaAndTimeInterval(movementAreaAndTimeIntervalCriteria);
     	
     	assertEquals(1, output.size());
     	assertEquals(varbergGrena.get(6).getGuid(), output.get(0).getGuid());
@@ -671,8 +649,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     private SearchValue createSearchValueSpeedHelper() {
         return new SearchValue(SearchField.SEGMENT_SPEED, "100", "200");
     }
-    
-    private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementDomainException {
+
+    private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementDomainException, MissingMovementConnectException {
     	MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
     	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
     	for(Movement move : varbergGrena) {

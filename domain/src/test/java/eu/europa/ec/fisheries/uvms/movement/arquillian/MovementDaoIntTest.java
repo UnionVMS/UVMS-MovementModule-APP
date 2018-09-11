@@ -251,7 +251,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         Integer listSize = 10;
         String sql = "select distinct m  from  MinimalMovement m";
 
-        List<MinimalMovement> minimalMovementList = movementDao.getMinimalMovementListPaginated(page, listSize, sql, searchKeyValues);
+        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
         assertNotNull(minimalMovementList);
         assertTrue(minimalMovementList.size() <= 10);
     }
@@ -265,7 +265,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         Integer listSize = 10;
         String sql = "select distinct m  from  MinimalMovement m where m.speed < 0";
 
-        List<MinimalMovement> minimalMovementList = movementDao.getMinimalMovementListPaginated(page, listSize, sql, searchKeyValues);
+        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
         assertNotNull(minimalMovementList);
         assertEquals(0, minimalMovementList.size());
     }
@@ -381,7 +381,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         String sql = "select m from Movement m ";
 
         expectedException.expect(MovementDomainException.class);
-        expectedException.expectMessage("[ Error when getting list ]");
+        expectedException.expectMessage("Error when getting list");
 
         movementDao.getMovementList(sql, searchValues);
     }
@@ -565,7 +565,8 @@ public class MovementDaoIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void merge() throws MovementDomainException {
 
-        expectedException.expect(MovementDomainException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
+        expectedException.expectMessage("attempt to create merge event with null entity");
         movementDao.merge(null);
     }
 
@@ -573,7 +574,8 @@ public class MovementDaoIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void persist() throws MovementDomainException {
 
-        expectedException.expect(MovementDomainException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
+        expectedException.expectMessage("attempt to create create event with null entity");
         movementDao.persist(null);
     }
 

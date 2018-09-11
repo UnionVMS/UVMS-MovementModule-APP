@@ -25,11 +25,9 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.exception.SpatialModelMapperException;
 import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleResponseMapper;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.PointType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.UnitType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.*;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.ejb.EJB;
@@ -42,9 +40,9 @@ import org.slf4j.LoggerFactory;
 
 @LocalBean
 @Stateless
-public class SpatialServiceBean implements SpatialService {
+public class MovementSpatialServiceBean implements SpatialService {
 
-    final static Logger LOG = LoggerFactory.getLogger(SpatialServiceBean.class);
+    private final static Logger LOG = LoggerFactory.getLogger(MovementSpatialServiceBean.class);
 
     @EJB
     private MessageConsumer consumer;
@@ -52,9 +50,10 @@ public class SpatialServiceBean implements SpatialService {
     @EJB
     private MessageProducer producer;
 
+    @Override
     public MovementType enrichMovementWithSpatialData(MovementBaseType movement) throws MovementServiceException {
         try {
-            LOG.debug("Enrich movement with spatial data envoked in SpatialServiceBean");
+            LOG.debug("Enrich movement with spatial data envoked in MovementSpatialServiceBean");
             PointType point = new PointType();
             point.setCrs(4326); //this magical int is the World Geodetic System 1984, aka EPSG:4326. See: https://en.wikipedia.org/wiki/World_Geodetic_System or http://spatialreference.org/ref/epsg/wgs-84/
             point.setLatitude(movement.getPosition().getLatitude());
@@ -67,6 +66,32 @@ public class SpatialServiceBean implements SpatialService {
             LOG.debug("Got response from Spatial " + spatialResponse.getText());
             SpatialEnrichmentRS enrichment = SpatialModuleResponseMapper.mapToSpatialEnrichmentRSFromResponse(spatialResponse, spatialMessageId);
             return MovementMapper.enrichAndMapToMovementType(movement, enrichment);
+        } catch (JMSException | SpatialModelMapperException | MovementMessageException | MessageException ex) {
+            throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex, ErrorCode.DATA_RETRIEVING_ERROR);
+        }
+    }
+
+    @Override
+    public List<MovementType> enrichMovementBatchWithSpatialData(List<MovementBaseType> movements) throws MovementServiceException {
+        List<SpatialEnrichmentRQListElement> batchReqLements = new ArrayList<>();
+        for (MovementBaseType movement : movements) {
+            PointType point = new PointType();
+            point.setCrs(4326);
+            point.setLatitude(movement.getPosition().getLatitude());
+            point.setLongitude(movement.getPosition().getLongitude());
+            List<LocationType> locationTypes = Arrays.asList(LocationType.PORT);
+            List<AreaType> areaTypes = Arrays.asList(AreaType.COUNTRY);
+            SpatialEnrichmentRQListElement spatialEnrichmentRQListElement = SpatialModuleRequestMapper.mapToCreateSpatialEnrichmentRQElement(point, UnitType.NAUTICAL_MILES, locationTypes, areaTypes);
+            batchReqLements.add(spatialEnrichmentRQListElement);
+        }
+        try {
+            LOG.debug("Enrich movement Batch with spatial data envoked in MovementSpatialServiceBean");
+            String spatialRequest = SpatialModuleRequestMapper.mapToCreateBatchSpatialEnrichmentRequest(batchReqLements);
+            String spatialMessageId = producer.sendModuleMessage(spatialRequest, ModuleQueue.SPATIAL);
+            TextMessage spatialJmsMessageRS = consumer.getMessage(spatialMessageId, TextMessage.class);
+            LOG.debug("Got response from Spatial " + spatialJmsMessageRS.getText());
+            BatchSpatialEnrichmentRS enrichment = SpatialModuleResponseMapper.mapToBatchSpatialEnrichmentRSFromResponse(spatialJmsMessageRS, spatialMessageId);
+            return MovementMapper.enrichAndMapToMovementTypes(movements, enrichment);
         } catch (JMSException | SpatialModelMapperException | MovementMessageException | MessageException ex) {
             throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex, ErrorCode.DATA_RETRIEVING_ERROR);
         }

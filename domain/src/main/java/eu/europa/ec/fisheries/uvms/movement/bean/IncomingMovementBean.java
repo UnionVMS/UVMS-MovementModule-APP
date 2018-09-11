@@ -8,7 +8,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +41,8 @@ public class IncomingMovementBean {
     EntityManager em;
 
     public void processMovement(Movement currentMovement) throws MovementDomainException {
-
-        if (currentMovement != null && !currentMovement.getProcessed()) {
+        LOG.debug("processMovement() method get called.");
+        if (currentMovement != null && !currentMovement.isProcessed()) {
             LOG.debug("Processing movement {}", currentMovement.getId());
             String connectId = currentMovement.getMovementConnect().getValue();
             Date timeStamp = currentMovement.getTimestamp();

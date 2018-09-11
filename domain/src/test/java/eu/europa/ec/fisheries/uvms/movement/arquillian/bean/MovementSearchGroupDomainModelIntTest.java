@@ -15,6 +15,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.persistence.PersistenceException;
 import java.util.List;
 
@@ -54,8 +55,8 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void failCreateMovementSearchGroupNoName() throws MovementDomainException {
-        expectedException.expect(MovementModelException.class);
-        expectedException.expectMessage("Could not create movement search group.");
+        expectedException.expect(EJBTransactionRolledbackException.class);
+        expectedException.expectMessage("MovementSearchGroupName cannot be null");
 
         MovementSearchGroup movementSearchGroup = createSearchGroup();
         movementSearchGroup.setName(null);
@@ -102,7 +103,7 @@ public class MovementSearchGroupDomainModelIntTest extends TransactionalTests {
         em.flush();
         assertNotNull(movementSearchGroup.getId());
 
-        expectedException.expect(MovementModelException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
         expectedException.expectMessage("Could not get movement search group by group ID:" + movementSearchGroup.getId());
 
         movementSearchGroupDomainModelBean.deleteMovementSearchGroup(movementSearchGroup.getId());

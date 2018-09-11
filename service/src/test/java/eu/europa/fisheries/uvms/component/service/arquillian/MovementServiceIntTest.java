@@ -6,13 +6,6 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAnd
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
@@ -33,7 +26,6 @@ import javax.jms.JMSException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
 
 /**
  * Created by thofan on 2017-03-02.
@@ -64,7 +56,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
     }
 
-
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementListByAreaAndTimeInterval_NoResult_But_RunsTheCode() {
@@ -93,7 +84,6 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.fail();
         }
     }
-
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -124,8 +114,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
     }
 
-
-
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovement() {
@@ -146,7 +134,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
     }
 
-
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovementsByConnectIds_EmptyList() {
@@ -161,7 +148,6 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.assertTrue(e != null);
         }
     }
-
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -178,8 +164,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         } catch (Exception e) {
             Assert.fail();
         }
-
-
     }
 
     @Test
@@ -230,7 +214,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void createMovementBatch() throws MovementServiceException {
 
         List<MovementBaseType> query = createBaseTypeList();
-        SimpleResponse response = movementService.createMovementBatch(query);
+        SimpleResponse response = movementService.createMovementBatch(query, "TEST").getResponse();
         Assert.assertTrue(response != null);
         Assert.assertTrue(response == SimpleResponse.OK);
     }
@@ -249,7 +233,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             latitude = latitude +  0.05;
         }
 
-        SimpleResponse simpleResponse = movementService.createMovementBatch(movementTypeList);
+        SimpleResponse simpleResponse = movementService.createMovementBatch(movementTypeList, "TEST").getResponse();
         Assert.assertNotNull(simpleResponse);
         Assert.assertEquals(SimpleResponse.OK, simpleResponse);
     }
@@ -268,7 +252,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             latitude += 0.05;
         }
         try {
-            movementService.createMovementBatch(movementTypeList);
+            movementService.createMovementBatch(movementTypeList, "TEST").getResponse();
             Assert.fail("This should produce an EJBException and trigger rollback");
         } catch (EJBException ignore) {}
     }
@@ -292,7 +276,6 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void getById() {
 
         try {
-
             Date now = DateUtil.nowUTC();
             double longitude = 9.140625D;
             double latitude = 57.683804D;
@@ -335,8 +318,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
     }
 
-
-
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements() {
@@ -349,7 +330,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         } catch (Exception e) {
             Assert.fail();
         }
-
     }
 
     @Test
@@ -396,7 +376,6 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.assertTrue(e != null);
         }
     }
-
 
     /******************************************************************************************************************
      *   HELPER FUNCTIONS
