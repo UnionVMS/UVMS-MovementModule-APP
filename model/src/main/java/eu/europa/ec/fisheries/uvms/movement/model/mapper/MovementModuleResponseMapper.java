@@ -41,16 +41,19 @@ public class MovementModuleResponseMapper {
             throw new MovementModelRuntimeException("Wrong corelationId in response. Expected was: " + correlationId + "But actual was: " + response.getJMSCorrelationID(), ErrorCode.MODEL_MAPPER_ERROR);
         }
 
-        // TODO: Fix this try-catch block last (KASIM)
-//        try {
-//            ExceptionType movementFault = JAXBMarshaller.unmarshallTextMessage(response, ExceptionType.class);
-//            if (movementFault.getCode() == 409) {
-//                throw new MovementDuplicateException(movementFault.getFault());
-//            }
-//            throw new MovementFaultException(response.getText(), movementFault);
-//        } catch (ModelMarshallException e) {
-//            // All is well
-//        }
+        try {
+            ExceptionType movementFault = JAXBMarshaller.unmarshallTextMessage(response, ExceptionType.class);
+            if (movementFault.getCode() == 409) {
+                throw new MovementModelException(movementFault.getFault(), ErrorCode.MOVEMENT_DUPLICATE_ERROR);
+            }
+            throw new MovementModelException(response.getText(), movementFault, ErrorCode.MOVEMENT_FAULT_ERROR);
+        } catch (MovementModelException e) {
+            if(e.getCode().equals(ErrorCode.MODEL_MARSHALL_ERROR)) {
+                // All is well
+            } else {
+                // TODO: Error; unmarshalling 'ExceptionType.class' went through.
+            }
+        }
     }
  
     public static String mapTogetMovementListByQueryResponse(List<MovementType> movementList) throws MovementModelException {

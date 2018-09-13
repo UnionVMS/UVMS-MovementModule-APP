@@ -46,8 +46,8 @@ public class MovementModelException extends Exception {
         this.code = code;
     }
 
-    public MovementModelException(String message, Throwable cause, ErrorCode code, ExceptionType fault) {
-        super(message, cause);
+    public MovementModelException(String message, ExceptionType fault, ErrorCode code) {
+        super(message);
         this.code = code;
         this.fault = fault;
     }

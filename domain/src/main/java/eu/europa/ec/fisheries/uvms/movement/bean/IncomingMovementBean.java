@@ -47,16 +47,26 @@ public class IncomingMovementBean {
             String connectId = currentMovement.getMovementConnect().getValue();
             Date timeStamp = currentMovement.getTimestamp();
 
-            //is this supposed to be a reference to processed instead of Timestamp? Easy fix is just to default processed to false, if that is the case
-            //ToDo: Timestamp will be null in the database if not set actively to a boolean value. This means duplicate timestamp Movements will not be detected by the processMovement method
-            //ToDo: since the isDateAlreadyInserted method does not handle the null case (by e.g. setting a default value to false instead of null). Look at class MovementDaoBean and check if
-            //ToDo: a null check is needed there or not.
+            /* TODO:
+                Is this supposed to be a reference to processed instead of Timestamp?
+                Easy fix is just to default processed to false, if that is the case.
+
+                Timestamp will be null in the database if not set actively to a boolean value.
+                This means duplicate timestamp Movements will not be detected by the processMovement
+                method since the isDateAlreadyInserted method does not handle the null case
+                (by e.g. setting a default value to false instead of null). Look at class MovementDaoBean
+                and check if a null check is needed there or not.
+
+             */
             List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
             if (!duplicateMovements.isEmpty()) {    //if a duplicate date exists
-                if (!currentMovement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {  //if they have different movement types
-                    Date newDate = DateUtil.addSecondsToDate(timeStamp, 1);                             //add a second so that it is marginally different from the previous one and proceed
+                // If they have different movement types
+                if (!currentMovement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {
+                    // Add a second so that it is marginally different from the previous one and proceed
+                    Date newDate = DateUtil.addSecondsToDate(timeStamp, 1);
                     currentMovement.setTimestamp(newDate);
-                } else {                                                                                        //else it is a duplicate of another move and should be ignored
+                } else {
+                    // else it is a duplicate of another move and should be ignored
                     LOG.info("Got a duplicate movement. Marking it as such.{}", currentMovement.getId());
                     currentMovement.setProcessed(true);
                     currentMovement.setDuplicate(true);
@@ -66,38 +76,56 @@ public class IncomingMovementBean {
             }
             currentMovement.setDuplicate(false);
 
-            Movement previousMovement = dao.getLatestMovement(connectId, timeStamp);  //get the movement that is closest in time b4 this one. Is one of these things supposed to reference LatestMovement instead of movement?, or just get the "youngest" movement made?
+            // Get the movement that is closest in time b4 this one. Is one of these things supposed to
+            // reference LatestMovement instead of movement?, or just get the "youngest" movement made?
+            Movement previousMovement = dao.getLatestMovement(connectId, timeStamp);
             Movement firstMovement = null;
 
             if (previousMovement == null) {
-                firstMovement = dao.getFirstMovement(connectId);                        //get the absolute first movement that this ConnectID(asset?) reported, in case that one is younger then the current one
-            } else if (previousMovement.getId().equals(currentMovement.getId())) {      //if previous movement is somehow the same as this movement, how this is supposed to be possible I have no idea.........
+                // Get the absolute first movement that this ConnectID(asset?)
+                // reported, in case that one is younger then the current one
+                firstMovement = dao.getFirstMovement(connectId);
+                // If previous movement is somehow the same as this movement,
+                // how this is supposed to be possible I have no idea.
+            } else if (previousMovement.getId().equals(currentMovement.getId())) {
                 return;
             } else {
-                // Should only be true when a new position reports which is not the latest position. Should not occur often but may occur when the mobile terminal has buffered its positions or inserted a manual position.
-                if (previousMovement.getTimestamp().after(timeStamp)) {    //how is this possible since getLatestMovement returns a position that is as close as possible b4 timestamp? so how can it be after?
+                // Should only be true when a new position reports which is not the latest position.
+                // Should not occur often but may occur when the mobile terminal has buffered its
+                // positions or inserted a manual position.
+
+                // How is this possible since getLatestMovement returns a position that is
+                // as close as possible b4 timestamp? so how can it be after?
+                if (previousMovement.getTimestamp().after(timeStamp)) {
                     firstMovement = dao.getFirstMovement(connectId);
                     previousMovement = dao.getLatestMovement(connectId, timeStamp);
                 }
             }
             currentMovement.setAreatransitionList(populateTransitions(currentMovement, previousMovement));
 
-            LOG.debug("ADDING CURRENT MOVEMENT TO LATESTMOVEMENT FOR {}", connectId);
-            dao.upsertLatestMovement(currentMovement, currentMovement.getMovementConnect());   //updating the table latestMovement, why IDK
+            LOG.debug("Adding currentMovement to latestMovement for {}", connectId);
+            // Updating the table latestMovement, why IDK
+            dao.upsertLatestMovement(currentMovement, currentMovement.getMovementConnect());
 
-            if (firstMovement == null && previousMovement == null) {      //First move for this connectID (asset?)
-                LOG.debug("CREATING FIRST MOVEMENT FOR CONNECTID: " + connectId + " MOVEMENT ID: " + currentMovement.getId());   //You only log this? And should it not be processing rather then creating?
-            } else if (previousMovement != null && firstMovement == null) {          //Normal case ie current movement is the latest movement
-                if (!dao.hasMovementToOrFromSegment(previousMovement)) {              //there is no segment with previous movement as the To or From element
+            // First move for this connectID (asset?)
+            if (firstMovement == null && previousMovement == null) {
+                // You only log this? And should it not be processing rather then creating?
+                LOG.debug("Creating firstMovement for connectId: " + connectId + " Movement Id: " + currentMovement.getId());
+                // Normal case ie current movement is the latest movement
+            } else if (previousMovement != null && firstMovement == null) {
+                // There is no segment with previous movement as the To or From element
+                if (!dao.hasMovementToOrFromSegment(previousMovement)) {
                     segmentBean.createSegmentAndTrack(previousMovement, currentMovement);
-                } else {                                                              //or there is one
-                    LOG.debug("PREVIOUS MOVEMENT FOUND, ID: " + previousMovement.getId() + " [ SPLITTING or ADDING SEGMENT ]");
-                    segmentBean.splitSegment(previousMovement, currentMovement);            //create a new one or split an old one and create a new one
+                } else { // or there is one
+                    LOG.debug("PreviousMovement found, Id: " + previousMovement.getId() + " [ Splitting or Adding Segment ]");
+                    // Create a new one or split an old one and create a new one
+                    segmentBean.splitSegment(previousMovement, currentMovement);
                 }
 
-            } else if (previousMovement == null) {         //if the current movement is before the first movement
+                // If the current movement is before the first movement
+            } else if (previousMovement == null) {
                 Track track = firstMovement.getTrack();
-                if(track == null) {                                                 //no track = create one
+                if(track == null) { // no track = create one
                     segmentBean.createSegmentAndTrack(currentMovement, firstMovement);
                 } else {
                     Segment segment = segmentBean.createSegment(currentMovement, firstMovement);
@@ -107,7 +135,9 @@ public class IncomingMovementBean {
                     currentMovement.setTrack(track);
                     firstMovement.setTrack(track);
                 }
-            } else {                                                                //both first and previous exist, so current movement is in the middle of a track, according to the logic at line 80
+            } else {
+                // Both first and previous exist, so current movement is in the middle of a track,
+                // according to the logic at line 80
                 segmentBean.splitSegment(previousMovement, currentMovement);
             }
             currentMovement.setProcessed(true);
