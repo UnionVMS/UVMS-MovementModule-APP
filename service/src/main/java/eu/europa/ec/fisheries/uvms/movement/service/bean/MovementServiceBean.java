@@ -34,7 +34,6 @@ import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageExc
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
@@ -195,7 +194,7 @@ public class MovementServiceBean implements MovementService {
                 throw new MovementServiceRuntimeException("Error when getting list, response from JMS Queue is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
             return MovementDataSourceResponseMapper.createMovementListResponse(response);
-        } catch (MovementModelException | MovementDomainException ex) {
+        } catch (MovementDomainException ex) {
             LOG.error("[ Error when getting movement list by query ] {}", ex.getMessage());
             throw new MovementServiceException("Error when getting movement list by query", ex, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }

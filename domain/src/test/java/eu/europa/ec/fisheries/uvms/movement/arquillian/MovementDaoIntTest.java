@@ -575,7 +575,6 @@ public class MovementDaoIntTest extends TransactionalTests {
     public void persist() throws MovementDomainException {
 
         expectedException.expect(EJBTransactionRolledbackException.class);
-        expectedException.expectMessage("attempt to create create event with null entity");
         movementDao.persist(null);
     }
 

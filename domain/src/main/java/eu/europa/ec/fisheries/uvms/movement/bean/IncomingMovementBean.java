@@ -95,7 +95,7 @@ public class IncomingMovementBean {
                     segmentBean.splitSegment(previousMovement, currentMovement);            //create a new one or split an old one and create a new one
                 }
 
-            } else if (firstMovement != null && previousMovement == null) {         //if the current movement is before the first movement
+            } else if (previousMovement == null) {         //if the current movement is before the first movement
                 Track track = firstMovement.getTrack();
                 if(track == null) {                                                 //no track = create one
                     segmentBean.createSegmentAndTrack(currentMovement, firstMovement);
