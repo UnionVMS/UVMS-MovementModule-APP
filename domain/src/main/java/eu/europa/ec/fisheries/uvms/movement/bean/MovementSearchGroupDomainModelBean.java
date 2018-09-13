@@ -103,7 +103,7 @@ public class MovementSearchGroupDomainModelBean {
             MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(groupId.intValue());
             filterGroup = dao.deleteMovementFilterGroup(filterGroup);
             return MovementGroupMapper.toMovementSearchGroup(filterGroup);
-        } catch (MovementDomainException e) {
+        } catch (Exception e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage());
             throw new MovementDomainException("Could not delete movement search group.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
