@@ -56,6 +56,15 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @EJB
     private MovementDomainModelBean movementDomainModelBean;
 
+	@EJB
+	MovementBatchModelBean movementBatchModelBean;
+
+	@EJB
+	MovementDao movementDao;
+
+	@EJB
+	IncomingMovementBean incomingMovementBean;
+
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -193,46 +202,54 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
         movementDomainModelBean.removeTrackMismatches(null, null);
     }
-    
-    @EJB
-    MovementBatchModelBean movementBatchModelBean;
-    
-    @EJB
-    MovementDao movementDao;
-    
-    @EJB
-    IncomingMovementBean incomingMovementBean;
+
+    @Test
+	public void testGetMovementListByQuery_WillFailWithNullParameter() throws ParseException, MovementDomainException {
+
+    	expectedException.expect(EJBTransactionRolledbackException.class);
+    	expectedException.expectMessage("Movement list query is null");
+
+		movementDomainModelBean.getMovementListByQuery(null);
+	}
+
+	@Test
+	public void testGetMovementListByQuery_WillFailNoPaginationSet() throws ParseException, MovementDomainException {
+
+		expectedException.expect(EJBTransactionRolledbackException.class);
+		expectedException.expectMessage("Pagination in movementlist query is null");
+
+		MovementQuery input = new MovementQuery();
+		input.setExcludeFirstAndLastSegment(true);
+		movementDomainModelBean.getMovementListByQuery(input);
+	}
+
+	@Test
+	public void testGetMovementListByQuery_WillFailNoSearchCriteria() throws ParseException, MovementDomainException {
+
+		expectedException.expect(EJBTransactionRolledbackException.class);
+		expectedException.expectMessage("No search criterias in MovementList query");
+
+		MovementQuery input = new MovementQuery();
+		input.setExcludeFirstAndLastSegment(true);
+
+		ListPagination listPagination = new ListPagination();
+		listPagination.setListSize(new BigInteger("100"));
+		listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
+		input.setPagination(listPagination);
+
+		movementDomainModelBean.getMovementListByQuery(input);
+	}
     
     @Test
     public void testGetMovementListByQuery() throws ParseException, MovementDomainException {
-    	ListResponseDto output;
-    	try {
-    		output = movementDomainModelBean.getMovementListByQuery(null);
-    		fail("Null as input should result in an exception");
-		} catch (RuntimeException e) {
-			assertTrue(true);
-		}
+		ListResponseDto output;
+		MovementQuery input = new MovementQuery();
+		input.setExcludeFirstAndLastSegment(true);
 
-    	MovementQuery input = new MovementQuery();
-    	input.setExcludeFirstAndLastSegment(true);
-    	
-    	try {
-    		output = movementDomainModelBean.getMovementListByQuery(input);
-    		fail("pagination is not set");
-		} catch (RuntimeException e) {
-			assertTrue(true);
-		}
     	ListPagination listPagination = new ListPagination();
     	listPagination.setListSize(new BigInteger("100"));
     	listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
     	input.setPagination(listPagination);
-    	
-    	try {
-    		output = movementDomainModelBean.getMovementListByQuery(input);
-    		fail("No searchcriteria in input");
-		} catch (RuntimeException e) {
-			assertTrue(true);
-		}
     	
     	String connectID = UUID.randomUUID().toString();
     	String connectID2 = UUID.randomUUID().toString();
@@ -275,49 +292,86 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	output = movementDomainModelBean.getMovementListByQuery(input);
     	assertEquals(2, output.getMovementList().size(),1);
     	*/
-    	input.getMovementRangeSearchCriteria().add(new RangeCriteria());
-    	try {
-    		output = movementDomainModelBean.getMovementListByQuery(input);
-    		fail("crap as input");
-		} catch (EJBTransactionRolledbackException e) {
-			assertTrue(true);
-		}
     }
+
+    @Test
+    public void testGetMovementListByQuery_WillFailEmptyRangeSearchCriteria() throws MovementDomainException, ParseException {
+
+		expectedException.expect(EJBTransactionRolledbackException.class);
+
+		MovementQuery input = new MovementQuery();
+		input.setExcludeFirstAndLastSegment(true);
+
+		ListPagination listPagination = new ListPagination();
+		listPagination.setListSize(new BigInteger("100"));
+		listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
+		input.setPagination(listPagination);
+
+		String connectID = UUID.randomUUID().toString();
+		String connectID2 = UUID.randomUUID().toString();
+		createAndProcess10MovementsFromVarbergGrena(connectID);
+		createAndProcess10MovementsFromVarbergGrena(connectID2);
+
+		ListCriteria listCriteria = new ListCriteria();
+		listCriteria.setKey(SearchKey.CONNECT_ID);
+		listCriteria.setValue(connectID);
+		input.getMovementSearchCriteria().add(listCriteria);
+
+		input.getMovementRangeSearchCriteria().add(new RangeCriteria());
+
+		movementDomainModelBean.getMovementListByQuery(input);
+	}
+
+	@Test
+	public void testGetMinimalMovementListByQuery_WillFailWithNullAsQuery() throws MovementDomainException {
+		expectedException.expect(EJBTransactionRolledbackException.class);
+		expectedException.expectMessage("Movement list query is null");
+
+		movementDomainModelBean.getMinimalMovementListByQuery(null);
+	}
+
+	@Test
+	public void testGetMinimalMovementListByQuery_WillFailNoPaginationSet() throws MovementDomainException {
+
+    	expectedException.expect(EJBTransactionRolledbackException.class);
+		expectedException.expectMessage("Pagination in movementList query is null");
+
+		MovementQuery input = new MovementQuery();
+		input.setExcludeFirstAndLastSegment(true);
+
+		movementDomainModelBean.getMinimalMovementListByQuery(input);
+	}
+
+	@Test
+	public void testGetMinimalMovementListByQuery_WillFailNoSearchCriteriaSet() throws MovementDomainException {
+
+		expectedException.expect(EJBTransactionRolledbackException.class);
+
+		MovementQuery input = new MovementQuery();
+		input.setExcludeFirstAndLastSegment(true);
+
+		ListPagination listPagination = new ListPagination();
+		listPagination.setListSize(new BigInteger("100"));
+		listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
+		input.setPagination(listPagination);
+		input.getMovementRangeSearchCriteria().add(new RangeCriteria());
+
+		movementDomainModelBean.getMinimalMovementListByQuery(input);
+	}
     
     @Test
-    public void testGetMinimalMovementListByQuery() throws MovementModelException, MovementDomainException {
+    public void testGetMinimalMovementListByQuery() throws MovementDomainException {
     	ListResponseDto output;
-    	try {
-    		output = movementDomainModelBean.getMinimalMovementListByQuery(null);
-    		fail("Null as input should result in an exception");
-		} catch (RuntimeException e) {
-			assertTrue(true);
-		}
     	
     	MovementQuery input = new MovementQuery();
     	input.setExcludeFirstAndLastSegment(true);
-    	
-    	try {
-    		output = movementDomainModelBean.getMinimalMovementListByQuery(input);
-    		fail("pagination is not set");
-		} catch (RuntimeException e) {
-			assertTrue(true);
-		}
+
     	ListPagination listPagination = new ListPagination();
     	listPagination.setListSize(new BigInteger("100"));
     	listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
     	input.setPagination(listPagination);
 
 
-/*
-//TODO: Look over this.
-    	try {
-    		output = movementDomainModelBean.getMinimalMovementListByQuery(input);
-    		fail("No searchcriteria in input");
-		} catch (InputArgumentException e) {
-			assertTrue(true);
-		}
-*/
     	String connectID = UUID.randomUUID().toString();
     	String connectID2 = UUID.randomUUID().toString();
     	createAndProcess10MovementsFromVarbergGrena(connectID);
@@ -359,42 +413,41 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	output = movementDomainModelBean.getMovementListByQuery(input);
     	assertEquals(2, output.getMovementList().size(),1);
     	*/
-    	
-    	input.getMovementRangeSearchCriteria().add(new RangeCriteria());
-    	try {
-    		output = movementDomainModelBean.getMinimalMovementListByQuery(input);
-    		fail("crap as input");
-		} catch (RuntimeException e) {
-			assertTrue(true);
-		}
     }
+
+	@Test
+	public void testGetMovementMapByQuery_WillFailWIthNullAsQuery() throws MovementDomainException {
+
+    	expectedException.expect(EJBTransactionRolledbackException.class);
+    	expectedException.expectMessage("Movement list query is null");
+
+		movementDomainModelBean.getMovementMapByQuery(null);
+	}
+
+	@Test
+	public void testGetMovementMapByQuery_WillFailWIthPaginationNotSupported() throws MovementDomainException {
+
+		expectedException.expect(EJBTransactionRolledbackException.class);
+		expectedException.expectMessage("Pagination not supported in get movement map by query");
+
+		MovementQuery input = new MovementQuery();
+		input.setExcludeFirstAndLastSegment(true);
+
+		ListPagination listPagination = new ListPagination();
+		listPagination.setListSize(new BigInteger("100"));
+		listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
+		input.setPagination(listPagination);
+
+		movementDomainModelBean.getMovementMapByQuery(input);
+	}
     
     @Test
     public void testGetMovementMapByQuery() throws MovementDomainException {
+
     	List<MovementMapResponseType> output;
-    	try {
-    		output = movementDomainModelBean.getMovementMapByQuery(null);
-    		fail("Null as input should result in an exception");
-		} catch (RuntimeException e) {
-			assertTrue(true);
-		}
-    	
+
     	MovementQuery input = new MovementQuery();
     	input.setExcludeFirstAndLastSegment(true);
-    	
-    	ListPagination listPagination = new ListPagination();
-    	listPagination.setListSize(new BigInteger("100"));
-    	listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
-    	input.setPagination(listPagination);
-    	
-    	try {
-    		output = movementDomainModelBean.getMovementMapByQuery(input);
-    		fail("Pagination not supported on this one");
-		} catch (RuntimeException e) {
-			assertTrue(true);
-		}
-    	
-    	input.setPagination(null);
     	
     	String connectID = UUID.randomUUID().toString();
     	String connectID2 = UUID.randomUUID().toString();
@@ -439,15 +492,24 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	output = movementDomainModelBean.getMovementMapByQuery(input);
     	assertEquals(2, output.get(0).getMovements().size(),1);
     	*/
-    	
-    	input.getMovementRangeSearchCriteria().add(new RangeCriteria());
-    	try {
-    		output = movementDomainModelBean.getMovementMapByQuery(input);
-    		fail("crap as input");
-		} catch (RuntimeException e) {
-			assertTrue(true);
-		}
     }
+
+	@Test
+	public void testGetMinimalMovementMapByQuery_WillFailNoSearchCriteriaSet() throws MovementDomainException {
+
+		expectedException.expect(EJBTransactionRolledbackException.class);
+
+		MovementQuery input = new MovementQuery();
+		input.setExcludeFirstAndLastSegment(true);
+
+		ListPagination listPagination = new ListPagination();
+		listPagination.setListSize(new BigInteger("100"));
+		listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
+		input.setPagination(listPagination);
+		input.getMovementRangeSearchCriteria().add(new RangeCriteria());
+
+		movementDomainModelBean.getMovementMapByQuery(input);
+	}
     
     @Test
     public void testRemoveTrackMismatches() throws MovementDomainException {

@@ -113,7 +113,7 @@ public class MovementDomainModelBean {
         }
     }
 
-    public ListResponseDto getMinimalMovementListByQuery(MovementQuery query) throws MovementModelException, MovementDomainException {
+    public ListResponseDto getMinimalMovementListByQuery(MovementQuery query) throws MovementDomainException {
 
         LOG.debug("Get list of movement from query.");
 
