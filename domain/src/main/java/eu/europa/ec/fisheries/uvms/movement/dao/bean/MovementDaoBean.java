@@ -184,46 +184,20 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     public void upsertLatestMovement(Movement movement, MovementConnect movementConnect) {
-        // TODO db update in catchblock ?
-        // TODO no nullcheck on latestMovement ???
-        LatestMovement latestMovement = null;
-
-
-//        try {
-//            latestMovement = getLatestMovement(movementConnect.getValue());     //get the latest movement in the table LatestMovement
-//            if (latestMovement != null && latestMovement.getTimestamp().after(movement.getTimestamp())) { //if it is in the middle of things
-//                LOG.debug("CURRENT MOVEMENT BEFORE LATEST MOVEMENT. NO CHANGE.");
-//                return;
-//            }
-//        } catch (NoResultException e) {       //if there is no latestMovement connected to this connectID, create one. Should this really be in a catch statement?
-//            latestMovement = new LatestMovement();
-//            latestMovement.setMovementConnect(movementConnect);
-//            latestMovement.setMovement(movement);
-//            latestMovement.setTimestamp(movement.getTimestamp());
-//            em.persist(latestMovement);
-//            return;
-//        }
-
-
-            latestMovement = getLatestMovement(movementConnect.getValue());     //get the latest movement in the table LatestMovement
-            if (latestMovement == null || latestMovement.getTimestamp().after(movement.getTimestamp())) { //if it is in the middle of things
-
+        LatestMovement latestMovement = getLatestMovement(movementConnect.getValue());
+        if (latestMovement == null) {
             latestMovement = new LatestMovement();
             latestMovement.setMovementConnect(movementConnect);
             latestMovement.setMovement(movement);
             latestMovement.setTimestamp(movement.getTimestamp());
             em.persist(latestMovement);
-            return;
+        } else if (latestMovement.getTimestamp().before(movement.getTimestamp())) { 
+            latestMovement.setMovement(movement);
+            latestMovement.setTimestamp(movement.getTimestamp());
         }
-
-
-
-        latestMovement.setMovement(movement);
-        latestMovement.setTimestamp(movement.getTimestamp());
-        //dont you need a create or persist here?
     }
 
-    private LatestMovement getLatestMovement(String connectId) throws NoResultException {
+    private LatestMovement getLatestMovement(String connectId) {
         try {
             TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery("LatestMovement.findLatestByMovementConnect", LatestMovement.class);
             latestMovementQuery.setParameter("connectId", connectId);

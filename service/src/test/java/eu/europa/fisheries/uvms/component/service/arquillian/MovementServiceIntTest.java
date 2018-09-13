@@ -444,8 +444,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     private List<MovementBaseType> createBaseTypeList() {
         List<MovementBaseType> query = new ArrayList<>();
         String connectId = UUID.randomUUID().toString();
-        Integer n = rnd.nextInt(10);
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < 5; i++) {
             query.add(createMovementBaseType(i, connectId));
         }
         return query;
