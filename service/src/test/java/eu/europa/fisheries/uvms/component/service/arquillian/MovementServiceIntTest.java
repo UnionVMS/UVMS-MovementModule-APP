@@ -1,35 +1,46 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
-import eu.europa.ec.fisheries.schema.movement.search.v1.*;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.EJBTransactionRolledbackException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.jms.JMSException;
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-/**
- * Created by thofan on 2017-03-02.
- */
+import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
+import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 
 @RunWith(Arquillian.class)
 public class MovementServiceIntTest extends TransactionalTests {
@@ -37,23 +48,14 @@ public class MovementServiceIntTest extends TransactionalTests {
     private Random rnd = new Random();
     private static int NumberOfMovements = 3;
 
-    private final static String TEST_USER_NAME = "MovementServiceIntTestTestUser";
-
     @EJB
     MovementService movementService;
 
-    @Test
+    @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementListByAreaAndTimeInterval_EmptyCriteria() {
+    public void getMovementListByAreaAndTimeInterval_EmptyCriteria() throws MovementServiceException {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
-        try {
-            GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
-            Assert.assertTrue(list != null);
-        } catch (MovementServiceException e) {
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.fail();
-        }
+        movementService.getMovementListByAreaAndTimeInterval(criteria);
     }
 
     @Test
@@ -85,9 +87,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
     }
 
-    @Test
+    @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementListByAreaAndTimeInterval_NoArea_ButDateAdded_NoResult_But_RunsTheCode() {
+    public void getMovementListByAreaAndTimeIntervalTimeIntervalNoCode() throws MovementServiceException {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
 
         Date curDate = DateUtil.nowUTC();
@@ -96,22 +98,13 @@ public class MovementServiceIntTest extends TransactionalTests {
         SimpleDateFormat format = new SimpleDateFormat(fmt);
         String formattedDate = format.format(curDate);
 
-
-        // NO areaCode  shpuld make the dates NOT be used
         //criteria.setAreaCode("AREA0");
         // fromDate
         criteria.setFromDate(formattedDate);
         // toDate
         criteria.setToDate(formattedDate);
 
-        try {
-            GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
-            Assert.assertTrue(list != null);
-        } catch (MovementServiceException e) {
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.fail();
-        }
+        movementService.getMovementListByAreaAndTimeInterval(criteria);
     }
 
     @Test
@@ -158,7 +151,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             GetMovementListByQueryResponse getMovementListByQueryResponse = movementService.getList(query);
             //Assert.assertTrue(getMovementListByQueryResponse != null); //changes to the error handling a few functions down means that the above call will throw an exception
             Assert.fail("The above call should throw an exception since query is incomplete");
-        } catch (MovementServiceException e) {
+        } catch (EJBTransactionRolledbackException e) {
             //Assert.fail();
         	Assert.assertTrue(true);
         } catch (Exception e) {

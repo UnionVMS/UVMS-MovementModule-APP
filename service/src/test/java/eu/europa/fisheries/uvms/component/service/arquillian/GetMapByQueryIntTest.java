@@ -43,7 +43,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
 
     //ToDo: An arbitrary string value should not be allowed to be set for the ListCriteria field called 'value' by using a setter as the value *must* match only allowed enum values for the enum SearchKey.
     //ToDo: This enum is mapped by the SearchField enum toward the MovementTypeType enum. One solution could be to remove the setValue() method in the ListCriteria class.
-    @Test(expected = EJBException.class)
+    @Test(expected = MovementServiceException.class)
     @OperateOnDeployment("movementservice")
     public void getMovementMapByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() throws MovementServiceException {
 

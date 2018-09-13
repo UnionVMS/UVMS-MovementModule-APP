@@ -663,8 +663,12 @@ public class SearchFieldMapper {
         }
         List<SearchValue> searchFields = new ArrayList<>();
         for (ListCriteria criteria : listCriteria) {
-            SearchField field = mapCriteria(criteria.getKey());
-            searchFields.add(new SearchValue(field, criteria.getValue()));
+            try {
+                SearchField field = mapCriteria(criteria.getKey());
+                searchFields.add(new SearchValue(field, criteria.getValue()));
+            } catch (MovementDomainException e) {
+                LOG.debug("Error when mapping to search field.. continuing with other criterias. {}", e.getMessage());
+            }
         }
         return searchFields;
     }
