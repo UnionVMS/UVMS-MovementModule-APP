@@ -46,7 +46,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementConnect() throws MovementDomainException {
+    public void getMovementConnect() {
 
         // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
         String randomUUID = UUID.randomUUID().toString();
@@ -58,7 +58,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementConnect_ZEROISH_GUID() throws MovementDomainException {
+    public void getMovementConnect_ZEROISH_GUID() {
 
         String guid = "100000-0000-0000-0000-000000000000";
         // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
@@ -69,7 +69,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void getMovementConnect_NULL_GUID() throws MovementDomainException {
+    public void getMovementConnect_NULL_GUID() {
         assertNull(movementBatchModelBean.getMovementConnectByConnectId(null));
     }
 

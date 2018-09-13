@@ -23,7 +23,6 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 
@@ -120,7 +119,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetPositionCalculations () throws MovementDomainException, MissingMovementConnectException {
+	public void testGetPositionCalculations () throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();

@@ -12,11 +12,8 @@ import java.util.UUID;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
-import javax.transaction.SystemException;
 
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +31,6 @@ import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 @RunWith(Arquillian.class)
 public class MovementDaoBeanTest extends TransactionalTests {
@@ -55,7 +51,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	public ExpectedException thrown = ExpectedException.none();
 	
 	@Test
-	public void testGetMovementsByGUID() throws MovementDomainException, MissingMovementConnectException {
+	public void testGetMovementsByGUID() throws MovementDomainException {
 		Movement output = movementDaoBean.getMovementByGUID("");
 		assertNull(output);
 		
@@ -72,7 +68,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementByConnectIdList() throws MovementDomainException, MissingMovementConnectException {
+	public void testGetLatestMovementByConnectIdList() throws MovementDomainException {
 		String connectID = UUID.randomUUID().toString();
 		String connectID2 = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
@@ -114,7 +110,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementsByConnectID() throws MovementDomainException, MissingMovementConnectException {
+	public void testGetLatestMovementsByConnectID() throws MovementDomainException {
 		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis()));
@@ -152,7 +148,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 
 	@Test
-	public void testGetLatestMovementsByConnectID_willFail() throws MovementDomainException, MissingMovementConnectException {
+	public void testGetLatestMovementsByConnectID_willFail() throws MovementDomainException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
 

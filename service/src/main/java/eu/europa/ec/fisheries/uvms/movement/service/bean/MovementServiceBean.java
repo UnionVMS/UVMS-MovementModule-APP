@@ -108,7 +108,7 @@ public class MovementServiceBean implements MovementService {
                 }
             }
             return createdMovement;
-        } catch (MovementServiceException | MovementMessageException ex) {
+        } catch (MovementServiceException | MovementMessageException | MissingMovementConnectException ex) {
             throw new EJBException(ex);
         }
     }
@@ -131,8 +131,8 @@ public class MovementServiceBean implements MovementService {
             createMovementBatchResponse.getMovements().addAll(savedBatchMovements);
             return createMovementBatchResponse;
         } catch (MovementServiceException | AuditModelMarshallException | MovementMessageException ex) {
-//            throw new EJBException("createMovementBatch failed", ex);
-//        } catch (MissingMovementConnectException mmcex){
+            throw new EJBException("createMovementBatch failed", ex);
+        } catch (MissingMovementConnectException mmcex){
             LOG.warn("Didn't find movement connect for the just received movement so NOT going to save anything!");
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
             createMovementBatchResponse.setResponse(SimpleResponse.NOK);

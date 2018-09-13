@@ -6,7 +6,6 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.SegmentBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
@@ -42,7 +41,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createSegmentOnFirstMovement() throws MovementDomainException, MissingMovementConnectException {
+    public void createSegmentOnFirstMovement() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -85,7 +84,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementDomainException, MissingMovementConnectException {
+    public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -128,7 +127,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void splitSegment() throws MovementDomainException, MissingMovementConnectException {
+    public void splitSegment() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         // TODO nothing indicates that this splitFunction actually works
@@ -190,7 +189,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createNewTrack() throws MovementDomainException, MissingMovementConnectException {
+    public void createNewTrack() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -246,7 +245,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createNewTrack_onSegmentMovement() throws MovementDomainException, MissingMovementConnectException {
+    public void createNewTrack_onSegmentMovement() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -269,7 +268,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void upsertTrack() throws MovementDomainException, MissingMovementConnectException {
+    public void upsertTrack() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         Calendar cal = Calendar.getInstance();
@@ -312,7 +311,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void upsertTrack5() throws MovementDomainException, MissingMovementConnectException {
+    public void upsertTrack5() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         Calendar cal = Calendar.getInstance();
@@ -373,7 +372,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void updateTrack() throws MovementDomainException, MissingMovementConnectException {
+    public void updateTrack() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         Calendar cal = Calendar.getInstance();
@@ -411,7 +410,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void addMovementBeforeFirst() throws MovementDomainException, MissingMovementConnectException {
+    public void addMovementBeforeFirst() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         // TODO better evaluation of results

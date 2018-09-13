@@ -76,33 +76,52 @@ public class MovementBatchModelBean {
         return movementConnect;
     }
 
-    public MovementType createMovement(MovementType movement, String username) {
+    public MovementType createMovement(MovementType receivedMovementType, String username) throws MissingMovementConnectException {
         long start = System.currentTimeMillis();
         try {
+            MovementType createdMovementType;
             long before = System.currentTimeMillis();
-            final Movement currentMovement = MovementModelToEntityMapper.mapNewMovementEntity(movement, username);
-            MovementConnect moveConnect = getMovementConnectByConnectId(movement.getConnectId());
-            currentMovement.setMovementConnect(moveConnect);
-            LOG.debug("Adding movement connect time: {}", (System.currentTimeMillis() - before));
+            final Movement currentMovement = MovementModelToEntityMapper.mapNewMovementEntity(receivedMovementType, username);
+            MovementConnect moveConnect = getMovementConnectByConnectId(receivedMovementType.getConnectId());
+            if(moveConnect != null){
+                currentMovement.setMovementConnect(moveConnect);
+                LOG.debug("Adding movement connect time: {}", (System.currentTimeMillis() - before));
+                before = System.currentTimeMillis();
+                List<Movementarea> areas = getAreas(currentMovement, receivedMovementType);
+                currentMovement.setMovementareaList(areas);
+                LOG.debug("Adding areas time: {}", (System.currentTimeMillis() - before));
+                LOG.debug("CREATING MOVEMENT FOR CONNECTID: " + receivedMovementType.getConnectId() + " MOVEMENT ID: " + currentMovement.getId());
+                dao.create(currentMovement);
+                // TODO: Make sure that relation is correct
+                if(moveConnect.getMovementList() == null) {
+                    moveConnect.setMovementList(new ArrayList<>());
+                }
+                //moveConnect.getMovementList().add(currentMovement);
+                //dao.persist(moveConnect);
 
-            before = System.currentTimeMillis();
-            List<Movementarea> areas = getAreas(currentMovement, movement);
-            currentMovement.setMovementareaList(areas);
-            LOG.debug("Adding areas time: {}", (System.currentTimeMillis() - before));
-
-            LOG.debug("Creating Movement for ConnectId: " + movement.getConnectId() + " Movement Id: " + currentMovement.getId());
-            dao.create(currentMovement);
-            // TODO: Make sure that relation is correct
-            if(moveConnect.getMovementList() == null) {
-                moveConnect.setMovementList(new ArrayList<>());
+                long diff = System.currentTimeMillis() - start;
+                LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
+            } else {
+                throw new MissingMovementConnectException("Couldn't find movementConnect!");
             }
             moveConnect.getMovementList().add(currentMovement);
             dao.persist(moveConnect);
 
-            MovementType movementType = mapToMovementType(currentMovement);
+            //Initiate the processing of movements, This is copied almost straight from MovementProcessorBean
+            //TODO: Move this to MovementServiceBean when we start to refactor the mappings
+            try {
+
+                incomingMovementBean.processMovement(currentMovement);
+            } catch (Exception e) {
+                LOG.error("Error while processing movement", e);
+                throw new RuntimeException("Error while processing movement: " + e);
+
+            }
+
+            createdMovementType = mapToMovementType(currentMovement);
             long diff = System.currentTimeMillis() - start;
             LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
-            return movementType;
+            return createdMovementType;
         } catch (MovementDomainException e) {
             LOG.error("[ Error when creating movement. ] {}", e);
             throw new EJBException("Could not create movement.", e);
@@ -120,7 +139,7 @@ public class MovementBatchModelBean {
         return mappedMovement;
     }
 
-    private List<Movementarea> getAreas(Movement currentMovement, MovementType movementType) throws MovementDomainException {
+    private List<Movementarea> getAreas(Movement currentMovement, MovementType movementType) {
         LOG.debug("CREATING AND GETTING AREAS AND AREATYPES");
         List<Movementarea> areas = new ArrayList<>();
         long start = System.currentTimeMillis();
@@ -212,7 +231,7 @@ public class MovementBatchModelBean {
         return newArea;
     }
 
-    public AreaType getAreaType(MovementMetaDataAreaType type) throws MovementDomainException {
+    public AreaType getAreaType(MovementMetaDataAreaType type) {
         AreaType areaType = dao.getAreaTypeByCode(type.getAreaType());
         if (areaType == null) {
             AreaType newAreaType = MovementModelToEntityMapper.mapToAreaType(type);

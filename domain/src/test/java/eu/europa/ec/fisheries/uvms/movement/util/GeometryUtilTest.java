@@ -24,7 +24,6 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 
 @RunWith(Arquillian.class)
@@ -80,7 +79,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	}
 
 	@Test
-	public void testGetCoordinateSequenceFromMovements() throws MovementDomainException, MissingMovementConnectException {
+	public void testGetCoordinateSequenceFromMovements() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		Date dateStartMovement = Calendar.getInstance().getTime();
@@ -106,7 +105,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLineStringFromMovments() throws MovementDomainException, MissingMovementConnectException {
+	public void testGetLineStringFromMovments() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		

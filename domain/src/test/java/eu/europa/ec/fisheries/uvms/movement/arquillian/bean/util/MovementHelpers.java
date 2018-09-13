@@ -12,6 +12,7 @@ import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 
 import javax.persistence.EntityManager;
@@ -39,31 +40,39 @@ public class MovementHelpers {
 
     /* positiontime is imortant */
     public Movement createMovement(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType,
-                                   String connectId, String userName, Date positionTime) throws MovementDomainException, MissingMovementConnectException {
+                                   String connectId, String userName, Date positionTime) throws MovementDomainException {
 
-        MovementType movementType = MockData.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, 0);
-        movementType.setPositionTime(positionTime);
-        movementType = movementBatchModelBean.createMovement(movementType, userName);
-        em.flush();
-        assertNotNull(movementType.getConnectId());
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
-        assertNotNull(movementList);
-        return movementList.get(movementList.size() - 1);
+        try {
+            MovementType movementType = MockData.createMovementType(longitude, latitude, altitude, segmentCategoryType, connectId, 0);
+            movementType.setPositionTime(positionTime);
+            movementType = movementBatchModelBean.createMovement(movementType, userName);
+            em.flush();
+            assertNotNull(movementType.getConnectId());
+            MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+            List<Movement> movementList = movementConnect.getMovementList();
+            assertNotNull(movementList);
+            return movementList.get(movementList.size() - 1);
+        } catch (MissingMovementConnectException e) {
+            throw new MovementDomainException("Movement Connect missing", e, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
+        }
     }
 
     private Movement createMovement(LatLong latlong,  double altitude, SegmentCategoryType segmentCategoryType, String connectId,
-                                    String userName, Date positionTime) throws MovementDomainException, MissingMovementConnectException {
+                                    String userName, Date positionTime) throws MovementDomainException {
 
-        MovementType movementType = MockData.createMovementType(latlong,  segmentCategoryType, connectId, altitude);
-        movementType.setPositionTime(positionTime);
-        movementType = movementBatchModelBean.createMovement(movementType, userName);
-        em.flush();
-        assertNotNull(movementType.getConnectId());
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
-        List<Movement> movementList = movementConnect.getMovementList();
-        assertNotNull(movementList);
-        return movementList.get(movementList.size() - 1);
+        try {
+            MovementType movementType = MockData.createMovementType(latlong,  segmentCategoryType, connectId, altitude);
+            movementType.setPositionTime(positionTime);
+            movementType = movementBatchModelBean.createMovement(movementType, userName);
+            em.flush();
+            assertNotNull(movementType.getConnectId());
+            MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+            List<Movement> movementList = movementConnect.getMovementList();
+            assertNotNull(movementList);
+            return movementList.get(movementList.size() - 1);
+        } catch (MissingMovementConnectException e) {
+            throw new MovementDomainException("Movement Connect missing", e, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
+        }
     }
 
     // create l coordinates for well known routes. Collections.shuffle(route);
@@ -79,17 +88,17 @@ public class MovementHelpers {
      *
      * @throws MovementDomainException
      */
-    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, String connectId) throws MovementDomainException, MissingMovementConnectException {
+    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, String connectId) throws MovementDomainException {
         List<LatLong> positions = createRuttVarbergGrena(numberPositions);
         return getMovements(order, connectId, positions);
     }
 
-    public List<Movement> createFishingTourVarberg(int order,  String connectId) throws MovementDomainException, MissingMovementConnectException {
+    public List<Movement> createFishingTourVarberg(int order,  String connectId) throws MovementDomainException {
         List<LatLong> positions = createRuttSmallFishingTourFromVarberg();
         return getMovements(order, connectId, positions);
     }
 
-    private List<Movement> getMovements(int order, String connectId, List<LatLong> positions) throws MovementDomainException, MissingMovementConnectException {
+    private List<Movement> getMovements(int order, String connectId, List<LatLong> positions) throws MovementDomainException {
         List<Movement> createdRoute = new ArrayList<>();
         String userName = "TEST";
 
