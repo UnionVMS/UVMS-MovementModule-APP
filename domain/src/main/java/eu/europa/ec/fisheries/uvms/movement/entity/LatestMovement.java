@@ -33,14 +33,18 @@ import java.time.Instant;
 @Table(name = "latestmovement")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "LatestMovement.findLatestByMovementConnect", query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value = :connectId"),
-    @NamedQuery(name = "LatestMovement.findLatestByMovementConnectList", query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value in (:connectId)"),
-    @NamedQuery(name = "LatestMovement.findLatest", query = "SELECT m FROM LatestMovement m ORDER BY m.timestamp")
+    @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value = :connectId"),
+    @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value in (:connectId)"),
+    @NamedQuery(name = LatestMovement.FIND_LATEST, query = "SELECT m FROM LatestMovement m ORDER BY m.timestamp")
 
 })
 @DynamicUpdate
 @DynamicInsert
 public class LatestMovement implements Serializable, Comparable<LatestMovement> {
+    
+    public static final String FIND_LATEST_BY_MOVEMENT_CONNECT = "LatestMovement.findLatestByMovementConnect";
+    public static final String FIND_LATEST_BY_MOVEMENT_CONNECT_LIST = "LatestMovement.findLatestByMovementConnectList";
+    public static final String FIND_LATEST = "LatestMovement.findLatest";
 
     private static final long serialVersionUID = 1L;
     

@@ -10,18 +10,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 
-import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementSearchGroupDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
-import java.util.List;
 
 @Stateless
 public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGroupDao {
@@ -43,7 +41,7 @@ public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGro
     @Override
     public List<MovementFilterGroup> getMovementFilterGroupsByUser(String user) {
         LOG.debug("Get movement groups by user.");
-        TypedQuery<MovementFilterGroup> query = em.createNamedQuery(UvmsConstants.GROUP_VESSEL_BY_USER, MovementFilterGroup.class);
+        TypedQuery<MovementFilterGroup> query = em.createNamedQuery(MovementFilterGroup.GROUP_VESSEL_BY_USER, MovementFilterGroup.class);
         query.setParameter("user", user);
         return query.getResultList();
     }

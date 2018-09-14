@@ -11,22 +11,33 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.area;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 
 /**
  **/
@@ -34,14 +45,20 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "area")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = UvmsConstants.AREA_FIND_ALL, query = "SELECT a FROM Area a"),
-    @NamedQuery(name = "Area.findByRemoteId", query = "SELECT a FROM Area a where a.remoteId =:remoteId"),
-    @NamedQuery(name = "Area.findByCode", query = "SELECT a FROM Area a where a.areaCode=:code"),
-    @NamedQuery(name = "Area.findByRemoteIdAndCode", query = "SELECT a FROM Area a where a.remoteId =:remoteId AND a.areaCode =:code")
+    @NamedQuery(name = Area.FIND_ALL, query = "SELECT a FROM Area a"),
+    @NamedQuery(name = Area.FIND_BY_REMOTE_ID, query = "SELECT a FROM Area a where a.remoteId =:remoteId"),
+    @NamedQuery(name = Area.FIND_BY_CODE, query = "SELECT a FROM Area a where a.areaCode=:code"),
+    @NamedQuery(name = Area.FIND_BY_REMOTE_ID_AND_CODE, query = "SELECT a FROM Area a where a.remoteId =:remoteId AND a.areaCode =:code")
 })
 @DynamicUpdate
 @DynamicInsert
 public class Area implements Serializable {
+    
+    public static final String FIND_ALL = "Area.findAll";
+    public static final String FIND_BY_REMOTE_ID = "Area.findByRemoteId";
+    public static final String FIND_BY_CODE = "Area.findByCode";
+    public static final String FIND_BY_REMOTE_ID_AND_CODE = "Area.findByRemoteIdAndCode";
+    
     @OneToMany(mappedBy = "areatranAreaId", fetch = FetchType.LAZY)
     private List<Areatransition> areatransitionList;
 

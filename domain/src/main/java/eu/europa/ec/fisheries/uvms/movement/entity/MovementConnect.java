@@ -14,7 +14,6 @@ package eu.europa.ec.fisheries.uvms.movement.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import org.hibernate.annotations.DynamicInsert;
@@ -46,13 +45,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "movementconnect")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = UvmsConstants.MOVEMENT_CONNECT_BY_CONNECT_ID, query = "SELECT m FROM MovementConnect m WHERE m.value = :value"),
-    @NamedQuery(name = UvmsConstants.MOVEMENT_CONNECT_GET_ALL, query = "SELECT m FROM MovementConnect m")
+    @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_BY_CONNECT_ID, query = "SELECT m FROM MovementConnect m WHERE m.value = :value"),
+    @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_GET_ALL, query = "SELECT m FROM MovementConnect m")
 })
 @DynamicUpdate
 @DynamicInsert
 public class MovementConnect implements Serializable, Comparable<MovementConnect> {
 
+    public static final String MOVEMENT_CONNECT_BY_CONNECT_ID = "MovementConnect.findByValue";
+    public static final String MOVEMENT_CONNECT_GET_ALL = "MovementConnect.findAll";
+    
     private static final long serialVersionUID = 1L;
 
     @Id

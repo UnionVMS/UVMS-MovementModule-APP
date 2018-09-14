@@ -10,12 +10,27 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.Query;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.io.ParseException;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
-import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.*;
+import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
+import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
@@ -48,7 +63,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
 
     public Movement getMovementByGUID(String guid) {
         try {
-            TypedQuery<Movement> query = em.createNamedQuery("Movement.findByGUID", Movement.class);
+            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_BY_GUID, Movement.class);
             query.setParameter("guid", guid);
             return query.getSingleResult();
         } catch (NoResultException e) {
@@ -64,7 +79,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
     public List<Movement> getLatestMovementsByConnectIdList(List<String> connectIds) {
         List<Movement> resultList = new ArrayList<>();
         TypedQuery<LatestMovement> latestMovementQuery =
-                em.createNamedQuery("LatestMovement.findLatestByMovementConnectList", LatestMovement.class);
+                em.createNamedQuery(LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, LatestMovement.class);
         latestMovementQuery.setParameter("connectId", connectIds);
         for (LatestMovement lm : latestMovementQuery.getResultList()) {
             resultList.add(lm.getMovement());
@@ -86,7 +101,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             else
                 return null;
         } else {
-            TypedQuery<Movement> query = em.createNamedQuery("Movement.findLatestByMovementConnect", Movement.class);
+            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, Movement.class);
             query.setParameter("connectId", connectId);
             query.setMaxResults(amount);
             return query.getResultList();
@@ -98,7 +113,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
     public AreaType getAreaTypeByCode(String code) {
         try {
             long start = System.currentTimeMillis();
-            TypedQuery<AreaType> query = em.createNamedQuery("AreaType.findByCode", AreaType.class);
+            TypedQuery<AreaType> query = em.createNamedQuery(AreaType.FIND_BY_CODE, AreaType.class);
             query.setParameter("code", code);
             AreaType singleResult = query.getSingleResult();
             long diff = System.currentTimeMillis() - start;
@@ -109,7 +124,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             return null;
         } catch (NonUniqueResultException e) {
             LOG.error("Duplicate area type in DB for code: {}. Cleaning up duplicates.", code);
-            TypedQuery<AreaType> query = em.createNamedQuery("AreaType.findByCode", AreaType.class);
+            TypedQuery<AreaType> query = em.createNamedQuery(AreaType.FIND_BY_CODE, AreaType.class);
             query.setParameter("code", code);
             List<AreaType> areaList = query.getResultList();
             // TODO  a get method that changes state in DB ???
@@ -128,7 +143,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             TypedQuery<Area> query;
             if (code != null && !code.isEmpty()) {
                 LOG.debug("Code present in GetAreaQuery: CODE: {}", code);
-                query = em.createNamedQuery("Area.findByCode", Area.class);
+                query = em.createNamedQuery(Area.FIND_BY_CODE, Area.class);
                 query.setParameter("code", code);
             } else {
                 throw new MovementDomainRuntimeException("No valid input parameters to method getAreaByRemoteIdAndCode",
@@ -148,7 +163,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
         long start = System.currentTimeMillis();
         //ToDo: The named query findExistingDate in the Movement class assumes that the duplicate field is false.
         //ToDo: Need to check if a null check is needed here since e.g. postgres defaults to null if no value is actively set.
-        TypedQuery<Movement> query = em.createNamedQuery("Movement.findExistingDate", Movement.class);
+        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_EXISTING_DATE, Movement.class);
         query.setParameter("date", date);
         query.setParameter("id", id);
         List<Movement> resultList = query.getResultList();
@@ -164,7 +179,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
 
     @Override
     public List<LatestMovement> getLatestMovements(Integer numberOfMovements) {
-        TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery("LatestMovement.findLatest", LatestMovement.class);
+        TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery(LatestMovement.FIND_LATEST, LatestMovement.class);
         latestMovementQuery.setMaxResults(numberOfMovements);
         List<LatestMovement> rs = latestMovementQuery.getResultList();
         return rs;
@@ -174,7 +189,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
     public Movement getLatestMovement(String id, Instant date) {
         Movement singleResult = null;
         try {
-            TypedQuery<Movement> query = em.createNamedQuery("Movement.findLatest", Movement.class);
+            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST, Movement.class);
             query.setParameter("id", id);
             query.setParameter("date", date);
             singleResult = query.getSingleResult();
@@ -200,7 +215,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
 
     private LatestMovement getLatestMovement(String connectId) {
         try {
-            TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery("LatestMovement.findLatestByMovementConnect", LatestMovement.class);
+            TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery(LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, LatestMovement.class);
             latestMovementQuery.setParameter("connectId", connectId);
             return latestMovementQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -210,7 +225,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
 
     public Segment findByFromMovement(Movement movement) {
         try {
-            TypedQuery<Segment> query = em.createNamedQuery("Segment.findByFromMovement", Segment.class);
+            TypedQuery<Segment> query = em.createNamedQuery(Segment.FIND_FIND_BY_FROM_MOVEMENT, Segment.class);
             query.setParameter("movement", movement);
             return query.getSingleResult();
         } catch (NoResultException e) {
@@ -221,7 +236,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
 
     public Boolean hasMovementToOrFromSegment(Movement movement) throws MovementDomainException {
         try {
-            TypedQuery<Segment> query = em.createNamedQuery("Segment.findByMovement", Segment.class);
+            TypedQuery<Segment> query = em.createNamedQuery(Segment.FIND_BY_MOVEMENT, Segment.class);
             query.setParameter("movement", movement);
             List<Segment> resultList = query.getResultList();
             if(resultList.isEmpty()) {
@@ -238,7 +253,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
 
     public Segment findByToMovement(Movement movement) {
         try {
-            TypedQuery<Segment> query = em.createNamedQuery("Segment.findByToMovement", Segment.class);
+            TypedQuery<Segment> query = em.createNamedQuery(Segment.FIND_BY_TO_MOVEMENT, Segment.class);
             query.setParameter("movement", movement);
             //query.setHint("javax.persistence.cache.storeMode", "REFRESH");
             return query.getSingleResult();
@@ -251,7 +266,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
     @Override
     public Movement getFirstMovement(String movementConnectValue) {
         try {
-            TypedQuery<Movement> query = em.createNamedQuery("Movement.findFirst", Movement.class);
+            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_FIRST, Movement.class);
             query.setParameter("id", movementConnectValue);
             return query.getSingleResult();
         } catch (NoResultException e) {
@@ -286,7 +301,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
 
     @Override
     public List<Movement> getListAll() {
-        Query query = em.createNamedQuery(UvmsConstants.MOVEMENT_FIND_ALL);
+        Query query = em.createNamedQuery(Movement.FIND_ALL);
         return query.getResultList();
     }
 
@@ -361,7 +376,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             // long start = System.currentTimeMillis();
             if (searchKeyValues == null || searchKeyValues.isEmpty()) {
                 LOG.debug("searchValues empty or null, getting all vessels and the latest reports for them");
-                TypedQuery<MovementConnect> connectQuery = em.createNamedQuery(UvmsConstants.MOVEMENT_CONNECT_GET_ALL, MovementConnect.class);
+                TypedQuery<MovementConnect> connectQuery = em.createNamedQuery(MovementConnect.MOVEMENT_CONNECT_GET_ALL, MovementConnect.class);
                 List<MovementConnect> movementConnects = connectQuery.getResultList();
 
                 for (MovementConnect movementConnect : movementConnects) {
@@ -385,7 +400,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
     @Override
     public MovementConnect getMovementConnectByConnectId(String id) {
         try {
-            TypedQuery<MovementConnect> query = em.createNamedQuery(UvmsConstants.MOVEMENT_CONNECT_BY_CONNECT_ID, MovementConnect.class);
+            TypedQuery<MovementConnect> query = em.createNamedQuery(MovementConnect.MOVEMENT_CONNECT_BY_CONNECT_ID, MovementConnect.class);
             query.setParameter("value", id);
             return query.getSingleResult();
         } catch (NoResultException ex) {
@@ -424,7 +439,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
         List<Movement> resultList = new ArrayList<>();
         Area areaResult = getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
         if(areaResult!=null) {
-            TypedQuery<Movement> query = em.createNamedQuery(UvmsConstants.MOVEMENT_LIST_BY_AREA_TIME_INTERVAL, Movement.class);
+            TypedQuery<Movement> query = em.createNamedQuery(Movement.LIST_BY_AREA_TIME_INTERVAL, Movement.class);
             query.setParameter("fromDate", DateUtil.convertDateTimeInUTC(criteria.getFromDate()));
             query.setParameter("toDate", DateUtil.convertDateTimeInUTC(criteria.getToDate()));
             query.setParameter("areaId", areaResult.getAreaId());
@@ -434,13 +449,13 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     public List<Movement> getUnprocessedMovements() {
-        TypedQuery<Movement> latestMovementQuery = em.createNamedQuery("Movement.findUnprocessed", Movement.class);
+        TypedQuery<Movement> latestMovementQuery = em.createNamedQuery(Movement.FIND_UNPROCESSED, Movement.class);
         latestMovementQuery.setMaxResults(100);
         return latestMovementQuery.getResultList();
     }
 
     public List<Long> getUnprocessedMovementIds() {
-        TypedQuery<Long> latestMovementQuery = em.createNamedQuery("Movement.findUnprocessedId", Long.class);
+        TypedQuery<Long> latestMovementQuery = em.createNamedQuery(Movement.FIND_UNPROCESSED_ID, Long.class);
         latestMovementQuery.setMaxResults(100);
         return latestMovementQuery.getResultList();
     }

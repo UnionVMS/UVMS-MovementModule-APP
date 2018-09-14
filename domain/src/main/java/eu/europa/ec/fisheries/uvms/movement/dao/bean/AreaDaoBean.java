@@ -11,17 +11,13 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 
 import java.util.List;
-
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.TypedQuery;
-
-import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
-import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 
 @LocalBean
@@ -32,7 +28,7 @@ public class AreaDaoBean extends Dao implements AreaDao {
 
     @Override
     public List<Area> getAreas() {
-        TypedQuery<Area> namedQuery = em.createNamedQuery(UvmsConstants.AREA_FIND_ALL, Area.class);
+        TypedQuery<Area> namedQuery = em.createNamedQuery(Area.FIND_ALL, Area.class);
         return namedQuery.getResultList();
     }
 
