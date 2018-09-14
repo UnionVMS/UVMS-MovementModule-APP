@@ -8,7 +8,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +17,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class IncomingMovementBean {
         if (currentMovement != null && !currentMovement.isProcessed()) {
             LOG.debug("Processing movement {}", currentMovement.getId());
             String connectId = currentMovement.getMovementConnect().getValue();
-            Date timeStamp = currentMovement.getTimestamp();
+            Instant timeStamp = currentMovement.getTimestamp();
 
             /* TODO:
                 Is this supposed to be a reference to processed instead of Timestamp?
@@ -63,8 +63,7 @@ public class IncomingMovementBean {
                 // If they have different movement types
                 if (!currentMovement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {
                     // Add a second so that it is marginally different from the previous one and proceed
-                    Date newDate = DateUtil.addSecondsToDate(timeStamp, 1);
-                    currentMovement.setTimestamp(newDate);
+ 					Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);                    currentMovement.setTimestamp(newDate);
                 } else {
                     // else it is a duplicate of another move and should be ignored
                     LOG.info("Got a duplicate movement. Marking it as such.{}", currentMovement.getId());
@@ -96,7 +95,7 @@ public class IncomingMovementBean {
 
                 // How is this possible since getLatestMovement returns a position that is
                 // as close as possible b4 timestamp? so how can it be after?
-                if (previousMovement.getTimestamp().after(timeStamp)) {
+                if (previousMovement.getTimestamp().isAfter(timeStamp)) {
                     firstMovement = dao.getFirstMovement(connectId);
                     previousMovement = dao.getLatestMovement(connectId, timeStamp);
                 }

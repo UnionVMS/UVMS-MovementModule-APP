@@ -18,6 +18,9 @@ import eu.europa.ec.fisheries.uvms.movement.entity.*;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
+
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +35,7 @@ public class MovementEntityToModelMapper {
         model.setReportedSpeed(movement.getSpeed());
         model.setReportedCourse(movement.getHeading());
         model.setGuid(movement.getGuid());
-        model.setPositionTime(movement.getTimestamp());
+        model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
         model.setMovementType(movement.getMovementType());
@@ -54,7 +57,7 @@ public class MovementEntityToModelMapper {
         model.setGuid(movement.getGuid());
         //TODO Fix this to double or int
         model.setReportedCourse(movement.getHeading());
-        model.setPositionTime(movement.getTimestamp());
+        model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
         model.setMovementType(movement.getMovementType());
@@ -84,7 +87,7 @@ public class MovementEntityToModelMapper {
         model.setReportedSpeed(movement.getSpeed());
         model.setGuid(movement.getGuid());
         model.setReportedCourse(movement.getHeading());
-        model.setPositionTime(movement.getTimestamp());
+        model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setActivity(mapToActivityType(movement.getActivity()));
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());

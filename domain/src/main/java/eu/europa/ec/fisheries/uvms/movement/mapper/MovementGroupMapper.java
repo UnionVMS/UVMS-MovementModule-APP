@@ -24,8 +24,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilter;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
-
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 public class MovementGroupMapper {
 
     public static MovementFilterGroup toGroupEntity(MovementFilterGroup filterGroup, MovementSearchGroup searchGroup, String username) {

@@ -22,7 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +32,12 @@ import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+
 import java.util.List;
 
 @LocalBean
@@ -143,7 +144,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
-    public List<Movement> isDateAlreadyInserted(String id, Date date) {
+    public List<Movement> isDateAlreadyInserted(String id, Instant date) {
         long start = System.currentTimeMillis();
         //ToDo: The named query findExistingDate in the Movement class assumes that the duplicate field is false.
         //ToDo: Need to check if a null check is needed here since e.g. postgres defaults to null if no value is actively set.
@@ -170,12 +171,12 @@ public class MovementDaoBean extends Dao implements MovementDao {
     }
 
     @Override
-    public Movement getLatestMovement(String id, Date date) {
+    public Movement getLatestMovement(String id, Instant date) {
         Movement singleResult = null;
         try {
             TypedQuery<Movement> query = em.createNamedQuery("Movement.findLatest", Movement.class);
             query.setParameter("id", id);
-            query.setParameter("date", date, TemporalType.TIMESTAMP);
+            query.setParameter("date", date);
             singleResult = query.getSingleResult();
         }catch (NoResultException e){
             LOG.debug("No previous movement found for date: " + date.toString() + " and connectedId: " + id );
@@ -191,7 +192,7 @@ public class MovementDaoBean extends Dao implements MovementDao {
             latestMovement.setMovement(movement);
             latestMovement.setTimestamp(movement.getTimestamp());
             em.persist(latestMovement);
-        } else if (latestMovement.getTimestamp().before(movement.getTimestamp())) { 
+        } else if (latestMovement.getTimestamp().isBefore(movement.getTimestamp())) {
             latestMovement.setMovement(movement);
             latestMovement.setTimestamp(movement.getTimestamp());
         }

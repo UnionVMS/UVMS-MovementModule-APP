@@ -4,7 +4,7 @@ import eu.europa.ec.fisheries.uvms.movement.dao.TempMovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -16,8 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
-import java.util.Date;
-import java.util.List;
+import java.time.Instant;import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -163,7 +162,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
 
     private TempMovement createTempMovementEntityHelper(double longitude, double latitude) {
 
-        Date now = DateUtil.nowUTC();
+        Instant now = DateUtil.nowUTC();
 
         TempMovement tempMovement = new TempMovement();
 

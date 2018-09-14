@@ -3,9 +3,12 @@ package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import java.util.Date;
+
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+
+import eu.europa.ec.fisheries.uvms.movement.message.BuildMovementServiceTestDeployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
@@ -28,7 +31,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 
 @RunWith(Arquillian.class)
-public class MovementMessageConsumerBeanTest {
+public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDeployment {
 
     private JMSHelper jmsHelper = new JMSHelper();
     
@@ -244,7 +247,7 @@ public class MovementMessageConsumerBeanTest {
     @Test
     @RunAsClient
     public void getMovementListByDateFromRange() throws Exception {
-        Date timestampBefore = new Date();
+        Instant timestampBefore = Instant.now();
         
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
@@ -253,7 +256,7 @@ public class MovementMessageConsumerBeanTest {
         // This is needed as long as the background processing job exists
         Thread.sleep(5000);
         
-        Date timestampAfter = new Date();
+        Instant timestampAfter = Instant.now();
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         RangeCriteria criteria = new RangeCriteria();
@@ -278,7 +281,7 @@ public class MovementMessageConsumerBeanTest {
     @Test
     @RunAsClient
     public void getMovementListByDateTwoMovements() throws Exception {
-        Date timestampBefore = new Date();
+        Instant timestampBefore = Instant.now();
         
         MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
         jmsHelper.createMovement(movementBaseType1, "test user");
@@ -289,7 +292,7 @@ public class MovementMessageConsumerBeanTest {
         // This is needed as long as the background processing job exists
         Thread.sleep(5000);
         
-        Date timestampAfter = new Date();
+        Instant timestampAfter = Instant.now();
         
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         RangeCriteria criteria = new RangeCriteria();

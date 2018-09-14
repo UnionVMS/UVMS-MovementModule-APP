@@ -9,7 +9,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -18,6 +18,9 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.transaction.UserTransaction;
+import java.time.Instant;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -77,7 +80,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void createMovement() throws MovementDomainException, MissingMovementConnectException {
 
-        Date now = DateUtil.nowUTC();
+        Instant now = DateUtil.nowUTC();
         double longitude = rnd.nextDouble();
         double latitude = rnd.nextDouble();
 
@@ -94,7 +97,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     public void enrichAreasSameArea() {
 
         // this test is migrated from the old testsuite
-        Date now = DateUtil.nowUTC();
+        Instant now = DateUtil.nowUTC();
         double longitude = rnd.nextDouble();
         double latitude = rnd.nextDouble();
 
@@ -114,7 +117,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     public void enrichAreasNotSameArea() {
 
         // this test is migrated from the old testsuite
-        Date now = DateUtil.nowUTC();
+        Instant now = DateUtil.nowUTC();
         double longitude = rnd.nextDouble();
         double latitude = rnd.nextDouble();
 
@@ -194,9 +197,9 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
         return areaType;
     }
 
-    private MovementType createMovementTypeHelper(Date timeStamp, double longitude, double latitude) {
+    private MovementType createMovementTypeHelper(Instant timeStamp, double longitude, double latitude) {
         MovementType movementType = new MovementType();
-        movementType.setPositionTime(timeStamp);
+        movementType.setPositionTime(Date.from(timeStamp));
         MovementPoint point = new MovementPoint();
         point.setLatitude(latitude);
         point.setLongitude(longitude);

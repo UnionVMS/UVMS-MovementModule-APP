@@ -5,8 +5,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,7 +58,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		
 		String connectId = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
-		Movement move = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectId, "TEST", new Date(System.currentTimeMillis()));
+		Movement move = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectId, "TEST", Instant.now());
 		move.setGuid();
 		incomingMovementBean.processMovement(move);
 		em.flush();
@@ -72,9 +73,9 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		String connectID = UUID.randomUUID().toString();
 		String connectID2 = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
-		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis()));
-		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis() + 100L));
-		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID2, "TEST", new Date(System.currentTimeMillis() + 200L));
+		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now());
+		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now().plusSeconds(1));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID2, "TEST", Instant.now().plusSeconds(2));
 		move1.setGuid();
 		incomingMovementBean.processMovement(move1);
 		move2.setGuid();
@@ -113,9 +114,9 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	public void testGetLatestMovementsByConnectID() throws MovementDomainException {
 		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
-		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis()));
-		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis() + 100L));
-		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID, "TEST42", new Date(System.currentTimeMillis() + 200L));
+		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now());
+		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now().plusSeconds(1));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID, "TEST42", Instant.now().plusSeconds(2));
 		move1.setGuid();
 		incomingMovementBean.processMovement(move1);
 		move2.setGuid();
@@ -154,9 +155,9 @@ public class MovementDaoBeanTest extends TransactionalTests {
 
 		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
-		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis()));
-		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", new Date(System.currentTimeMillis() + 100L));
-		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID, "TEST42", new Date(System.currentTimeMillis() + 200L));
+		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now());
+		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.ofEpochMilli(System.currentTimeMillis() + 100L));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID, "TEST42", Instant.ofEpochMilli(System.currentTimeMillis() + 200L));
 		move1.setGuid();
 		incomingMovementBean.processMovement(move1);
 		move2.setGuid();
@@ -239,7 +240,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	@Test
 	public void testIsDateAlreadyInserted() {
 		//only testing the no result part since the rest of teh function is tested elsewhere
-		List<Movement> output = movementDaoBean.isDateAlreadyInserted("ShouldNotExist", new Date(System.currentTimeMillis()));
+		List<Movement> output = movementDaoBean.isDateAlreadyInserted("ShouldNotExist", Instant.now());
 		assertTrue(output.isEmpty());
 	}
 
@@ -247,7 +248,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		AreaType areaType = new AreaType();
 		String input = "TestAreaType";
 		areaType.setName(input);
-		areaType.setUpdatedTime(new Date(System.currentTimeMillis()));
+		areaType.setUpdatedTime(Instant.now());
 		areaType.setUpdatedUser("TestUser");
 		return areaType;
 	}
@@ -257,7 +258,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		area.setAreaName("TestArea");
 		area.setAreaCode(areaType.getName());
 		area.setRemoteId("TestRemoteId");
-		area.setAreaUpdattim(new Date(System.currentTimeMillis()));
+		area.setAreaUpdattim(Instant.now());
 		area.setAreaUpuser("TestUser");
 		area.setAreaType(areaType);
 		return area;

@@ -35,9 +35,9 @@ public abstract class BuildMovementRestDeployment {
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
         
-        testWar.addAsLibraries(Maven.configureResolver().loadPomFromFile("pom.xml")
-                .resolve("eu.europa.ec.fisheries.uvms.movement:movement-service")
-                .withoutTransitivity().asFile());
+        /*testWar.addAsLibraries(Maven.configureResolver().loadPomFromFile("pom.xml")
+                //.resolve("eu.europa.ec.fisheries.uvms.movement:movement-service")
+                .withoutTransitivity().asFile());*/
 
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.rest");
 

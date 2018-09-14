@@ -11,12 +11,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.entity.temp;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 import javax.persistence.*;
@@ -89,9 +93,10 @@ public class TempMovement implements Serializable {
     @Column(name = "tmpmove_status")
     private String status;
 
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @Column(name = "tmpmove_timestamp")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    private Instant timestamp;
 
     //@Column(name = "tmpmove_archive")
     @Enumerated(EnumType.STRING)
@@ -113,11 +118,11 @@ public class TempMovement implements Serializable {
     @Column(name = "tmpmove_course")
     private Double course;
 
-    @Basic(optional = false)
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "tmpmove_updattim")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
+    private Instant updated;
 
     @Basic(optional = false)
     @NotNull
@@ -133,7 +138,7 @@ public class TempMovement implements Serializable {
         this.id = id;
     }
 
-    public TempMovement(Long id, Date updated, String updatedBy) {
+    public TempMovement(Long id, Instant updated, String updatedBy) {
         this.id = id;
         this.updated = updated;
         this.updatedBy = updatedBy;
@@ -203,11 +208,11 @@ public class TempMovement implements Serializable {
         this.status = status;
     }
 
-    public Date getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -243,11 +248,11 @@ public class TempMovement implements Serializable {
         this.course = course;
     }
 
-    public Date getUpdated() {
+    public Instant getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(Instant updated) {
         this.updated = updated;
     }
 

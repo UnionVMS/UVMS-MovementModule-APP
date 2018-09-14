@@ -12,6 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.dao;
 
 import com.vividsolutions.jts.io.ParseException;
+
+import java.time.Instant;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -20,7 +22,6 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeInter
 import eu.europa.ec.fisheries.uvms.movement.entity.*;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
-import java.util.Date;
 
 @Local
 public interface MovementDao {
@@ -153,7 +154,7 @@ public interface MovementDao {
 
     List<Long> getUnprocessedMovementIds();
 
-    Movement getLatestMovement(String id, Date date);
+    Movement getLatestMovement(String id, Instant date);
 
     Movement getMovementById(Long id);
 

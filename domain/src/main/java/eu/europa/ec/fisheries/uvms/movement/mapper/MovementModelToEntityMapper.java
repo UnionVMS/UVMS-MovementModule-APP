@@ -17,6 +17,7 @@ import com.vividsolutions.jts.geom.Point;
 
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,6 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
 
 public class MovementModelToEntityMapper {
 
@@ -78,7 +78,7 @@ public class MovementModelToEntityMapper {
             }
 
             if (movement.getPositionTime() != null) {
-                entity.setTimestamp(movement.getPositionTime());
+                entity.setTimestamp(movement.getPositionTime().toInstant());
             } else {
                 entity.setTimestamp(DateUtil.nowUTC());
             }

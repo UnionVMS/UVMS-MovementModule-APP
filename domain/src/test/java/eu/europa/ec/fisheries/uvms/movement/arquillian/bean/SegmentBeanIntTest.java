@@ -10,7 +10,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
@@ -19,8 +19,9 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import javax.persistence.TypedQuery;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,11 +47,10 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
-        cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+
+
+        Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date2 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
         Movement toMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", date2);
@@ -89,9 +89,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
+        Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();;
 
         Movement movement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
         segmentBean.createSegmentAndTrack(movement, movement);
@@ -131,13 +129,11 @@ public class SegmentBeanIntTest extends TransactionalTests {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         // TODO nothing indicates that this splitFunction actually works
-        Calendar cal = Calendar.getInstance();
-        cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
-        cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
-        cal.set(1925, 06, 06);
-        Date date3 = cal.getTime();
+        Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+
+        Instant date2 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+
+        Instant date3 = OffsetDateTime.of(1925, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
         String connectId = UUID.randomUUID().toString();
 
@@ -194,11 +190,9 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
-        cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
+        Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+
+        Instant date2 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();;
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0d, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
         Movement toMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "two", date2);
@@ -271,13 +265,9 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void upsertTrack() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
-        cal.set(1930, 06, 06);
-        Date date2 = cal.getTime();
-        cal.set(1935, 06, 06);
-        Date date3 = cal.getTime();
+        Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date2 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date3 = OffsetDateTime.of(1935, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
         String connectId = UUID.randomUUID().toString();
 
@@ -314,19 +304,12 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void upsertTrack5() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
-        cal.set(1925, 06, 06);
-        Date date2 = cal.getTime();
-        cal.set(1930, 06, 06);
-        Date date3 = cal.getTime();
-        cal.set(1935, 06, 06);
-        Date date4 = cal.getTime();
-        cal.set(1940, 06, 06);
-        Date date5 = cal.getTime();
-        cal.set(1945, 06, 06);
-        Date date6 = cal.getTime();
+        Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date2 = OffsetDateTime.of(1925, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date3 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date4 = OffsetDateTime.of(1935, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date5 = OffsetDateTime.of(1940, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date6 = OffsetDateTime.of(1945, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
         String connectId = UUID.randomUUID().toString();
 
@@ -375,13 +358,9 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void updateTrack() throws MovementDomainException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
-        cal.set(1925, 06, 06);
-        Date date2 = cal.getTime();
-        cal.set(1930, 06, 06);
-        Date date3 = cal.getTime();
+        Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date2 = OffsetDateTime.of(1925, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date3 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
         String connectId = UUID.randomUUID().toString();
 
@@ -415,13 +394,9 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         // TODO better evaluation of results
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(1920, 06, 06);
-        Date date1 = cal.getTime();
-        cal.set(1925, 06, 06);
-        Date date2 = cal.getTime();
-        cal.set(1910, 06, 06);
-        Date date_before = cal.getTime();
+        Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date2 = OffsetDateTime.of(1925, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        Instant date_before = OffsetDateTime.of(1910, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
         String connectId = UUID.randomUUID().toString();
 

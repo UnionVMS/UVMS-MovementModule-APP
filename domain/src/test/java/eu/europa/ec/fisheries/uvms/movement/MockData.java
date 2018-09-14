@@ -21,8 +21,9 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 
+import java.sql.Date;
 import java.util.Collections;
 import java.util.List;
 
@@ -139,7 +140,7 @@ public class MockData {
         movementType.setSource(MovementSourceType.NAF);
         movementType.setStatus("TEST");
 
-        movementType.setPositionTime(latlong.positionTime);
+        movementType.setPositionTime(Date.from(latlong.positionTime));
         movementType.setTripNumber(0d);
 
         movementType.setCalculatedCourse(0d);

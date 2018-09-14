@@ -21,7 +21,7 @@ import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.*;
-import eu.europa.ec.fisheries.uvms.movement.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -31,11 +31,13 @@ import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+import javax.inject.Inject;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -275,8 +277,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	RangeCriteria rangeCriteria = new RangeCriteria();
     	rangeCriteria.setKey(RangeKeyType.DATE);
-    	rangeCriteria.setFrom(DateUtil.parseUTCDateToString(new Date(System.currentTimeMillis())));
-    	rangeCriteria.setTo(DateUtil.parseUTCDateToString(new Date((System.currentTimeMillis() + 1800000L)))); //1 800 000 is the time for 6 of the movements in the list 
+    	rangeCriteria.setFrom(DateUtil.parseUTCDateToString(DateUtil.nowUTC()));
+    	rangeCriteria.setTo(DateUtil.parseUTCDateToString(DateUtil.nowUTC().plusSeconds(1800))); //1 800 000 is the time for 6 of the movements in the list  aka 1 800
     	input.getMovementRangeSearchCriteria().add(rangeCriteria);
     	
     	output = movementDomainModelBean.getMovementListByQuery(input);
@@ -396,8 +398,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	RangeCriteria rangeCriteria = new RangeCriteria();
     	rangeCriteria.setKey(RangeKeyType.DATE);
-    	rangeCriteria.setFrom(DateUtil.parseUTCDateToString(new Date(System.currentTimeMillis())));
-    	rangeCriteria.setTo(DateUtil.parseUTCDateToString(new Date((System.currentTimeMillis() + 1800000L)))); //1 800 000 is the time for 6 of the movements in the list 
+    	rangeCriteria.setFrom(DateUtil.parseUTCDateToString(DateUtil.nowUTC()));
+    	rangeCriteria.setTo(DateUtil.parseUTCDateToString(DateUtil.nowUTC().plusSeconds(1800))); //1 800 000 is the time for 6 of the movements in the list aka 1800 seconds
     	input.getMovementRangeSearchCriteria().add(rangeCriteria);
     	
     	output = movementDomainModelBean.getMinimalMovementListByQuery(input);
@@ -475,8 +477,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	RangeCriteria rangeCriteria = new RangeCriteria();
     	rangeCriteria.setKey(RangeKeyType.DATE);
-    	rangeCriteria.setFrom(DateUtil.parseUTCDateToString(new Date(System.currentTimeMillis())));
-    	rangeCriteria.setTo(DateUtil.parseUTCDateToString(new Date((System.currentTimeMillis() + 1800000L)))); //1 800 000 is the time for 6 of the movements in the list 
+    	rangeCriteria.setFrom(DateUtil.parseUTCDateToString(DateUtil.nowUTC()));
+    	rangeCriteria.setTo(DateUtil.parseUTCDateToString(DateUtil.nowUTC().plusSeconds(1800) )); //1 800 000 is the time for 6 of the movements in the list aka 1800 seconds
     	input.getMovementRangeSearchCriteria().add(rangeCriteria);
     	
     	output = movementDomainModelBean.getMovementMapByQuery(input);
@@ -584,7 +586,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	AreaType areaType = new AreaType();
 		String input = "TestAreaType";
 		areaType.setName(input);
-		areaType.setUpdatedTime(new Date(System.currentTimeMillis()));
+		areaType.setUpdatedTime(DateUtil.nowUTC());
 		areaType.setUpdatedUser("TestUser");
 		em.persist(areaType);
 		em.flush();
@@ -593,7 +595,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 		area.setAreaName("TestArea");
 		area.setAreaCode(input);
 		area.setRemoteId("TestRemoteId");
-		area.setAreaUpdattim(new Date(System.currentTimeMillis()));
+		area.setAreaUpdattim(DateUtil.nowUTC());
 		area.setAreaUpuser("TestUser");
 		area.setAreaType(areaType);
 		
@@ -607,7 +609,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         area.setAreaName("TestArea2");
 		area.setAreaCode(input + "2");
 		area.setRemoteId("TestRemoteId2");
-		area.setAreaUpdattim(new Date(System.currentTimeMillis()));
+		area.setAreaUpdattim(DateUtil.nowUTC());
 		area.setAreaUpuser("TestUser2");
 		area.setAreaType(areaType);
 		
@@ -624,13 +626,13 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	String connectID = UUID.randomUUID().toString();
     	
     	MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
-    	movementAreaAndTimeIntervalCriteria.setFromDate(DateUtil.parseUTCDateToString(new Date(System.currentTimeMillis())));
-    	movementAreaAndTimeIntervalCriteria.setToDate(DateUtil.parseUTCDateToString(new Date(System.currentTimeMillis() + 2100000L))); //2 100 000 is the time for 7 of the movements in the list
+    	movementAreaAndTimeIntervalCriteria.setFromDate(DateUtil.parseUTCDateToString(DateUtil.nowUTC()));
+    	movementAreaAndTimeIntervalCriteria.setToDate(DateUtil.parseUTCDateToString(DateUtil.nowUTC().plusSeconds(2100))); //2 100 000 is the time for 7 of the movements in the list aka 2100 seconds
 
     	AreaType areaType = new AreaType();
 		String input = "TestAreaType";
 		areaType.setName(input);
-		areaType.setUpdatedTime(new Date(System.currentTimeMillis()));
+		areaType.setUpdatedTime(DateUtil.nowUTC());
 		areaType.setUpdatedUser("TestUser");
 		em.persist(areaType);
 		em.flush();
@@ -639,7 +641,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 		area.setAreaName("TestArea");
 		area.setAreaCode(input);
 		area.setRemoteId("TestRemoteId");
-		area.setAreaUpdattim(new Date(System.currentTimeMillis()));
+		area.setAreaUpdattim(DateUtil.nowUTC());
 		area.setAreaUpuser("TestUser");
 		area.setAreaType(areaType);
 		
@@ -650,7 +652,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         areaDao.flushMovementAreas();
     	List<Movementarea> movementAreaList = new ArrayList<Movementarea>();
     	Movementarea movementarea = new Movementarea();
-    	movementarea.setMovareaUpdattim(new Date());
+    	movementarea.setMovareaUpdattim(DateUtil.nowUTC());
     	movementarea.setMovareaUpuser("TestUser");
     	movementarea.setMovareaAreaId(area);
     	movementarea.setMovareaMoveId(varbergGrena.get(6));

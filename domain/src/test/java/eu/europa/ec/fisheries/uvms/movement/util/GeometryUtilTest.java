@@ -4,14 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
 import javax.ejb.EJB;
 
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,7 +82,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	public void testGetCoordinateSequenceFromMovements() throws MovementDomainException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		Date dateStartMovement = Calendar.getInstance().getTime();
+		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		Coordinate[] input = new Coordinate[2];
 		input[0] = new Coordinate(11.641982, 57.632304);
@@ -90,7 +90,7 @@ public class GeometryUtilTest extends TransactionalTests {
 		
 		
 		Movement start =  movementHelpers.createMovement(input[0].x, input[0].y, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
-		Movement end =  movementHelpers.createMovement(input[1].x, input[1].y, 0d, SegmentCategoryType.GAP, connectId, "ONE", new Date(dateStartMovement.getTime()+10000));
+		Movement end =  movementHelpers.createMovement(input[1].x, input[1].y, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement.plusSeconds(10));
 		
 		Coordinate[] output = GeometryUtil.getCoordinateSequenceFromMovements(start, end);
 		
