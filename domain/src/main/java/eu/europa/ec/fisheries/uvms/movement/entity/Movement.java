@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -45,12 +44,23 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Type;
+import com.vividsolutions.jts.geom.Point;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
+import eu.europa.ec.fisheries.uvms.movement.util.MovementComparator;
 
 /**
  **/
@@ -58,29 +68,46 @@ import org.hibernate.annotations.*;
 @Table(name = "movement")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Movement.findAll", query = "SELECT m FROM Movement m WHERE m.duplicate = false"),
-    @NamedQuery(name = "Movement.findUnprocessed", query = "SELECT m FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
-    @NamedQuery(name = "Movement.findUnprocessedId", query = "SELECT m.id FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
-    @NamedQuery(name = "Movement.findById", query = "SELECT m FROM Movement m WHERE m.id = :id AND m.duplicate = false"),
-    @NamedQuery(name = "Movement.findByGUID", query = "SELECT m FROM Movement m WHERE m.guid = :guid AND m.duplicate = false"),
-    @NamedQuery(name = "Movement.findByAltitude", query = "SELECT m FROM Movement m WHERE m.altitude = :altitude AND m.duplicate = false"),
-    @NamedQuery(name = "Movement.findBySpeed", query = "SELECT m FROM Movement m WHERE m.speed = :speed AND m.duplicate = false"),
-    @NamedQuery(name = "Movement.findByHeading", query = "SELECT m FROM Movement m WHERE m.heading = :heading AND m.duplicate = false"),
-    @NamedQuery(name = "Movement.findByStatus", query = "SELECT m FROM Movement m WHERE m.status = :status AND m.duplicate = false"),
-    @NamedQuery(name = "Movement.findByUpdated", query = "SELECT m FROM Movement m WHERE m.updated = :updated AND m.duplicate = false"),
-    @NamedQuery(name = "Movement.findByUpdatedBy", query = "SELECT m FROM Movement m WHERE m.updatedBy = :updatedBy AND m.duplicate = false"),
-    @NamedQuery(name = "Movement.findLatestByMovementConnect", query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = "Movement.findLatest", query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select max(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.timestamp < :date and mm.processed = true) AND mc2.value = :id and m.processed = true"),
-    @NamedQuery(name = "Movement.findFirst", query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.duplicate = false and mm.processed = true) AND mc2.value = :id and m.processed = true"),
-    @NamedQuery(name = "Movement.findMovementByAreaAndTimestampInterval", query = "SELECT m FROM Movement m INNER JOIN m.movementareaList mal WHERE (m.timestamp BETWEEN :fromDate AND :toDate) AND m.duplicate = false AND mal.movareaMoveId.id = m.id AND mal.movareaAreaId.areaId = :areaId"),
+    @NamedQuery(name = Movement.FIND_ALL, query = "SELECT m FROM Movement m WHERE m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_UNPROCESSED, query = "SELECT m FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
+    @NamedQuery(name = Movement.FIND_UNPROCESSED_ID, query = "SELECT m.id FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
+    @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_BY_GUID, query = "SELECT m FROM Movement m WHERE m.guid = :guid AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_BY_ALTITUDE, query = "SELECT m FROM Movement m WHERE m.altitude = :altitude AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_BY_SPEED, query = "SELECT m FROM Movement m WHERE m.speed = :speed AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_BY_HEADING, query = "SELECT m FROM Movement m WHERE m.heading = :heading AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_BY_STATUS, query = "SELECT m FROM Movement m WHERE m.status = :status AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_BY_UPDATED, query = "SELECT m FROM Movement m WHERE m.updated = :updated AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_BY_UPDATED_BY, query = "SELECT m FROM Movement m WHERE m.updatedBy = :updatedBy AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select max(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.timestamp < :date and mm.processed = true) AND mc2.value = :id and m.processed = true"),
+    @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.duplicate = false and mm.processed = true) AND mc2.value = :id and m.processed = true"),
+    @NamedQuery(name = Movement.LIST_BY_AREA_TIME_INTERVAL, query = "SELECT m FROM Movement m INNER JOIN m.movementareaList mal WHERE (m.timestamp BETWEEN :fromDate AND :toDate) AND m.duplicate = false AND mal.movareaMoveId.id = m.id AND mal.movareaAreaId.areaId = :areaId"),
     																			   //SELECT mo FROM Movement mo INNER JOIN mo.movementarea ma WHERE (mo.timestamp BETWEEN :fromDate AND :toDate) AND mo.move_duplicate = false AND ma.movareaId = mo.id AND ma.movareaId = :areaId 	
     																			   //SELECT movement FROM Movement movement INNER JOIN movement.movementareaList movementArea WHERE (movement.timestamp BETWEEN :fromDate AND :toDate) AND movement.duplicate = false AND movementArea.movareaMoveId = movement.id AND movementArea.movareaAreaId.areaId = :areaId
-    @NamedQuery(name = "Movement.findExistingDate", query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false")
+    @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false")
 })
 @DynamicUpdate
 @DynamicInsert
 public class Movement implements Serializable, Comparable<Movement> {
 
+    public static final String FIND_ALL = "Movement.findAll";
+    public static final String FIND_UNPROCESSED = "Movement.findUnprocessed";
+    public static final String FIND_UNPROCESSED_ID = "Movement.findUnprocessedId";
+    public static final String FIND_BY_ID = "Movement.findById";
+    public static final String FIND_BY_GUID = "Movement.findByGUID";
+    public static final String FIND_BY_ALTITUDE = "Movement.findByAltitude";
+    public static final String FIND_BY_SPEED = "Movement.findBySpeed";
+    public static final String FIND_BY_HEADING = "Movement.findByHeading";
+    public static final String FIND_BY_STATUS = "Movement.findByStatus";
+    public static final String FIND_BY_UPDATED = "Movement.findByUpdated";
+    public static final String FIND_BY_UPDATED_BY = "Movement.findByUpdatedBy";
+    public static final String FIND_LATEST_BY_MOVEMENT_CONNECT = "Movement.findLatestByMovementConnect";
+    public static final String FIND_LATEST = "Movement.findLatest";
+    public static final String FIND_FIRST = "Movement.findFirst";
+    public static final String LIST_BY_AREA_TIME_INTERVAL = "Movement.findMovementByAreaAndTimestampInterval";
+    public static final String FIND_EXISTING_DATE = "Movement.findExistingDate";
+    
     private static final long serialVersionUID = 1L;
 
     /*@JoinColumn(name = "move_movetyp_id", referencedColumnName = "movetyp_id")

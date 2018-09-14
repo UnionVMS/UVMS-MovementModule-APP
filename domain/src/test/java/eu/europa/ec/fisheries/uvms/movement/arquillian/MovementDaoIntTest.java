@@ -401,7 +401,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         List<SearchValue> searchValues = new ArrayList<>();
         String sql = "SELECT m FROM Movement m WHERE m.speed < -42";
 
-        List<Movement> movements = movementDao.getMovementList(sql, searchValues, 0);
+        List<Movement> movements = movementDao.getMovementList(sql, searchValues, 1);
         assertNotNull(movements);
     }
 

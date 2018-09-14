@@ -15,26 +15,21 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 /**
  * The persistent class for the movementfiltergroup database table.
@@ -42,12 +37,16 @@ import org.hibernate.annotations.DynamicUpdate;
  */
 @Entity
 @NamedQueries({
-    @NamedQuery(name = UvmsConstants.GROUP_VESSEL_FIND_ALL, query = "SELECT f FROM MovementFilterGroup f"),
-    @NamedQuery(name = UvmsConstants.GROUP_VESSEL_BY_USER, query="SELECT f FROM MovementFilterGroup f WHERE f.user = :user")
+    @NamedQuery(name = MovementFilterGroup.GROUP_VESSEL_FIND_ALL, query = "SELECT f FROM MovementFilterGroup f"),
+    @NamedQuery(name = MovementFilterGroup.GROUP_VESSEL_BY_USER, query="SELECT f FROM MovementFilterGroup f WHERE f.user = :user")
 })
 @DynamicUpdate
 @DynamicInsert
 public class MovementFilterGroup implements Serializable {
+    
+    public static final String GROUP_VESSEL_FIND_ALL = "Filtergroup.findAll";
+    public static final String GROUP_VESSEL_BY_USER = "Filtergroup.findByUser";
+    
     private static final long serialVersionUID = 1L;
 
     @Id

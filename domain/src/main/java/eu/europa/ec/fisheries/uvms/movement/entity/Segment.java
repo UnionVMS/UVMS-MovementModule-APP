@@ -50,21 +50,33 @@ import org.hibernate.annotations.*;
 @Table(name = "segment")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Segment.findAll", query = "SELECT s FROM Segment s"),
-    @NamedQuery(name = "Segment.findById", query = "SELECT s FROM Segment s WHERE s.id = :id"),
-    @NamedQuery(name = "Segment.findByDistance", query = "SELECT s FROM Segment s WHERE s.distance = :distance"),
-    @NamedQuery(name = "Segment.findByDuration", query = "SELECT s FROM Segment s WHERE s.duration = :duration"),
-    @NamedQuery(name = "Segment.findBySpeedOverGround", query = "SELECT s FROM Segment s WHERE s.speedOverGround = :speedOverGround"),
-    @NamedQuery(name = "Segment.findByCourseOverGround", query = "SELECT s FROM Segment s WHERE s.courseOverGround = :courseOverGround"),
-    @NamedQuery(name = "Segment.findByUpdated", query = "SELECT s FROM Segment s WHERE s.updated = :updated"),
-    @NamedQuery(name = "Segment.findByUpdatedBy", query = "SELECT s FROM Segment s WHERE s.updatedBy = :updatedBy"),
-    @NamedQuery(name = "Segment.findByFromMovement", query = "SELECT s FROM Segment s WHERE s.fromMovement = :movement"),
-    @NamedQuery(name = "Segment.findByToMovement", query = "SELECT s FROM Segment s WHERE s.toMovement = :movement"),
-    @NamedQuery(name = "Segment.findByMovement", query = "SELECT s FROM Segment s WHERE s.toMovement = :movement OR s.fromMovement = :movement"),})
+    @NamedQuery(name = Segment.FIND_ALL, query = "SELECT s FROM Segment s"),
+    @NamedQuery(name = Segment.FIND_BY_ID, query = "SELECT s FROM Segment s WHERE s.id = :id"),
+    @NamedQuery(name = Segment.FIND_BY_DISTANCE, query = "SELECT s FROM Segment s WHERE s.distance = :distance"),
+    @NamedQuery(name = Segment.FIND_BY_DURATION, query = "SELECT s FROM Segment s WHERE s.duration = :duration"),
+    @NamedQuery(name = Segment.FIND_BY_SPEED_OVER_GROUND, query = "SELECT s FROM Segment s WHERE s.speedOverGround = :speedOverGround"),
+    @NamedQuery(name = Segment.FIND_BY_COURSE_OVER_GROUND, query = "SELECT s FROM Segment s WHERE s.courseOverGround = :courseOverGround"),
+    @NamedQuery(name = Segment.FIND_BY_UPDATED, query = "SELECT s FROM Segment s WHERE s.updated = :updated"),
+    @NamedQuery(name = Segment.FIND_BY_UPDATED_BY, query = "SELECT s FROM Segment s WHERE s.updatedBy = :updatedBy"),
+    @NamedQuery(name = Segment.FIND_FIND_BY_FROM_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.fromMovement = :movement"),
+    @NamedQuery(name = Segment.FIND_BY_TO_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.toMovement = :movement"),
+    @NamedQuery(name = Segment.FIND_BY_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.toMovement = :movement OR s.fromMovement = :movement"),})
 @DynamicUpdate
 @DynamicInsert
 public class Segment implements Serializable {
 
+    public static final String FIND_ALL = "Segment.findAll";
+    public static final String FIND_BY_ID = "Segment.findById";
+    public static final String FIND_BY_DISTANCE = "Segment.findByDistance";
+    public static final String FIND_BY_DURATION = "Segment.findByDuration";
+    public static final String FIND_BY_SPEED_OVER_GROUND = "Segment.findBySpeedOverGround";
+    public static final String FIND_BY_COURSE_OVER_GROUND = "Segment.findByCourseOverGround";
+    public static final String FIND_BY_UPDATED = "Segment.findByUpdated";
+    public static final String FIND_BY_UPDATED_BY = "Segment.findByUpdatedBy";
+    public static final String FIND_FIND_BY_FROM_MOVEMENT = "Segment.findByFromMovement";
+    public static final String FIND_BY_TO_MOVEMENT = "Segment.findByToMovement";
+    public static final String FIND_BY_MOVEMENT = "Segment.findByMovement";
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)

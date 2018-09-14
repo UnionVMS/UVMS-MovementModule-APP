@@ -43,11 +43,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "areatype")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "AreaType.findByCode", query = "SELECT a FROM AreaType a where a.name =:code ")
+    @NamedQuery(name = AreaType.FIND_BY_CODE, query = "SELECT a FROM AreaType a where a.name =:code ")
 })
 @DynamicUpdate
 @DynamicInsert
 public class AreaType implements Serializable {
+    
+    public static final String FIND_BY_CODE = "AreaType.findByCode";
 
     private static final long serialVersionUID = 1L;
     @Id

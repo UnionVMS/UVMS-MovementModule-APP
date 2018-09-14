@@ -25,7 +25,7 @@ import java.util.List;
 @Stateless
 public class TempMovementDaoBean extends Dao implements TempMovementDao {
 
-    private final static Logger LOG = LoggerFactory.getLogger(TempMovementDaoBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TempMovementDaoBean.class);
 
     @Override
     public TempMovement createTempMovementEntity(TempMovement tempMovement) {
@@ -36,7 +36,7 @@ public class TempMovementDaoBean extends Dao implements TempMovementDao {
     @Override
     public TempMovement getTempMovementByGuid(String guid) {
         try {
-            TypedQuery<TempMovement> query = em.createNamedQuery("TempMovement.findByGuidId", TempMovement.class);
+            TypedQuery<TempMovement> query = em.createNamedQuery(TempMovement.FIND_BY_GUID, TempMovement.class);
             query.setParameter("guid", guid);
             return query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException e) {
@@ -48,7 +48,7 @@ public class TempMovementDaoBean extends Dao implements TempMovementDao {
     @Override
     public List<TempMovement> getTempMovementListPaginated(Integer page, Integer listSize) {
         try {
-            TypedQuery<TempMovement> query = em.createNamedQuery("TempMovement.findAllOrdered", TempMovement.class);
+            TypedQuery<TempMovement> query = em.createNamedQuery(TempMovement.FIND_ALL_ORDERED, TempMovement.class);
             query.setFirstResult(listSize * (page - 1));
             query.setMaxResults(listSize);
             return query.getResultList();
@@ -61,7 +61,7 @@ public class TempMovementDaoBean extends Dao implements TempMovementDao {
     @Override
     public Long getTempMovementListCount() {
         try {
-            TypedQuery<Long> query = em.createNamedQuery("TempMovement.count", Long.class);
+            TypedQuery<Long> query = em.createNamedQuery(TempMovement.COUNT, Long.class);
             return query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException e) {
             LOG.error("[ Error when fetching temp movement list count. ] {}", e.getMessage());

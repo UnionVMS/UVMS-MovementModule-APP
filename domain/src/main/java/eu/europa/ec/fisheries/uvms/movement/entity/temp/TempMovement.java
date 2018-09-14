@@ -35,28 +35,48 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "tempmovement")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "TempMovement.findAll", query = "SELECT t FROM TempMovement t"),
-    @NamedQuery(name = "TempMovement.findAllOrdered", query = "SELECT t FROM TempMovement t where t.state != 'DELETED' order by timestamp desc"),
-    @NamedQuery(name = "TempMovement.findById", query = "SELECT t FROM TempMovement t WHERE t.id = :id"),
-    @NamedQuery(name = "TempMovement.findByGuidId", query = "SELECT t FROM TempMovement t WHERE t.guid = :guid"),
-    @NamedQuery(name = "TempMovement.findByFlag", query = "SELECT t FROM TempMovement t WHERE t.flag = :flag"),
-    @NamedQuery(name = "TempMovement.findByIrcs", query = "SELECT t FROM TempMovement t WHERE t.ircs = :ircs"),
-    @NamedQuery(name = "TempMovement.findByCfr", query = "SELECT t FROM TempMovement t WHERE t.cfr = :cfr"),
-    @NamedQuery(name = "TempMovement.findByExternalMarkings", query = "SELECT t FROM TempMovement t WHERE t.externalMarkings = :externalMarkings"),
-    @NamedQuery(name = "TempMovement.findByName", query = "SELECT t FROM TempMovement t WHERE t.name = :name"),
-    @NamedQuery(name = "TempMovement.findByStatus", query = "SELECT t FROM TempMovement t WHERE t.status = :status"),
-    @NamedQuery(name = "TempMovement.findByTimestamp", query = "SELECT t FROM TempMovement t WHERE t.timestamp = :timestamp"),
-    @NamedQuery(name = "TempMovement.count", query = "SELECT count(t) FROM TempMovement t where t.state != 'DELETED'"),
-    @NamedQuery(name = "TempMovement.findByLatitude", query = "SELECT t FROM TempMovement t WHERE t.latitude = :latitude"),
-    @NamedQuery(name = "TempMovement.findByLongitude", query = "SELECT t FROM TempMovement t WHERE t.longitude = :longitude"),
-    @NamedQuery(name = "TempMovement.findBySpeed", query = "SELECT t FROM TempMovement t WHERE t.speed = :speed"),
-    @NamedQuery(name = "TempMovement.findByCourse", query = "SELECT t FROM TempMovement t WHERE t.course = :course"),
-    @NamedQuery(name = "TempMovement.findByUpdated", query = "SELECT t FROM TempMovement t WHERE t.updated = :updated"),
-    @NamedQuery(name = "TempMovement.findByUpdatedBy", query = "SELECT t FROM TempMovement t WHERE t.updatedBy = :updatedBy") })
+    @NamedQuery(name = TempMovement.FIND_ALL, query = "SELECT t FROM TempMovement t"),
+    @NamedQuery(name = TempMovement.FIND_ALL_ORDERED, query = "SELECT t FROM TempMovement t where t.state != 'DELETED' order by timestamp desc"),
+    @NamedQuery(name = TempMovement.FIND_BY_ID, query = "SELECT t FROM TempMovement t WHERE t.id = :id"),
+    @NamedQuery(name = TempMovement.FIND_BY_GUID, query = "SELECT t FROM TempMovement t WHERE t.guid = :guid"),
+    @NamedQuery(name = TempMovement.FIND_BY_FLAG, query = "SELECT t FROM TempMovement t WHERE t.flag = :flag"),
+    @NamedQuery(name = TempMovement.FIND_BY_IRCS, query = "SELECT t FROM TempMovement t WHERE t.ircs = :ircs"),
+    @NamedQuery(name = TempMovement.FIND_BY_CFR, query = "SELECT t FROM TempMovement t WHERE t.cfr = :cfr"),
+    @NamedQuery(name = TempMovement.FIND_BY_EXTERNAL_MARKING, query = "SELECT t FROM TempMovement t WHERE t.externalMarkings = :externalMarkings"),
+    @NamedQuery(name = TempMovement.FIND_BY_NAME, query = "SELECT t FROM TempMovement t WHERE t.name = :name"),
+    @NamedQuery(name = TempMovement.FIND_BY_STATUS, query = "SELECT t FROM TempMovement t WHERE t.status = :status"),
+    @NamedQuery(name = TempMovement.FIND_BY_TIMESTAMP, query = "SELECT t FROM TempMovement t WHERE t.timestamp = :timestamp"),
+    @NamedQuery(name = TempMovement.COUNT, query = "SELECT count(t) FROM TempMovement t where t.state != 'DELETED'"),
+    @NamedQuery(name = TempMovement.FIND_BY_LATITUDE, query = "SELECT t FROM TempMovement t WHERE t.latitude = :latitude"),
+    @NamedQuery(name = TempMovement.FIND_BY_LONGITUDE, query = "SELECT t FROM TempMovement t WHERE t.longitude = :longitude"),
+    @NamedQuery(name = TempMovement.FIND_BY_SPEED, query = "SELECT t FROM TempMovement t WHERE t.speed = :speed"),
+    @NamedQuery(name = TempMovement.FIND_BY_COURSE, query = "SELECT t FROM TempMovement t WHERE t.course = :course"),
+    @NamedQuery(name = TempMovement.FIND_BY_UPDATED, query = "SELECT t FROM TempMovement t WHERE t.updated = :updated"),
+    @NamedQuery(name = TempMovement.FIND_BY_UPDATED_BY, query = "SELECT t FROM TempMovement t WHERE t.updatedBy = :updatedBy") })
 //@formatter:on
 @DynamicUpdate
 @DynamicInsert
 public class TempMovement implements Serializable {
+    
+    public static final String FIND_ALL = "TempMovement.findAll";
+    public static final String FIND_ALL_ORDERED = "TempMovement.findAllOrdered";
+    public static final String FIND_BY_ID = "TempMovement.findById";
+    public static final String FIND_BY_GUID = "TempMovement.findByGuid";
+    public static final String FIND_BY_FLAG = "TempMovement.findByFlag";
+    public static final String FIND_BY_IRCS = "TempMovement.findByIrcs";
+    public static final String FIND_BY_CFR = "TempMovement.findByCfr";
+    public static final String FIND_BY_EXTERNAL_MARKING = "TempMovement.findByExternalMarkings";
+    public static final String FIND_BY_NAME = "TempMovement.findByName";
+    public static final String FIND_BY_STATUS = "TempMovement.findByStatus";
+    public static final String FIND_BY_TIMESTAMP = "TempMovement.findByTimestamp";
+    public static final String COUNT = "TempMovement.count";
+    public static final String FIND_BY_LATITUDE = "TempMovement.findByLatitude";
+    public static final String FIND_BY_LONGITUDE = "TempMovement.findByLongitude";
+    public static final String FIND_BY_SPEED = "TempMovement.findBySpeed";
+    public static final String FIND_BY_COURSE = "TempMovement.findByCourse";
+    public static final String FIND_BY_UPDATED = "TempMovement.findByUpdated";
+    public static final String FIND_BY_UPDATED_BY = "TempMovement.findByUpdatedBy";
+    
     private static final long serialVersionUID = 1L;
 
     @Id

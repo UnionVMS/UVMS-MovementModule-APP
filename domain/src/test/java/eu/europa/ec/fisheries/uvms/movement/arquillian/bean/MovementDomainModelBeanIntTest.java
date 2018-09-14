@@ -583,6 +583,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     
     @Test
     public void testGetAreas() throws MovementDomainException {
+        int areasBefore = movementDomainModelBean.getAreas().size();
+        
     	AreaType areaType = new AreaType();
 		String input = "TestAreaType";
 		areaType.setName(input);
@@ -603,7 +605,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         areaDao.flushMovementAreas();
         
         List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> output = movementDomainModelBean.getAreas();
-        assertEquals(1, output.size());
+        assertEquals(areasBefore + 1, output.size());
         
         area = new Area();
         area.setAreaName("TestArea2");
@@ -617,7 +619,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         areaDao.flushMovementAreas();
         
         output = movementDomainModelBean.getAreas();
-        assertEquals(2, output.size());
+        assertEquals(areasBefore + 2, output.size());
         
     }
     

@@ -11,15 +11,13 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
+import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.uvms.movement.constant.UvmsConstants;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilter;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
@@ -30,9 +28,9 @@ public class MovementGroupMapper {
     public static MovementFilterGroup toGroupEntity(MovementFilterGroup filterGroup, MovementSearchGroup searchGroup, String username) {
         validateMovementSearchGroup(searchGroup);
 
-        filterGroup.setActive(UvmsConstants.TRUE);
-        filterGroup.setGlobal(UvmsConstants.TRUE);
-        filterGroup.setDynamic(searchGroup.isDynamic() ? UvmsConstants.TRUE : UvmsConstants.FALSE);
+        filterGroup.setActive(Boolean.TRUE.toString());
+        filterGroup.setGlobal(Boolean.TRUE.toString());
+        filterGroup.setDynamic(searchGroup.isDynamic() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
         filterGroup.setUpdated(DateUtil.nowUTC());
         filterGroup.setUpdatedBy(username);
         filterGroup.setName(searchGroup.getName());
@@ -105,7 +103,7 @@ public class MovementGroupMapper {
 
     private static boolean getBoolean(String value) {
         if (value != null && !value.isEmpty()) {
-            return value.equalsIgnoreCase(UvmsConstants.TRUE);
+            return value.equalsIgnoreCase(Boolean.TRUE.toString());
         }
 
         return false;
