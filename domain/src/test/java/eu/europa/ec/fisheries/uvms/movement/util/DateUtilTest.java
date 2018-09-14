@@ -39,6 +39,9 @@ public class DateUtilTest extends TransactionalTests {
 		//yyyy-MM-dd HH:mm:ss Z      					  2018-03-09 09:26:30 +0100
 		Instant timestamp = DateUtil.getDateFromString("2018-03-09 10:26:30 +0100");
 		assertTrue(testDate.equals(timestamp));
+
+		timestamp = DateUtil.getDateFromString("2018-03-09 09:26:30 Z");
+		assertTrue(testDate.equals(timestamp));
 		
 		timestamp = DateUtil.getDateFromString("2018-03-09 04:26:30 -0500");
 		assertTrue(testDate.equals(timestamp));
@@ -57,6 +60,10 @@ public class DateUtilTest extends TransactionalTests {
 		assertTrue(testDate.equals(timestamp));
 		
 		timestamp = DateUtil.getDateFromString("2018-03-09 12:26:30 +03");
+		assertTrue(testDate.equals(timestamp));
+
+		//yyyy-MM-dd HH:mm:ss
+		timestamp = DateUtil.getDateFromString("2018-03-09 09:26:30");
 		assertTrue(testDate.equals(timestamp));
 
 		
@@ -111,6 +118,10 @@ public class DateUtilTest extends TransactionalTests {
 		
 		timestamp = DateUtil.parseToUTCDate("2018-03-09 12:26:30 +03");
 		assertTrue(testDate.equals( timestamp));
+
+		//yyyy-MM-dd HH:mm:ss
+		timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 9:26:30");
+		assertTrue(testDate.equals(timestamp));
 
 		
 		//fails to come

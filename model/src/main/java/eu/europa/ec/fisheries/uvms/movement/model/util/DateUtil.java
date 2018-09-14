@@ -73,7 +73,6 @@ public class DateUtil {
     }
 
     public static Instant getDateFromString(String inDate, String format){
-        //return OffsetDateTime.parse(inDate, DateTimeFormatter.ofPattern(format)).toInstant();   //goes via OffsetDateTime to make sure that it can handle formats other then ISO_INSTANT, for example formats other then 2011-12-03T10:15:30Z
         return ZonedDateTime.parse(inDate, DateTimeFormatter.ofPattern(format)).toInstant();   //goes via ZonedDateTime to make sure that it can handle formats other then ISO_INSTANT, for example formats other then 2011-12-03T10:15:30Z and does not cry in pain from a zone
     }
 
@@ -92,6 +91,12 @@ public class DateUtil {
 
 
     public static Instant convertDateTimeInUTC(String dateTimeInUTC){
+        if(dateTimeInUTC == null){
+            return null;
+        }
+        if(dateTimeInUTC.length() < 20){    //if there is no offset info, assume UTC and add it
+            dateTimeInUTC = dateTimeInUTC.concat(" Z");
+        }
         for (DateFormats format : DateFormats.values()) {
             Instant date = convertDateTimeInUTC(dateTimeInUTC, format.getFormat());
             if (date != null) {
