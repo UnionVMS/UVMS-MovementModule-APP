@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDaoBean;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
@@ -10,12 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.ws.rs.core.MediaType;
-import java.io.StringReader;
 import java.time.Instant;
 import java.util.List;
 
@@ -23,8 +17,6 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Arquillian.class)
 public class AreaRestResourceTest extends BuildMovementRestDeployment {
-
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Inject
     private AreaDaoBean areaDao;
@@ -48,15 +40,7 @@ public class AreaRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
-        return readResponseDtoList(response, eu.europa.ec.fisheries.schema.movement.area.v1.AreaType.class);
-    }
-
-    private <T> List<T> readResponseDtoList(String response, Class<T> clazz) throws Exception {
-        JsonReader jsonReader = Json.createReader(new StringReader(response));
-        JsonObject responseDto = jsonReader.readObject();
-        JsonArray data = responseDto.getJsonArray("data");
-        return objectMapper.readValue(data.toString(),
-                objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+        return RestHelper.readResponseDtoList(response, eu.europa.ec.fisheries.schema.movement.area.v1.AreaType.class);
     }
 
     private AreaType createAreaType() {
