@@ -10,17 +10,19 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 
+import java.util.List;
+import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
 import eu.europa.ec.fisheries.uvms.movement.dao.TempMovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.persistence.*;
-import java.util.List;
 
 @Stateless
 public class TempMovementDaoBean extends Dao implements TempMovementDao {
@@ -34,14 +36,13 @@ public class TempMovementDaoBean extends Dao implements TempMovementDao {
     }
 
     @Override
-    public TempMovement getTempMovementByGuid(String guid) {
+    public TempMovement getTempMovementByGuid(String guid) throws MovementDomainException {
         try {
             TypedQuery<TempMovement> query = em.createNamedQuery(TempMovement.FIND_BY_GUID, TempMovement.class);
             query.setParameter("guid", guid);
             return query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException e) {
-            LOG.error("[ Error when fetching temp movement. ] {}", e.getMessage());
-            throw new MovementDomainRuntimeException("Error when fetching temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+            throw new MovementDomainException("Error when fetching temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 

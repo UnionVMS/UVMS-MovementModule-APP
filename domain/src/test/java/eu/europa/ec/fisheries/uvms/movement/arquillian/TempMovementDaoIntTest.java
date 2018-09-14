@@ -92,7 +92,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     @OperateOnDeployment("normal")
     public void getTempMovementByGuid_ZeroGuid_Exception_Thrown() throws MovementDomainException {
 
-        expectedException.expect(EJBTransactionRolledbackException.class);
+        expectedException.expect(MovementDomainException.class);
         expectedException.expectMessage("Error when fetching temp movement");
 
         // we assume that the probability for zero guid exists in db is so low so we consider this safe

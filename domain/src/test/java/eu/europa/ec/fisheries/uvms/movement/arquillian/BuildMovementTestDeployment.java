@@ -45,7 +45,7 @@ public abstract class BuildMovementTestDeployment {
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement");
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.bean");
         testWar.addClass(MovementBatchModelBean.class).addClass(MovementDomainModelBean.class)
-                .addClass(MovementSearchGroupDomainModelBean.class).addClass(TempMovementDomainModelBean.class)
+                .addClass(MovementSearchGroupDomainModelBean.class)
                 .addClass(SegmentBean.class).addClass(IncomingMovementBean.class);
 
         testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.model");

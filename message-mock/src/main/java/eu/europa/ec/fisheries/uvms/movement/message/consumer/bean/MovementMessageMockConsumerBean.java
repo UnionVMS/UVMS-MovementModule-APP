@@ -42,5 +42,9 @@ public class MovementMessageMockConsumerBean extends AbstractConsumer implements
             throw new ConfigMessageException("Error when retrieving message: ");
         }
     }
-
+    
+    @Override
+    public <T> T getMessage(String correlationId, Class type, Long timeout) throws MessageException {
+        return null;
+    }
 }
