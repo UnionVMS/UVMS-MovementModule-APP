@@ -25,6 +25,9 @@
 		<spatial.model.version>1.0.12</spatial.model.version>
 		<audit.model.version>4.0.8</audit.model.version>
 		<exchange.model.version>4.0.17</exchange.model.version>
+		
+		<!-- Remove before release -->		
+		<installAtEnd>false</installAtEnd>
 	</properties>
 
 	<dependencies>
