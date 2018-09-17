@@ -14,7 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.bean;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
@@ -54,7 +54,7 @@ public class MovementBatchModelBean {
     private static final Logger LOG = LoggerFactory.getLogger(MovementBatchModelBean.class);
 
     @EJB
-    private MovementDaoBean dao;
+    private MovementDao dao;
 
     @Inject
     IncomingMovementBean incomingMovementBean;   //for some reason this functionality is not in MovementProcessorBean

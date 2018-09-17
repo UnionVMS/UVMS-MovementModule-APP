@@ -17,11 +17,9 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- **/
 public class SegmentCalculationUtil {
 
-    final static Logger LOG = LoggerFactory.getLogger(SegmentCalculationUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SegmentCalculationUtil.class);
 
     private static final double DISTANCE_TO_PORT_THRESHOLD_IN_NAUTICAL_MILES = 1.5;
 

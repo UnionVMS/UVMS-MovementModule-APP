@@ -1,31 +1,31 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
-import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.bean.SegmentBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import javax.ejb.EJB;
-import javax.persistence.TypedQuery;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
-
-import static org.junit.Assert.*;
+import javax.ejb.EJB;
+import javax.persistence.TypedQuery;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
+import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.bean.SegmentBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
+import eu.europa.ec.fisheries.uvms.movement.entity.Track;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 
 @RunWith(Arquillian.class)
 @Ignore //Since we process movements as we create them, theses tests need changing to not try to create the same segments.

@@ -1,29 +1,20 @@
 package eu.europa.ec.fisheries.uvms.movement.mapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.time.Instant;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import javax.ejb.EJB;
-
-import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
-
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
@@ -38,15 +29,15 @@ import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
-
-import static org.junit.Assert.*;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 
 @RunWith(Arquillian.class)
 public class MovementEntityToModelTest extends TransactionalTests {
@@ -325,7 +316,6 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));
 		
 		for(Movement move : movementList) {
-			incomingMovementBean.processMovement(move);
 			assertTrue(move.isProcessed());
 		}
 		

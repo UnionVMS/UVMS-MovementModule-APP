@@ -18,6 +18,8 @@ import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 
 public class CalculationUtil {
+    
+    private CalculationUtil() {}
 
     private static final double NAUTICAL_MILE_ONE_METER = 0.000539956803;
     private static final int EARTH_RADIUS_METER = 6371000;
@@ -67,7 +69,7 @@ public class CalculationUtil {
         if ((pointThisPosition.getX() != pointPreviousPosition.getX()) ||  (pointThisPosition.getY() != pointPreviousPosition.getY())) {
 
             distanceInMeters = calculateDistance(pointPreviousPosition.getY(), pointPreviousPosition.getX(), pointThisPosition.getY(), pointThisPosition.getX());
-            durationInSeconds = ((currentPosition.getTimestamp().getEpochSecond() - previousPosition.getTimestamp().getEpochSecond()));
+            durationInSeconds = (currentPosition.getTimestamp().getEpochSecond() - previousPosition.getTimestamp().getEpochSecond());
 
             courseOverGround = calculateCourse(pointPreviousPosition.getY(), pointPreviousPosition.getX(), pointThisPosition.getY(), pointThisPosition.getX());
             distanceBetweenPointsInNauticalMiles = CalculationUtil.getNauticalMilesFromMeter(distanceInMeters);

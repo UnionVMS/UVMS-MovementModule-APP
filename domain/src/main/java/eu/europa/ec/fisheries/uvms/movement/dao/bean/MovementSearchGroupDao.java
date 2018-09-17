@@ -12,41 +12,34 @@ package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementSearchGroupDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 
 @Stateless
-public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGroupDao {
+public class MovementSearchGroupDao {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MovementSearchGroupDaoBean.class);
-
-    @Override
+    @PersistenceContext
+    private EntityManager em;
+    
     public MovementFilterGroup createMovementFilterGroup(MovementFilterGroup filterGroup) {
         em.persist(filterGroup);
         return filterGroup;
     }
 
-    @Override
     public MovementFilterGroup getMovementFilterGroupById(Integer groupId) {
-        LOG.debug("Get movement search group by ID.");
         return em.find(MovementFilterGroup.class, groupId.longValue());
     }
 
-    @Override
     public List<MovementFilterGroup> getMovementFilterGroupsByUser(String user) {
-        LOG.debug("Get movement groups by user.");
         TypedQuery<MovementFilterGroup> query = em.createNamedQuery(MovementFilterGroup.GROUP_VESSEL_BY_USER, MovementFilterGroup.class);
         query.setParameter("user", user);
         return query.getResultList();
     }
 
-    @Override
     public MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementDomainException {
         //Sanity check on id to prevent create operation instead of update operation.
         if(filterGroup.getId() != null && getMovementFilterGroupById(filterGroup.getId().intValue()) != null) {
@@ -58,7 +51,6 @@ public class MovementSearchGroupDaoBean extends Dao implements MovementSearchGro
         return filterGroup;
     }
 
-    @Override
     public MovementFilterGroup deleteMovementFilterGroup(MovementFilterGroup filterGroup) {
         em.remove(filterGroup);
         return filterGroup;

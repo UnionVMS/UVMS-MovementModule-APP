@@ -1,20 +1,19 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import java.time.Instant;
+import java.util.List;
+import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.inject.Inject;
-import javax.ws.rs.core.MediaType;
-import java.time.Instant;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDao;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
+import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 
 @RunWith(Arquillian.class)
 public class AreaRestResourceTest extends BuildMovementRestDeployment {
@@ -29,7 +28,7 @@ public class AreaRestResourceTest extends BuildMovementRestDeployment {
         Area area = createArea(areaType);
         areaDao.createMovementArea(area);
 
-        assertEquals(area.getAreaType().getName(), "TestAreaType");
+        assertEquals(area.getAreaType().getName(), areaType.getName());
 
         List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> areaTypes = getAreas();
         assertTrue(areaTypes.size() > 0);
@@ -46,7 +45,7 @@ public class AreaRestResourceTest extends BuildMovementRestDeployment {
 
     private AreaType createAreaType() {
         AreaType areaType = new AreaType();
-        String input = "TestAreaType";
+        String input = "TestAreaType" + MovementTestHelper.getRandomIntegers(10);
         areaType.setName(input);
         areaType.setUpdatedTime(Instant.now());
         areaType.setUpdatedUser("TestUser");
@@ -56,7 +55,7 @@ public class AreaRestResourceTest extends BuildMovementRestDeployment {
     private Area createArea(AreaType areaType) {
         Area area = new Area();
         area.setAreaName("TestArea");
-        area.setAreaCode(areaType.getName());
+        area.setAreaCode("AreaCode" + MovementTestHelper.getRandomIntegers(10));
         area.setRemoteId("TestRemoteId");
         area.setAreaUpdattim(Instant.now());
         area.setAreaUpuser("TestUser");

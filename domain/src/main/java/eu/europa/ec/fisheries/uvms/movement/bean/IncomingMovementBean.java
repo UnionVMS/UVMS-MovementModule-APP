@@ -1,7 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
@@ -35,7 +35,7 @@ public class IncomingMovementBean {
     private SegmentBean segmentBean;
 
     @EJB
-    private MovementDaoBean dao;
+    private MovementDao dao;
 
     @PersistenceContext
     EntityManager em;

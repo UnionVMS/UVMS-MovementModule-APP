@@ -11,24 +11,24 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.bean;
 
+import static org.mockito.Mockito.when;
+import java.time.Instant;
+import java.util.Date; //leave be for now
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.*;
-
-
-import java.time.Instant;
-import java.util.Date; //leave be for now
-
-import static org.mockito.Mockito.when;
 
 public class CreateMovementTest {
 

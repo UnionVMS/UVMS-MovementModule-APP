@@ -32,7 +32,7 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
-import eu.europa.ec.fisheries.uvms.movement.dao.TempMovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.TempMovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.TempMovementMapper;
@@ -147,7 +147,7 @@ public class TempMovementServiceBean implements TempMovementService {
             response.setTempMovementList(tempMovementList);
 
             return MovementDataSourceResponseMapper.tempMovementListResponse(response);
-        } catch (MovementDomainException e) {
+        } catch (Exception e) {
             throw new MovementServiceException("Error when updating temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }

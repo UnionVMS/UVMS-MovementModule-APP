@@ -2,7 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.bean;
 
 import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
@@ -30,7 +30,7 @@ public class SegmentBean {
     private static final Logger LOG = LoggerFactory.getLogger(SegmentBean.class);
 
     @EJB
-    private MovementDaoBean dao;
+    private MovementDao dao;
 
     public Segment createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementDomainException {
         Segment segment = createSegment(fromMovement, toMovement);

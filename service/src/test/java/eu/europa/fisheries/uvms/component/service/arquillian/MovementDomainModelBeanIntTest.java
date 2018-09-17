@@ -32,8 +32,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
@@ -628,10 +628,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	varbergGrena.get(6).setMovementareaList(movementAreaList);
     	varbergGrena.get(7).setMovementareaList(movementAreaList);
     	
-    	for(Movement move : varbergGrena) {
-    		incomingMovementBean.processMovement(move);
-    	}
-    	
     	movementAreaAndTimeIntervalCriteria.setAreaCode(input);
 
 		GetMovementListByAreaAndTimeIntervalResponse output = movementService.getMovementListByAreaAndTimeInterval(movementAreaAndTimeIntervalCriteria);
@@ -680,13 +676,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementServiceException {
     	MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
     	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
-    	for(Movement move : varbergGrena) {
-    		try {
-                incomingMovementBean.processMovement(move);
-            } catch (MovementDomainException e) {
-                throw new MovementServiceException(ErrorCode.UNSUCCESSFUL_DB_OPERATION);
-            }
-    	}
     	return varbergGrena;
     }
 }

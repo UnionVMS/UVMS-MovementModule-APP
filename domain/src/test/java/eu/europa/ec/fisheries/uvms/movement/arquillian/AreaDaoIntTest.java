@@ -5,11 +5,13 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import java.util.List;
+import javax.ejb.EJB;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,11 +19,12 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDao;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 
 /**
  * @author roblar
@@ -243,6 +246,7 @@ public class AreaDaoIntTest extends TransactionalTests {
     private Area createAreaHelper() {
         Area area = new Area();
         area.setAreaName("areaName");
+        area.setAreaCode("AreaCode" + MovementHelpers.getRandomIntegers(10));
         area.setRemoteId("remoteId");
         area.setAreaUpdattim(DateUtil.nowUTC());
         area.setAreaUpuser("areaUpuser");

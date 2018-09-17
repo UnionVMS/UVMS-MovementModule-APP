@@ -1,24 +1,24 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementSearchGroupDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilter;
-import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
-import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.EJB;
+import javax.persistence.PersistenceException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-
-import javax.ejb.EJB;
-import javax.persistence.PersistenceException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementSearchGroupDao;
+import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 
 @RunWith(Arquillian.class)
 public class MovementSearchGroupDaoIntTest extends TransactionalTests {

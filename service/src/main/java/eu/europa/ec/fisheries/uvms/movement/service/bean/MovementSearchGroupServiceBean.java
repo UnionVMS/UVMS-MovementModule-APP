@@ -16,7 +16,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementSearchGroupDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementSearchGroupDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementGroupMapper;
@@ -34,13 +34,13 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
     
     @Override
     public MovementSearchGroup createMovementSearchGroup(MovementSearchGroup searchGroup, String username) throws MovementServiceException {
+        if(searchGroup.getName() == null || searchGroup.getName().isEmpty()){
+            throw new MovementServiceRuntimeException("Search group must have a name", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+        }
+        if(username == null){
+            throw new MovementServiceRuntimeException("Create MovementSearchGroup must have username set, cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+        }
         try {
-            if(searchGroup.getName() == null || searchGroup.getName().isEmpty()){
-                throw new MovementServiceRuntimeException("Search group must have a name", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-            }
-            if(username == null){
-                throw new MovementServiceRuntimeException("Create MovementSearchGroup must have username set, cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-            }
             if (MovementGroupValidator.isMovementGroupOk(searchGroup)) {
                 MovementFilterGroup filterGroup = MovementGroupMapper.toGroupEntity(searchGroup, username);
                 filterGroup = dao.createMovementFilterGroup(filterGroup);
@@ -49,7 +49,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
                 throw new MovementServiceException("One or several movement types are misspelled or non existent." +
                         " Allowed values are: [ " + MovementGroupValidator.ALLOWED_FIELD_VALUES + " ]", ErrorCode.UNSUCCESSFUL_DB_OPERATION);
             }
-        } catch (MovementDomainException e) {
+        } catch (Exception e) {
             throw new MovementServiceException("Error when creating movement search group", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
@@ -63,7 +63,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
                         + id.intValue(), ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
             return MovementGroupMapper.toMovementSearchGroup(filterGroup);
-        } catch (MovementDomainException e) {
+        } catch (Exception e) {
             throw new MovementServiceException("Error when getting movement search group", e, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
@@ -77,7 +77,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
                 searchGroups.add(MovementGroupMapper.toMovementSearchGroup(filterGroup));
             }
             return searchGroups;
-        } catch (MovementDomainException e) {
+        } catch (Exception e) {
             throw new MovementServiceException("Error when getting movement search groups by user", e, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
@@ -108,7 +108,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
             MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(id.intValue());
             filterGroup = dao.deleteMovementFilterGroup(filterGroup);
             return MovementGroupMapper.toMovementSearchGroup(filterGroup);
-        } catch (MovementDomainException e) {
+        } catch (Exception e) {
             throw new MovementServiceException("Error when deleting movement search group", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }

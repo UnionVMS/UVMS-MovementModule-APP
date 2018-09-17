@@ -25,9 +25,9 @@ import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- **/
 public class WKTUtil {
+    
+    private WKTUtil() {}
 
     public static String getWktLineString(List<Geometry> geometries) {
         List<Coordinate> coords = new ArrayList<>();

@@ -7,7 +7,7 @@ import eu.europa.ec.fisheries.uvms.movement.MockData;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
@@ -48,7 +48,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     private MovementBatchModelBean movementBatchModelBean;
 
     @EJB
-    private MovementDaoBean movementDao;
+    private MovementDao movementDao;
 
     @Test
     @OperateOnDeployment("normal")
@@ -65,10 +65,8 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         List<Movement> movementList = movementConnect.getMovementList();
         assertNotNull("List of Movement creation was successful.", movementList);
         assertTrue("The list of Movement contains exactly one Movement object. It has: " + movementList.size() + " movements", movementList.size() == 1);
-        Long id = movementList.get(0).getId();
-        incomingMovementBean.processMovement(id);
 
-        Movement movement = movementDao.getMovementById(id);
+        Movement movement = movementDao.getMovementById(movementList.get(0).getId());
         assertNotNull("Movement object was successfully created.", movement);
         LOG.info(" [ testCreatingMovement: Movement object was successfully created. ] ");
     }
@@ -88,10 +86,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
         List<Movement> movementList = movementConnect.getMovementList();
         Long id = movementList.get(0).getId();
-
-
-        //When: Invoke the processMovement method
-         incomingMovementBean.processMovement(id);
 
         //Then: Test that the Movement is processed properly.
         Movement actualMovement = movementDao.getMovementById(id);
@@ -116,9 +110,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
         List<Movement> movementList = movementConnect.getMovementList();
         Long id = movementList.get(0).getId();
-
-        //When: Invoke the processMovement method on the read Movement entity.
-        incomingMovementBean.processMovement(id);
 
         //Then: Test that the Movement is processed properly.
         Movement actualMovement = movementDao.getMovementById(id);
@@ -158,9 +149,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         movementDao.persist(firstMovement);
         firstMovement = movementDao.getMovementById(firstMovementId);
-
-        //When: Invoke the processMovement method on one of the Movement entities.
-        incomingMovementBean.processMovement(firstMovementId);
 
         //Then: Expected is that movement processed flag and duplication flag are both set to true and a duplication id has been set.
         assertThat(firstMovement.isProcessed(), is(true));
@@ -285,10 +273,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();
         
-        for (Movement movement : movementList) {
-			incomingMovementBean.processMovement(movement);
-		}
-        
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
         
@@ -319,10 +303,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();
-        
-        for (Movement movement : movementList) {
-			incomingMovementBean.processMovement(movement);
-		}
         
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
@@ -370,11 +350,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();
-        
-        for (Movement movement : movementList) {
-			incomingMovementBean.processMovement(movement);
-		}
-        
+
         Movement firstMovement = movementList.get(0);
         Movement thirdMovement = movementList.get(1);
         Movement secondMovement = movementList.get(2);
@@ -417,10 +393,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();
         
-        for (Movement movement : movementList) {
-			incomingMovementBean.processMovement(movement);
-		}
-        
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
         Movement thirdMovement = movementList.get(2);
@@ -458,11 +430,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();
-        
-        for (Movement movement : movementList) {
-			incomingMovementBean.processMovement(movement);
-		}
-        
+ 
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
         Movement thirdMovement = movementList.get(2);

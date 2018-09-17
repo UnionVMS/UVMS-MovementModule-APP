@@ -194,7 +194,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
         try {
             MovementSearchGroup deletedMovementSearchGroup = movementSearchGroupService.deleteMovementSearchGroup(Long.MIN_VALUE);
             Assert.fail();
-        } catch (EJBTransactionRolledbackException e) {
+        } catch (MovementServiceException e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -212,7 +212,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
         }
     }
     
-    @Test(expected = EJBTransactionRolledbackException.class)
+    @Test(expected = MovementServiceException.class)
     public void deleteMovementSearchGroup_then_getById_Exception_Thrown() throws MovementDomainException, MovementServiceException {
         MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
         MovementSearchGroup movementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementGroup, TEST_USER_NAME);

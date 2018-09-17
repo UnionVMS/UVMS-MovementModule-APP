@@ -1,10 +1,11 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian;
 
-import eu.europa.ec.fisheries.uvms.movement.dao.TempMovementDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
-import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import java.time.Instant;
+import java.util.List;
+import javax.ejb.EJB;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -13,12 +14,11 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.EJBTransactionRolledbackException;
-import java.time.Instant;import java.util.List;
-
-import static org.junit.Assert.*;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.TempMovementDao;
+import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 
 /**
  * Created by thofan on 2017-02-22.

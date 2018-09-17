@@ -1,5 +1,13 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util;
 
+import static org.junit.Assert.assertNotNull;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import javax.persistence.EntityManager;
 import com.peertopark.java.geocalc.Coordinate;
 import com.peertopark.java.geocalc.DegreeCoordinate;
 import com.peertopark.java.geocalc.EarthCalc;
@@ -8,19 +16,12 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.MockData;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
-
-import javax.persistence.EntityManager;
-
-import java.time.Instant;
-import java.util.*;
-
-import static org.junit.Assert.assertNotNull;
 
 public class MovementHelpers {
 
@@ -54,7 +55,7 @@ public class MovementHelpers {
             List<Movement> movementList = movementConnect.getMovementList();
             assertNotNull(movementList);
             return movementList.get(movementList.size() - 1);
-        } catch (MovementDomainRuntimeException | MovementDomainException e) {
+        } catch (MovementDomainRuntimeException e) {
             throw new MovementDomainException("Movement Connect missing", e, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
         }
 
@@ -340,5 +341,14 @@ public class MovementHelpers {
 
     private double rad2deg(double rad) {
         return (rad * 180.0 / Math.PI);
+    }
+    
+    public static String getRandomIntegers(int length) {
+        return new Random()
+                .ints(0,9)
+                .mapToObj(i -> String.valueOf(i))
+                .limit(length)
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 }

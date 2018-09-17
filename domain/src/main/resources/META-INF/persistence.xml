@@ -4,6 +4,7 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence">
     <persistence-unit name="movementPU" transaction-type="JTA">
         <jta-data-source>jdbc/uvms_movement</jta-data-source>
+        <class>eu.europa.ec.fisheries.uvms.config.service.entity.Parameter</class>
         <properties>
             <property name="hibernate.dialect" value="${hibernate.spatial.dialect}"/>
             <property name="hibernate.cache.use_second_level_cache" value="true"/>

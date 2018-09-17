@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GeometryUtil {
+    
+    private GeometryUtil() {}
 
     private static final Logger LOG = LoggerFactory.getLogger(GeometryUtil.class);
 

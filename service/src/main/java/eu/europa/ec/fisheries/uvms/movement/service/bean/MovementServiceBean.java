@@ -45,8 +45,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDaoBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
@@ -90,10 +90,10 @@ public class MovementServiceBean implements MovementService {
     private MovementBatchModelBean movementBatch;
 
     @Inject
-    private MovementDaoBean dao;
+    private MovementDao dao;
     
     @Inject
-    private AreaDaoBean areaDao;
+    private AreaDao areaDao;
 
     @Inject
     @CreatedMovement

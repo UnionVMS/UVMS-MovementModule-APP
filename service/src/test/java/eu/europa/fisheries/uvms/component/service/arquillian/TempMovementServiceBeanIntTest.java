@@ -161,7 +161,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         tempMovementService.getTempMovement(UUID.randomUUID().toString());
     }
 
-    @Test(expected = EJBTransactionRolledbackException.class)
+    @Test(expected = MovementServiceException.class)
     public void getTempMovementListNullCheckFailureTest() throws MovementServiceException {
         tempMovementService.getTempMovements(null);
     }

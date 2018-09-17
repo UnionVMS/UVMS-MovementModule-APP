@@ -20,11 +20,11 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-/**
- **/
 public class MovementComparator {
+    
+    private MovementComparator() {}
 
-    public static Comparator<Movement> MOVEMENT = new Comparator<Movement>() {
+    public static final Comparator<Movement> MOVEMENT = new Comparator<Movement>() {
         @Override
         public int compare(Movement m1, Movement m2) {
         	if (m1 == null || m2 ==null) {
@@ -35,7 +35,7 @@ public class MovementComparator {
         }
     };
 
-    public static Comparator<MovementConnect> MOVEMENT_CONNECT = new Comparator<MovementConnect>() {
+    public static final Comparator<MovementConnect> MOVEMENT_CONNECT = new Comparator<MovementConnect>() {
         @Override
         public int compare(MovementConnect m1, MovementConnect m2) {
         	if (m1 == null || m2 ==null) {
@@ -46,7 +46,7 @@ public class MovementComparator {
         }
     };
 
-    public static Comparator<LatestMovement> LATEST_MOVEMENT = new Comparator<LatestMovement>() {
+    public static final Comparator<LatestMovement> LATEST_MOVEMENT = new Comparator<LatestMovement>() {
         @Override
         public int compare(LatestMovement m1, LatestMovement m2) {
         	if (m1 == null || m2 ==null) {
@@ -57,7 +57,7 @@ public class MovementComparator {
         }
     };
 
-    public static Comparator<MinimalMovement> MINIMAL_MOVEMENT = new Comparator<MinimalMovement>() {
+    public static final Comparator<MinimalMovement> MINIMAL_MOVEMENT = new Comparator<MinimalMovement>() {
         @Override
         public int compare(MinimalMovement m1, MinimalMovement m2) {
         	if (m1 == null || m2 ==null) {

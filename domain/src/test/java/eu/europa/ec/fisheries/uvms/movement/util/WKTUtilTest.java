@@ -3,30 +3,23 @@ package eu.europa.ec.fisheries.uvms.movement.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.time.Instant;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-
 import javax.ejb.EJB;
-
-import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
-
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 
 @RunWith(Arquillian.class)
 public class WKTUtilTest extends TransactionalTests {

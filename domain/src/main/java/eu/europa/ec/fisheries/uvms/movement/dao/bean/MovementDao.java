@@ -10,23 +10,21 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.io.ParseException;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
-import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
@@ -39,28 +37,15 @@ import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeExcep
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.util.WKTUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-
-import java.util.List;
-
-@LocalBean
 @Stateless
-public class MovementDaoBean extends Dao implements MovementDao {
+public class MovementDao {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MovementDaoBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementDao.class);
 
+    @PersistenceContext
+    private EntityManager em;
+    
     public Movement getMovementByGUID(String guid) {
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_BY_GUID, Movement.class);
@@ -177,7 +162,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
-    @Override
     public List<LatestMovement> getLatestMovements(Integer numberOfMovements) {
         TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery(LatestMovement.FIND_LATEST, LatestMovement.class);
         latestMovementQuery.setMaxResults(numberOfMovements);
@@ -185,7 +169,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
         return rs;
     }
 
-    @Override
     public Movement getLatestMovement(String id, Instant date) {
         Movement singleResult = null;
         try {
@@ -263,7 +246,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
-    @Override
     public Movement getFirstMovement(String movementConnectValue) {
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_FIRST, Movement.class);
@@ -275,12 +257,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
-    
-    @Override
-    @Deprecated
-    public Movement getEntityById(String id){
-    	return null;
-    }
    /* @Override   //removed to see if it blows
     public Movement getEntityById(String id) throws NoEntityFoundException, MovementDaoException {
         try {
@@ -299,13 +275,11 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }*/
 
-    @Override
     public List<Movement> getListAll() {
         Query query = em.createNamedQuery(Movement.FIND_ALL);
         return query.getResultList();
     }
 
-    @Override
     public <T> T getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException {
         try {
             Query query = getMovementQuery(sql, searchKeyValues);
@@ -328,7 +302,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
         return query;
     }
 
-    @Override
     public Long getMovementListSearchCount(String countSql, List<SearchValue> searchKeyValues) throws ParseException {
         TypedQuery<Long> query = em.createQuery(countSql, Long.class);
         setTypedQueryMovementParams(searchKeyValues, query);
@@ -355,7 +328,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
-    @Override
     public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues) throws MovementDomainException {
         try {
             LOG.debug("SQL QUERY IN LIST PAGINATED: " + sql);
@@ -369,7 +341,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
-    @Override
     public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues, int numberOfReports) throws MovementDomainException {
         try {
             List<Movement> movements = new ArrayList<>();
@@ -397,7 +368,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
-    @Override
     public MovementConnect getMovementConnectByConnectId(String id) {
         try {
             TypedQuery<MovementConnect> query = em.createNamedQuery(MovementConnect.MOVEMENT_CONNECT_BY_CONNECT_ID, MovementConnect.class);
@@ -410,31 +380,26 @@ public class MovementDaoBean extends Dao implements MovementDao {
         }
     }
 
-    @Override
     public <T> T merge(T entity) {
         T updated = em.merge(entity);
         em.flush();
         return updated;
     }
 
-    @Override
     public <T> T persist(T entity) {
         em.persist(entity);
         return entity;
     }
 
-    @Override
     public <T> T create(T entity) {
         em.persist(entity);
         return entity;
     }
 
-    @Override
     public void flush() {
         em.flush();
     }
 
-    @Override
     public List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) {
         List<Movement> resultList = new ArrayList<>();
         Area areaResult = getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
@@ -460,7 +425,6 @@ public class MovementDaoBean extends Dao implements MovementDao {
         return latestMovementQuery.getResultList();
     }
 
-    @Override
     public MovementConnect createMovementConnect(MovementConnect movementConnect) {
         em.persist(movementConnect);
         return movementConnect;

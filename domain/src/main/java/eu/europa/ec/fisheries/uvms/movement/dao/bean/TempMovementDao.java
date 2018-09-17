@@ -12,30 +12,27 @@ package eu.europa.ec.fisheries.uvms.movement.dao.bean;
 
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.uvms.movement.dao.Dao;
-import eu.europa.ec.fisheries.uvms.movement.dao.TempMovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 
 @Stateless
-public class TempMovementDaoBean extends Dao implements TempMovementDao {
+public class TempMovementDao {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TempMovementDaoBean.class);
-
-    @Override
+    @PersistenceContext
+    private EntityManager em;
+    
     public TempMovement createTempMovementEntity(TempMovement tempMovement) {
         em.persist(tempMovement);
         return tempMovement;
     }
 
-    @Override
     public TempMovement getTempMovementByGuid(String guid) throws MovementDomainException {
         try {
             TypedQuery<TempMovement> query = em.createNamedQuery(TempMovement.FIND_BY_GUID, TempMovement.class);
@@ -46,7 +43,6 @@ public class TempMovementDaoBean extends Dao implements TempMovementDao {
         }
     }
 
-    @Override
     public List<TempMovement> getTempMovementListPaginated(Integer page, Integer listSize) {
         try {
             TypedQuery<TempMovement> query = em.createNamedQuery(TempMovement.FIND_ALL_ORDERED, TempMovement.class);
@@ -54,19 +50,16 @@ public class TempMovementDaoBean extends Dao implements TempMovementDao {
             query.setMaxResults(listSize);
             return query.getResultList();
         } catch (RuntimeException e) {
-            LOG.error("[ Error when fetching temp movement list. ] {}", e.getMessage());
-            throw new MovementDomainRuntimeException("[ Error when fetching temp movement list. ]", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+            throw new MovementDomainRuntimeException("Error when fetching temp movement list.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
-    @Override
     public Long getTempMovementListCount() {
         try {
             TypedQuery<Long> query = em.createNamedQuery(TempMovement.COUNT, Long.class);
             return query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException e) {
-            LOG.error("[ Error when fetching temp movement list count. ] {}", e.getMessage());
-            throw new MovementDomainRuntimeException("Error when fetching temp movement list count. ]", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+            throw new MovementDomainRuntimeException("Error when fetching temp movement list count.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 }

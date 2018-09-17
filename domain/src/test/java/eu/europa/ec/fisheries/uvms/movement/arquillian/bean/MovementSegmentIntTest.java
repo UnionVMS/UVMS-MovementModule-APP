@@ -1,25 +1,26 @@
 package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 
+import static org.junit.Assert.assertEquals;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+import javax.ejb.EJB;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.bean.util.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import javax.ejb.EJB;
-import java.time.Instant;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(Arquillian.class)
 public class MovementSegmentIntTest extends TransactionalTests {
@@ -53,10 +54,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Movement secondMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", dateSecondMovement);
         Movement thirdMovement = movementHelpers.createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId, "THREE", dateThirdMovement);
 
-        incomingMovementBean.processMovement(firstMovement.getId());
-        incomingMovementBean.processMovement(secondMovement.getId());
-        incomingMovementBean.processMovement(thirdMovement.getId());
-
         em.flush();
 
         Movement firstAfter = movementDao.getMovementById(firstMovement.getId());
@@ -89,11 +86,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Movement secondMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", secondMovementDate);
         Movement thirdMovement = movementHelpers.createMovement(2d, 2d, 0d, SegmentCategoryType.GAP, connectId, "THREE", thirdMovementDate);
         Movement forthMovement = movementHelpers.createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "FORTH", forthMovementDate);
-
-        incomingMovementBean.processMovement(firstMovement.getId());
-        incomingMovementBean.processMovement(secondMovement.getId());
-        incomingMovementBean.processMovement(thirdMovement.getId());
-        incomingMovementBean.processMovement(forthMovement.getId());
 
         em.flush();
 
@@ -132,15 +124,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Movement thirdMovement = movementHelpers.createMovement(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, "TWO", secondMovementDate);
         Movement forthMovement = movementHelpers.createMovement(3d, 3d, 0d, SegmentCategoryType.GAP, connectId, "FORTH", forthMovementDate);
 
-        incomingMovementBean.processMovement(firstMovement.getId());
-        em.flush();
-        incomingMovementBean.processMovement(secondMovement.getId());
-        em.flush();
-        incomingMovementBean.processMovement(thirdMovement.getId());
-        em.flush();
-        incomingMovementBean.processMovement(forthMovement.getId());
-        em.flush();
-
         Movement firstAfter = movementDao.getMovementById(firstMovement.getId());
 
         assertEquals(3, firstAfter.getTrack().getSegmentList().size());
@@ -166,10 +149,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
         String connectId = UUID.randomUUID().toString();
 
         List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(ORDER_NORMAL, ALL, connectId);
-        for(Movement movement : movementList){
-            incomingMovementBean.processMovement(movement.getId());
-            em.flush();
-        }
 
         assertSegmentMovementIds(movementList);
     }
@@ -191,9 +170,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
         String connectId = UUID.randomUUID().toString();
 
         List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(order, ALL, connectId);
-        for(Movement movement : movementList){
-            incomingMovementBean.processMovement(movement);
-        }
 
         Movement aMovement = movementList.get(movementList.size() - 1);
         Track track = aMovement.getTrack();
@@ -231,10 +207,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
         String connectId = UUID.randomUUID().toString();
 
         List<Movement> movementList = movementHelpers.createFishingTourVarberg(ORDER_NORMAL ,connectId);
-        for(Movement movement : movementList){
-            incomingMovementBean.processMovement(movement.getId());
-            em.flush();
-        }
         assertSegmentMovementIds(movementList);
     }
 
