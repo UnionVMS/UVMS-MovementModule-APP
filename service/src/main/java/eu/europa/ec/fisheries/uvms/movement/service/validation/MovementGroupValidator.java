@@ -16,6 +16,9 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 
 public class MovementGroupValidator {
 
@@ -44,7 +47,6 @@ public class MovementGroupValidator {
     private static boolean containsCorrectMovementField(String key) {
         for (SearchKey type : SearchKey.values()) {
             if (key.equalsIgnoreCase(type.name())) {
-
                 return true;
             }
         }
@@ -52,11 +54,9 @@ public class MovementGroupValidator {
     }
 
     private static String getAllowedValues() {
-        StringBuilder builder = new StringBuilder();
-        for (SearchKey type : SearchKey.values()) {
-            builder.append(type.name()).append(", ");
-        }
-        return builder.toString();
+        return Arrays
+                .stream(SearchKey.values())
+                .map(Enum::name)
+                .collect(Collectors.joining(", "));
     }
-
 }
