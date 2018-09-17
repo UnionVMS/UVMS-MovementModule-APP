@@ -1,7 +1,7 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
+import static org.junit.Assert.assertThat;
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
+import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
@@ -23,7 +24,6 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeInter
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
@@ -36,10 +36,9 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -77,14 +76,8 @@ public class MovementServiceIntTest extends TransactionalTests {
         // toDate
         criteria.setToDate(formattedDate);
 
-        try {
-            GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
-            Assert.assertTrue(list != null);
-        } catch (MovementServiceException e) {
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.fail();
-        }
+        GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
+        Assert.assertTrue(list != null);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
@@ -131,14 +124,8 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void getLatestMovementsByConnectIds_EmptyList() {
 
         List<String> connectionIds = new ArrayList<>();
-        try {
-            List<MovementDto> movements =  movementService.getLatestMovementsByConnectIds(connectionIds);
-            Assert.fail();
-        } catch (MovementServiceException e) {
-            Assert.assertTrue(e != null);
-        } catch (Exception e) {
-            Assert.assertTrue(e != null);
-        }
+        List<MovementDto> movements =  movementService.getLatestMovementsByConnectIds(connectionIds);
+        assertThat(movements.size(), CoreMatchers.is(0));
     }
 
     @Test
@@ -147,7 +134,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
         MovementQuery query = createMovementQuery(true);
         try {
-            GetMovementListByQueryResponse getMovementListByQueryResponse = movementService.getList(query);
+            movementService.getList(query);
             //Assert.assertTrue(getMovementListByQueryResponse != null); //changes to the error handling a few functions down means that the above call will throw an exception
             Assert.fail("The above call should throw an exception since query is incomplete");
         } catch (EJBTransactionRolledbackException e) {
@@ -191,7 +178,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
         query.getMovementSearchCriteria().add(listCriteria);
         try {
-            GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
+            movementService.getMapByQuery(query);
             Assert.fail();
         } catch (MovementServiceException e) {
             Assert.assertTrue(e != null);
@@ -252,15 +239,8 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getAreas() {
-
-        try {
-            List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> response = movementService.getAreas();
-            Assert.assertTrue(response != null);
-        } catch (MovementServiceException e) {
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.fail();
-        }
+        List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> response = movementService.getAreas();
+        Assert.assertTrue(response != null);
     }
 
     @Test
@@ -302,7 +282,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
         String connectId = null;
         try {
-            MovementType createdMovementType = movementService.getById(connectId);
+            movementService.getById(connectId);
             Assert.fail();
 
         } catch (Exception e) {
@@ -313,45 +293,23 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements() {
-
-        try {
-            List<MovementDto> listMovementDto = movementService.getLatestMovements(5);
-            Assert.assertTrue(listMovementDto != null);
-        } catch (MovementServiceException e) {
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.fail();
-        }
+        List<MovementDto> listMovementDto = movementService.getLatestMovements(5);
+        Assert.assertTrue(listMovementDto != null);
     }
 
-    @Test
+    @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
     public void getLatestMovements_NumberNULL() {
-
-        try {
-            List<MovementDto> listMovementDto = movementService.getLatestMovements(null);
-            Assert.fail();
-        } catch  (MovementServiceException e) {
-            Assert.assertTrue(e != null);
-        } catch (Exception e) {
-            Assert.assertTrue(e != null);
-        } catch (Throwable e) {
-            Assert.assertTrue(e != null);
-        }
+        movementService.getLatestMovements(null);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements_NegativeNumber() {
-
         try {
-            List<MovementDto> listMovementDto = movementService.getLatestMovements(-3);
+            movementService.getLatestMovements(-3);
             Assert.fail();
-        } catch  (MovementServiceException e) {
-            Assert.assertTrue(e != null);
         } catch (Exception e) {
-            Assert.assertTrue(e != null);
-        } catch (Throwable e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -359,10 +317,9 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getById_emptyGUID() {
-
         String connectId = "";
         try {
-            MovementType createdMovementType = movementService.getById(connectId);
+            movementService.getById(connectId);
             Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e != null);

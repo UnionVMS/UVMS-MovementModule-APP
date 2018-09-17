@@ -63,6 +63,9 @@ public class MovementDao {
 
     public List<Movement> getLatestMovementsByConnectIdList(List<String> connectIds) {
         List<Movement> resultList = new ArrayList<>();
+        if (connectIds == null || connectIds.isEmpty()) {
+            return resultList;
+        }
         TypedQuery<LatestMovement> latestMovementQuery =
                 em.createNamedQuery(LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, LatestMovement.class);
         latestMovementQuery.setParameter("connectId", connectIds);

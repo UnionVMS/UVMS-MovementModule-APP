@@ -1,15 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
-import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
@@ -20,6 +10,16 @@ import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
+import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
+import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 
 /**
  * Created by thofan on 2017-04-20.
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class CreateMovementBean {
 
-    private final static Logger LOG = LoggerFactory.getLogger(CreateMovementBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateMovementBean.class);
 
     @EJB
     private MovementService movementService;

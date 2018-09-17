@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
@@ -24,16 +23,14 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.UserServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
@@ -134,7 +131,7 @@ public class MovementRestResource {
         }
         try {
             return new ResponseDto(serviceLayer.getLatestMovementsByConnectIds(connectIds), ResponseCode.OK);
-        } catch (MovementServiceException | NullPointerException ex) {
+        } catch (NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
@@ -168,7 +165,7 @@ public class MovementRestResource {
             List<MovementDto> response = serviceLayer.getLatestMovements(numberOfMovements);
             LOG.debug("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
             return new ResponseDto(response, ResponseCode.OK);
-        } catch (MovementServiceException | NullPointerException ex) {
+        } catch (NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
@@ -186,7 +183,7 @@ public class MovementRestResource {
         LOG.debug("Get by id invoked in rest layer");
         try {
             return new ResponseDto(serviceLayer.getById(id), ResponseCode.OK);
-        } catch (MovementServiceException | NullPointerException ex) {
+        } catch (NullPointerException ex) {
             LOG.error("[ Error when getting by id. ] ", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {

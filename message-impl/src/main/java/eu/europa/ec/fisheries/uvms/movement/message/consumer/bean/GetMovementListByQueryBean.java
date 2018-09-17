@@ -1,16 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
-import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
@@ -21,6 +10,17 @@ import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
+import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
+import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by thofan on 2017-04-21.

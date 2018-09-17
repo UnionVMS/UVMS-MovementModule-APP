@@ -18,7 +18,7 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ public class CreateMovementBatchBean {
     private final static Logger LOG = LoggerFactory.getLogger(CreateMovementBatchBean.class);
 
     @EJB
-    private MovementServiceBean movementService;
+    private MovementService movementService;
 
     @EJB
     private MessageProducer messageProducer;

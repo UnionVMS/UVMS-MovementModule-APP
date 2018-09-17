@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
@@ -18,7 +18,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 public class GetMapByQueryIntTest extends TransactionalTests {
 
     @Inject
-    MovementServiceBean movementServiceBean;
+    MovementService movementServiceBean;
 
 
     @Test(expected = EJBTransactionRolledbackException.class)

@@ -42,7 +42,7 @@ import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
@@ -68,7 +68,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	IncomingMovementBean incomingMovementBean;
 	
 	@EJB
-    MovementServiceBean movementService;
+    MovementService movementService;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -131,15 +131,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         expectedException.expect(EJBTransactionRolledbackException.class);
 
         movementService.getLatestMovements(-5);
-    }
-
-    @Test
-    public void getLatestMovementsByConnectIds_crashOnEmpty() throws MovementServiceException {
-        expectedException.expect(EJBTransactionRolledbackException.class);
-        expectedException.expectMessage("could not extract ResultSet");
-
-        List<String> connectIds = new ArrayList<>();
-        movementService.getLatestMovementsByConnectIds(connectIds);
     }
 
     @Test

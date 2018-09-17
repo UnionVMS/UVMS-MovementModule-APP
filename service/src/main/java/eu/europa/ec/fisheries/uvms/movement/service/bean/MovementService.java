@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -64,7 +63,6 @@ import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageExc
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -74,11 +72,10 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 
-@LocalBean
 @Stateless
-public class MovementServiceBean implements MovementService {
+public class MovementService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MovementServiceBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementService.class);
 
     @EJB
     private MessageProducer producer;
@@ -100,12 +97,10 @@ public class MovementServiceBean implements MovementService {
     private Event<NotificationMessage> createdMovementEvent;
 
     /**
-     * {@inheritDoc}
      *
      * @param data
      * @throws MovementServiceException
      */
-    @Override
     public MovementType createMovement(MovementBaseType data, String username) {
         try {
             //enrich with closest port, closest country and area transitions
@@ -131,7 +126,6 @@ public class MovementServiceBean implements MovementService {
         }
     }
 
-    @Override
     public CreateMovementBatchResponse createMovementBatch(List<MovementBaseType> movementBaseTypeList, String username) {
         LOG.debug("Create invoked in service layer");
         try {
@@ -158,7 +152,6 @@ public class MovementServiceBean implements MovementService {
         }
     }
 
-    @Override
     public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException {
         if (query == null) {
             throw new MovementServiceRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
@@ -239,12 +232,10 @@ public class MovementServiceBean implements MovementService {
     }
     
     /**
-     * {@inheritDoc}
      *
      * @return
      * @throws MovementServiceException
      */
-    @Override
     public GetMovementListByQueryResponse getList(MovementQuery query) throws MovementServiceException {
         if (query == null) {
             throw new MovementServiceRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
@@ -294,12 +285,10 @@ public class MovementServiceBean implements MovementService {
     }
 
     /**
-     * {@inheritDoc}
      *
      * @return
      * @throws MovementServiceException
      */
-    @Override
     public GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException {
         if (query == null) {
             throw new MovementServiceRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
@@ -353,7 +342,6 @@ public class MovementServiceBean implements MovementService {
      * @return
      * @throws MovementServiceException
      */
-    @Override
     public MovementType getById(String id) {
         Movement latestMovements = dao.getMovementByGUID(id);
         MovementType response = MovementEntityToModelMapper.mapToMovementType(latestMovements);
@@ -373,7 +361,6 @@ public class MovementServiceBean implements MovementService {
         }
     }
 
-    @Override
     public SimpleResponse createMovementBatch(List<MovementBaseType> query) {
         LOG.debug("Create invoked in service layer");
         try {
@@ -404,21 +391,18 @@ public class MovementServiceBean implements MovementService {
         }
     }
 
-    @Override
     public List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) {
         List<Movement> movements = dao.getLatestMovementsByConnectIdList(connectIds);
         List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementType(movements);
         return MovementMapper.mapToMovementDtoList(latestMovements);
     }
 
-    @Override
     public List<MovementDto> getLatestMovements(Integer numberOfMovements) {
         List<LatestMovement> movements = dao.getLatestMovements(numberOfMovements);
         List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
         return MovementMapper.mapToMovementDtoList(latestMovements);
     }
 
-    @Override
     public GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) {
         List<Movement> movements = dao.getMovementListByAreaAndTimeInterval(criteria);
         List<MovementType> movementListByAreaAndTimeInterval = movements != null ? MovementEntityToModelMapper.mapToMovementType(movements) : null;
@@ -428,7 +412,6 @@ public class MovementServiceBean implements MovementService {
         return MovementDataSourceResponseMapper.mapMovementListAreaAndTimeIntervalResponse(movementListByAreaAndTimeInterval);
     }
 
-	@Override
 	public List<AreaType> getAreas() {
 	    List<Area> areas = areaDao.getAreas();
         return AreaMapper.mapToAreaTypes(areas);

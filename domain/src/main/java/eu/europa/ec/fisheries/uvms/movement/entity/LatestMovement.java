@@ -34,7 +34,7 @@ import java.time.Instant;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value = :connectId"),
-    @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value in (:connectId)"),
+    @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value in :connectId"),
     @NamedQuery(name = LatestMovement.FIND_LATEST, query = "SELECT m FROM LatestMovement m ORDER BY m.timestamp")
 
 })

@@ -21,14 +21,14 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 
 @RunWith(Arquillian.class)
 public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Inject
-    private MovementServiceBean movementService;
+    private MovementService movementService;
     
     @Test
     public void getListByQueryByConnectId() throws Exception {
