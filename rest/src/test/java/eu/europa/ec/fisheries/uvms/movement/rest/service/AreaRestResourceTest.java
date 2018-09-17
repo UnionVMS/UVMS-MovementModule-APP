@@ -1,6 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDaoBean;
+import eu.europa.ec.fisheries.uvms.movement.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 public class AreaRestResourceTest extends BuildMovementRestDeployment {
 
     @Inject
-    private AreaDaoBean areaDao;
+    private AreaDao areaDao;
 
     @Test
     public void getAreasTest() throws Exception {

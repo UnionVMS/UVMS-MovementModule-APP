@@ -9,17 +9,15 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.MockData;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 
 import javax.persistence.EntityManager;
 
 import java.time.Instant;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.*;
 
 import static org.junit.Assert.assertNotNull;
@@ -56,7 +54,7 @@ public class MovementHelpers {
             List<Movement> movementList = movementConnect.getMovementList();
             assertNotNull(movementList);
             return movementList.get(movementList.size() - 1);
-        } catch (MissingMovementConnectException | MovementDomainException e) {
+        } catch (MovementDomainRuntimeException | MovementDomainException e) {
             throw new MovementDomainException("Movement Connect missing", e, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
         }
 
@@ -75,7 +73,7 @@ public class MovementHelpers {
             List<Movement> movementList = movementConnect.getMovementList();
             assertNotNull(movementList);
             return movementList.get(movementList.size() - 1);
-        } catch (MissingMovementConnectException e) {
+        } catch (MovementDomainRuntimeException e) {
             throw new MovementDomainException("Movement Connect missing", e, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
         }
     }

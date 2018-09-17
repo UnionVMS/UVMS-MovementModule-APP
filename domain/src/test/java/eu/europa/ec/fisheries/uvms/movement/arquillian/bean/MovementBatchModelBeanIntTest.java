@@ -3,7 +3,6 @@ package eu.europa.ec.fisheries.uvms.movement.arquillian.bean;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.arquillian.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
@@ -18,8 +17,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
-import javax.inject.Inject;
-import javax.transaction.UserTransaction;
 import java.time.Instant;
 import java.util.*;
 
@@ -78,7 +75,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("normal")
-    public void createMovement() throws MovementDomainException, MissingMovementConnectException {
+    public void createMovement() throws MovementDomainException {
 
         Instant now = DateUtil.nowUTC();
         double longitude = rnd.nextDouble();

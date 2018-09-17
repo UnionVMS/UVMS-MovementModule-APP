@@ -15,7 +15,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementDaoBean;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
@@ -24,6 +23,7 @@ import eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.mapper.MovementModelToEntityMapper;
 
@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,7 +82,7 @@ public class MovementBatchModelBean {
         return movementConnect;
     }
 
-    public MovementType createMovement(MovementType receivedMovementType, String username) throws MissingMovementConnectException {
+    public MovementType createMovement(MovementType receivedMovementType, String username) {
         long start = System.currentTimeMillis();
         try {
             MovementType createdMovementType;
@@ -101,13 +102,11 @@ public class MovementBatchModelBean {
                 if(moveConnect.getMovementList() == null) {
                     moveConnect.setMovementList(new ArrayList<>());
                 }
-                //moveConnect.getMovementList().add(currentMovement);
-                //dao.persist(moveConnect);
 
                 long diff = System.currentTimeMillis() - start;
                 LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
             } else {
-                throw new MissingMovementConnectException("Couldn't find movementConnect!");
+                throw new MovementDomainRuntimeException("Couldn't find movementConnect!", ErrorCode.NO_MOVEMENT_CONNECT);
             }
             moveConnect.getMovementList().add(currentMovement);
             dao.persist(moveConnect);
@@ -120,7 +119,6 @@ public class MovementBatchModelBean {
             } catch (Exception e) {
                 LOG.error("Error while processing movement", e);
                 throw new RuntimeException("Error while processing movement: " + e);
-
             }
 
             createdMovementType = mapToMovementType(currentMovement);
@@ -133,6 +131,7 @@ public class MovementBatchModelBean {
         }
     }
 
+    @Transactional
     private MovementType mapToMovementType(Movement currentMovement) {
         long start = System.currentTimeMillis();
         MovementType mappedMovement = MovementEntityToModelMapper.mapToMovementType(currentMovement);

@@ -17,7 +17,6 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.dao.exception.MissingMovementConnectException;
 import eu.europa.ec.fisheries.uvms.movement.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
@@ -52,7 +51,7 @@ public class CreateMovementTest {
     }
 
     @Test
-    public void createMovementFirstMovement() throws MovementDomainException, MissingMovementConnectException {
+    public void createMovementFirstMovement() throws MovementDomainException {
 
         MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
         IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);
