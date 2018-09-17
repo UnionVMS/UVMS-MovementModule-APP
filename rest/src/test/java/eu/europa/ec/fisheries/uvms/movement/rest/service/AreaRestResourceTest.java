@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Arquillian.class)
 public class AreaRestResourceTest extends BuildMovementRestDeployment {
@@ -31,7 +32,7 @@ public class AreaRestResourceTest extends BuildMovementRestDeployment {
         assertEquals(area.getAreaType().getName(), "TestAreaType");
 
         List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> areaTypes = getAreas();
-        assertEquals(areaTypes.size(), 1);
+        assertTrue(areaTypes.size() > 0);
     }
 
     private List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> getAreas() throws Exception {

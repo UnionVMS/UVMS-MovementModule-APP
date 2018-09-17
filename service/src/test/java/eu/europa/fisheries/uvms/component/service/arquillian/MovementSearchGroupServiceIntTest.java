@@ -1,21 +1,24 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.UUID;
+import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.ejb.EJB;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.UUID;
+import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
+import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
+import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by thofan on 2017-02-27.
@@ -140,6 +143,28 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
         MovementSearchGroup createdMovementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, "TEST");
         Assert.assertTrue(createdMovementSearchGroup != null);
     }
+    
+    @Test
+    public void createMovementSearchGroup() throws MovementServiceException {
+        MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, UUID.randomUUID().toString());
+        MovementSearchGroup movementSearchGroupAfterPersist = movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+        em.flush();
+        assertNotNull(movementSearchGroupAfterPersist.getId());
+    }
+
+    @Test(expected = EJBTransactionRolledbackException.class)
+    public void failCreateMovementSearchGroupNoUserName() throws MovementServiceException {
+        MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, UUID.randomUUID().toString());
+        movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, null);
+    }
+
+    @Test(expected = EJBTransactionRolledbackException.class)
+    public void failCreateMovementSearchGroupNoName() throws MovementServiceException {
+        MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, UUID.randomUUID().toString());
+        movementSearchGroup.setName(null);
+        movementSearchGroupService.createMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+        em.flush();
+    }
 
 
     @Test
@@ -165,11 +190,11 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void deleteMovementSearchGroup_MIN_VALUE_AS_ID() {
+    public void deleteMovementSearchGroup_MIN_VALUE_AS_ID() throws MovementServiceException {
         try {
             MovementSearchGroup deletedMovementSearchGroup = movementSearchGroupService.deleteMovementSearchGroup(Long.MIN_VALUE);
             Assert.fail();
-        } catch (MovementServiceException e) {
+        } catch (EJBTransactionRolledbackException e) {
             Assert.assertTrue(e != null);
         }
     }
@@ -185,6 +210,19 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
         } catch (Exception e) {
             Assert.assertTrue(e != null);
         }
+    }
+    
+    @Test(expected = EJBTransactionRolledbackException.class)
+    public void deleteMovementSearchGroup_then_getById_Exception_Thrown() throws MovementDomainException, MovementServiceException {
+        MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+        MovementSearchGroup movementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementGroup, TEST_USER_NAME);
+        em.flush();
+        assertNotNull(movementSearchGroup.getId());
+
+        movementSearchGroupService.deleteMovementSearchGroup(movementSearchGroup.getId().longValue());
+        em.flush();
+
+        movementSearchGroupService.getMovementSearchGroup(movementSearchGroup.getId().longValue());
     }
 
     @Test
@@ -209,6 +247,20 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
         } catch (Exception e) {
             Assert.fail();
         }
+    }
+    
+    @Test
+    public void getMovementSearchGroupNormal() throws MovementServiceException {
+        MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+        MovementSearchGroup movementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementGroup, TEST_USER_NAME);
+        em.flush();
+        assertNotNull(movementSearchGroup.getId());
+
+        MovementSearchGroup tryToFindIt = movementSearchGroupService.getMovementSearchGroup(movementSearchGroup.getId().longValue());
+        assertNotNull(tryToFindIt);
+
+        assertEquals(movementSearchGroup.getId(), tryToFindIt.getId());
+        assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
     }
 
     @Test
@@ -290,6 +342,87 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
             Assert.assertTrue(e != null);
         }
     }
+    
+    @Test
+    public void updateMovementSearchGroupNormal() throws MovementServiceException {
+        MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+        MovementSearchGroup movementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementGroup, TEST_USER_NAME);
+        em.flush();
+        assertNotNull(movementSearchGroup.getId());
+
+        MovementSearchGroup tryToFindIt = movementSearchGroupService.getMovementSearchGroup(movementSearchGroup.getId().longValue());
+        assertNotNull(tryToFindIt);
+        assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
+
+        movementSearchGroup.setName("CHANGED_IT");
+        tryToFindIt = movementSearchGroupService.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+
+        assertNotNull(tryToFindIt);
+        assertEquals("CHANGED_IT", tryToFindIt.getName());
+    }
+
+    @Test
+    public void updateMovementSearchGroupWithExtraCriteria() throws MovementServiceException {
+        MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+        MovementSearchGroup movementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementGroup, TEST_USER_NAME);
+        em.flush();
+        assertNotNull(movementSearchGroup.getId());
+
+        MovementSearchGroup tryToFindIt = movementSearchGroupService.getMovementSearchGroup(movementSearchGroup.getId().longValue());
+        assertNotNull(tryToFindIt);
+        assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
+
+        movementSearchGroup.setName("CHANGED_IT");
+        GroupListCriteria criteria = new GroupListCriteria();
+        criteria.setType(SearchKeyType.ASSET);
+        criteria.setKey("IRCS");
+        criteria.setValue("SLEA2");
+        movementSearchGroup.getSearchFields().add(criteria);
+        tryToFindIt = movementSearchGroupService.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+
+        assertNotNull(tryToFindIt);
+        assertEquals("CHANGED_IT", tryToFindIt.getName());
+        assertEquals(2, tryToFindIt.getSearchFields().size());
+    }
+
+    @Test
+    public void updateMovementSearchGroupRemoveCriterias() throws MovementServiceException {
+        MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+        MovementSearchGroup movementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementGroup, TEST_USER_NAME);
+        em.flush();
+        assertNotNull(movementSearchGroup.getId());
+
+        movementSearchGroup.setName("CHANGED_IT");
+        movementSearchGroup.getSearchFields().clear();
+        MovementSearchGroup tryToFindIt = movementSearchGroupService.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+
+        assertNotNull(tryToFindIt);
+        assertEquals("CHANGED_IT", tryToFindIt.getName());
+        assertEquals(0, tryToFindIt.getSearchFields().size());
+    }
+
+    @Test
+    public void updateMovementSearchGroupRemoveCriteriasAddOne() throws MovementServiceException {
+        MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+        MovementSearchGroup movementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementGroup, TEST_USER_NAME);
+        em.flush();
+        assertNotNull(movementSearchGroup.getId());
+
+        movementSearchGroup.setName("CHANGED_IT");
+        movementSearchGroup.getSearchFields().clear();
+        GroupListCriteria crit = new GroupListCriteria();
+        crit.setType(SearchKeyType.ASSET);
+        crit.setKey("IRCS");
+        crit.setValue("SLEA2");
+        movementSearchGroup.getSearchFields().add(crit);
+        MovementSearchGroup tryToFindIt = movementSearchGroupService.updateMovementSearchGroup(movementSearchGroup, TEST_USER_NAME);
+
+        assertNotNull(tryToFindIt);
+        assertEquals("CHANGED_IT", tryToFindIt.getName());
+        assertEquals(1, tryToFindIt.getSearchFields().size());
+        GroupListCriteria criteria = tryToFindIt.getSearchFields().get(0);
+        assertEquals("SLEA2", criteria.getValue());
+    }
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -304,6 +437,26 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
         } catch (Exception e) {
             Assert.fail(e.toString());
         }
+    }
+    
+    @Test
+    public void getMovementSearchGroupsByUserNormal() throws MovementServiceException {
+        int searchGroupsBefore = movementSearchGroupService.getMovementSearchGroupsByUser(TEST_USER_NAME).size();
+        
+        MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
+        movementGroup.setUser(TEST_USER_NAME);
+        MovementSearchGroup movementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementGroup, TEST_USER_NAME);
+        em.flush();
+        assertNotNull(movementSearchGroup.getId());
+
+        List<MovementSearchGroup> movementSearchGroupsByUser = movementSearchGroupService.getMovementSearchGroupsByUser(TEST_USER_NAME);
+        assertNotNull(movementSearchGroupsByUser);
+        assertEquals(searchGroupsBefore + 1, movementSearchGroupsByUser.size());
+
+        MovementSearchGroup tryToFindIt = movementSearchGroupsByUser.get(0);
+
+        assertEquals(movementSearchGroup.getId(), tryToFindIt.getId());
+        assertEquals(movementSearchGroup.getName(), tryToFindIt.getName());
     }
 
     @Test
