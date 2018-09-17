@@ -24,6 +24,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.mapper.TempMovementMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +34,6 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.TempMovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
@@ -41,14 +43,13 @@ import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 @Stateless
 public class TempMovementResource {
 
-    final static Logger LOG = LoggerFactory.getLogger(TempMovementResource.class);
+    private final static Logger LOG = LoggerFactory.getLogger(TempMovementResource.class);
 
     @EJB
-    TempMovementService service;
+    TempMovementServiceBean service;
 
     @Context
     private HttpServletRequest request;
-
 
     /**
      *
@@ -65,10 +66,13 @@ public class TempMovementResource {
     public ResponseDto create(final TempMovementType data) {
         LOG.debug("Create temp movement invoked in rest layer");
         try {
-            return new ResponseDto(service.createTempMovement(data, request.getRemoteUser()), ResponseCode.OK);
+            TempMovement tempMovement = TempMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
+            tempMovement = service.createTempMovement(tempMovement, request.getRemoteUser());
+            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (Throwable throwable) {
             LOG.error("[ Error when creating. ] {} ", throwable);
-            return new ResponseDto(throwable.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto<>(throwable.getMessage(), ResponseCode.ERROR);
         }
     }
 
@@ -78,13 +82,15 @@ public class TempMovementResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto get(@PathParam("guid") String guid) {
         try {
-            return new ResponseDto(service.getTempMovement(guid), ResponseCode.OK);
+            TempMovement tempMovement = service.getTempMovement(guid);
+            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException e) {
             LOG.error("[ Error when getting temp movement with GUID. ] {} ", e.getStackTrace());
-            return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
 
@@ -104,13 +110,15 @@ public class TempMovementResource {
     public ResponseDto remove(@PathParam("guid") String guid) {
         LOG.debug("Archive(remove) temp movement invoked in rest layer");
         try {
-            return new ResponseDto(service.archiveTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
+            TempMovement tempMovement = service.archiveTempMovement(guid, request.getRemoteUser());
+            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when archiving temp movement. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
 
@@ -129,13 +137,16 @@ public class TempMovementResource {
     public ResponseDto update(final TempMovementType data) {
         LOG.debug("Update temp movement invoked in rest layer");
         try {
-            return new ResponseDto(service.updateTempMovement(data, request.getRemoteUser()), ResponseCode.OK);
+            TempMovement tempMovement = TempMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
+            tempMovement = service.updateTempMovement(tempMovement, request.getRemoteUser());
+            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when updating temp movement. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
             LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
 
@@ -181,13 +192,15 @@ public class TempMovementResource {
     public ResponseDto send(@PathParam("guid") String guid) {
         LOG.debug("Send temp movement invoked in rest layer");
         try {
-            return new ResponseDto(service.sendTempMovement(guid, request.getRemoteUser()), ResponseCode.OK);
+            TempMovement tempMovement = service.sendTempMovement(guid, request.getRemoteUser());
+            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when sending temp movement. ] {} ", ex.getStackTrace());
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception e) {
             LOG.error("[ Error: Cannot create duplicate movement] {} ", e.getStackTrace());
-            return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
 }

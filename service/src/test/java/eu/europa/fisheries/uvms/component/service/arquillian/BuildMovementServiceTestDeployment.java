@@ -9,15 +9,15 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
-import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementServiceBean;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
@@ -65,9 +65,9 @@ public abstract class BuildMovementServiceTestDeployment {
         .addClass(MovementDataSourceResponseMapper.class)
         .addClass(SpatialServiceMockedBean.class)
         .addClass(MovementListResponseDto.class)
-        .addClass(MovementDto.class).addClass(MovementMapper.class);
-        archive.addClass(TempMovementServiceBean.class).addClass(TempMovementService.class);
-        archive.addClass(MovementServiceException.class);
+        .addClass(MovementDto.class).addClass(MovementMapper.class)
+        .addClass(TempMovementServiceBean.class)
+        .addClass(MovementServiceException.class);
 
         archive.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service.exception");
 

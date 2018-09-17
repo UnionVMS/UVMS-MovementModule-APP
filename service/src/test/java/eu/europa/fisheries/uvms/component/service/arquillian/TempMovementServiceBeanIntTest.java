@@ -8,6 +8,10 @@ import java.time.Instant;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+
+import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementServiceBean;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.ShouldThrowException;
 import org.jboss.arquillian.junit.Arquillian;
@@ -20,11 +24,11 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
+//import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
+//import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
@@ -39,14 +43,13 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @EJB
-    private TempMovementService tempMovementService;
-
+    private TempMovementServiceBean tempMovementService;
 
     @Test
     @OperateOnDeployment("movementservice")
     public void create() throws MovementServiceException {
-        TempMovementType tempMovementType = createTempMovement();
-        TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
+        TempMovement tempMovement = createTempMovement();
+        TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
         Assert.assertNotNull(result.getGuid());
     }
@@ -56,9 +59,9 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void createWithBrokenJMS() throws MovementServiceException {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
-        TempMovementType tempMovementType = createTempMovement();
+        TempMovement tempMovement = createTempMovement();
         //This should still work because the only "dependency" that is broken is the AUDIT module.
-        TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
+        TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
     }
 
@@ -66,11 +69,11 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void createWithGivenId() {
         String id = UUID.randomUUID().toString();
-        TempMovementType tempMovementType = createTempMovement();
+        TempMovement tempMovement = createTempMovement();
         try {
-            tempMovementService.createTempMovement(tempMovementType, "TEST");
+            tempMovementService.createTempMovement(tempMovement, "TEST");
             em.flush();
-            TempMovementType fetched = tempMovementService.getTempMovement(id);
+            TempMovement fetched = tempMovementService.getTempMovement(id);
             Assert.assertFalse("Should not reach this!", true);
         } catch (MovementServiceException e) {
             Assert.assertTrue(e.getMessage().contains("Error when getting temp movement"));
@@ -85,42 +88,45 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test(expected = EJBTransactionRolledbackException.class)
     public void createTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
-        tempMovementService.createTempMovement(new TempMovementType(), null);
+        tempMovementService.createTempMovement(new TempMovement(), null);
     }
 
     @Test
     public void createTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTempMovement();
-        tempMovementType.setState(TempMovementStateEnum.DRAFT);
-        TempMovementType createTempMovement = tempMovementService.createTempMovement(tempMovementType, username);
+        TempMovement tempMovement = createTempMovement();
+        tempMovement.setState(TempMovementStateEnum.DRAFT);
+        TempMovement createTempMovement = tempMovementService.createTempMovement(tempMovement, username);
         em.flush();
 
         assertNotNull(createTempMovement);
-        assertNotNull(createTempMovement.getUpdatedTime());
+        assertNotNull(createTempMovement.getUpdated());
         assertNotNull(createTempMovement.getGuid());
 
-        assertEquals(tempMovementType.getSpeed(), createTempMovement.getSpeed());
+        assertEquals(tempMovement.getSpeed(), createTempMovement.getSpeed());
         assertEquals(TempMovementStateEnum.DRAFT, createTempMovement.getState());
-        assertEquals(tempMovementType.getStatus(), createTempMovement.getStatus());
+        assertEquals(tempMovement.getStatus(), createTempMovement.getStatus());
 
-        assertEquals(tempMovementType.getAsset(), createTempMovement.getAsset());
+        assertEquals(tempMovement.getFlag(), createTempMovement.getFlag());
+        assertEquals(tempMovement.getIrcs(), createTempMovement.getIrcs());
+        assertEquals(tempMovement.getCfr(), createTempMovement.getCfr());
+        assertEquals(tempMovement.getExternalMarkings(), createTempMovement.getExternalMarkings());
+        assertEquals(tempMovement.getName(), createTempMovement.getName());
 
-        assertEquals(tempMovementType.getPosition().getLongitude(), createTempMovement.getPosition().getLongitude());
-        assertEquals(tempMovementType.getPosition().getLatitude(), createTempMovement.getPosition().getLatitude());
-        assertNull(createTempMovement.getPosition().getAltitude());
+        assertEquals(tempMovement.getLongitude(), createTempMovement.getLongitude());
+        assertEquals(tempMovement.getLatitude(), createTempMovement.getLatitude());
     }
 
     @Test
     @OperateOnDeployment("movementservice")
     public void getTempMovement() throws MovementServiceException {
-        TempMovementType tempMovementType = createTempMovement();
-        TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
+        TempMovement tempMovement = createTempMovement();
+        TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
         Assert.assertNotNull(result.getGuid());
 
-        TempMovementType fetched = tempMovementService.getTempMovement(result.getGuid());
+        TempMovement fetched = tempMovementService.getTempMovement(result.getGuid());
         Assert.assertNotNull(fetched);
         Assert.assertEquals(fetched.getGuid(), result.getGuid());
     }
@@ -128,7 +134,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getTempMovementWithBogusId() {
-        TempMovementType tt = null;
+        TempMovement tt = null;
         try {
             tt = tempMovementService.getTempMovement("TEST");
         } catch (MovementServiceException e) {
@@ -143,11 +149,11 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     public void getTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTempMovement();
-        TempMovementType createTempMovement = tempMovementService.createTempMovement(tempMovementType, username);
+        TempMovement tempMovement = createTempMovement();
+        TempMovement createTempMovement = tempMovementService.createTempMovement(tempMovement, username);
         em.flush();
 
-        TempMovementType getTempMovement = tempMovementService.getTempMovement(createTempMovement.getGuid());
+        TempMovement getTempMovement = tempMovementService.getTempMovement(createTempMovement.getGuid());
         assertEquals(createTempMovement, getTempMovement);
     }
 
@@ -170,8 +176,8 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     public void getTempMovementListSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTempMovement();
-        TempMovementType createTempMovement = tempMovementService.createTempMovement(tempMovementType, username);
+        TempMovement tempMovement = createTempMovement();
+        TempMovement createTempMovement = tempMovementService.createTempMovement(tempMovement, username);
         em.flush();
 
         MovementQuery query = new MovementQuery();
@@ -189,13 +195,13 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void updateTempMovement() throws MovementServiceException {
-        TempMovementType tempMovementType = createTempMovement();
-        TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
+        TempMovement tempMovement = createTempMovement();
+        TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
         String id = result.getGuid();
         Assert.assertNotNull(id);
 
-        TempMovementType fetched = tempMovementService.getTempMovement(id);
+        TempMovement fetched = tempMovementService.getTempMovement(id);
         Assert.assertNotNull(fetched);
         Assert.assertEquals(id, fetched.getGuid());
         Assert.assertEquals(TempMovementStateEnum.SENT, fetched.getState());
@@ -204,7 +210,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         tempMovementService.updateTempMovement(fetched, "TEST");
         em.flush();
 
-        TempMovementType fetchedAgain = tempMovementService.getTempMovement(id);
+        TempMovement fetchedAgain = tempMovementService.getTempMovement(id);
         Assert.assertNotNull(fetched);
         Assert.assertEquals(id, fetchedAgain.getGuid());
         Assert.assertEquals(TempMovementStateEnum.DELETED, fetchedAgain.getState());
@@ -218,57 +224,61 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test(expected = EJBTransactionRolledbackException.class)
     public void updateTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
-        tempMovementService.updateTempMovement(new TempMovementType(), null);
+        tempMovementService.updateTempMovement(new TempMovement(), null);
     }
 
     @Test(expected = MovementServiceException.class)
     public void updateTempMovementNoValidGuidForTempMovementCheckFailureTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
-        TempMovementType tempMovementType = createTempMovement();
+        TempMovement tempMovement = createTempMovement();
         em.flush();
 
-        tempMovementType.setGuid(UUID.randomUUID().toString());
-        tempMovementService.updateTempMovement(tempMovementType, username);
+        tempMovement.setGuid(UUID.randomUUID().toString());
+        tempMovementService.updateTempMovement(tempMovement, username);
     }
 
     @Test
     public void updateTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTempMovement();
-        TempMovementType createTempMovement = tempMovementService.createTempMovement(tempMovementType, username);
+        TempMovement tempMovement = createTempMovement();
+        TempMovement createTempMovement = tempMovementService.createTempMovement(tempMovement, username);
         em.flush();
 
         createTempMovement.setSpeed(25d);
 
-        TempMovementType updateTempMovement = tempMovementService.updateTempMovement(createTempMovement, username);
+        TempMovement updateTempMovement = tempMovementService.updateTempMovement(createTempMovement, username);
 
         assertNotNull(updateTempMovement);
-        assertNotNull(updateTempMovement.getUpdatedTime());
+        assertNotNull(updateTempMovement.getUpdated());
         assertNotNull(updateTempMovement.getGuid());
 
         assertEquals(createTempMovement.getSpeed(), updateTempMovement.getSpeed());
         assertEquals(createTempMovement.getState(), updateTempMovement.getState());
         assertEquals(createTempMovement.getStatus(), updateTempMovement.getStatus());
 
-        assertEquals(createTempMovement.getAsset(), updateTempMovement.getAsset());
+        assertEquals(createTempMovement.getFlag(), createTempMovement.getFlag());
+        assertEquals(createTempMovement.getIrcs(), createTempMovement.getIrcs());
+        assertEquals(createTempMovement.getCfr(), createTempMovement.getCfr());
+        assertEquals(createTempMovement.getExternalMarkings(), createTempMovement.getExternalMarkings());
+        assertEquals(createTempMovement.getName(), createTempMovement.getName());
 
-        assertEquals(createTempMovement.getPosition().getLongitude(), updateTempMovement.getPosition().getLongitude());
-        assertEquals(createTempMovement.getPosition().getLatitude(), updateTempMovement.getPosition().getLatitude());
+        assertEquals(createTempMovement.getLongitude(), createTempMovement.getLongitude());
+        assertEquals(createTempMovement.getLatitude(), createTempMovement.getLatitude());
     }
 
     @Test
     @OperateOnDeployment("movementservice")
     public void archiveTempMovement() throws MovementServiceException {
-        TempMovementType tempMovementType = createTempMovement();
-        TempMovementType result = tempMovementService.createTempMovement(tempMovementType, "TEST");
+        TempMovement tempMovement = createTempMovement();
+        TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
         String id = result.getGuid();
         Assert.assertNotNull(id);
 
         tempMovementService.archiveTempMovement(id, "TEST");
 
-        TempMovementType fetched = tempMovementService.getTempMovement(id);
+        TempMovement fetched = tempMovementService.getTempMovement(id);
         Assert.assertNotNull(fetched);
         Assert.assertEquals(id, fetched.getGuid());
         Assert.assertEquals(TempMovementStateEnum.DELETED, fetched.getState());
@@ -296,15 +306,15 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     public void archiveTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTempMovement();
-        TempMovementType createTempMovement = tempMovementService.createTempMovement(tempMovementType, username);
+        TempMovement tempMovementType = createTempMovement();
+        TempMovement createTempMovement = tempMovementService.createTempMovement(tempMovementType, username);
         em.flush();
 
-        TempMovementType archiveTempMovement = tempMovementService.archiveTempMovement(createTempMovement.getGuid(), username);
+        TempMovement archiveTempMovement = tempMovementService.archiveTempMovement(createTempMovement.getGuid(), username);
         em.flush();
 
         assertNotNull(archiveTempMovement);
-        assertNotNull(archiveTempMovement.getUpdatedTime());
+        assertNotNull(archiveTempMovement.getUpdated());
         assertNotNull(archiveTempMovement.getGuid());
         assertEquals(TempMovementStateEnum.DELETED, archiveTempMovement.getState());
     }
@@ -324,43 +334,36 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     public void sendTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
-        TempMovementType tempMovementType = createTempMovement();
-        TempMovementType createTempMovement = tempMovementService.createTempMovement(tempMovementType, username);
+        TempMovement tempMovement = createTempMovement();
+        TempMovement createTempMovement = tempMovementService.createTempMovement(tempMovement, username);
         em.flush();
 
-        TempMovementType sendTempMovement = tempMovementService.sendTempMovement(createTempMovement.getGuid(), username);
+        TempMovement sendTempMovement = tempMovementService.sendTempMovement(createTempMovement.getGuid(), username);
         em.flush();
 
         assertNotNull(sendTempMovement);
-        assertNotNull(sendTempMovement.getUpdatedTime());
+        assertNotNull(sendTempMovement.getUpdated());
         assertNotNull(sendTempMovement.getGuid());
         assertEquals(TempMovementStateEnum.SENT, sendTempMovement.getState());
     }
 
-    private TempMovementType createTempMovement() {
-        VesselType vesselType = new VesselType();
-        vesselType.setCfr("T");
-        vesselType.setExtMarking("T");
-        vesselType.setFlagState("T");
-        vesselType.setIrcs("T");
-        vesselType.setName("T");
+    private TempMovement createTempMovement() {
 
-        MovementPoint movementPoint = new MovementPoint();
-        movementPoint.setAltitude(0.0);
-        movementPoint.setLatitude(0.0);
-        movementPoint.setLongitude(0.0);
+        TempMovement tempMovement = new TempMovement();
+        tempMovement.setCfr("T");
+        tempMovement.setExternalMarkings("T");
+        tempMovement.setFlag("T");
+        tempMovement.setIrcs("T");
+        tempMovement.setName("T");
+        tempMovement.setLatitude(0.0);
+        tempMovement.setLongitude(0.0);
+        tempMovement.setTimestamp(Instant.now());
+        tempMovement.setCourse(0.0);
+        tempMovement.setSpeed(0.0);
+        tempMovement.setState(TempMovementStateEnum.SENT);
+        tempMovement.setUpdated(Instant.now());
+        tempMovement.setUpdatedBy("TEST");
 
-        Instant d = Instant.now();
-
-
-        TempMovementType tempMovementType = new TempMovementType();
-        tempMovementType.setAsset(vesselType);
-        tempMovementType.setCourse(0.0);
-        tempMovementType.setPosition(movementPoint);
-        tempMovementType.setSpeed(0.0);
-        tempMovementType.setState(TempMovementStateEnum.SENT);
-        tempMovementType.setTime(DateUtil.parseDateToString(d, "yyyy-MM-dd HH:mm:ss Z"));
-        //tempMovementType.setUpdatedTime();
-        return tempMovementType;
+        return tempMovement;
     }
 }

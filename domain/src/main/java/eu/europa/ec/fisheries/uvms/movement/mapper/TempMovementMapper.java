@@ -81,53 +81,44 @@ public class TempMovementMapper {
         return tempMovement;
     }
 
-    public static TempMovement toExistingTempMovementEntity(TempMovement currentTempMovement, TempMovementType newTempMovement, String username) {
+    // TODO: This method is redundant. Let callers to use merge instead of relaying on managed entity.
+    public static TempMovement toExistingTempMovementEntity(TempMovement currentTempMovement, TempMovement newTempMovement, String username) {
         if (currentTempMovement == null) {
             LOG.warn("TempMovement is null, aborting mapping");
             throw new MovementDomainRuntimeException("TempMovement is null, aborting mapping", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
-
         if (newTempMovement.getCourse() != null) {
             currentTempMovement.setCourse(newTempMovement.getCourse());
         }
-
         if (newTempMovement.getSpeed() != null) {
             currentTempMovement.setSpeed(newTempMovement.getSpeed());
         }
-
-        if (newTempMovement.getAsset() != null) {
-            VesselType asset = newTempMovement.getAsset();
-            if (asset.getCfr() != null && !asset.getCfr().isEmpty()) {
-                currentTempMovement.setCfr(asset.getCfr());
-            }
-            if (asset.getExtMarking() != null && !asset.getExtMarking().isEmpty()) {
-                currentTempMovement.setExternalMarkings(asset.getExtMarking());
-            }
-            if (asset.getFlagState() != null && !asset.getFlagState().isEmpty()) {
-                currentTempMovement.setFlag(asset.getFlagState());
-            }
-            if (asset.getIrcs() != null && !asset.getIrcs().isEmpty()) {
-                currentTempMovement.setIrcs(asset.getIrcs());
-            }
-            if (asset.getName() != null && !asset.getName().isEmpty()) {
-                currentTempMovement.setName(asset.getName());
-            }
+        if (newTempMovement.getCfr() != null && !newTempMovement.getCfr().isEmpty()) {
+            currentTempMovement.setCfr(newTempMovement.getCfr());
         }
-
-        if (newTempMovement.getPosition() != null) {
-            if (newTempMovement.getPosition().getLatitude() != null) {
-                currentTempMovement.setLatitude(newTempMovement.getPosition().getLatitude());
-            }
-            if (newTempMovement.getPosition().getLongitude() != null) {
-                currentTempMovement.setLongitude(newTempMovement.getPosition().getLongitude());
-            }
+        if (newTempMovement.getExternalMarkings() != null && !newTempMovement.getExternalMarkings().isEmpty()) {
+            currentTempMovement.setExternalMarkings(newTempMovement.getExternalMarkings());
         }
-
+        if (newTempMovement.getFlag() != null && !newTempMovement.getFlag().isEmpty()) {
+            currentTempMovement.setFlag(newTempMovement.getFlag());
+        }
+        if (newTempMovement.getIrcs() != null && !newTempMovement.getIrcs().isEmpty()) {
+            currentTempMovement.setIrcs(newTempMovement.getIrcs());
+        }
+        if (newTempMovement.getName() != null && !newTempMovement.getName().isEmpty()) {
+            currentTempMovement.setName(newTempMovement.getName());
+        }
+        if (newTempMovement.getLatitude() != null) {
+            currentTempMovement.setLatitude(newTempMovement.getLatitude());
+        }
+        if (newTempMovement.getLongitude() != null) {
+            currentTempMovement.setLongitude(newTempMovement.getLongitude());
+        }
         if (newTempMovement.getStatus() != null && !newTempMovement.getStatus().isEmpty()) {
             currentTempMovement.setStatus(newTempMovement.getStatus());
         }
-        if (newTempMovement.getTime() != null && !newTempMovement.getTime().isEmpty()) {
-            currentTempMovement.setTimestamp(DateUtil.convertDateTimeInUTC(newTempMovement.getTime()));
+        if (newTempMovement.getTimestamp() != null) {
+            currentTempMovement.setTimestamp(newTempMovement.getTimestamp());
         }
         if (newTempMovement.getState() != null) {
             currentTempMovement.setState(TempMovementStateEnum.valueOf(newTempMovement.getState().name()));
