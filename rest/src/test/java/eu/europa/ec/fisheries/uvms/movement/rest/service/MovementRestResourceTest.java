@@ -3,22 +3,16 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
@@ -32,8 +26,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 
 @RunWith(Arquillian.class)
 public class MovementRestResourceTest extends BuildMovementRestDeployment {
-
-    private ObjectMapper objectMapper = new ObjectMapper();
     
     @Inject
     private MovementServiceBean movementService;
@@ -177,7 +169,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(query), String.class);
             
-        return readResponseDto(response, GetMovementListByQueryResponse.class);
+        return RestHelper.readResponseDto(response, GetMovementListByQueryResponse.class);
     }
     
     private GetMovementListByQueryResponse getMinimalListByQuery(MovementQuery query) throws Exception {
@@ -188,7 +180,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(query), String.class);
             
-        return readResponseDto(response, GetMovementListByQueryResponse.class);
+        return RestHelper.readResponseDto(response, GetMovementListByQueryResponse.class);
     }
     
     private List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws Exception {
@@ -198,7 +190,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(connectIds), String.class);
             
-        return readResponseDtoList(response, MovementDto.class);
+        return RestHelper.readResponseDtoList(response, MovementDto.class);
     }
     
     private List<MovementDto> getLatestMovements(int numberOfMovements) throws Exception {
@@ -208,7 +200,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
             
-        return readResponseDtoList(response, MovementDto.class);
+        return RestHelper.readResponseDtoList(response, MovementDto.class);
     }
     
     private MovementType getMovementById(String id) throws Exception {
@@ -218,20 +210,6 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
         
-        return readResponseDto(response, MovementType.class);
-    }
-    
-    private <T> T readResponseDto(String response, Class<T> clazz) throws Exception {
-        JsonReader jsonReader = Json.createReader(new StringReader(response));
-        JsonObject responseDto = jsonReader.readObject();
-        JsonObject data = responseDto.getJsonObject("data");
-        return objectMapper.readValue(data.toString(), clazz);
-    }
-    
-    private <T> List<T> readResponseDtoList(String response, Class<T> clazz) throws Exception {
-        JsonReader jsonReader = Json.createReader(new StringReader(response));
-        JsonObject responseDto = jsonReader.readObject();
-        JsonArray data = responseDto.getJsonArray("data");
-        return objectMapper.readValue(data.toString(), objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+        return RestHelper.readResponseDto(response, MovementType.class);
     }
 }
