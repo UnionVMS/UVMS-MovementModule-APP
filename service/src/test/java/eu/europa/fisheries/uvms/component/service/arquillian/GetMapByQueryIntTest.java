@@ -1,17 +1,15 @@
 package eu.europa.fisheries.uvms.component.service.arquillian;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import javax.ejb.EJBTransactionRolledbackException;
+import javax.inject.Inject;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.ejb.EJBException;
-import javax.inject.Inject;
-import javax.jms.JMSException;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by roblar on 2017-03-08.
@@ -23,7 +21,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
     MovementServiceBean movementServiceBean;
 
 
-    @Test(expected = MovementServiceException.class)
+    @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
     public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryIsNotAllowed() throws MovementServiceException {
 
@@ -32,7 +30,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
         movementServiceBean.getMapByQuery(movementQuery);
     }
 
-    @Test(expected = MovementServiceException.class)
+    @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
     public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryThrowsMovementServiceException() throws MovementServiceException {
 

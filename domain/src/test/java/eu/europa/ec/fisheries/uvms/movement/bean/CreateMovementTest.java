@@ -35,9 +35,6 @@ public class CreateMovementTest {
     @Mock
     private MovementDao dao;
 
-    @InjectMocks
-    private MovementDomainModelBean model;
-
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);

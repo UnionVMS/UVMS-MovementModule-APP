@@ -44,7 +44,7 @@ public abstract class BuildMovementTestDeployment {
         // Need to exclude job first...
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement");
         //testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.bean");
-        testWar.addClass(MovementBatchModelBean.class).addClass(MovementDomainModelBean.class)
+        testWar.addClass(MovementBatchModelBean.class)
                 .addClass(SegmentBean.class).addClass(IncomingMovementBean.class);
 
         testWar.addPackages(true,"eu.europa.ec.fisheries.uvms.movement.model");
