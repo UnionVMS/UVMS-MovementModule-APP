@@ -11,6 +11,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
+import java.util.ArrayList;
+import java.util.Date;  //leave be for now
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetType;
@@ -26,27 +31,47 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.*;
-
-
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;  //leave be for now
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRSListElement;
 
 
 public class MovementMapper {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementMapper.class);
 
+    private MovementMapper() {}
+    
+    public static MovementType mapMovementBaseTypeToMovementType(MovementBaseType movementBaseType) {
+        MovementType movementType = new MovementType();
+        movementType.setGuid(movementBaseType.getGuid());
+        movementType.setConnectId(movementBaseType.getConnectId());
+        movementType.setAssetId(movementBaseType.getAssetId());
+        movementType.setPosition(movementBaseType.getPosition());
+        movementType.setPositionTime(movementBaseType.getPositionTime());
+        movementType.setStatus(movementBaseType.getStatus());
+        movementType.setReportedSpeed(movementBaseType.getReportedSpeed());
+        movementType.setReportedCourse(movementBaseType.getReportedCourse());
+        movementType.setMovementType(movementBaseType.getMovementType());
+        movementType.setSource(movementBaseType.getSource());
+        movementType.setActivity(movementBaseType.getActivity());
+        movementType.setTripNumber(movementBaseType.getTripNumber());
+        movementType.setInternalReferenceNumber(movementBaseType.getInternalReferenceNumber());
+        movementType.setProcessed(movementBaseType.isProcessed());
+        movementType.setDuplicate(movementBaseType.isDuplicate());
+        movementType.setDuplicates(movementBaseType.getDuplicates());
+        return movementType;
+    }
+    
     public static List<MovementDto> mapToMovementDtoList(List<MovementType> movmements) {
         List<MovementDto> mappedMovements = new ArrayList<>();
         for (MovementType mappedMovement : movmements) {
@@ -91,7 +116,7 @@ public class MovementMapper {
 
     public static MovementType enrichAndMapToMovementType(MovementBaseType movement, SpatialEnrichmentRS enrichment) {
 
-        MovementType movementType = Mapper.getInstance().getMapper().map(movement, MovementType.class);
+        MovementType movementType = MovementMapper.mapMovementBaseTypeToMovementType(movement);
         MovementMetaData movementMeta = new MovementMetaData();
 
         if (enrichment.getClosestLocations() != null) {
@@ -122,7 +147,7 @@ public class MovementMapper {
         List<MovementType> enrichedList = new ArrayList<>();
         for (MovementBaseType movement : movements) {
             SpatialEnrichmentRSListElement enrichmentRSListElement = enrichmentRespLists.get(index);
-            MovementType movementType = Mapper.getInstance().getMapper().map(movement, MovementType.class);
+            MovementType movementType = MovementMapper.mapMovementBaseTypeToMovementType(movement);
             MovementMetaData movementMeta = new MovementMetaData();
             if (enrichmentRSListElement.getClosestLocations() != null) {
                 enrichWithPortData(enrichmentRSListElement.getClosestLocations().getClosestLocations(), LocationType.PORT, movementMeta);

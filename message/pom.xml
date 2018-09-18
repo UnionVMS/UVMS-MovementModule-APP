@@ -18,12 +18,6 @@
             <artifactId>movement-model</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.apache.commons</groupId>
-		      		<artifactId>commons-lang3</artifactId>            		
-            	</exclusion>
-            </exclusions>                        
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.audit</groupId>
@@ -31,12 +25,6 @@
             <version>${audit.model.version}</version>
             <type>jar</type>
         </dependency>
-        <dependency>
-		      <groupId>org.apache.commons</groupId>
-		      <artifactId>commons-lang3</artifactId>
-		      <version>3.7</version>
-		</dependency>
-        
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
             <artifactId>uvms-config</artifactId>
@@ -46,11 +34,6 @@
             <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
             <artifactId>uvms-commons-message</artifactId>
             <version>${uvms.common.version}</version>
-        </dependency>
-        <dependency>
-        	<groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        	<version>2.6</version>
         </dependency>
     </dependencies>
 

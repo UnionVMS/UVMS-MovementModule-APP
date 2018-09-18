@@ -34,18 +34,13 @@
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
+			<version>8.0</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Modules dep -->
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>movement-model</artifactId>
-				<version>${project.version}</version>
-				<type>jar</type>
-			</dependency>
 			<dependency>
 				<groupId>fish.focus.uvms.maven</groupId>
 				<artifactId>uvms-pom-gis-deps</artifactId>
@@ -76,42 +71,7 @@
 				<version>1.20</version>
 				<type>pom</type>
 			</dependency>
-    		<dependency>
-    			<groupId>ch.qos.logback</groupId>
-    			<artifactId>logback-core</artifactId>
-    			<version>1.2.3</version>
-    		</dependency>
-    		<dependency>
-    			<groupId>ch.qos.logback</groupId>
-    			<artifactId>logback-classic</artifactId>
-    			<version>1.2.3</version>
-    		</dependency>
-    		<dependency>
-    		  <groupId>org.slf4j</groupId>
-  			  <artifactId>slf4j-api</artifactId>
-    		  <version>1.7.25</version>
-    		</dependency>
-		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-databind</artifactId>
-		    <version>2.7.9.1</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-annotations</artifactId>
-		    <version>2.7.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-core</artifactId>
-		    <version>2.7.9</version>
-		</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-jsr310</artifactId>
-				<version>2.9.6</version>
-			</dependency>
-	</dependencies>		
+		</dependencies>		
 	</dependencyManagement>
 
 	<repositories>
