@@ -1,8 +1,8 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import static junit.framework.TestCase.assertNotNull;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -11,7 +11,8 @@ import java.util.Date;    //leave be for now
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+
+import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,7 +30,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
 
 /**
  * Created by andreasw on 2017-03-09.
@@ -49,7 +49,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     private MovementDao movementDao;
 
     @Test
-    public void testCreatingMovement() throws MovementDomainException {
+    public void testCreatingMovement() {
         String uuid = UUID.randomUUID().toString();
 
         MovementType movementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid,0);
@@ -69,7 +69,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    public void testProcessingMovement() throws MovementDomainException {
+    public void testProcessingMovement() {
 
         // Given: Get the id for a persisted movement entity.
 
@@ -92,7 +92,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    public void testProcessingMovement_NoDuplicateMovement() throws MovementDomainException {
+    public void testProcessingMovement_NoDuplicateMovement() {
 
         // Given: Get the id for a persisted movement entity.
 
@@ -116,7 +116,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     @Test
     @Ignore   //Since we now process stuff as we create them this test falls apart TODO: fix
-    public void testDuplicateMovementsInProcessingMovementMethod_sameTimeStamp_duplicationFlagSetToFalse_sameMovementType() throws MovementDomainException {
+    public void testDuplicateMovementsInProcessingMovementMethod_sameTimeStamp_duplicationFlagSetToFalse_sameMovementType() {
 
         // Given: Create a movement with the exact same timestamp as a movement that exists in the database.
         String firstUuid = UUID.randomUUID().toString();
@@ -248,7 +248,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testMovementAndSegmentRelation() throws Exception {
+    public void testMovementAndSegmentRelation() {
     	String connectId = UUID.randomUUID().toString();
     	MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
@@ -274,7 +274,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testMovementAndSegmentRelationThreeMovements() throws Exception {
+    public void testMovementAndSegmentRelationThreeMovements() {
     	String connectId = UUID.randomUUID().toString();
     	MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
@@ -315,7 +315,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testMovementAndSegmentRelationThreeMovementsNonOrdered() throws Exception {
+    public void testMovementAndSegmentRelationThreeMovementsNonOrdered() {
     	int tenMinutes = 600000;
     	String connectId = UUID.randomUUID().toString();
     	Instant positionTime = Instant.now();
@@ -361,7 +361,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testTrackWithThreeMovements() throws Exception {
+    public void testTrackWithThreeMovements() {
     	String connectId = UUID.randomUUID().toString();
     	MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
@@ -393,7 +393,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testTrackWithThreeMovementsNonOrdered() throws Exception {
+    public void testTrackWithThreeMovementsNonOrdered() {
     	int tenMinutes = 600000;
     	String connectId = UUID.randomUUID().toString();
     	Date positionTime = new Date();

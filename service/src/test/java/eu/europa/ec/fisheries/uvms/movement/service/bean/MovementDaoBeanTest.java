@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+
+import org.hamcrest.core.StringContains;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.internal.matchers.ThrowableMessageMatcher;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
@@ -34,9 +37,6 @@ public class MovementDaoBeanTest extends TransactionalTests {
 
     @EJB
     private MovementDao movementDao;
-
-    @EJB
-    private IncomingMovementBean incomingMovementBean;
 	
 	@EJB
 	MovementDao movementDaoBean;
@@ -170,7 +170,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
     private AreaDao areaDao;
 	
 	@Test
-	public void testGetAreaByRemoteIDAndCode() throws MovementDomainException {
+	public void testGetAreaByRemoteIDAndCode() {
 		AreaType areaType = createAreaType();
 		em.persist(areaType);
 		em.flush();
@@ -188,10 +188,10 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 
 	@Test
-	public void testGetAreaByRemoteIDAndCode_willFail() throws MovementDomainException {
+	public void testGetAreaByRemoteIDAndCode_willFail() {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
-		thrown.expectMessage("No valid input parameters to method getAreaByRemoteIdAndCode");
+		expectedMessage("No valid input parameters to method getAreaByRemoteIdAndCode");
 
 		AreaType areaType = createAreaType();
 
@@ -231,5 +231,9 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		area.setAreaUpuser("TestUser");
 		area.setAreaType(areaType);
 		return area;
+	}
+
+	private void expectedMessage(String message) {
+		thrown.expect(new ThrowableMessageMatcher(new StringContains(message)));
 	}
 }

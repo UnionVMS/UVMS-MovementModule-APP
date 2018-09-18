@@ -16,9 +16,12 @@ import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+
+import org.hamcrest.core.StringContains;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.internal.matchers.ThrowableMessageMatcher;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -58,7 +61,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     private Random rnd = new Random();
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public ExpectedException thrown = ExpectedException.none();
 
     @EJB
     private MovementDao movementDao;
@@ -69,7 +72,7 @@ public class MovementDaoIntTest extends TransactionalTests {
      ******************************************************************************************************************/
 
     @Test
-    public void create() throws MovementDomainException {
+    public void create() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -94,13 +97,13 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void flush() throws MovementDomainException {
+    public void flush() {
         movementDao.flush();
         assertTrue("We assume hibernate native functions actually works", true);
     }
 
     @Test
-    public void getFirstMovement() throws MovementDomainException {
+    public void getFirstMovement() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -191,13 +194,13 @@ public class MovementDaoIntTest extends TransactionalTests {
 //    }
 
     @Test
-    public void getLatestMovements() throws MovementDomainException {
+    public void getLatestMovements() {
         List<LatestMovement> all = movementDao.getLatestMovements(10);
         assertNotNull(all);
     }
 
     @Test
-    public void getListAll() throws MovementDomainException {
+    public void getListAll() {
 
         int n = rnd.nextInt(50);
         for (int i = 0; i < n; i++) {
@@ -219,7 +222,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getListAll_NO_PositionalDups() throws MovementDomainException {
+    public void getListAll_NO_PositionalDups() {
 
         double longitude = 8.140625D;
         double latitude = 56.683804D;
@@ -272,7 +275,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementById() throws MovementDomainException {
+    public void getMovementById() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -296,8 +299,8 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     public void getMovementById_NULL_AS_SearchCriteria() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("id to load is required for loading");
+        thrown.expect(RuntimeException.class);
+        expectedMessage("id to load is required for loading");
 
         movementDao.getMovementById(null);
     }
@@ -309,7 +312,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementConnectByConnectId() throws MovementDomainException {
+    public void getMovementConnectByConnectId() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -373,8 +376,8 @@ public class MovementDaoIntTest extends TransactionalTests {
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.AREA, "HEPP"));
         String sql = "select m from Movement m ";
 
-        expectedException.expect(MovementDomainException.class);
-        expectedException.expectMessage("Error when getting list");
+        thrown.expect(MovementDomainException.class);
+        expectedMessage("Error when getting list");
 
         movementDao.getMovementList(sql, searchValues);
     }
@@ -476,12 +479,12 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     // The value of this test is very limited
     @Test
-    public void getMovementListByAreaAndTimeInterval_Invalid_Null_Parameter() throws MovementDomainException {
+    public void getMovementListByAreaAndTimeInterval_Invalid_Null_Parameter() {
 
         // TODO  this one cannot be instantiated using new (probably a soap thing)
         // MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
 
-        expectedException.expect(EJBTransactionRolledbackException.class);
+        thrown.expect(EJBTransactionRolledbackException.class);
 
         List<Movement> movementListByAreaAndTimeInterval = movementDao.getMovementListByAreaAndTimeInterval(null);
     }
@@ -522,7 +525,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     @Test
     public void getMovementListSearchCount_SearchValueNull_ExceptionThrown() throws java.text.ParseException, ParseException, MovementDomainException {
 
-        expectedException.expect(Exception.class);
+        thrown.expect(Exception.class);
 
         String sql = SearchFieldMapper.createCountSearchSql(null, true);
         movementDao.getMovementListSearchCount(sql,null);
@@ -543,22 +546,20 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void merge() throws MovementDomainException {
-
-        expectedException.expect(EJBTransactionRolledbackException.class);
-        expectedException.expectMessage("attempt to create merge event with null entity");
+    public void merge() {
+        thrown.expect(EJBTransactionRolledbackException.class);
+        expectedMessage("attempt to create merge event with null entity");
         movementDao.merge(null);
     }
 
     @Test
-    public void persist() throws MovementDomainException {
-
-        expectedException.expect(EJBTransactionRolledbackException.class);
+    public void persist() {
+        thrown.expect(EJBTransactionRolledbackException.class);
         movementDao.persist(null);
     }
 
     @Test
-    public void upsertLatestMovementOnExisting() throws MovementDomainException {
+    public void upsertLatestMovementOnExisting() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -581,7 +582,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void upsertLatestMovementOnNonExisting() throws MovementDomainException {
+    public void upsertLatestMovementOnNonExisting() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
@@ -684,5 +685,9 @@ public class MovementDaoIntTest extends TransactionalTests {
             }
         }
         return false;
+    }
+
+    private void expectedMessage(String message) {
+        thrown.expect(new ThrowableMessageMatcher(new StringContains(message)));
     }
 }
