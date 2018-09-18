@@ -3,7 +3,7 @@ package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-
+import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -79,23 +79,65 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(createdMovement.getInternalReferenceNumber(), is(movementBaseType.getInternalReferenceNumber()));
     }
     
-    @Ignore // Should work when background job is removed
     @Test
     @RunAsClient
-    public void createMovementVerifyCalculatedData() throws Exception {
+    public void createMovementVerifyBasicMetaData() throws Exception {
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
         assertThat(createdMovement.getGuid(), is(notNullValue()));
-        assertThat(createdMovement.getCalculatedSpeed(), is(notNullValue()));
-        assertThat(createdMovement.getCalculatedCourse(), is(notNullValue()));
         assertThat(createdMovement.getWkt(), is(notNullValue()));
         assertThat(createdMovement.getMetaData(), is(notNullValue()));
     }
     
+    @Test
+    @RunAsClient
+    public void createMovementVerifyCalculatedData() throws Exception {
+        String connectId = UUID.randomUUID().toString();
+        
+        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType(0d, 1d);
+        movementBaseType.setConnectId(connectId);
+        movementBaseType.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
+        jmsHelper.createMovement(movementBaseType, "test user");
+        
+        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType(0d, 2d);
+        movementBaseType2.setConnectId(connectId);
+        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType2, "test user");
+        MovementType createdMovement = response.getMovement();
+        
+        assertThat(createdMovement.getGuid(), is(notNullValue()));
+        assertThat(createdMovement.getCalculatedSpeed(), is(notNullValue()));
+        assertThat(createdMovement.getCalculatedCourse(), is(notNullValue()));
+    }
+    
+    @Test
+    @RunAsClient
+    public void createMovementVerifyBasicSegment() throws Exception {
+        String connectId = UUID.randomUUID().toString();
+        
+        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType(0d, 0d);
+        movementBaseType1.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
+        movementBaseType1.setConnectId(connectId);
+        jmsHelper.createMovement(movementBaseType1, "test user");
+        
+        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType(0d, 1d);
+        movementBaseType2.setConnectId(connectId);
+        jmsHelper.createMovement(movementBaseType2, "test user");
+        
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId);
+        query.getMovementSearchCriteria().add(criteria);
+        GetMovementListByQueryResponse movementList = jmsHelper.getMovementListByQuery(query);
+        List<MovementType> movements = movementList.getMovement();
+        
+        assertThat(movements.size(), is(2));
+        assertThat(movements.get(0).getSegmentIds(), is(movements.get(1).getSegmentIds()));
+    }
+    
     /* Test areas are defined in SpatialModuleMock */
     @Test
-    @Ignore    //metaData.getAreas().get(0).getTransitionType() evaluates as POS on jenkins but as ENT on my local machine   ;(
     @RunAsClient
     public void createMovementVerifyBasicAreaData() throws Exception {
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
@@ -107,7 +149,35 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(metaData.getClosestCountry().getCode(), is("SWE"));
         assertThat(metaData.getClosestPort().getCode(), is("GOT"));
         assertThat(metaData.getAreas().size(), is(2));
-        assertThat(metaData.getAreas().get(0).getTransitionType(), is(MovementTypeType.POS));
+        assertThat(metaData.getAreas().get(0).getTransitionType(), is(MovementTypeType.ENT));
+    }
+
+    @Ignore // Second position in same area should have transition type POS
+    @Test
+    @RunAsClient
+    public void createMovementVerifyAreaTransitionType() throws Exception {
+        String connectId = UUID.randomUUID().toString();
+        
+        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType(0d, 0d);
+        movementBaseType1.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
+        movementBaseType1.setConnectId(connectId);
+        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType1, "test user");
+        MovementType createdMovement = response.getMovement();
+        
+        assertThat(createdMovement.getGuid(), is(notNullValue()));
+        assertThat(createdMovement.getMetaData(), is(notNullValue()));
+        MovementMetaData metaData = createdMovement.getMetaData();
+        assertThat(metaData.getAreas().get(0).getTransitionType(), is(MovementTypeType.ENT));
+        
+        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType(0d, 1d);
+        movementBaseType2.setConnectId(connectId);
+        CreateMovementResponse response2 = jmsHelper.createMovement(movementBaseType2, "test user");
+        MovementType createdMovement2 = response2.getMovement();
+        
+        assertThat(createdMovement2.getGuid(), is(notNullValue()));
+        assertThat(createdMovement2.getMetaData(), is(notNullValue()));
+        MovementMetaData metaData2 = createdMovement2.getMetaData();
+        assertThat(metaData2.getAreas().get(0).getTransitionType(), is(MovementTypeType.POS));
     }
 
     @Test
@@ -117,9 +187,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
 
-        // This is needed as long as the background processing job exists
-        Thread.sleep(5000);
-        
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
@@ -148,9 +215,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         movementBaseType2.setConnectId(connectId);
         jmsHelper.createMovement(movementBaseType2, "test user");
 
-        // This is needed as long as the background processing job exists
-        Thread.sleep(5000);
-        
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
@@ -171,9 +235,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
         jmsHelper.createMovement(movementBaseType2, "test user");
 
-        // This is needed as long as the background processing job exists
-        Thread.sleep(5000);
-        
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria1 = new ListCriteria();
         criteria1.setKey(SearchKey.CONNECT_ID);
@@ -198,9 +259,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
 
-        // This is needed as long as the background processing job exists
-        Thread.sleep(5000);
-        
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.MOVEMENT_ID);
@@ -226,9 +284,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
         jmsHelper.createMovement(movementBaseType2, "test user");
 
-        // This is needed as long as the background processing job exists
-        Thread.sleep(5000);
-        
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria1 = new ListCriteria();
         criteria1.setKey(SearchKey.MOVEMENT_ID);
@@ -247,16 +302,13 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Test
     @RunAsClient
     public void getMovementListByDateFromRange() throws Exception {
-        Instant timestampBefore = Instant.now();
+        Instant timestampBefore = Instant.now().minusSeconds(1);
         
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
         
-        // This is needed as long as the background processing job exists
-        Thread.sleep(5000);
-        
-        Instant timestampAfter = Instant.now();
+        Instant timestampAfter = Instant.now().plusSeconds(1);
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         RangeCriteria criteria = new RangeCriteria();
@@ -281,7 +333,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Test
     @RunAsClient
     public void getMovementListByDateTwoMovements() throws Exception {
-        Instant timestampBefore = Instant.now();
+        Instant timestampBefore = Instant.now().minusSeconds(1);
         
         MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
         jmsHelper.createMovement(movementBaseType1, "test user");
@@ -289,10 +341,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
         jmsHelper.createMovement(movementBaseType2, "test user");
 
-        // This is needed as long as the background processing job exists
-        Thread.sleep(5000);
-        
-        Instant timestampAfter = Instant.now();
+        Instant timestampAfter = Instant.now().plusSeconds(1);
         
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         RangeCriteria criteria = new RangeCriteria();
