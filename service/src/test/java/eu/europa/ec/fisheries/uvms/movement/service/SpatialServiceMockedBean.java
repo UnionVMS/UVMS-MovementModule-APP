@@ -1,26 +1,40 @@
 package eu.europa.ec.fisheries.uvms.movement.service;
 
-import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import org.apache.commons.collections.CollectionUtils;
-
-import javax.ejb.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 
 @LocalBean
 @Stateless
 public class SpatialServiceMockedBean  implements SpatialService {
 
+    public static final String MESSAGE_PRODUCER_METHODS_FAIL = "MESSAGE_PRODUCER_METHODS_FAIL";
+
+    private void shouldIFail() throws MovementServiceException {
+        String fail = System.getProperty(MESSAGE_PRODUCER_METHODS_FAIL, "false");
+        if(!"false".equals(fail.toLowerCase())) {
+            throw new MovementServiceException(ErrorCode.JMS_SENDING_ERROR);
+        }
+    }
+    
     public MovementType enrichMovementWithSpatialData(MovementBaseType movement) throws MovementServiceException {
-      return  createSmalletPossibleMovementType(movement);
+        shouldIFail();
+        return  createSmalletPossibleMovementType(movement);
     }
 
     @Override
-    public List<MovementType> enrichMovementBatchWithSpatialData(List<MovementBaseType> movements) {
+    public List<MovementType> enrichMovementBatchWithSpatialData(List<MovementBaseType> movements) throws MovementServiceException {
+        shouldIFail();
         ArrayList<MovementType> movementTypes = new ArrayList<>();
         for(MovementBaseType movement : movements) {
             movementTypes.add(createSmalletPossibleMovementType(movement));

@@ -65,6 +65,9 @@ public class TempMovementServiceBean {
     
     @Inject
     private TempMovementDao dao;
+    
+    @Inject
+    private AuditService auditService;
 
     @Inject
     @CreatedManualMovement
@@ -77,12 +80,7 @@ public class TempMovementServiceBean {
         try {
             tempMovement = dao.createTempMovementEntity(tempMovement);
             fireMovementEvent(tempMovement);
-            // this should not roll back,  so we just log it
-            try {
-                producer.sendModuleMessage(AuditModuleRequestMapper.mapAuditLogTempMovementCreated(tempMovement.getGuid(), username), ModuleQueue.AUDIT);
-            } catch (AuditModelMarshallException | MovementMessageException ignore) {
-                LOG.error("Failed to send audit log message! Temp Movement with guid {} was created ", tempMovement.getGuid());
-            }
+            auditService.sendTempMovementCreatedAudit(tempMovement, username);
             return tempMovement;
         } catch (Exception e) {
             throw new EJBException("Error when creating temp movement", e);

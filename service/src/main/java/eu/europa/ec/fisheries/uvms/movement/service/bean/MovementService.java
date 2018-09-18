@@ -40,13 +40,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
@@ -77,9 +71,6 @@ public class MovementService {
     private static final Logger LOG = LoggerFactory.getLogger(MovementService.class);
 
     @EJB
-    private MessageProducer producer;
-
-    @EJB
     private SpatialService spatial;
 
     @EJB
@@ -90,6 +81,9 @@ public class MovementService {
     
     @Inject
     private AreaDao areaDao;
+    
+    @Inject
+    private AuditService auditService;
 
     @Inject
     @CreatedMovement
@@ -97,30 +91,20 @@ public class MovementService {
 
     /**
      *
-     * @param data
+     * @param movement
      * @throws MovementServiceException
      */
-    public MovementType createMovement(MovementBaseType data, String username) {
+    public MovementType createMovement(MovementBaseType movement, String username) {
         try {
             //enrich with closest port, closest country and area transitions
-            MovementType enrichedMovement = spatial.enrichMovementWithSpatialData(data);
+            MovementType enrichedMovement = spatial.enrichMovementWithSpatialData(movement);
             MovementType createdMovement = movementBatch.createMovement(enrichedMovement, username);
             if(createdMovement != null){
                 fireMovementEvent(createdMovement);
-                try {
-                    String auditData;
-                    if (MovementTypeType.MAN.equals(enrichedMovement.getMovementType())) {
-                        auditData = AuditModuleRequestMapper.mapAuditLogManualMovementCreated(createdMovement.getGuid(), username);
-                    } else {
-                        auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(createdMovement.getGuid(), username);
-                    }
-                    producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
-                } catch (AuditModelMarshallException e) {
-                    LOG.error("Failed to send audit log message! Movement with guid {} was created ", createdMovement.getGuid());
-                }
+                auditService.sendMovementCreatedAudit(createdMovement, username);
             }
             return createdMovement;
-        } catch (MovementServiceException | MovementMessageException | MovementDomainRuntimeException ex) {
+        } catch (MovementServiceException | MovementDomainRuntimeException ex) {
             throw new EJBException(ex);
         }
     }
@@ -135,8 +119,7 @@ public class MovementService {
                 savedBatchMovements.add(movementBatch.createMovement(enrichedMovement, username));
             }
             SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(savedBatchMovements) ? SimpleResponse.OK : SimpleResponse.NOK;
-            String auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(simpleResponse.name(), username);
-            producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
+            auditService.sendMovementBatchCreatedAudit(simpleResponse.name(), username);
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
             createMovementBatchResponse.setResponse(simpleResponse);
             createMovementBatchResponse.getMovements().addAll(savedBatchMovements);
@@ -146,7 +129,7 @@ public class MovementService {
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
             createMovementBatchResponse.setResponse(SimpleResponse.NOK);
             return createMovementBatchResponse;
-        } catch (MovementServiceException | AuditModelMarshallException | MovementMessageException ex) {
+        } catch (MovementServiceException ex) {
             throw new EJBException("createMovementBatch failed", ex);
         }
     }
@@ -378,13 +361,9 @@ public class MovementService {
                 movementBatch.createMovement(movement, "Batch movement");
             }
 
-            // TODO  One Audit for the entire batch ??????? and always OK ???????
-            String auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(createdMovement.name(), "UVMS batch movement");
-            producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
+            auditService.sendMovementBatchCreatedAudit(createdMovement.name(), "UVMS batch movement");
 
             return createdMovement;
-        } catch (AuditModelMarshallException | MovementMessageException ex) {
-            throw new EJBException("createMovementBatch failed", ex);
         } catch (Exception e) {
             return SimpleResponse.NOK;
         }
