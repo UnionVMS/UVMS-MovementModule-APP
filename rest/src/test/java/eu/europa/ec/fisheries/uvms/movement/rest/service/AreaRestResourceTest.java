@@ -9,11 +9,11 @@ import javax.ws.rs.core.MediaType;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.AreaDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 
 @RunWith(Arquillian.class)
 public class AreaRestResourceTest extends BuildMovementRestDeployment {

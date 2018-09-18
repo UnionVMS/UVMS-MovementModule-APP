@@ -16,14 +16,14 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
-import eu.europa.ec.fisheries.uvms.movement.dao.bean.MovementSearchGroupDao;
-import eu.europa.ec.fisheries.uvms.movement.entity.group.MovementFilterGroup;
-import eu.europa.ec.fisheries.uvms.movement.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.mapper.MovementGroupMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementSearchGroupDao;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementGroupMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
 
 @Stateless

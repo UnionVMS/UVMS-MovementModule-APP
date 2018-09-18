@@ -16,11 +16,12 @@
     <properties>
         <application.name>${project.parent.artifactId}</application.name>
         <application.version>${project.parent.version}</application.version>
-        <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log
-        </application.logfile>
-        <application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log
-        </application.error.logfile>
         <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
+        <application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log</application.error.logfile>
+        <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
+        
+        <docker.dev.start.phase>test-compile</docker.dev.start.phase>
+		<docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
     </properties>
 
     <dependencies>
@@ -30,10 +31,10 @@
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-            <artifactId>${project.parent.artifactId}-model</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>movement-model</artifactId>
+		</dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.spatial</groupId>
             <artifactId>spatial-model</artifactId>
@@ -53,11 +54,6 @@
             <groupId>eu.europa.ec.fisheries.uvms.user</groupId>
             <artifactId>user-model</artifactId>
             <version>${user.model.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-            <artifactId>movement-dbaccess-domain</artifactId>
-            <version>4.0.16-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

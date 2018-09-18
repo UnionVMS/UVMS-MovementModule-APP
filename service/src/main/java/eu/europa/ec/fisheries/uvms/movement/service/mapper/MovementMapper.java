@@ -27,10 +27,10 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
-import eu.europa.ec.fisheries.uvms.movement.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.*;
 
 
