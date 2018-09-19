@@ -28,7 +28,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by thofan on 2017-02-23.
@@ -79,7 +79,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    public void createMovement() throws MovementDomainException {
+    public void createMovement() throws MovementServiceException {
 
         Instant now = DateUtil.nowUTC();
         double longitude = rnd.nextDouble();
@@ -144,7 +144,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getAreaType() throws MovementDomainException {
+    public void getAreaType() throws MovementServiceException {
 
         Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
         areaTransition.setMovementType(MovementTypeType.MAN);
@@ -155,7 +155,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getAreaType_AREATYPE_AS_NULL() throws MovementDomainException {
+    public void getAreaType_AREATYPE_AS_NULL() throws MovementServiceException {
 
         expectedException.expect(Exception.class);
 

@@ -23,7 +23,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * @author roblar
@@ -45,7 +45,7 @@ public class AreaDaoIntTest extends TransactionalTests {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void testCreateArea() throws MovementDomainException {
+    public void testCreateArea() throws MovementServiceException {
 
         AreaType areaType = createAreaTypeHelper();
         areaType.setName("testCreateArea");
@@ -64,7 +64,7 @@ public class AreaDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void testGetArea() throws MovementDomainException {
+    public void testGetArea() throws MovementServiceException {
 
         AreaType areaType = createAreaTypeHelper();
         areaType.setName("testGetArea");
@@ -84,7 +84,7 @@ public class AreaDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void testGetAllAreas() throws MovementDomainException {
+    public void testGetAllAreas() throws MovementServiceException {
 
         List<Area> readAllAreasFromDatabase;
 
@@ -228,7 +228,7 @@ public class AreaDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void failGetArea() throws MovementDomainException {
+    public void failGetArea() throws MovementServiceException {
         Area failingAreaRead = areaDao.readMovementAreaById(-42L);
         assertNull(failingAreaRead);
     }

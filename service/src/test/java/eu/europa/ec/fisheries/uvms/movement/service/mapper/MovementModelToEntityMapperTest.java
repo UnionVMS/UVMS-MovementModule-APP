@@ -29,7 +29,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by roblar on 2017-03-31.
@@ -38,7 +38,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainExce
 public class MovementModelToEntityMapperTest extends TransactionalTests {
 
     @Test
-    public void testMapNewMovementEntity_reportedSpeedIsNull() throws MovementDomainException {
+    public void testMapNewMovementEntity_reportedSpeedIsNull() throws MovementServiceException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -55,7 +55,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_reportedCourseIsNull() throws MovementDomainException {
+    public void testMapNewMovementEntity_reportedCourseIsNull() throws MovementServiceException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -71,7 +71,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_positionIsNull() throws MovementDomainException {
+    public void testMapNewMovementEntity_positionIsNull() throws MovementServiceException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -87,7 +87,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_ifSourceIsNullThenMovementSourceTypeIs_INMARSATC() throws MovementDomainException {
+    public void testMapNewMovementEntity_ifSourceIsNullThenMovementSourceTypeIs_INMARSATC() throws MovementServiceException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -104,7 +104,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_ifMovementTypeIsNullThenMovementTypeTypeIs_POS() throws MovementDomainException {
+    public void testMapNewMovementEntity_ifMovementTypeIsNullThenMovementTypeTypeIs_POS() throws MovementServiceException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -120,7 +120,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_ifPositionTimeIsNullThenTimeStampIsSet() throws MovementDomainException {
+    public void testMapNewMovementEntity_ifPositionTimeIsNullThenTimeStampIsSet() throws MovementServiceException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -137,7 +137,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_activityIsNull() throws MovementDomainException {
+    public void testMapNewMovementEntity_activityIsNull() throws MovementServiceException {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -153,7 +153,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testMapNewMovementEntity_metaDataIsNull() throws MovementDomainException  {
+    public void testMapNewMovementEntity_metaDataIsNull() throws MovementServiceException  {
 
         //Given
         String uuid = UUID.randomUUID().toString();
@@ -251,7 +251,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
-    public void testCreateActivity_mapFromMovementBaseTypeToActivity() throws MovementDomainException {
+    public void testCreateActivity_mapFromMovementBaseTypeToActivity() throws MovementServiceException {
 
         //Given
         String uuid = UUID.randomUUID().toString();

@@ -17,7 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @Stateless
 public class MovementSearchGroupDao {
@@ -40,13 +40,13 @@ public class MovementSearchGroupDao {
         return query.getResultList();
     }
 
-    public MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementDomainException {
+    public MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup) throws MovementServiceException {
         //Sanity check on id to prevent create operation instead of update operation.
         if(filterGroup.getId() != null && getMovementFilterGroupById(filterGroup.getId().intValue()) != null) {
             filterGroup = em.merge(filterGroup);
             em.flush();
         } else {
-            throw new MovementDomainException("Missing ID or filterGroup with matching ID.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new MovementServiceException("Missing ID or filterGroup with matching ID.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         return filterGroup;
     }

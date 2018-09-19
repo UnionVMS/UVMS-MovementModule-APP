@@ -37,8 +37,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper;
 
@@ -101,7 +101,7 @@ public class MovementBatchModelBean {
                 long diff = System.currentTimeMillis() - start;
                 LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
             } else {
-                throw new MovementDomainRuntimeException("Couldn't find movementConnect!", ErrorCode.NO_MOVEMENT_CONNECT);
+                throw new MovementServiceRuntimeException("Couldn't find movementConnect!", ErrorCode.NO_MOVEMENT_CONNECT);
             }
             moveConnect.getMovementList().add(currentMovement);
             dao.persist(moveConnect);
@@ -109,18 +109,16 @@ public class MovementBatchModelBean {
             //Initiate the processing of movements, This is copied almost straight from MovementProcessorBean
             //TODO: Move this to MovementServiceBean when we start to refactor the mappings
             try {
-
                 incomingMovementBean.processMovement(currentMovement);
             } catch (Exception e) {
                 LOG.error("Error while processing movement", e);
                 throw new RuntimeException("Error while processing movement: " + e);
             }
-
             createdMovementType = mapToMovementType(currentMovement);
             long diff = System.currentTimeMillis() - start;
             LOG.debug("Create movement done: " + " ---- TIME ---- " + diff + "ms" );
             return createdMovementType;
-        } catch (MovementDomainException e) {
+        } catch (Exception e) {
             LOG.error("[ Error when creating movement. ] {}", e);
             throw new EJBException("Could not create movement.", e);
         }
@@ -185,7 +183,6 @@ public class MovementBatchModelBean {
         return areas;
     }
 
-
     /**
      * Enriches the MovementTypes Areas in the metadata object. If there are
      * transitions present that are not already mapped in the movementType they are
@@ -240,12 +237,12 @@ public class MovementBatchModelBean {
         }
     }
 
-    public void flush() throws MovementDomainException {
+    public void flush() throws MovementServiceException {
         try {
             dao.flush();
         } catch (Exception e) {
             LOG.error("[ Error when creating ] {}", e.getMessage());
-            throw new MovementDomainException("Error when creating", e, ErrorCode.DAO_PERSIST_ERROR);
+            throw new MovementServiceException("Error when creating", e, ErrorCode.DAO_PERSIST_ERROR);
         }
     }
 }

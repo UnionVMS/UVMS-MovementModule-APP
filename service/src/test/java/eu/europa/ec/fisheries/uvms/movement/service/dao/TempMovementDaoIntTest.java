@@ -20,7 +20,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnu
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by thofan on 2017-02-22.
@@ -69,7 +69,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getTempMovementByGuid() throws MovementDomainException {
+    public void getTempMovementByGuid() throws MovementServiceException {
 
         // first create one
         TempMovement tempMovement = createTempMovementEntityHelper(LONGITUDE, LATITUDE);
@@ -88,9 +88,9 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getTempMovementByGuid_ZeroGuid_Exception_Thrown() throws MovementDomainException {
+    public void getTempMovementByGuid_ZeroGuid_Exception_Thrown() throws MovementServiceException {
 
-        thrown.expect(MovementDomainException.class);
+        thrown.expect(MovementServiceException.class);
         expectedMessage("Error when fetching temp movement");
 
         // we assume that the probability for zero guid exists in db is so low so we consider this safe

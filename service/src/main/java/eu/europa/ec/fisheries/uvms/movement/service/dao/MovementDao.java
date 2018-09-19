@@ -33,8 +33,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 
@@ -77,7 +77,7 @@ public class MovementDao {
 
     public List<Movement> getLatestMovementsByConnectId(String connectId, Integer amount) {
         if(amount < 1) {
-            throw new MovementDomainRuntimeException("Amount can't have 0 or negative value.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new MovementServiceRuntimeException("Amount can't have 0 or negative value.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         } else if (amount == 1) {
             // TODO  not stable
             LatestMovement latestMovement = getLatestMovement(connectId);
@@ -134,7 +134,7 @@ public class MovementDao {
                 query = em.createNamedQuery(Area.FIND_BY_CODE, Area.class);
                 query.setParameter("code", code);
             } else {
-                throw new MovementDomainRuntimeException("No valid input parameters to method getAreaByRemoteIdAndCode",
+                throw new MovementServiceRuntimeException("No valid input parameters to method getAreaByRemoteIdAndCode",
                         ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
             Area singleResult = query.getSingleResult();
@@ -220,7 +220,7 @@ public class MovementDao {
         }
     }
 
-    public Boolean hasMovementToOrFromSegment(Movement movement) throws MovementDomainException {
+    public Boolean hasMovementToOrFromSegment(Movement movement) throws MovementServiceException {
         try {
             TypedQuery<Segment> query = em.createNamedQuery(Segment.FIND_BY_MOVEMENT, Segment.class);
             query.setParameter("movement", movement);
@@ -233,7 +233,7 @@ public class MovementDao {
             }
         } catch (Exception e) {
             LOG.error("[ Error when getting latest movement. ] {}", e.getMessage());
-            throw new MovementDomainException("Error when getting latest movement", e, ErrorCode.RETRIEVING_LATEST_MOVEMENT_ERROR);
+            throw new MovementServiceException("Error when getting latest movement", e, ErrorCode.RETRIEVING_LATEST_MOVEMENT_ERROR);
         }
     }
 
@@ -283,7 +283,7 @@ public class MovementDao {
         return query.getResultList();
     }
 
-    public <T> T getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementDomainException {
+    public <T> T getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues) throws MovementServiceException {
         try {
             Query query = getMovementQuery(sql, searchKeyValues);
             query.setFirstResult(listSize * (page - 1));
@@ -292,10 +292,10 @@ public class MovementDao {
             return resultList;
         } catch (IllegalArgumentException e) {
             LOG.error("[ Error getting movement list paginated ] {}", e.getMessage());
-            throw new MovementDomainRuntimeException("Error when getting list", e, ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new MovementServiceRuntimeException("Error when getting list", e, ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         } catch (Exception e) {
             LOG.error("[ Error getting movement list paginated ]  {}", e.getMessage());
-            throw new MovementDomainException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
+            throw new MovementServiceException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
 
@@ -331,7 +331,7 @@ public class MovementDao {
         }
     }
 
-    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues) throws MovementDomainException {
+    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues) throws MovementServiceException {
         try {
             LOG.debug("SQL QUERY IN LIST PAGINATED: " + sql);
             Query query = getMovementQuery(sql, searchKeyValues);
@@ -340,11 +340,11 @@ public class MovementDao {
             return null;
         } catch (Exception e) {
             LOG.error("[ Error getting movement list paginated ]  {}", e.getMessage());
-            throw new MovementDomainException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
+            throw new MovementServiceException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
 
-    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues, int numberOfReports) throws MovementDomainException {
+    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues, int numberOfReports) throws MovementServiceException {
         try {
             List<Movement> movements = new ArrayList<>();
             // long start = System.currentTimeMillis();
@@ -367,7 +367,7 @@ public class MovementDao {
             return movements;
         } catch (ParseException e) {
             LOG.error("[ Error getting movement list paginated ]  {}", e.getMessage());
-            throw new MovementDomainException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
+            throw new MovementServiceException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
 
