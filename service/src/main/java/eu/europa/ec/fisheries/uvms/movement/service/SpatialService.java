@@ -1,18 +1,16 @@
 package eu.europa.ec.fisheries.uvms.movement.service;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-
-import javax.ejb.Local;
 import java.util.List;
+import javax.ejb.Local;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by thofan on 2017-03-03.
  */
 @Local
 public interface SpatialService {
-    MovementType enrichMovementWithSpatialData(MovementBaseType movement) throws MovementServiceException;
+    Movement enrichMovementWithSpatialData(Movement movement) throws MovementServiceException;
 
-    List<MovementType> enrichMovementBatchWithSpatialData(List<MovementBaseType> movements) throws MovementServiceException;
+    List<Movement> enrichMovementBatchWithSpatialData(List<Movement> movements) throws MovementServiceException;
 }

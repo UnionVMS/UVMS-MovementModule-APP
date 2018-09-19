@@ -61,6 +61,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRun
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.AreaMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -75,6 +76,9 @@ public class MovementService {
 
     @EJB
     private MovementBatchModelBean movementBatch;
+    
+    @Inject
+    private IncomingMovementBean incomingMovementBean;
 
     @Inject
     private MovementDao dao;
@@ -94,35 +98,36 @@ public class MovementService {
      * @param movement
      * @throws MovementServiceException
      */
-    public MovementType createMovement(MovementBaseType movement, String username) {
+    public Movement createMovement(Movement movement, String username) {
         try {
-            //enrich with closest port, closest country and area transitions
-            MovementType enrichedMovement = spatial.enrichMovementWithSpatialData(movement);
-            MovementType createdMovement = movementBatch.createMovement(enrichedMovement, username);
+            //enrich with closest port, closest country and areas
+            Movement enrichedMovement = spatial.enrichMovementWithSpatialData(movement);
+            Movement createdMovement = movementBatch.createMovement(enrichedMovement);
+            incomingMovementBean.processMovement(createdMovement);
             if(createdMovement != null){
                 fireMovementEvent(createdMovement);
                 auditService.sendMovementCreatedAudit(createdMovement, username);
             }
             return createdMovement;
-        } catch (MovementServiceException | MovementDomainRuntimeException ex) {
+        } catch (MovementServiceException | MovementDomainRuntimeException | MovementDomainException ex) {
             throw new EJBException(ex);
         }
     }
 
-    public CreateMovementBatchResponse createMovementBatch(List<MovementBaseType> movementBaseTypeList, String username) {
+    public CreateMovementBatchResponse createMovementBatch(List<Movement> movements, String username) {
         LOG.debug("Create invoked in service layer");
         try {
             LOG.debug("ENRICHING MOVEMENTS BATCH WITH SPATIAL DATA");
-            List<MovementType> enrichedMovements = spatial.enrichMovementBatchWithSpatialData(movementBaseTypeList);
-            List<MovementType> savedBatchMovements = new ArrayList<>();
-            for (MovementType enrichedMovement : enrichedMovements) {
-                savedBatchMovements.add(movementBatch.createMovement(enrichedMovement, username));
+            List<Movement> enrichedMovements = spatial.enrichMovementBatchWithSpatialData(movements);
+            List<Movement> savedBatchMovements = new ArrayList<>();
+            for (Movement enrichedMovement : enrichedMovements) {
+                savedBatchMovements.add(movementBatch.createMovement(enrichedMovement));
             }
             SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(savedBatchMovements) ? SimpleResponse.OK : SimpleResponse.NOK;
             auditService.sendMovementBatchCreatedAudit(simpleResponse.name(), username);
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
             createMovementBatchResponse.setResponse(simpleResponse);
-            createMovementBatchResponse.getMovements().addAll(savedBatchMovements);
+            createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementType(savedBatchMovements));
             return createMovementBatchResponse;
         } catch (MovementDomainRuntimeException mdre) {
             LOG.warn("Didn't find movement connect for the just received movement so NOT going to save anything!");
@@ -335,37 +340,11 @@ public class MovementService {
     }
 
 
-    private void fireMovementEvent(MovementBaseType createdMovement) {
+    private void fireMovementEvent(Movement createdMovement) {
         try {
             createdMovementEvent.fire(new NotificationMessage("movementGuid", createdMovement.getGuid()));
         } catch (Exception e) {
             LOG.error("[ Error when firing notification of created temp movement. ] {}", e.getMessage());
-        }
-    }
-
-    public SimpleResponse createMovementBatch(List<MovementBaseType> query) {
-        LOG.debug("Create invoked in service layer");
-        try {
-
-            LOG.debug("ENRICHING MOVEMENTS WITH SPATIAL DATA");
-
-            List<MovementType> enrichedMovements = new ArrayList<>();
-
-            for (MovementBaseType movement : query) {
-                MovementType enrichedMovement = spatial.enrichMovementWithSpatialData(movement);
-                enrichedMovements.add(enrichedMovement);
-            }
-
-            SimpleResponse createdMovement = SimpleResponse.OK;
-            for (MovementType movement : enrichedMovements) {
-                movementBatch.createMovement(movement, "Batch movement");
-            }
-
-            auditService.sendMovementBatchCreatedAudit(createdMovement.name(), "UVMS batch movement");
-
-            return createdMovement;
-        } catch (Exception e) {
-            return SimpleResponse.NOK;
         }
     }
 

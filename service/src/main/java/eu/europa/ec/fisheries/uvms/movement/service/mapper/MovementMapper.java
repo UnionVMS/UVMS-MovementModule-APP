@@ -34,6 +34,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
@@ -114,58 +116,51 @@ public class MovementMapper {
         return dto;
     }
 
-    public static MovementType enrichAndMapToMovementType(MovementBaseType movement, SpatialEnrichmentRS enrichment) {
+    public static Movement enrichMovement(Movement movement, SpatialEnrichmentRS enrichment) {
 
-        MovementType movementType = MovementMapper.mapMovementBaseTypeToMovementType(movement);
-        MovementMetaData movementMeta = new MovementMetaData();
+        Movementmetadata metadata = new Movementmetadata();
 
         if (enrichment.getClosestLocations() != null) {
-            enrichWithPortData(enrichment.getClosestLocations().getClosestLocations(), LocationType.PORT, movementMeta);
+            enrichWithPortData(enrichment.getClosestLocations().getClosestLocations(), LocationType.PORT, metadata);
         } else {
             LOG.error("NO CLOSEST LOCATIONS FOUND IN RESPONSE FROM SPATIAL ");
         }
 
         if (enrichment.getClosestAreas() != null) {
-            enrichWithCountryData(enrichment.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, movementMeta);
+            enrichWithCountryData(enrichment.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, metadata);
         } else {
             LOG.error("NO CLOSEST AREAS FOUND IN RESPONSE FROM SPATIAL ");
         }
 
-        if (enrichment.getAreasByLocation() != null) {
-            movementMeta.getAreas().addAll(mapToAreas(enrichment.getAreasByLocation().getAreas()));
-        } else {
-            LOG.error("NO AREAS FOUND IN RESPONSE FROM SPATIAL ");
-        }
-
-        movementType.setMetaData(movementMeta);
-        return movementType;
+        metadata.setMovemetUpdattim(DateUtil.nowUTC());
+        metadata.setMovemetUpuser("UVMS");
+        movement.setMetadata(metadata);
+        return movement;
     }
 
-    public static List<MovementType> enrichAndMapToMovementTypes(List<MovementBaseType> movements, BatchSpatialEnrichmentRS enrichment) {
+    public static List<Movement> enrichAndMapToMovementTypes(List<Movement> movements, BatchSpatialEnrichmentRS enrichment) {
         int index = 0;
         List<SpatialEnrichmentRSListElement> enrichmentRespLists = enrichment.getEnrichmentRespLists();
-        List<MovementType> enrichedList = new ArrayList<>();
-        for (MovementBaseType movement : movements) {
+        List<Movement> enrichedList = new ArrayList<>();
+        for (Movement movement : movements) {
             SpatialEnrichmentRSListElement enrichmentRSListElement = enrichmentRespLists.get(index);
-            MovementType movementType = MovementMapper.mapMovementBaseTypeToMovementType(movement);
-            MovementMetaData movementMeta = new MovementMetaData();
+            Movementmetadata metadata = new Movementmetadata();
             if (enrichmentRSListElement.getClosestLocations() != null) {
-                enrichWithPortData(enrichmentRSListElement.getClosestLocations().getClosestLocations(), LocationType.PORT, movementMeta);
+                enrichWithPortData(enrichmentRSListElement.getClosestLocations().getClosestLocations(), LocationType.PORT, metadata);
             } else {
                 LOG.error("NO CLOSEST LOCATIONS FOUND IN RESPONSE FROM SPATIAL ");
             }
             if (enrichmentRSListElement.getClosestAreas() != null) {
-                enrichWithCountryData(enrichmentRSListElement.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, movementMeta);
+                enrichWithCountryData(enrichmentRSListElement.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, metadata);
             } else {
                 LOG.error("NO CLOSEST AREAS FOUND IN RESPONSE FROM SPATIAL ");
             }
-            if (enrichmentRSListElement.getAreasByLocation() != null) {
-                movementMeta.getAreas().addAll(mapToAreas(enrichmentRSListElement.getAreasByLocation().getAreas()));
-            } else {
-                LOG.error("NO AREAS FOUND IN RESPONSE FROM SPATIAL ");
-            }
-            movementType.setMetaData(movementMeta);
-            enrichedList.add(movementType);
+            index++;
+            
+            metadata.setMovemetUpdattim(DateUtil.nowUTC());
+            metadata.setMovemetUpuser("UVMS");
+            movement.setMetadata(metadata);
+            enrichedList.add(movement);
         }
         return enrichedList;
     }
@@ -185,29 +180,25 @@ public class MovementMapper {
         return mappedAreas;
     }
 
-    private static void enrichWithPortData(List<Location> locations, LocationType type, MovementMetaData meta) {
+    private static void enrichWithPortData(List<Location> locations, LocationType type, Movementmetadata meta) {
         for (Location location : locations) {
             if (location.getLocationType().equals(type)) {
-                ClosestLocationType locationType = new ClosestLocationType();
-                locationType.setRemoteId(location.getId());
-                locationType.setDistance(location.getDistance());
-                locationType.setCode(location.getCode());
-                locationType.setName(location.getName());
-                meta.setClosestPort(locationType);
+                meta.setClosestPortRemoteId(location.getId());
+                meta.setClosestPortDistance(location.getDistance());
+                meta.setClosestPortCode(location.getCode());
+                meta.setClosestPortName(location.getName());
             }
         }
     }
 
-    private static void enrichWithCountryData(List<Area> locations, AreaType areaType, MovementMetaData meta) {
+    private static void enrichWithCountryData(List<Area> locations, AreaType areaType, Movementmetadata meta) {
         for (Area location : locations) {
             if (location.getAreaType() != null &&
                     location.getAreaType().equals(areaType)) {
-                ClosestLocationType locationType = new ClosestLocationType();
-                locationType.setRemoteId(location.getId());
-                locationType.setDistance(location.getDistance());
-                locationType.setCode(location.getCode());
-                locationType.setName(location.getName());
-                meta.setClosestCountry(locationType);
+                meta.setClosestCountryRemoteId(location.getId());
+                meta.setClosestCountryDistance(location.getDistance());
+                meta.setClosestCountryCode(location.getCode());
+                meta.setClosestCountryName(location.getName());
             }
         }
     }

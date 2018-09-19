@@ -20,6 +20,10 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelExcepti
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper;
 
 /**
  * Created by thofan on 2017-04-20.
@@ -43,12 +47,13 @@ public class CreateMovementBean {
     public void createMovement(TextMessage jmsMessage) {
         try {
             CreateMovementRequest createMovementRequest = JAXBMarshaller.unmarshallTextMessage(jmsMessage, CreateMovementRequest.class);
-            MovementType createdMovement = movementService.createMovement(createMovementRequest.getMovement(), createMovementRequest.getUsername());
-            String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(createdMovement);
+            Movement movement = MovementModelToEntityMapper.mapNewMovementEntity(createMovementRequest.getMovement(), createMovementRequest.getUsername());
+            Movement createdMovement = movementService.createMovement(movement, createMovementRequest.getUsername());
+            String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(MovementEntityToModelMapper.mapToMovementType(createdMovement));
 
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
-        } catch (EJBException | MovementMessageException | JMSException | MovementModelException ex) {
+        } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementDomainException ex) {
             LOG.error("[ Error when creating movement ] ", ex);
             EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
             errorEvent.fire(eventMessage);

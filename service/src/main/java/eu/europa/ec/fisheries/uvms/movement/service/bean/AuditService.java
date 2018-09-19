@@ -15,13 +15,13 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 
 @Stateless
@@ -32,7 +32,7 @@ public class AuditService {
     @Inject
     private MessageProducer producer;
 
-    public void sendMovementCreatedAudit(MovementType movement, String username) {
+    public void sendMovementCreatedAudit(Movement movement, String username) {
         try {
             String auditData;
             if (MovementTypeType.MAN.equals(movement.getMovementType())) {

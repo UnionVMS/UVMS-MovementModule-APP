@@ -96,51 +96,26 @@ public class MovementDao {
         }
     }
 
-    // TODO this method removes records in DB if it gets exception at a getOperation
-    // TODO this state should not occur in the first place
     public AreaType getAreaTypeByCode(String code) {
         try {
-            long start = System.currentTimeMillis();
             TypedQuery<AreaType> query = em.createNamedQuery(AreaType.FIND_BY_CODE, AreaType.class);
             query.setParameter("code", code);
-            AreaType singleResult = query.getSingleResult();
-            long diff = System.currentTimeMillis() - start;
-            LOG.debug("getAreaTypeByCode: " + " ---- TIME ---- " + diff +"ms" );
-            return singleResult;
+            return query.getSingleResult();
         } catch (NoResultException e) {
-            LOG.debug("No result when retrieving AreaType By code: " + code);
+            LOG.debug("No result when retrieving AreaType By code: {}", code);
             return null;
-        } catch (NonUniqueResultException e) {
-            LOG.error("Duplicate area type in DB for code: {}. Cleaning up duplicates.", code);
-            TypedQuery<AreaType> query = em.createNamedQuery(AreaType.FIND_BY_CODE, AreaType.class);
-            query.setParameter("code", code);
-            List<AreaType> areaList = query.getResultList();
-            // TODO  a get method that changes state in DB ???
-            // TODO correct the error at correct place
-            for (int i = 1; i < areaList.size(); i++) {
-                Long areaTypeId = areaList.get(i).getId();
-                em.remove(em.find(AreaType.class, areaTypeId));
-            }
-            return areaList.get(0);
         }
     }
 
     public Area getAreaByRemoteIdAndCode(String code, String remoteId) {
         try {
-            long start = System.currentTimeMillis();
-            TypedQuery<Area> query;
-            if (code != null && !code.isEmpty()) {
-                LOG.debug("Code present in GetAreaQuery: CODE: {}", code);
-                query = em.createNamedQuery(Area.FIND_BY_CODE, Area.class);
-                query.setParameter("code", code);
-            } else {
+            if (code == null || code.isEmpty()) {
                 throw new MovementDomainRuntimeException("No valid input parameters to method getAreaByRemoteIdAndCode",
                         ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
-            Area singleResult = query.getSingleResult();
-            long diff = System.currentTimeMillis() - start;
-            LOG.debug("getAreaByRemoteIdAndCode: " +  " ---- TIME ----" + diff +"ms");
-            return singleResult;
+            TypedQuery<Area> query = em.createNamedQuery(Area.FIND_BY_CODE, Area.class);
+            query.setParameter("code", code);
+            return query.getSingleResult();
         } catch (NoResultException e) {
             LOG.debug("Could not get AreaType By code: {} and remoteId: {}", code, remoteId);
             return null;

@@ -61,7 +61,7 @@ public class AreaType implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 500)
-    @Column(name = "areatype_name")
+    @Column(name = "areatype_name", unique = true)
     private String name;
 
     @JsonSerialize(using = InstantSerializer.class)

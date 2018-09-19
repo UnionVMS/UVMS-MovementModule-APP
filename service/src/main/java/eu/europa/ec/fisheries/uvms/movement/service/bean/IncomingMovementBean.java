@@ -63,7 +63,8 @@ public class IncomingMovementBean {
                 // If they have different movement types
                 if (!currentMovement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {
                     // Add a second so that it is marginally different from the previous one and proceed
- 					Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);                    currentMovement.setTimestamp(newDate);
+ 					Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);                    
+ 					currentMovement.setTimestamp(newDate);
                 } else {
                     // else it is a duplicate of another move and should be ignored
                     LOG.info("Got a duplicate movement. Marking it as such.{}", currentMovement.getId());
