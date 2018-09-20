@@ -51,7 +51,7 @@ public class MovementBatchModelBean {
         }
     }
     
-    protected MovementConnect getMovementConnectByConnectId(String connectId) {
+    public MovementConnect getMovementConnectByConnectId(String connectId) {
         MovementConnect movementConnect;
         
         if (connectId == null) {

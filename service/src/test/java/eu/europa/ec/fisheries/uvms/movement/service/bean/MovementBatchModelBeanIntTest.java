@@ -16,6 +16,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
@@ -23,12 +26,15 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 
 /**
  * Created by thofan on 2017-02-23.
@@ -86,70 +92,20 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
         double latitude = rnd.nextDouble();
 
         String randomUUID = UUID.randomUUID().toString();
-        MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
-        movementType.setConnectId(randomUUID);
+        Movement movement = MockData.createMovement(longitude, latitude, randomUUID);
+        movement.getMovementConnect().setValue(randomUUID);
 
-        movementBatchModelBean.createMovement(movementType, TEST_USER_NAME);
-        movementBatchModelBean.flush();
+        movementBatchModelBean.createMovement(movement);
     }
 
-    @Test
-    public void enrichAreasSameArea() {
-
-        // this test is migrated from the old testsuite
-        Instant now = DateUtil.nowUTC();
-        double longitude = rnd.nextDouble();
-        double latitude = rnd.nextDouble();
-
-        MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
-
-        MovementMetaData metaData = getMappedMovementHelper(2);
-        movementType.setMetaData(metaData);
-
-        List<Areatransition> areaTransitionList = new ArrayList<>();
-        areaTransitionList.add(getAreaTransition("AREA1", MovementTypeType.ENT));
-        movementBatchModelBean.enrichAreas(movementType, areaTransitionList);
-        assertEquals(" AreaSize should be 2", 2, movementType.getMetaData().getAreas().size());
-    }
-
-    @Test
-    public void enrichAreasNotSameArea() {
-
-        // this test is migrated from the old testsuite
-        Instant now = DateUtil.nowUTC();
-        double longitude = rnd.nextDouble();
-        double latitude = rnd.nextDouble();
-
-        MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
-
-        MovementMetaData metaData = getMappedMovementHelper(2);
-        movementType.setMetaData(metaData);
-
-        List<Areatransition> areaTransitionList = new ArrayList<>();
-        areaTransitionList.add(getAreaTransition("AREA3", MovementTypeType.ENT));
-        movementBatchModelBean.enrichAreas(movementType, areaTransitionList);
-        assertEquals(" AreaSize should be 3", 3, movementType.getMetaData().getAreas().size());
-    }
-
-
-    @Test
-    public void mapToMovementMetaDataAreaType() {
-
-        // TODO  maybe like this ?
-        Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
-        areaTransition.setMovementType(MovementTypeType.MAN);
-        areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
-        MovementMetaDataAreaType movementMetaDataAreaType = movementBatchModelBean.MapToMovementMetaDataAreaType(areaTransition);
-        assertNotNull(movementMetaDataAreaType);
-    }
-
+    /*
     @Test
     public void getAreaType() throws MovementDomainException {
 
         Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
         areaTransition.setMovementType(MovementTypeType.MAN);
         areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
-        MovementMetaDataAreaType movementMetaDataAreaType = movementBatchModelBean.MapToMovementMetaDataAreaType(areaTransition);
+        MovementMetaDataAreaType movementMetaDataAreaType = MovementEntityToModelMapper.mapToMovementMetaDataAreaType(areaTransition);
         AreaType areaType = movementBatchModelBean.getAreaType(movementMetaDataAreaType);
         assertNotNull(areaType);
     }
@@ -162,46 +118,27 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
         Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
         areaTransition.setMovementType(MovementTypeType.MAN);
         areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
-        MovementMetaDataAreaType movementMetaDataAreaType = movementBatchModelBean.MapToMovementMetaDataAreaType(areaTransition);
+        MovementMetaDataAreaType movementMetaDataAreaType = MovementEntityToModelMapper.mapToMovementMetaDataAreaType(areaTransition);
         assertNotNull(movementMetaDataAreaType);
         movementBatchModelBean.getAreaType(null);
     }
-
+     */
 
     /******************************************************************************************************************
      *   HELPER FUNCTIONS
      ******************************************************************************************************************/
 
-    private Areatransition getAreaTransition(String code, MovementTypeType transitionType) {
-        Areatransition transition = new Areatransition();
-        transition.setMovementType(transitionType);
-        transition.setAreatranAreaId(getAreaHelper(code));
-        return transition;
-    }
+    private Movement createMovementTypeHelper(Instant timeStamp, double longitude, double latitude) {
+        Movement movementType = new Movement();
+        movementType.setTimestamp(timeStamp);
 
-    private Area getAreaHelper(String areaCode) {
-        Area area = new Area();
-        area.setAreaCode(areaCode);
-        area.setAreaName(areaCode);
-        area.setAreaType(getAraTypeHelper(areaCode));
-        return area;
-    }
-
-    private AreaType getAraTypeHelper(String name) {
-        AreaType areaType = new AreaType();
-        areaType.setName(name);
-        return areaType;
-    }
-
-    private MovementType createMovementTypeHelper(Instant timeStamp, double longitude, double latitude) {
-        MovementType movementType = new MovementType();
-        movementType.setPositionTime(Date.from(timeStamp));
-        MovementPoint point = new MovementPoint();
-        point.setLatitude(latitude);
-        point.setLongitude(longitude);
-
-        movementType.setPosition(point);
-        movementType.setComChannelType(MovementComChannelType.MANUAL);
+        Coordinate coordinate = new Coordinate(longitude, latitude);
+        GeometryFactory factory = new GeometryFactory();
+        Point point = factory.createPoint(coordinate);
+        point.setSRID(4326);
+        movementType.setLocation(point);
+        
+//        movementType.setComChannelType(MovementComChannelType.MANUAL);
         //movementType.setInternalReferenceNumber( );
         movementType.setTripNumber(rnd.nextDouble());
         movementType.setMovementType(MovementTypeType.POS);

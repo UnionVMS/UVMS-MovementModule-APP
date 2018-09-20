@@ -30,6 +30,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
 
 /**
  * Created by andreasw on 2017-03-09.
@@ -52,12 +53,12 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     public void testCreatingMovement() {
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid,0);
-        movementType = movementBatchModelBean.createMovement(movementType, "TEST");
+        Movement movementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid, 0, "TEST");
+        movementType = movementBatchModelBean.createMovement(movementType);
         assertNotNull("MovementType creation was successful.", movementType.getGuid());
         em.flush();
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getValue());
         assertNotNull("MovementConnect creation was successful.", movementConnect);
         List<Movement> movementList = movementConnect.getMovementList();
         assertNotNull("List of Movement creation was successful.", movementList);
@@ -69,17 +70,18 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    public void testProcessingMovement() {
+    public void testProcessingMovement() throws MovementDomainException {
 
         // Given: Get the id for a persisted movement entity.
 
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid,0);
-        movementType = movementBatchModelBean.createMovement(movementType, "TEST");
+        Movement movementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid, 0, "TEST");
+        movementType = movementBatchModelBean.createMovement(movementType);
+        incomingMovementBean.processMovement(movementType);
         em.flush();
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getValue());
         List<Movement> movementList = movementConnect.getMovementList();
         Long id = movementList.get(0).getId();
 
@@ -98,11 +100,11 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         String uuid = UUID.randomUUID().toString();
 
-        MovementType movementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, uuid,0);
-        movementType = movementBatchModelBean.createMovement(movementType, "TEST");
+        Movement movementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid, 0, "TEST");
+        movementType = movementBatchModelBean.createMovement(movementType);
         em.flush();
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getConnectId());
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getValue());
         List<Movement> movementList = movementConnect.getMovementList();
         Long id = movementList.get(0).getId();
 
@@ -121,11 +123,11 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         // Given: Create a movement with the exact same timestamp as a movement that exists in the database.
         String firstUuid = UUID.randomUUID().toString();
 
-        MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, firstUuid,0);
-        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+        Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, firstUuid, 0, "TEST");
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         em.flush();
 
-        MovementConnect firstMovementConnect = movementDao.getMovementConnectByConnectId(firstMovementType.getConnectId());
+        MovementConnect firstMovementConnect = movementDao.getMovementConnectByConnectId(firstMovementType.getMovementConnect().getValue());
 
         List<Movement> firstMovementList = firstMovementConnect.getMovementList();
 
@@ -248,15 +250,17 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testMovementAndSegmentRelation() {
+    public void testMovementAndSegmentRelation() throws MovementDomainException {
     	String connectId = UUID.randomUUID().toString();
-    	MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
-        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
+        incomingMovementBean.processMovement(firstMovementType);
        
-        MovementType secondMovementType = MockData.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        Movement secondMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
+        incomingMovementBean.processMovement(secondMovementType);
         
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();
@@ -274,19 +278,22 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testMovementAndSegmentRelationThreeMovements() {
+    public void testMovementAndSegmentRelationThreeMovements() throws MovementDomainException {
     	String connectId = UUID.randomUUID().toString();
-    	MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
-        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
+        incomingMovementBean.processMovement(firstMovementType);
        
-        MovementType secondMovementType = MockData.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        Movement secondMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
+        incomingMovementBean.processMovement(secondMovementType);
 
-        MovementType thirdMovementType = MockData.createMovementType(1d, 2d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType, "TEST");
+        Movement thirdMovementType = MockData.createMovement(1d, 2d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType);
         assertNotNull(thirdMovementType);
+        incomingMovementBean.processMovement(thirdMovementType);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();
@@ -315,24 +322,27 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testMovementAndSegmentRelationThreeMovementsNonOrdered() {
+    public void testMovementAndSegmentRelationThreeMovementsNonOrdered() throws MovementDomainException {
     	int tenMinutes = 600000;
     	String connectId = UUID.randomUUID().toString();
     	Instant positionTime = Instant.now();
-    	MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
-    	firstMovementType.setPositionTime(Date.from(positionTime));
-        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+    	firstMovementType.setTimestamp(positionTime);
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
+        incomingMovementBean.processMovement(firstMovementType);
 
-        MovementType thirdMovementType = MockData.createMovementType(1d, 2d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        thirdMovementType.setPositionTime(Date.from(positionTime.plusMillis(2*tenMinutes)));
-        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType, "TEST");
+        Movement thirdMovementType = MockData.createMovement(1d, 2d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        thirdMovementType.setTimestamp(positionTime.plusMillis(2*tenMinutes));
+        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType);
         assertNotNull(thirdMovementType);
+        incomingMovementBean.processMovement(thirdMovementType);
 
-        MovementType secondMovementType = MockData.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        secondMovementType.setPositionTime(Date.from(positionTime.plusMillis(tenMinutes)));
-        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        Movement secondMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        secondMovementType.setTimestamp(positionTime.plusMillis(tenMinutes));
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
+        incomingMovementBean.processMovement(secondMovementType);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();
@@ -361,22 +371,30 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testTrackWithThreeMovements() {
+    public void testTrackWithThreeMovements() throws MovementDomainException {
     	String connectId = UUID.randomUUID().toString();
-    	MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
-        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+    	Instant timestamp = Instant.now();
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+    	firstMovementType.setTimestamp(timestamp);
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
+        incomingMovementBean.processMovement(firstMovementType);
        
-        MovementType secondMovementType = MockData.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        Movement secondMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        secondMovementType.setTimestamp(timestamp.plusSeconds(10));
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
+        incomingMovementBean.processMovement(secondMovementType);
 
-        MovementType thirdMovementType = MockData.createMovementType(1d, 2d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType, "TEST");
+        Movement thirdMovementType = MockData.createMovement(1d, 2d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        thirdMovementType.setTimestamp(timestamp.plusSeconds(20));
+        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType);
         assertNotNull(thirdMovementType);
+        incomingMovementBean.processMovement(thirdMovementType);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();
+        
         
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
@@ -393,24 +411,27 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testTrackWithThreeMovementsNonOrdered() {
+    public void testTrackWithThreeMovementsNonOrdered() throws MovementDomainException {
     	int tenMinutes = 600000;
     	String connectId = UUID.randomUUID().toString();
-    	Date positionTime = new Date();
-    	MovementType firstMovementType = MockData.createMovementType(0d, 1d, 0d, SegmentCategoryType.EXIT_PORT, connectId, 0);
-    	firstMovementType.setPositionTime(positionTime);
-        firstMovementType = movementBatchModelBean.createMovement(firstMovementType, "TEST");
+    	Instant positionTime = Instant.now();
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+    	firstMovementType.setTimestamp(positionTime);
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
+        incomingMovementBean.processMovement(firstMovementType);
        
-        MovementType secondMovementType = MockData.createMovementType(2d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
-		secondMovementType.setPositionTime(new Date(positionTime.getTime() + 2*tenMinutes));
-        secondMovementType = movementBatchModelBean.createMovement(secondMovementType, "TEST");
+        Movement secondMovementType = MockData.createMovement(2d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+		secondMovementType.setTimestamp(positionTime.plusMillis(2*tenMinutes));
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
+        incomingMovementBean.processMovement(secondMovementType);
 
-        MovementType thirdMovementType = MockData.createMovementType(1d, 1d, 0d, SegmentCategoryType.GAP, connectId, 0);
-        thirdMovementType.setPositionTime(new Date(positionTime.getTime() + tenMinutes));
-        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType, "TEST");
+        Movement thirdMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        thirdMovementType.setTimestamp(positionTime.plusMillis(tenMinutes));
+        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType);
         assertNotNull(thirdMovementType);
+        incomingMovementBean.processMovement(thirdMovementType);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementConnect.getMovementList();

@@ -1,15 +1,18 @@
 package eu.europa.ec.fisheries.uvms.movement.service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import javax.inject.Inject;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -20,6 +23,9 @@ public class SpatialServiceMockedBean  implements SpatialService {
 
     public static final String MESSAGE_PRODUCER_METHODS_FAIL = "MESSAGE_PRODUCER_METHODS_FAIL";
 
+    @Inject
+    private AreaDao areaDao;
+    
     private void shouldIFail() throws MovementServiceException {
         String fail = System.getProperty(MESSAGE_PRODUCER_METHODS_FAIL, "false");
         if(!"false".equals(fail.toLowerCase())) {
@@ -27,48 +33,56 @@ public class SpatialServiceMockedBean  implements SpatialService {
         }
     }
     
-    public MovementType enrichMovementWithSpatialData(MovementBaseType movement) throws MovementServiceException {
+    public Movement enrichMovementWithSpatialData(Movement movement) throws MovementServiceException {
         shouldIFail();
-        return  createSmalletPossibleMovementType(movement);
+        movement.setMetadata(getMetadata());
+        movement.setMovementareaList(getMovementAreas(1, movement));
+        return movement;
     }
 
     @Override
-    public List<MovementType> enrichMovementBatchWithSpatialData(List<MovementBaseType> movements) throws MovementServiceException {
+    public List<Movement> enrichMovementBatchWithSpatialData(List<Movement> movements) throws MovementServiceException {
         shouldIFail();
-        ArrayList<MovementType> movementTypes = new ArrayList<>();
-        for(MovementBaseType movement : movements) {
-            movementTypes.add(createSmalletPossibleMovementType(movement));
+        for(Movement movement : movements) {
+            movement.setMetadata(getMetadata());
+            movement.setMovementareaList(getMovementAreas(1, movement));
         }
-        return movementTypes;
+        return movements;
     }
 
-    private MovementType createSmalletPossibleMovementType(MovementBaseType movement){
-        MovementType movementType  = new MovementType();
-        movementType.setPositionTime(movement.getPositionTime());
-        movementType.setPosition(movement.getPosition());
-        movementType.setComChannelType(MovementComChannelType.MANUAL);
-        movementType.setTripNumber(movement.getTripNumber());
-        movementType.setMovementType(movement.getMovementType());
-        movementType.setConnectId(movement.getConnectId());
-        movementType.setMetaData(getMappedMovementHelper(1));
-        movementType.setSource(MovementSourceType.NAF);
-        return movementType;
+    public Movementmetadata getMetadata() {
+        Movementmetadata metadata = new Movementmetadata();
+        metadata.setMovemetUpdattim(Instant.now());
+        metadata.setMovemetUpuser("Test");
+        return metadata;
     }
-
-    public  MovementMetaData getMappedMovementHelper(int numberOfAreas) {
-        MovementMetaData metaData = new MovementMetaData();
+    
+    public List<Movementarea> getMovementAreas(int numberOfAreas, Movement movement) {
+        List<Movementarea> areas = new ArrayList<>();
         for (int i = 0; i < numberOfAreas; i++) {
-            metaData.getAreas().add(getMovementMetadataTypeHelper("AREA" + i));
+            areas.add(getMovementAreaHelper("AREA" + MovementHelpers.getRandomIntegers(10), movement));
         }
-        return metaData;
+        return areas;
     }
 
-    public  MovementMetaDataAreaType getMovementMetadataTypeHelper(String areaCode) {
-        MovementMetaDataAreaType area = new MovementMetaDataAreaType();
-        area.setCode(areaCode);
-        area.setName(areaCode);
-        area.setAreaType(areaCode);
-        return area;
+    public Movementarea getMovementAreaHelper(String areaCode, Movement movement) {
+        Movementarea movementArea = new Movementarea();
+        Area area = new Area();
+        area.setAreaCode(areaCode);
+        area.setAreaName(areaCode);
+        area.setAreaUpdattim(Instant.now());
+        area.setAreaUpuser("Test");
+        AreaType areaType = new AreaType();
+        areaType.setName(areaCode);
+        areaType.setUpdatedTime(Instant.now());
+        areaType.setUpdatedUser("Test");
+        area.setAreaType(areaType);
+        areaDao.createMovementArea(area);
+        movementArea.setMovareaAreaId(area);
+        movementArea.setMovareaMoveId(movement);
+        movementArea.setMovareaUpdattim(DateUtil.nowUTC());
+        movementArea.setMovareaUpuser("TEST");
+        return movementArea;
     }
 
 }

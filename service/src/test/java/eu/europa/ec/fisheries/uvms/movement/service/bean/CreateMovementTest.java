@@ -57,8 +57,8 @@ public class CreateMovementTest {
                 .thenReturn(getMovementConnect())
                 .thenReturn(getMovement(eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil.nowUTC(), 1, 2));
 
-        MovementType createMovement = createMovement(eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil.nowUTC(), 1, 2);
-        MovementType created = test.createMovement(createMovement, "TEST");
+        Movement createMovement = createMovement(eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil.nowUTC(), 1, 2);
+        Movement created = test.createMovement(createMovement);
 
         //verify(model, atLeast(2)).splitSegment(any(Movement.class), any(Movement.class));
         //verify(model, times(3)).splitSegment(any(Movement.class), any(Movement.class));
@@ -86,13 +86,14 @@ public class CreateMovementTest {
         return connect;
     }
 
-    private MovementType createMovement(Instant timeStamp, double loong, double lat) {
-        MovementType mock = new MovementType();
-        mock.setPositionTime(Date.from(timeStamp));
-        MovementPoint point = new MovementPoint();
-        point.setLatitude(lat);
-        point.setLongitude(loong);
-        mock.setPosition(point);
+    private Movement createMovement(Instant timeStamp, double loong, double lat) {
+        Movement mock = new Movement();
+        mock.setTimestamp(timeStamp);
+        Coordinate coordinate = new Coordinate(loong, lat);
+        GeometryFactory factory = new GeometryFactory();
+        Point point = factory.createPoint(coordinate);
+        point.setSRID(4326);
+        mock.setLocation(point);
         return mock;
     }
 }

@@ -3,6 +3,7 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,7 @@ import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
 @RunWith(Arquillian.class)
 public class MovementRestResourceTest extends BuildMovementRestDeployment {
@@ -32,8 +34,8 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     public void getListByQueryByConnectId() throws Exception {
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        MovementType createdMovement = movementService.createMovement(movementBaseType, "Test");
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createMovement(movementBaseType, "Test");
         
         // This is needed until background job have been removed
         Thread.sleep(5000);
@@ -41,7 +43,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         MovementQuery query = MovementTestHelper.createMovementQuery();
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(createdMovement.getConnectId());
+        criteria.setValue(createdMovement.getMovementConnect().getValue());
         query.getMovementSearchCriteria().add(criteria);
         
         GetMovementListByQueryResponse queryResponse = getListByQuery(query);
@@ -55,8 +57,8 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     public void getMinimalListByQueryByConnectId() throws Exception {
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        MovementType createdMovement = movementService.createMovement(movementBaseType, "Test");
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createMovement(movementBaseType, "Test");
         
         // This is needed until background job have been removed
         Thread.sleep(5000);
@@ -64,7 +66,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         MovementQuery query = MovementTestHelper.createMovementQuery();
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(createdMovement.getConnectId());
+        criteria.setValue(createdMovement.getMovementConnect().getValue());
         query.getMovementSearchCriteria().add(criteria);
         
         GetMovementListByQueryResponse queryResponse = getMinimalListByQuery(query);
@@ -78,13 +80,13 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     public void getLatestMovementsByConnectIds() throws Exception {
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        MovementType createdMovement = movementService.createMovement(movementBaseType, "Test");
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createMovement(movementBaseType, "Test");
         
         // This is needed until background job have been removed
         Thread.sleep(5000);
         
-        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement.getConnectId()));
+        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement.getMovementConnect().getValue()));
         assertThat(latestMovements.size(), is(1));
         assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement.getGuid()));
     }
@@ -93,19 +95,19 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     public void getLatestMovementsByConnectIdsTwoPositions() throws Exception {
         String connectId = UUID.randomUUID().toString();
         
-        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
-        movementBaseType1.setConnectId(connectId);
-        movementBaseType1.setPositionTime(new Date(System.currentTimeMillis() - 60 * 1000));
+        Movement movementBaseType1 = MovementTestHelper.createMovement();
+        movementBaseType1.getMovementConnect().setValue(connectId);
+        movementBaseType1.setTimestamp(Instant.now().minusSeconds(60));
         movementService.createMovement(movementBaseType1, "Test");
         
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
-        movementBaseType2.setConnectId(connectId);
-        MovementType createdMovement2 = movementService.createMovement(movementBaseType2, "Test");
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType1.getMovementConnect().setValue(connectId);
+        Movement createdMovement2 = movementService.createMovement(movementBaseType2, "Test");
         
         // This is needed until background job have been removed
         Thread.sleep(5000);
         
-        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement2.getConnectId()));
+        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement2.getMovementConnect().getValue()));
         assertThat(latestMovements.size(), is(1));
         assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement2.getGuid()));
     }
@@ -114,29 +116,29 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     public void getLatestMovementsByConnectIdsTwoPositionsUnordered() throws Exception {
         String connectId = UUID.randomUUID().toString();
         
-        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
-        movementBaseType1.setConnectId(connectId);
-        MovementType createdMovement1 = movementService.createMovement(movementBaseType1, "Test");
+        Movement movementBaseType1 = MovementTestHelper.createMovement();
+        movementBaseType1.getMovementConnect().setValue(connectId);
+        Movement createdMovement1 = movementService.createMovement(movementBaseType1, "Test");
         
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
-        movementBaseType2.setConnectId(connectId);
-        movementBaseType2.setPositionTime(new Date(System.currentTimeMillis() - 60 * 1000));
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType1.getMovementConnect().setValue(connectId);
+        movementBaseType2.setTimestamp(Instant.now().minusSeconds(60));
         movementService.createMovement(movementBaseType2, "Test");
         
         // This is needed until background job have been removed
         Thread.sleep(5000);
         
-        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement1.getConnectId()));
+        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement1.getMovementConnect().getValue()));
         assertThat(latestMovements.size(), is(1));
         assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement1.getGuid()));
     }
     
     @Test
     public void getLatestMovements() throws Exception {
-        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
+        Movement movementBaseType1 = MovementTestHelper.createMovement();
         movementService.createMovement(movementBaseType1, "Test");
         
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
         movementService.createMovement(movementBaseType2, "Test");
         
         // This is needed until background job have been removed
@@ -148,8 +150,8 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     public void getMovementById() throws Exception {
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        MovementType createdMovement = movementService.createMovement(movementBaseType, "Test");
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createMovement(movementBaseType, "Test");
 
         // This is needed until background job have been removed
         Thread.sleep(5000);

@@ -16,14 +16,21 @@ import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import java.sql.Date;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 
 public class MockData {
 
@@ -97,6 +104,58 @@ public class MockData {
         return previousMovement;
     }
 
+    public static Movement createMovement(double longitude, double latitude, String connectId) {
+        return createMovement(longitude, latitude, 1, SegmentCategoryType.OTHER, connectId, 0d, "Test");
+    }
+    
+    public static Movement createMovement(double longitude, double latitude, int altitude, SegmentCategoryType segmentCategoryType, String connectId, double reportedCourse, String username) {
+
+        LatLong latLong = new LatLong(latitude, longitude, DateUtil.nowUTC());
+        latLong.bearing = reportedCourse;
+        return createMovement(latLong, segmentCategoryType, connectId, altitude, username);
+    }
+
+    public static Movement createMovement(LatLong latlong, SegmentCategoryType segmentCategoryType, String connectId, int altitude, String username) {
+
+        Activity activityType = new Activity();
+        activityType.setCallback("TEST");
+        activityType.setMessageId("TEST");
+        activityType.setActivityType(MovementActivityTypeType.AUT);
+        activityType.setUpdated(Instant.now());
+        activityType.setUpdatedBy("TEST");
+
+        Movement movement = new Movement();
+
+        movement.setMovementType(MovementTypeType.POS);
+        movement.setActivity(activityType);
+        MovementConnect movementConnect = new MovementConnect();
+        movementConnect.setValue(connectId);
+        movement.setMovementConnect(movementConnect);
+        movement.setInternalReferenceNumber("TEST");
+        Coordinate coordinate = new Coordinate(latlong.longitude, latlong.latitude);
+        GeometryFactory factory = new GeometryFactory();
+        Point point = factory.createPoint(coordinate);
+        point.setSRID(4326);
+        movement.setLocation(point);
+        movement.setAltitude(altitude);
+        movement.setHeading(latlong.bearing);
+        movement.setSpeed(latlong.speed);
+        movement.setMovementSource(MovementSourceType.NAF);
+        movement.setStatus("TEST");
+        movement.setUpdated(Instant.now());
+        movement.setUpdatedBy(username);
+
+        movement.setTimestamp(latlong.positionTime);
+        movement.setTripNumber(0d);
+        
+        movement.setMovementareaList(new ArrayList<Movementarea>());
+        
+        movement.setDuplicate(false);
+        movement.setProcessed(false);
+        
+        return movement;
+    }
+    
     public static MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, double reportedCourse) {
 
         LatLong latLong = new LatLong(latitude, longitude, DateUtil.nowUTC());

@@ -349,7 +349,7 @@ public class MovementEntityToModelMapper {
      * @param areaTransitionList the list of transitions that will enrich the
      * mapped movementType
      */
-    private static void enrichAreas(MovementType mappedMovement, List<Areatransition> areaTransitionList) {
+    protected static void enrichAreas(MovementType mappedMovement, List<Areatransition> areaTransitionList) {
 
         if(mappedMovement.getMetaData() == null) {
             mappedMovement.setMetaData(new MovementMetaData());
@@ -374,7 +374,7 @@ public class MovementEntityToModelMapper {
         mappedMovement.getMetaData().getAreas().addAll(areas.values());
     }
     
-    private static MovementMetaDataAreaType mapToMovementMetaDataAreaType(Areatransition areaTransition) {
+    protected static MovementMetaDataAreaType mapToMovementMetaDataAreaType(Areatransition areaTransition) {
         MovementMetaDataAreaType newArea = new MovementMetaDataAreaType();
         newArea.setTransitionType(areaTransition.getMovementType());
         newArea.setCode(areaTransition.getAreatranAreaId().getAreaCode());

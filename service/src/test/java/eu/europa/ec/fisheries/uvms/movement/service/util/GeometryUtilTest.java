@@ -86,8 +86,8 @@ public class GeometryUtilTest extends TransactionalTests {
 		input[1] = new Coordinate(11.629729, 57.618091);
 		
 		
-		Movement start =  movementHelpers.createMovement(input[0].x, input[0].y, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
-		Movement end =  movementHelpers.createMovement(input[1].x, input[1].y, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement.plusSeconds(10));
+		Movement start =  movementHelpers.createMovement(input[0].x, input[0].y, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
+		Movement end =  movementHelpers.createMovement(input[1].x, input[1].y, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement.plusSeconds(10));
 		
 		Coordinate[] output = GeometryUtil.getCoordinateSequenceFromMovements(start, end);
 		

@@ -5,14 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.math.BigInteger;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
-
+import javax.inject.Inject;
 import org.hamcrest.core.StringContains;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -36,9 +35,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -62,6 +58,9 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
 	@EJB
 	MovementBatchModelBean movementBatchModelBean;
+	
+	@Inject
+	private IncomingMovementBean incomingMovementBean;
 
 	@EJB
 	MovementDao movementDao;
@@ -216,7 +215,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
     
     @Test
-    public void testGetMovementListByQuery() throws MovementServiceException {
+    public void testGetMovementListByQuery() throws MovementServiceException, MovementDomainException {
 		GetMovementListByQueryResponse output;
 		MovementQuery input = new MovementQuery();
 		input.setExcludeFirstAndLastSegment(true);
@@ -270,7 +269,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    public void testGetMovementListByQuery_WillFailEmptyRangeSearchCriteria() throws MovementServiceException {
+    public void testGetMovementListByQuery_WillFailEmptyRangeSearchCriteria() throws MovementServiceException, MovementDomainException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
 
@@ -335,7 +334,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
     
     @Test
-    public void testGetMinimalMovementListByQuery() throws MovementServiceException {
+    public void testGetMinimalMovementListByQuery() throws MovementServiceException, MovementDomainException {
     	GetMovementListByQueryResponse output;
     	
     	MovementQuery input = new MovementQuery();
@@ -417,7 +416,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
     
     @Test
-    public void testGetMovementMapByQuery() throws MovementServiceException {
+    public void testGetMovementMapByQuery() throws MovementServiceException, MovementDomainException {
 
     	GetMovementMapByQueryResponse output;
 
@@ -487,7 +486,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
     
     @Test
-    public void testRemoveTrackMismatches() throws MovementServiceException {
+    public void testRemoveTrackMismatches() throws MovementServiceException, MovementDomainException {
     	String connectID = UUID.randomUUID().toString();
     	List<Movement> varbergGrena = createAndProcess10MovementsFromVarbergGrena(connectID);
     	List<MovementTrack> input = new ArrayList<>();
@@ -516,7 +515,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testGetLatestMovementsByConnectID() throws MovementServiceException {
+    public void testGetLatestMovementsByConnectID() throws MovementServiceException, MovementDomainException {
     	String connectID = UUID.randomUUID().toString();
     	String connectID2 = UUID.randomUUID().toString();
     	List<Movement> control = createAndProcess10MovementsFromVarbergGrena(connectID);
@@ -663,9 +662,12 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         return new SearchValue(SearchField.SEGMENT_SPEED, "100", "200");
     }
 
-    private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementServiceException {
+    private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementServiceException, MovementDomainException {
     	MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
     	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
+    	for (Movement movement : varbergGrena) {
+            incomingMovementBean.processMovement(movement);
+        }
     	return varbergGrena;
     }
 

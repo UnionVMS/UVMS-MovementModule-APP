@@ -126,8 +126,8 @@ public class CalculationUtilTest extends TransactionalTests {
 		double endLon = 11.703635;
 		double endLat = 57.600009;
 		
-		Movement start =  movementHelpers.createMovement(startLon, startLat, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
-		Movement end =  movementHelpers.createMovement(endLon, endLat, 0d, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement.plusSeconds(10));
+		Movement start =  movementHelpers.createMovement(startLon, startLat, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
+		Movement end =  movementHelpers.createMovement(endLon, endLat, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement.plusSeconds(10));
 		
 		SegmentCalculations segmentCalc = CalculationUtil.getPositionCalculations(start, end);
 		

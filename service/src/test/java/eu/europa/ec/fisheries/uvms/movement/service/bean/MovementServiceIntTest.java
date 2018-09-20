@@ -17,6 +17,9 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
@@ -35,10 +38,12 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementEventTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
@@ -111,10 +116,9 @@ public class MovementServiceIntTest extends TransactionalTests {
 
         // create a MovementConnect
         String connectId = UUID.randomUUID().toString();
-        MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
-        movementType.setConnectId(connectId);
+        Movement movementType = MockData.createMovement(longitude, latitude, connectId);
         try {
-            MovementType createdMovementType = movementService.createMovement(movementType, "TEST");
+            Movement createdMovementType = movementService.createMovement(movementType, "Test");
             Assert.assertTrue(createdMovementType != null);
         } catch (Exception e) {
             Assert.fail();
@@ -189,17 +193,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
     }
 
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void createMovementBatch() throws MovementServiceException {
-
-        List<MovementBaseType> query = createBaseTypeList();
-        SimpleResponse response = movementService.createMovementBatch(query, "TEST").getResponse();
-        Assert.assertTrue(response != null);
-        Assert.assertTrue(response == SimpleResponse.OK);
-    }
-
     @Test
     @OperateOnDeployment("movementservice")
     public void createBatch() throws MovementServiceException {
@@ -207,9 +200,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         Double longitude = rnd.nextDouble();
         Double latitude = rnd.nextDouble();
-        List<MovementBaseType> movementTypeList = new ArrayList<>();
+        List<Movement> movementTypeList = new ArrayList<>();
         for(int i = 0 ; i < NumberOfMovements ; i++){
-            movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
+            movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID().toString()));
             longitude = longitude  + 0.05;
             latitude = latitude +  0.05;
         }
@@ -226,9 +219,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
         Double longitude = rnd.nextDouble();
         Double latitude = rnd.nextDouble();
-        List<MovementBaseType> movementTypeList = new ArrayList<>();
+        List<Movement> movementTypeList = new ArrayList<>();
         for(int i = 0 ; i < NumberOfMovements ; i++){
-            movementTypeList.add(MovementEventTestHelper.createMovementBaseType(longitude, latitude));
+            movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID().toString()));
             longitude += 0.05;
             latitude += 0.05;
         }
@@ -256,10 +249,9 @@ public class MovementServiceIntTest extends TransactionalTests {
 
             // create a MovementConnect
             String connectId = UUID.randomUUID().toString();
-            MovementType movementType = createMovementTypeHelper(now, longitude, latitude);
-            movementType.setConnectId(connectId);
+            Movement movementType = MockData.createMovement(longitude, latitude, connectId);
             Assert.assertTrue(movementService != null);
-            MovementType createdMovementType = movementService.createMovement(movementType, "TEST");
+            Movement createdMovementType = movementService.createMovement(movementType, "TEST");
             em.flush();
             Assert.assertTrue(createdMovementType != null);
 
@@ -399,8 +391,8 @@ public class MovementServiceIntTest extends TransactionalTests {
         return area;
     }
 
-    private List<MovementBaseType> createBaseTypeList() {
-        List<MovementBaseType> query = new ArrayList<>();
+    private List<Movement> createBaseTypeList() {
+        List<Movement> query = new ArrayList<>();
         String connectId = UUID.randomUUID().toString();
         for (int i = 0; i < 5; i++) {
             query.add(createMovementBaseType(i, connectId));
@@ -408,23 +400,25 @@ public class MovementServiceIntTest extends TransactionalTests {
         return query;
     }
 
-    private MovementBaseType createMovementBaseType(Integer i, String connectId) {
-        MovementBaseType movementBaseType = new MovementBaseType();
-        movementBaseType.setConnectId(connectId);
-        movementBaseType.setSource(MovementSourceType.AIS);
-        movementBaseType.setMovementType(MovementTypeType.MAN);
-        movementBaseType.setPosition(position());
-        return movementBaseType;
+    private Movement createMovementBaseType(Integer i, String connectId) {
+        Movement movement = new Movement();
+        MovementConnect movementConnect = new MovementConnect();
+        movementConnect.setValue(connectId);
+        movement.setMovementConnect(movementConnect);
+        movement.setMovementSource(MovementSourceType.AIS);
+        movement.setMovementType(MovementTypeType.MAN);
+        movement.setLocation(position());
+        return movement;
     }
 
-    private MovementPoint position() {
-
+    private Point position() {
         Double longitude = rnd.nextDouble();
         Double latitude = rnd.nextDouble();
-        MovementPoint movementPoint = new MovementPoint();
-        movementPoint.setLongitude(longitude);
-        movementPoint.setLatitude(latitude);
-        return movementPoint;
+        Coordinate coordinate = new Coordinate(longitude, latitude);
+        GeometryFactory factory = new GeometryFactory();
+        Point point = factory.createPoint(coordinate);
+        point.setSRID(4326);
+        return point;
     }
 
     private MovementQuery createMovementQuery(boolean usePagination) {

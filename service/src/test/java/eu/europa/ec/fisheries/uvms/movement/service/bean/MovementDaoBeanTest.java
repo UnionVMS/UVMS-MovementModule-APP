@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
-
+import javax.inject.Inject;
 import org.hamcrest.core.StringContains;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -34,6 +34,9 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@EJB
     private MovementBatchModelBean movementBatchModelBean;
+	
+	@Inject
+	private IncomingMovementBean incomingMovementBean;
 
     @EJB
     private MovementDao movementDao;
@@ -59,13 +62,17 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementByConnectIdList() throws MovementServiceException {
+	public void testGetLatestMovementByConnectIdList() throws MovementServiceException, MovementDomainException {
 		String connectID = UUID.randomUUID().toString();
 		String connectID2 = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now());
 		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now().plusSeconds(1));
 		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID2, "TEST", Instant.now().plusSeconds(2));
+		
+		incomingMovementBean.processMovement(move1);
+		incomingMovementBean.processMovement(move2);
+		incomingMovementBean.processMovement(move3);
 		
 		List<String> input = new ArrayList<>();
 		input.add(connectID);
@@ -94,12 +101,16 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementsByConnectID() throws MovementServiceException {
+	public void testGetLatestMovementsByConnectID() throws MovementServiceException, MovementDomainException {
 		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now());
 		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now().plusSeconds(1));
 		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID, "TEST42", Instant.now().plusSeconds(2));
+
+        incomingMovementBean.processMovement(move1);
+        incomingMovementBean.processMovement(move2);
+        incomingMovementBean.processMovement(move3);
 		
 		System.out.println(connectID);
 		List<Movement> output = movementDaoBean.getLatestMovementsByConnectId(connectID, 1);
@@ -125,7 +136,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 
 	@Test
-	public void testGetLatestMovementsByConnectID_willFail() throws MovementServiceException {
+	public void testGetLatestMovementsByConnectID_willFail() throws MovementServiceException, MovementDomainException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
 
@@ -135,6 +146,10 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		Movement move2 = movementHelpers.createMovement(21D, 21D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.ofEpochMilli(System.currentTimeMillis() + 100L));
 		Movement move3 = movementHelpers.createMovement(22D, 22D, 0, SegmentCategoryType.OTHER, connectID, "TEST42", Instant.ofEpochMilli(System.currentTimeMillis() + 200L));
 
+		incomingMovementBean.processMovement(move1);
+		incomingMovementBean.processMovement(move2);
+		incomingMovementBean.processMovement(move3);
+		
 		System.out.println(connectID);
 		List<Movement> output = movementDaoBean.getLatestMovementsByConnectId(connectID, 1);
 		assertEquals(1, output.size());

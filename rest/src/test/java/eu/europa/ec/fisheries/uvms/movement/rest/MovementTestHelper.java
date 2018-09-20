@@ -1,9 +1,13 @@
 package eu.europa.ec.fisheries.uvms.movement.rest;
 
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.UUID;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
@@ -19,48 +23,54 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 
 public class MovementTestHelper {
 
-    public static MovementBaseType createMovementBaseType() {
-        return MovementTestHelper.createMovementBaseType(56d,11d);
+    public static Movement createMovement() {
+        return MovementTestHelper.createMovement(56d,11d);
     }
 
-    public static MovementBaseType createMovementBaseType(Double longitude , Double latitude) {
+    public static Movement createMovement(Double longitude , Double latitude) {
 
-        MovementBaseType movementBaseType = new MovementBaseType();
-        movementBaseType.setMovementType(MovementTypeType.POS);
-        movementBaseType.setConnectId(UUID.randomUUID().toString());
+        Movement movement = new Movement();
+        movement.setMovementType(MovementTypeType.POS);
+        MovementConnect movementConnect = new MovementConnect();
+        movementConnect.setValue(UUID.randomUUID().toString());
+        movement.setMovementConnect(movementConnect);
 
-        AssetId assetId = new AssetId();
-        assetId.setAssetType(AssetType.VESSEL);
-        assetId.setIdType(AssetIdType.GUID);
-        assetId.setValue(UUID.randomUUID().toString());
-        movementBaseType.setAssetId(assetId);
+        Coordinate coordinate = new Coordinate(longitude, latitude);
+        GeometryFactory factory = new GeometryFactory();
+        Point point = factory.createPoint(coordinate);
+        point.setSRID(4326);
+        movement.setLocation(point);
 
-        MovementPoint movementPoint = new MovementPoint();
-        movementPoint.setLongitude(longitude);
-        movementPoint.setLatitude(latitude);
-        movementPoint.setAltitude(2D);
-        movementBaseType.setPosition(movementPoint);
-
-        MovementActivityType activityType = new MovementActivityType();
+        Activity activityType = new Activity();
         activityType.setCallback("TEST");
         activityType.setMessageId("TEST");
-        activityType.setMessageType(MovementActivityTypeType.AUT);
+        activityType.setActivityType(MovementActivityTypeType.AUT);
+        activityType.setUpdated(Instant.now());
+        activityType.setUpdatedBy("TEST");
 
-        movementBaseType.setActivity(activityType);
+        movement.setActivity(activityType);
 
-        movementBaseType.setDuplicates("false");
-        movementBaseType.setInternalReferenceNumber("TEST");
-        movementBaseType.setReportedCourse(0d);
-        movementBaseType.setReportedSpeed(0d);
-        movementBaseType.setSource(MovementSourceType.NAF);
-        movementBaseType.setStatus("TEST");
-        movementBaseType.setPositionTime(Calendar.getInstance().getTime());
-        movementBaseType.setTripNumber(0d);
+        movement.setInternalReferenceNumber("TEST");
+        movement.setHeading(0d);
+        movement.setSpeed(0d);
+        movement.setMovementSource(MovementSourceType.NAF);
+        movement.setStatus("TEST");
+        movement.setTimestamp(Instant.now());
+        movement.setTripNumber(0d);
+        
+        movement.setUpdatedBy("Test");
+        movement.setUpdated(Instant.now());
 
-        return movementBaseType;
+        movement.setDuplicate(false);
+        movement.setProcessed(false);
+        
+        return movement;
     }
     
     public static MovementSearchGroup createBasicMovementSearchGroup() {
