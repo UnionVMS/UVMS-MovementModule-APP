@@ -2,7 +2,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
 
-import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -387,9 +385,14 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(thirdMovement.getTrack()));
         
         assertThat(track.getMovementList().size(), is(3));
-        assertThat(track.getMovementList(), hasItem(firstMovement));
-        assertThat(track.getMovementList(), hasItem(secondMovement));
-        assertThat(track.getMovementList(), hasItem(thirdMovement));
+
+//        assertThat(track.getMovementList(), hasItem(firstMovement));
+//        assertThat(track.getMovementList(), hasItem(secondMovement));
+//        assertThat(track.getMovementList(), hasItem(thirdMovement));
+
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
     
     @Test
@@ -424,8 +427,12 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(thirdMovement.getTrack()));
         
         assertThat(track.getMovementList().size(), is(3));
-        assertThat(track.getMovementList(), hasItem(firstMovement));
-        assertThat(track.getMovementList(), hasItem(secondMovement));
-        assertThat(track.getMovementList(), hasItem(thirdMovement));
+//        assertThat(track.getMovementList(), hasItem(firstMovement));
+//        assertThat(track.getMovementList(), hasItem(secondMovement));
+//        assertThat(track.getMovementList(), hasItem(thirdMovement));
+
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
 }

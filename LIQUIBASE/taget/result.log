@@ -1,0 +1,29 @@
+eu.europa.ec.fisheries.uvms.movement:liquibase:jar:4.0.16-SNAPSHOT
++- javax:javaee-api:jar:8.0:provided
+|  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+|     \- javax.activation:activation:jar:1.1:provided
++- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+|  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+|  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+|  +- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+|  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+|  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+\- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.22-SNAPSHOT:test
+   +- junit:junit:jar:4.12:test
+   |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+   +- org.mockito:mockito-core:jar:2.22.0:test
+   |  +- net.bytebuddy:byte-buddy:jar:1.8.21:test
+   |  +- net.bytebuddy:byte-buddy-agent:jar:1.8.21:test
+   |  \- org.objenesis:objenesis:jar:2.6:test
+   +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+   |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+   |     +- org.powermock:powermock-core:jar:1.6.6:test
+   |     |  \- org.javassist:javassist:jar:3.21.0-GA:test
+   |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+   +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+   |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+   |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+   +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+   |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+   |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+   \- org.databene:contiperf:jar:2.4.4:test
