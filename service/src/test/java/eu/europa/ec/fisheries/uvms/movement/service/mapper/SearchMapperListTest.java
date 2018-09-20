@@ -26,7 +26,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -42,13 +42,13 @@ public class SearchMapperListTest extends TransactionalTests {
     private static final String NO_DUPLICATE = "WHERE  m.duplicate = false ";
 
     @Test
-    public void testCreateSearchSql() throws ParseException, MovementDomainException {
+    public void testCreateSearchSql() throws ParseException, MovementServiceException {
         String data = SearchFieldMapper.createSelectSearchSql(null, true);
         assertEquals(INITIAL_SELECT +NO_DUPLICATE + ORDER_BY, data);
     }
     
     @Test
-    public void testGetOrdinalValueFromEnum() throws MovementDomainException {
+    public void testGetOrdinalValueFromEnum() throws MovementServiceException {
 
         for (MovementTypeType mt : MovementTypeType.values()) {
             Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mt.name(), SearchField.MOVMENT_TYPE));
@@ -72,7 +72,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
 
     @Test
-    public void testSearchFieldSegmentId() throws ParseException, MovementDomainException {
+    public void testSearchFieldSegmentId() throws ParseException, MovementServiceException {
         List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -99,7 +99,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
     
     @Test
-    public void testSearchFieldCategory() throws ParseException, MovementDomainException {
+    public void testSearchFieldCategory() throws ParseException, MovementServiceException {
         List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -126,7 +126,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
     
     @Test
-    public void testCreateMinimalSelectSearchSql() throws ParseException, MovementDomainException {
+    public void testCreateMinimalSelectSearchSql() throws ParseException, MovementServiceException {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -143,7 +143,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
 
     @Test
-    public void testMultipleSearchFieldCategorys() throws ParseException, MovementDomainException {
+    public void testMultipleSearchFieldCategorys() throws ParseException, MovementServiceException {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -170,7 +170,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
     
     @Test
-    public void testCreateCountSearchSql() throws ParseException, MovementDomainException {
+    public void testCreateCountSearchSql() throws ParseException, MovementServiceException {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();

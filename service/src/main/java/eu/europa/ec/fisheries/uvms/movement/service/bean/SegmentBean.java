@@ -15,7 +15,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.util.GeometryUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.util.SegmentCalculationUtil;
@@ -32,7 +32,7 @@ public class SegmentBean {
     @EJB
     private MovementDao dao;
 
-    public Segment createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementDomainException {
+    public Segment createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementServiceException {
         Segment segment = createSegment(fromMovement, toMovement);
         Track track = upsertTrack(fromMovement.getTrack(), segment, toMovement);
         fromMovement.setTrack(track);
@@ -45,14 +45,14 @@ public class SegmentBean {
      * @param fromMovement
      * @param toMovement
      * @return
-     * @throws MovementDomainException
+     * @throws MovementServiceException
      */
-    public Segment createSegment(Movement fromMovement, Movement toMovement) throws MovementDomainException {
+    public Segment createSegment(Movement fromMovement, Movement toMovement) throws MovementServiceException {
         Segment segment = new Segment();
 
         if (toMovement == null && fromMovement == null) {
             LOG.error("[ ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null <createSegment> ]");
-            throw new MovementDomainException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null", ErrorCode.DAO_MAPPING_ERROR);
+            throw new MovementServiceException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null", ErrorCode.DAO_MAPPING_ERROR);
         }
         //calculations for segment
         SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
@@ -87,9 +87,9 @@ public class SegmentBean {
      * @param newMovement
      * @return
      *
-     * @throws MovementDomainException
+     * @throws MovementServiceException
      */
-    public Track upsertTrack(Track track, Segment segment, Movement newMovement) throws MovementDomainException {
+    public Track upsertTrack(Track track, Segment segment, Movement newMovement) throws MovementServiceException {
         if (track == null) {        //if there is no tracks
         	Track newTrack = createNewTrack(segment);
             dao.persist(newMovement);
@@ -111,7 +111,7 @@ public class SegmentBean {
                     updateTrack(track, newMovement, segment);
                     break;
                 default:
-                    throw new MovementDomainException("SEGMENT CATEGORY " + segment.getSegmentCategory().name() + " IS NOT MAPPED", ErrorCode.DAO_MAPPING_ERROR);
+                    throw new MovementServiceException("SEGMENT CATEGORY " + segment.getSegmentCategory().name() + " IS NOT MAPPED", ErrorCode.DAO_MAPPING_ERROR);
             }
         }
         return track;
@@ -181,9 +181,9 @@ public class SegmentBean {
      * @param previousMovement
      * @param currentMovement
      *
-     * @throws MovementDomainException
+     * @throws MovementServiceException
      */
-    public void splitSegment(Movement previousMovement, Movement currentMovement) throws MovementDomainException {
+    public void splitSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
 
         Segment theSegmentToBeBroken = dao.findByFromMovement(previousMovement);
 
@@ -191,7 +191,7 @@ public class SegmentBean {
 
             theSegmentToBeBroken = dao.findByToMovement(previousMovement);
             if (theSegmentToBeBroken == null) {     //if there also is no segment with the previous movement as To
-                throw new MovementDomainException("PREVIOUS MOVEMENT MUST HAVE A SEGMENT BUT IT DOESN'T, SOME LOGICAL ERROR HAS OCCURRED",
+                throw new MovementServiceException("PREVIOUS MOVEMENT MUST HAVE A SEGMENT BUT IT DOESN'T, SOME LOGICAL ERROR HAS OCCURRED",
                         ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             } else {
                 Segment segment = createSegment(theSegmentToBeBroken.getToMovement(), currentMovement); //create a new segment and fill it
@@ -208,7 +208,7 @@ public class SegmentBean {
 
         if (currentMovement == null && previousMovement == null) {
             LOG.error("[ ERROR when updating Segment entity: currentPosition AND previous Position cannot be null <updateSegment> ]");
-            throw new MovementDomainException("ERROR when updating Segment entity: currentPosition AND previous Position cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new MovementServiceException("ERROR when updating Segment entity: currentPosition AND previous Position cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         //calculating and setting new segment values
         SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, currentMovement);
@@ -252,9 +252,9 @@ public class SegmentBean {
      * @param firstMovement
      * @param currentMovement
      *
-     * @throws MovementDomainException
+     * @throws MovementServiceException
      */
-    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementDomainException {
+    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementServiceException {
         Segment segment = firstMovement.getFromSegment();
         if (segment == null) {
             segment = createSegment(currentMovement, firstMovement);

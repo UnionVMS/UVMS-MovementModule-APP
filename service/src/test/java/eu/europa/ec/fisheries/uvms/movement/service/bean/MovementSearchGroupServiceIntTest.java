@@ -18,7 +18,6 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKeyType;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
@@ -214,7 +213,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
     
     @Test(expected = MovementServiceException.class)
-    public void deleteMovementSearchGroup_then_getById_Exception_Thrown() throws MovementDomainException, MovementServiceException {
+    public void deleteMovementSearchGroup_then_getById_Exception_Thrown() throws MovementServiceException, MovementServiceException {
         MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
         MovementSearchGroup movementSearchGroup = movementSearchGroupService.createMovementSearchGroup(movementGroup, TEST_USER_NAME);
         em.flush();

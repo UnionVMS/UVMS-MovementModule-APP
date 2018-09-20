@@ -26,7 +26,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
@@ -62,7 +61,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementByConnectIdList() throws MovementServiceException, MovementDomainException {
+	public void testGetLatestMovementByConnectIdList() throws MovementServiceException {
 		String connectID = UUID.randomUUID().toString();
 		String connectID2 = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
@@ -101,7 +100,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testGetLatestMovementsByConnectID() throws MovementServiceException, MovementDomainException {
+	public void testGetLatestMovementsByConnectID() throws MovementServiceException {
 		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, 0, SegmentCategoryType.OTHER, connectID, "TEST", Instant.now());
@@ -136,7 +135,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 
 	@Test
-	public void testGetLatestMovementsByConnectID_willFail() throws MovementServiceException, MovementDomainException {
+	public void testGetLatestMovementsByConnectID_willFail() throws MovementServiceException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
 

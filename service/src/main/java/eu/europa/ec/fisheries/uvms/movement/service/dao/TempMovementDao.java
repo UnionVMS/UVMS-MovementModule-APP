@@ -19,8 +19,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 @Stateless
 public class TempMovementDao {
@@ -33,13 +33,13 @@ public class TempMovementDao {
         return tempMovement;
     }
 
-    public TempMovement getTempMovementByGuid(String guid) throws MovementDomainException {
+    public TempMovement getTempMovementByGuid(String guid) throws MovementServiceException {
         try {
             TypedQuery<TempMovement> query = em.createNamedQuery(TempMovement.FIND_BY_GUID, TempMovement.class);
             query.setParameter("guid", guid);
             return query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException e) {
-            throw new MovementDomainException("Error when fetching temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+            throw new MovementServiceException("Error when fetching temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -50,7 +50,7 @@ public class TempMovementDao {
             query.setMaxResults(listSize);
             return query.getResultList();
         } catch (RuntimeException e) {
-            throw new MovementDomainRuntimeException("Error when fetching temp movement list.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+            throw new MovementServiceRuntimeException("Error when fetching temp movement list.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -59,7 +59,7 @@ public class TempMovementDao {
             TypedQuery<Long> query = em.createNamedQuery(TempMovement.COUNT, Long.class);
             return query.getSingleResult();
         } catch (NoResultException | NonUniqueResultException e) {
-            throw new MovementDomainRuntimeException("Error when fetching temp movement list count.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+            throw new MovementServiceRuntimeException("Error when fetching temp movement list count.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 }

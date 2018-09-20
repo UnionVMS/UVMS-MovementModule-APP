@@ -20,7 +20,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnu
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 public class TempMovementMapper {
 
@@ -29,7 +29,7 @@ public class TempMovementMapper {
     public static TempMovement toTempMovementEntity(TempMovementType tempMovementType, String username) {
         if (tempMovementType == null || tempMovementType.getPosition() == null) {
             LOG.warn("TempMovementType is null, aborting mapping");
-            throw new MovementDomainRuntimeException("TempMovementType is null, aborting mapping", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new MovementServiceRuntimeException("TempMovementType is null, aborting mapping", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
 
         TempMovement tempMovement = new TempMovement();
@@ -85,7 +85,7 @@ public class TempMovementMapper {
     public static TempMovement toExistingTempMovementEntity(TempMovement currentTempMovement, TempMovement newTempMovement, String username) {
         if (currentTempMovement == null) {
             LOG.warn("TempMovement is null, aborting mapping");
-            throw new MovementDomainRuntimeException("TempMovement is null, aborting mapping", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new MovementServiceRuntimeException("TempMovement is null, aborting mapping", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (newTempMovement.getCourse() != null) {
             currentTempMovement.setCourse(newTempMovement.getCourse());

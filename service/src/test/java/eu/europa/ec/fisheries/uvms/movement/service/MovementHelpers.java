@@ -15,9 +15,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 public class MovementHelpers {
 
@@ -46,7 +45,7 @@ public class MovementHelpers {
             movement.setTimestamp(positionTime);
             movement = movementBatchModelBean.createMovement(movement);
             return movement;
-        } catch (MovementDomainRuntimeException e) {
+        } catch (MovementServiceRuntimeException e) {
             throw new MovementServiceException("Movement Connect missing", e, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
         }
 
@@ -59,7 +58,7 @@ public class MovementHelpers {
             Movement movement = MockData.createMovement(latlong,  segmentCategoryType, connectId, altitude, userName);
             movement.setTimestamp(positionTime);
             return movementBatchModelBean.createMovement(movement);
-        } catch (MovementDomainRuntimeException e) {
+        } catch (MovementServiceRuntimeException e) {
             throw new MovementServiceException("Movement Connect missing", e, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
         }
     }
@@ -75,7 +74,7 @@ public class MovementHelpers {
      * @param connectId
      * @return
      *
-     * @throws MovementDomainException
+     * @throws MovementServiceException
      */
     public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, String connectId) throws MovementServiceException {
         List<LatLong> positions = createRuttVarbergGrena(numberPositions);

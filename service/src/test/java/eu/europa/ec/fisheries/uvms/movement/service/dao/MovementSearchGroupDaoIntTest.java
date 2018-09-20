@@ -17,7 +17,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
 public class MovementSearchGroupDaoIntTest extends TransactionalTests {
@@ -31,7 +31,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void createMovementFilterGroup() throws MovementDomainException {
+    public void createMovementFilterGroup() throws MovementServiceException {
         MovementFilterGroup movementFilterGroup = newFilterGroup();
         movementFilterGroup = dao.createMovementFilterGroup(movementFilterGroup);
         assertNotNull(movementFilterGroup.getId());
@@ -39,7 +39,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void createMovementFilterGroupNoUpdateTime() throws MovementDomainException {
+    public void createMovementFilterGroupNoUpdateTime() throws MovementServiceException {
         expectedException.expect(PersistenceException.class);
 
         MovementFilterGroup movementFilterGroup = newFilterGroup();
@@ -50,7 +50,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void createMovementFilterGroupNoUpdateBy() throws MovementDomainException {
+    public void createMovementFilterGroupNoUpdateBy() throws MovementServiceException {
         expectedException.expect(PersistenceException.class);
 
         MovementFilterGroup movementFilterGroup = newFilterGroup();
@@ -61,7 +61,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void deleteMovementFilterGroup() throws MovementDomainException {
+    public void deleteMovementFilterGroup() throws MovementServiceException {
         MovementFilterGroup movementFilterGroup = newFilterGroup();
         movementFilterGroup = dao.createMovementFilterGroup(movementFilterGroup);
         assertNotNull(movementFilterGroup.getId());
@@ -75,7 +75,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementFilterGroupById() throws MovementDomainException {
+    public void getMovementFilterGroupById() throws MovementServiceException {
         MovementFilterGroup movementFilterGroup = newFilterGroup();
         movementFilterGroup = dao.createMovementFilterGroup(movementFilterGroup);
         assertNotNull(movementFilterGroup.getId());
@@ -87,13 +87,13 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void failGetMovementFilterGroupById() throws MovementDomainException {
+    public void failGetMovementFilterGroupById() throws MovementServiceException {
         MovementFilterGroup movementFilterGroup = dao.getMovementFilterGroupById(-1337);
         assertNull(movementFilterGroup);
     }
 
     @Test
-    public void getMovementFilterGroupsByUser() throws MovementDomainException {
+    public void getMovementFilterGroupsByUser() throws MovementServiceException {
         MovementFilterGroup movementFilterGroup = newFilterGroup();
         movementFilterGroup = dao.createMovementFilterGroup(movementFilterGroup);
         assertNotNull(movementFilterGroup.getId());
@@ -114,7 +114,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void updateMovementFilterGroup() throws MovementDomainException {
+    public void updateMovementFilterGroup() throws MovementServiceException {
         MovementFilterGroup movementFilterGroup = newFilterGroup();
         movementFilterGroup.setUpdatedBy("First Value");
         movementFilterGroup = dao.createMovementFilterGroup(movementFilterGroup);
@@ -135,8 +135,8 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void updateMovementFilterGroupFailedNoId() throws MovementDomainException {
-        expectedException.expect(MovementDomainException.class);
+    public void updateMovementFilterGroupFailedNoId() throws MovementServiceException {
+        expectedException.expect(MovementServiceException.class);
         MovementFilterGroup movementFilterGroup = newFilterGroup();
         dao.updateMovementFilterGroup(movementFilterGroup);
         em.flush();

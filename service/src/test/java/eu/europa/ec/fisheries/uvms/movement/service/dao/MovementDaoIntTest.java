@@ -36,7 +36,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -249,7 +249,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMinimalMovementListPaginated() throws MovementDomainException {
+    public void getMinimalMovementListPaginated() throws MovementServiceException {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
         Integer page = 1;
@@ -262,7 +262,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMinimalMovementListPaginated_NegativeSpeed() throws MovementDomainException {
+    public void getMinimalMovementListPaginated_NegativeSpeed() throws MovementServiceException {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
         Integer page = 1;
@@ -337,7 +337,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementList_NonPaginated_NullCheckResultSetAtUnlogicQuery() throws MovementDomainException {
+    public void getMovementList_NonPaginated_NullCheckResultSetAtUnlogicQuery() throws MovementServiceException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
@@ -349,7 +349,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementList_NonPaginated_NoSearchValues() throws MovementDomainException {
+    public void getMovementList_NonPaginated_NoSearchValues() throws MovementServiceException {
 
         List<SearchValue> searchValues = new ArrayList<>();
         String sql = "select m from Movement m ";
@@ -359,7 +359,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementList_NonPaginated_WithSearchValues() throws MovementDomainException {
+    public void getMovementList_NonPaginated_WithSearchValues() throws MovementServiceException {
 
         // this is not covered in the code BUT it forces that code path to execute
 
@@ -371,12 +371,12 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementList_NonPaginated_ShouldCrash() throws MovementDomainException {
+    public void getMovementList_NonPaginated_ShouldCrash() throws MovementServiceException {
 
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.AREA, "HEPP"));
         String sql = "select m from Movement m ";
 
-        thrown.expect(MovementDomainException.class);
+        thrown.expect(MovementServiceException.class);
         expectedMessage("Error when getting list");
 
         movementDao.getMovementList(sql, searchValues);
@@ -384,7 +384,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
 
     @Test
-    public void getMovementList_NumberOfReports_0_NoSearchValue() throws MovementDomainException {
+    public void getMovementList_NumberOfReports_0_NoSearchValue() throws MovementServiceException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
@@ -397,7 +397,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     // @Test
     // Unstable ServerCode see TODO
-    public void getMovementList_NumberOfReports_1_NoSearchValue() throws MovementDomainException {
+    public void getMovementList_NumberOfReports_1_NoSearchValue() throws MovementServiceException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
         // TODO getLatestMovementsByConnectId in DAO throws exception and crashes the entire result-set if a lookup is empty
@@ -410,7 +410,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementList_NumberOfReports_5_noSearchValue() throws MovementDomainException {
+    public void getMovementList_NumberOfReports_5_noSearchValue() throws MovementServiceException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
@@ -422,7 +422,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementList_NumberOfReports_0_WithSearchValue() throws MovementDomainException {
+    public void getMovementList_NumberOfReports_0_WithSearchValue() throws MovementServiceException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
@@ -436,7 +436,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementList_NumberOfReports_1_WithSearchValue() throws MovementDomainException {
+    public void getMovementList_NumberOfReports_1_WithSearchValue() throws MovementServiceException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
@@ -450,7 +450,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementList_NumberOfReports_1_withSearchValue_NoResult() throws MovementDomainException {
+    public void getMovementList_NumberOfReports_1_withSearchValue_NoResult() throws MovementServiceException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
@@ -464,7 +464,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementList_NumberOfReports_5_withSearchValue() throws MovementDomainException {
+    public void getMovementList_NumberOfReports_5_withSearchValue() throws MovementServiceException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
@@ -491,7 +491,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     // don't want to use JodaTime in tests . . .
     @Test
-    public void getMovementListPaginated() throws MovementDomainException {
+    public void getMovementListPaginated() throws MovementServiceException {
 
         long currentTimeMillis = System.currentTimeMillis();
 
@@ -514,7 +514,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getMovementListSearchCount() throws java.text.ParseException, ParseException, MovementDomainException {
+    public void getMovementListSearchCount() throws java.text.ParseException, ParseException, MovementServiceException {
         List<SearchValue> searchValues = new ArrayList<>();
         String sql = SearchFieldMapper.createCountSearchSql(searchValues, true);
         Long searchResult = movementDao.getMovementListSearchCount(sql,searchValues);
@@ -523,7 +523,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
     
     @Test
-    public void getMovementListSearchCount_SearchValueNull_ExceptionThrown() throws java.text.ParseException, ParseException, MovementDomainException {
+    public void getMovementListSearchCount_SearchValueNull_ExceptionThrown() throws java.text.ParseException, ParseException, MovementServiceException {
 
         thrown.expect(Exception.class);
 
@@ -670,7 +670,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         try {
             return movementDao.getMovementList(sql, new ArrayList<>());
-        } catch (MovementDomainException e) {
+        } catch (MovementServiceException e) {
             fail(e.toString());
         }
         return new ArrayList<>();

@@ -36,7 +36,6 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
@@ -54,14 +53,11 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.AreaMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -109,7 +105,7 @@ public class MovementService {
                 auditService.sendMovementCreatedAudit(createdMovement, username);
             }
             return createdMovement;
-        } catch (MovementServiceException | MovementDomainRuntimeException | MovementDomainException ex) {
+        } catch (MovementServiceException ex) {
             throw new EJBException(ex);
         }
     }
@@ -129,7 +125,7 @@ public class MovementService {
             createMovementBatchResponse.setResponse(simpleResponse);
             createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementType(savedBatchMovements));
             return createMovementBatchResponse;
-        } catch (MovementDomainRuntimeException mdre) {
+        } catch (MovementServiceRuntimeException mdre) {
             LOG.warn("Didn't find movement connect for the just received movement so NOT going to save anything!");
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
             createMovementBatchResponse.setResponse(SimpleResponse.NOK);
@@ -266,8 +262,6 @@ public class MovementService {
             return MovementDataSourceResponseMapper.createMovementListResponse(response);
         } catch (ParseException | com.vividsolutions.jts.io.ParseException e) {
             throw new MovementServiceException("Error when getting movement list by query: ParseException", e, ErrorCode.PARSING_ERROR);
-        } catch (MovementDomainException ex) {
-            throw new MovementServiceException("Error when getting movement list by query", ex, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
 
@@ -316,8 +310,8 @@ public class MovementService {
             response.setMovementList(movementList);
             response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
             return MovementDataSourceResponseMapper.createMovementListResponse(response);
-        } catch (MovementDomainException | ParseException | com.vividsolutions.jts.io.ParseException ex) {
-            throw new MovementServiceException("Error when getting movement list by query", ex, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+        } catch (ParseException | com.vividsolutions.jts.io.ParseException ex) {
+            throw new MovementServiceException("Error when getting movement list by query", ex, ErrorCode.PARSING_ERROR);
         }
     }
 
@@ -433,8 +427,7 @@ public class MovementService {
     }
 	
     private void getMovementsByConnectedIds(Integer numberOfLatestReports, List<SearchValue> searchKeys,
-            List<Movement> movementEntityList, List<SearchValue> connectedIdsFromSearchKeyValues) throws ParseException,
-            MovementDomainException {
+            List<Movement> movementEntityList, List<SearchValue> connectedIdsFromSearchKeyValues) throws ParseException, MovementServiceException {
 
         String sql;
         List<SearchValue> searchValuesWithoutConnectedIds = removeConnectedIdsFromSearchKeyValues(searchKeys);

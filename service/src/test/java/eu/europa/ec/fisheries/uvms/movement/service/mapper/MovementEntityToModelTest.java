@@ -44,7 +44,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
@@ -320,7 +319,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
-	public void testExtractTracks() throws MovementServiceException, MovementDomainException {
+	public void testExtractTracks() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
 		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));

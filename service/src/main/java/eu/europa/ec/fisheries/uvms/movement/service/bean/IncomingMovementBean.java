@@ -8,7 +8,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class IncomingMovementBean {
     @PersistenceContext
     EntityManager em;
 
-    public void processMovement(Movement currentMovement) throws MovementDomainException {
+    public void processMovement(Movement currentMovement) throws MovementServiceException {
         LOG.debug("processMovement() method get called.");
         if (currentMovement != null && !currentMovement.isProcessed()) {
             LOG.debug("Processing movement {}", currentMovement.getId());
@@ -145,7 +145,7 @@ public class IncomingMovementBean {
         }
     }
 
-    public void processMovement(Long id) throws MovementDomainException {
+    public void processMovement(Long id) throws MovementServiceException {
         Movement currentMovement = dao.getMovementById(id);
         processMovement(currentMovement);
     }

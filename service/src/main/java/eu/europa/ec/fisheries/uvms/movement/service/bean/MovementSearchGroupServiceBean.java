@@ -20,7 +20,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementSearchGroupDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementGroupMapper;
@@ -97,7 +96,7 @@ public class MovementSearchGroupServiceBean implements MovementSearchGroupServic
             currentGroup = MovementGroupMapper.toGroupEntity(currentGroup, searchGroup, username);
             MovementFilterGroup updatedGroup = dao.updateMovementFilterGroup(currentGroup);
             return MovementGroupMapper.toMovementSearchGroup(updatedGroup);
-        } catch (MovementDomainException e) {
+        } catch (MovementServiceException e) {
             throw new MovementServiceException("Error when updating movement search group.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }

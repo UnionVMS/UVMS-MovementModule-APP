@@ -30,13 +30,13 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 public class MovementModelToEntityMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementModelToEntityMapper.class);
 
-    public static Movement mapNewMovementEntity(MovementType movement, String username) throws MovementDomainException {
+    public static Movement mapNewMovementEntity(MovementType movement, String username) throws MovementServiceException {
         try {
             Movement entity = new Movement();
 
@@ -97,11 +97,11 @@ public class MovementModelToEntityMapper {
             return entity;
         } catch (Exception e) {
             LOG.error("[ ERROR when mapping to Movement entity: < mapNewMovementEntity > ]");
-            throw new MovementDomainException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
+            throw new MovementServiceException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
     }
     
-    public static Movement mapNewMovementEntity(MovementBaseType movement, String username) throws MovementDomainException {
+    public static Movement mapNewMovementEntity(MovementBaseType movement, String username) throws MovementServiceException {
         try {
             Movement entity = new Movement();
 
@@ -162,7 +162,7 @@ public class MovementModelToEntityMapper {
             return entity;
         } catch (Exception e) {
             LOG.error("[ ERROR when mapping to Movement entity: < mapNewMovementEntity > ]");
-            throw new MovementDomainException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
+            throw new MovementServiceException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
     }
 
@@ -189,7 +189,7 @@ public class MovementModelToEntityMapper {
         return meta;
     }
 
-    public static Activity createActivity(MovementBaseType movement) throws MovementDomainException {
+    public static Activity createActivity(MovementBaseType movement) throws MovementServiceException {
         try {
             Activity activity = new Activity();
             activity.setActivityType(movement.getActivity().getMessageType());
@@ -200,7 +200,7 @@ public class MovementModelToEntityMapper {
             return activity;
         } catch (Exception e) {
             LOG.error("[ ERROR when mapping to Activity entity: < createActivity > ]");
-            throw new MovementDomainException("ERROR when mapping to Activity entity ", e, ErrorCode.DAO_MAPPING_ERROR);
+            throw new MovementServiceException("ERROR when mapping to Activity entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
     }
 

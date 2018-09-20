@@ -28,7 +28,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 public class CreateMovementTest {
 
@@ -48,7 +48,7 @@ public class CreateMovementTest {
     }
 
     @Test
-    public void createMovementFirstMovement() throws MovementDomainException {
+    public void createMovementFirstMovement() throws MovementServiceException {
 
         MovementBatchModelBean test = Mockito.mock(MovementBatchModelBean.class);
         IncomingMovementBean proc = Mockito.mock(IncomingMovementBean.class);

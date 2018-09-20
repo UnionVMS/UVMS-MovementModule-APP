@@ -22,7 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 @Stateless
 public class MovementBatchModelBean {
@@ -37,7 +37,7 @@ public class MovementBatchModelBean {
         try {
             MovementConnect moveConnect = getMovementConnectByConnectId(connectId);
             if(moveConnect == null) {
-                throw new MovementDomainRuntimeException("Couldn't find movementConnect!", ErrorCode.NO_MOVEMENT_CONNECT);
+                throw new MovementServiceRuntimeException("Couldn't find movementConnect!", ErrorCode.NO_MOVEMENT_CONNECT);
             }
             movement.setMovementConnect(moveConnect);
             if (moveConnect.getMovementList() == null) {

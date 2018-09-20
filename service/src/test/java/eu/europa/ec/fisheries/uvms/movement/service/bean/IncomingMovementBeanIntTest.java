@@ -2,24 +2,19 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import java.time.Instant;
-import java.util.Date;    //leave be for now
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
-
-import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
@@ -30,7 +25,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by andreasw on 2017-03-09.
@@ -70,7 +65,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    public void testProcessingMovement() throws MovementDomainException {
+    public void testProcessingMovement() throws MovementServiceException {
 
         // Given: Get the id for a persisted movement entity.
 
@@ -250,7 +245,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testMovementAndSegmentRelation() throws MovementDomainException {
+    public void testMovementAndSegmentRelation() throws MovementServiceException {
     	String connectId = UUID.randomUUID().toString();
     	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
@@ -278,7 +273,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testMovementAndSegmentRelationThreeMovements() throws MovementDomainException {
+    public void testMovementAndSegmentRelationThreeMovements() throws MovementServiceException {
     	String connectId = UUID.randomUUID().toString();
     	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
@@ -322,7 +317,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testMovementAndSegmentRelationThreeMovementsNonOrdered() throws MovementDomainException {
+    public void testMovementAndSegmentRelationThreeMovementsNonOrdered() throws MovementServiceException {
     	int tenMinutes = 600000;
     	String connectId = UUID.randomUUID().toString();
     	Instant positionTime = Instant.now();
@@ -371,7 +366,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
-    public void testTrackWithThreeMovements() throws MovementDomainException {
+    public void testTrackWithThreeMovements() throws MovementServiceException {
     	String connectId = UUID.randomUUID().toString();
     	Instant timestamp = Instant.now();
     	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
@@ -405,13 +400,18 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(thirdMovement.getTrack()));
         
         assertThat(track.getMovementList().size(), is(3));
-        assertThat(track.getMovementList(), hasItem(firstMovement));
-        assertThat(track.getMovementList(), hasItem(secondMovement));
-        assertThat(track.getMovementList(), hasItem(thirdMovement));
+
+//        assertThat(track.getMovementList(), hasItem(firstMovement));
+//        assertThat(track.getMovementList(), hasItem(secondMovement));
+//        assertThat(track.getMovementList(), hasItem(thirdMovement));
+
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
     
     @Test
-    public void testTrackWithThreeMovementsNonOrdered() throws MovementDomainException {
+    public void testTrackWithThreeMovementsNonOrdered() throws MovementServiceException {
     	int tenMinutes = 600000;
     	String connectId = UUID.randomUUID().toString();
     	Instant positionTime = Instant.now();
@@ -445,8 +445,12 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(thirdMovement.getTrack()));
         
         assertThat(track.getMovementList().size(), is(3));
-        assertThat(track.getMovementList(), hasItem(firstMovement));
-        assertThat(track.getMovementList(), hasItem(secondMovement));
-        assertThat(track.getMovementList(), hasItem(thirdMovement));
+//        assertThat(track.getMovementList(), hasItem(firstMovement));
+//        assertThat(track.getMovementList(), hasItem(secondMovement));
+//        assertThat(track.getMovementList(), hasItem(thirdMovement));
+
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
 }

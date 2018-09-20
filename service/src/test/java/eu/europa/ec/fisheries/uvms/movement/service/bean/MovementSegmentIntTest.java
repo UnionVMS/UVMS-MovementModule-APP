@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +17,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
@@ -39,7 +37,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     private IncomingMovementBean incomingMovementBean;
 
     @Test
-    public void createThreeMovementTrackInOrder() throws MovementServiceException, MovementDomainException {
+    public void createThreeMovementTrackInOrder() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -73,7 +71,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
-    public void createFourMovementTrackInOrder() throws MovementServiceException, MovementDomainException {
+    public void createFourMovementTrackInOrder() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -113,7 +111,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
-    public void createFourMovementTrackOutOfOrder() throws MovementServiceException, MovementDomainException {
+    public void createFourMovementTrackOutOfOrder() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 
         String connectId = UUID.randomUUID().toString();
@@ -152,7 +150,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
-    public void createVarbergGrenaNormal() throws MovementServiceException, MovementDomainException {
+    public void createVarbergGrenaNormal() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
@@ -164,16 +162,16 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
-    public void createVarbergGrenaBasedOnReversedOrder() throws MovementServiceException, MovementDomainException {
+    public void createVarbergGrenaBasedOnReversedOrder() throws MovementServiceException {
         testVarbergGrenaBasedOnOrdering(ORDER_REVERSED);
     }
 
     @Test
-    public void createVarbergGrenaBasedOnRandomOrder() throws MovementServiceException, MovementDomainException {
+    public void createVarbergGrenaBasedOnRandomOrder() throws MovementServiceException {
         testVarbergGrenaBasedOnOrdering(ORDER_RANDOM);
     }
 
-    private void testVarbergGrenaBasedOnOrdering(int order) throws MovementServiceException, MovementDomainException {
+    private void testVarbergGrenaBasedOnOrdering(int order) throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 
@@ -212,7 +210,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
-    public void createFishingTourVarberg() throws MovementServiceException, MovementDomainException {
+    public void createFishingTourVarberg() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
         String connectId = UUID.randomUUID().toString();
 

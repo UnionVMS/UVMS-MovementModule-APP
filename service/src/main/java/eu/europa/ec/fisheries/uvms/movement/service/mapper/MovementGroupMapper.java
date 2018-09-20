@@ -22,7 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilter;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 public class MovementGroupMapper {
 
     public static MovementFilterGroup toGroupEntity(MovementFilterGroup filterGroup, MovementSearchGroup searchGroup, String username) {
@@ -111,7 +111,7 @@ public class MovementGroupMapper {
 
     private static void validateMovementSearchGroup(MovementSearchGroup searchGroup) {
         if (searchGroup.getName() == null) {
-            throw new MovementDomainRuntimeException("MovementSearchGroupName cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new MovementServiceRuntimeException("MovementSearchGroupName cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
     }
 }

@@ -20,7 +20,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementDomainRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 public class GeometryUtil {
     
@@ -47,10 +47,10 @@ public class GeometryUtil {
         Coordinate[] corSeq = new Coordinate[2];
 
         if (previousPosition.getLocation() == null) {
-            throw new MovementDomainRuntimeException("Previous location is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new MovementServiceRuntimeException("Previous location is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if (currentPosition.getLocation() == null) {
-            throw new MovementDomainRuntimeException("Current location is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new MovementServiceRuntimeException("Current location is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
 
         corSeq[0] = previousPosition.getLocation().getCoordinate();
