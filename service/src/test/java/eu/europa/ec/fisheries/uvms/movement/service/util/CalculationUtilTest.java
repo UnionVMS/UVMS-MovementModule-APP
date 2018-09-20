@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.time.Instant;
@@ -10,7 +11,6 @@ import javax.ejb.EJB;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
@@ -116,7 +116,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	
 	@Test
 	public void testGetPositionCalculations () throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
@@ -126,8 +126,8 @@ public class CalculationUtilTest extends TransactionalTests {
 		double endLon = 11.703635;
 		double endLat = 57.600009;
 		
-		Movement start =  movementHelpers.createMovement(startLon, startLat, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
-		Movement end =  movementHelpers.createMovement(endLon, endLat, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement.plusSeconds(10));
+		Movement start =  movementHelpers.createMovement(startLon, startLat, connectId, "ONE", dateStartMovement);
+		Movement end =  movementHelpers.createMovement(endLon, endLat, connectId, "ONE", dateStartMovement.plusSeconds(10));
 		
 		SegmentCalculations segmentCalc = CalculationUtil.getPositionCalculations(start, end);
 		
@@ -158,4 +158,110 @@ public class CalculationUtilTest extends TransactionalTests {
 			assertTrue(true);
 		}
 	}
+	
+	@Test
+    public void north() {
+        Double expected = 0.0;
+
+        Double prevLon = 0.0;
+        Double prevLat = 0.0;
+        Double thisLon = 0.0;
+        Double thisLat = 1.0;
+
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void northEast() {
+        Double expected = 44.99563645534488;
+
+        Double prevLon = 0.0;
+        Double prevLat = 0.0;
+        Double thisLon = 1.0;
+        Double thisLat = 1.0;
+
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void east() {
+        Double expected = 90.0;
+
+        Double prevLon = 0.0;
+        Double prevLat = 0.0;
+        Double thisLon = 1.0;
+        Double thisLat = 0.0;
+
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void southEast() {
+        Double expected = 135.00436354465512;
+
+        Double prevLon = 0.0;
+        Double prevLat = 0.0;
+        Double thisLon = 1.0;
+        Double thisLat = -1.0;
+
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void south() {
+        Double expected = 180.0;
+
+        Double prevLon = 0.0;
+        Double prevLat = 0.0;
+        Double thisLon = 0.0;
+        Double thisLat = -1.0;
+
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void southWest() {
+        Double expected = 224.99563645534485;
+
+        Double prevLon = 0.0;
+        Double prevLat = 0.0;
+        Double thisLon = -1.0;
+        Double thisLat = -1.0;
+
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void west() {
+        Double expected = 270.0;
+
+        Double prevLon = 0.0;
+        Double prevLat = 0.0;
+        Double thisLon = -1.0;
+        Double thisLat = 0.0;
+
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void noMovement() {
+        Double prevLon = 0.0;
+        Double prevLat = 0.0;
+        Double thisLon = 0.0;
+        Double thisLat = 0.0;
+
+        Double actual = CalculationUtil.calculateCourse(prevLat, prevLon, thisLat, thisLon);
+        assertNull(actual);
+    }
 }

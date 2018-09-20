@@ -35,7 +35,7 @@ public class WKTUtilTest extends TransactionalTests {
 
 	@Test
 	public void testGetWKTLineString() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = Instant.now();
 		
@@ -69,7 +69,7 @@ public class WKTUtilTest extends TransactionalTests {
 	
 	@Test
 	public void testGetWktLineStringFromMovementList() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = Instant.now();
 		

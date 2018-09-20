@@ -5,14 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import javax.persistence.EntityManager;
 import com.peertopark.java.geocalc.Coordinate;
 import com.peertopark.java.geocalc.DegreeCoordinate;
 import com.peertopark.java.geocalc.EarthCalc;
 import com.peertopark.java.geocalc.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
@@ -22,26 +19,21 @@ public class MovementHelpers {
 
     private final MovementBatchModelBean movementBatchModelBean;
 
-    private final MovementDao movementDao;
+    private Random rnd = new Random();
 
-    private final EntityManager em;
-    
-    public MovementHelpers(EntityManager em, MovementBatchModelBean movementBatchModelBean, MovementDao movementDao) {
-        this.em = em;
+    public MovementHelpers(MovementBatchModelBean movementBatchModelBean) {
         this.movementBatchModelBean = movementBatchModelBean;
-        this.movementDao = movementDao;
     }
 
     /******************************************************************************************************************
      *  helpers
      *****************************************************************************************************************/
 
-    /* positiontime is imortant */
-    public Movement createMovement(double longitude, double latitude, int altitude, SegmentCategoryType segmentCategoryType,
-                                   String connectId, String userName, Instant positionTime) throws MovementServiceException {
+    public Movement createMovement(double longitude, double latitude, String connectId, String userName,
+                                   Instant positionTime) throws MovementServiceException {
 
         try {
-            Movement movement = MockData.createMovement(longitude, latitude, altitude, segmentCategoryType, connectId, 0, userName);
+            Movement movement = MockData.createMovement(longitude, latitude, connectId, 0, userName);
             movement.setTimestamp(positionTime);
             movement = movementBatchModelBean.createMovement(movement);
             return movement;
@@ -51,11 +43,10 @@ public class MovementHelpers {
 
     }
 
-    private Movement createMovement(LatLong latlong,  int altitude, SegmentCategoryType segmentCategoryType, String connectId,
-                                    String userName, Instant positionTime) throws MovementServiceException {
+    private Movement createMovement(LatLong latlong,  String connectId, String userName, Instant positionTime) throws MovementServiceException {
 
         try {
-            Movement movement = MockData.createMovement(latlong,  segmentCategoryType, connectId, altitude, userName);
+            Movement movement = MockData.createMovement(latlong,  connectId, userName);
             movement.setTimestamp(positionTime);
             return movementBatchModelBean.createMovement(movement);
         } catch (MovementServiceRuntimeException e) {
@@ -90,9 +81,7 @@ public class MovementHelpers {
         List<Movement> createdRoute = new ArrayList<>();
         String userName = "TEST";
 
-        boolean firstLoop = true;
-        SegmentCategoryType segmentCategoryType = SegmentCategoryType.EXIT_PORT;
-        long timeStamp = System.currentTimeMillis();
+        Instant timeStamp = Instant.now();
         int loopCount = 0;
 
         long timeDelta = 300000;
@@ -109,13 +98,8 @@ public class MovementHelpers {
 
         for(LatLong position : positions){
             loopCount++;
-            Movement movement = createMovement(position, 2,segmentCategoryType, connectId,
-                    userName + "_" + String.valueOf(loopCount), Instant.ofEpochMilli(timeStamp));
-            if(firstLoop){
-                firstLoop = false;
-                segmentCategoryType = SegmentCategoryType.GAP;
-            }
-            timeStamp += timeDelta;
+            Movement movement = createMovement(position, connectId,userName + "_" + String.valueOf(loopCount), timeStamp);
+            timeStamp = timeStamp.plusMillis(timeDelta);
             createdRoute.add(movement);
         }
         return createdRoute;
@@ -158,7 +142,7 @@ public class MovementHelpers {
 
         int movementTimeDeltaInMillis = 30000;
         List<LatLong> rutt = new ArrayList<>();
-        long ts = System.currentTimeMillis();
+        Instant ts = Instant.now();
 
         double latitude = 57.110 ;
         double longitude = 12.244  ;
@@ -173,7 +157,7 @@ public class MovementHelpers {
                 longitude = longitude - 0.003;
             if (latitude < END_LATITUDE && longitude < END_LONGITUDE)
                 break;
-            rutt.add(new LatLong(latitude, longitude, getDate(ts += movementTimeDeltaInMillis)));
+            rutt.add(new LatLong(latitude, longitude, ts.plusMillis(movementTimeDeltaInMillis)));
         }
 
         // now when we have a route we must calculate heading and speed
@@ -186,47 +170,11 @@ public class MovementHelpers {
         }
     }
 
-    private List<LatLong> createRuttCobhNewYork(int numberPositions, float distanceBetweenPositions) {
-
-        int movementTimeDeltaInMillis = 30000;
-        List<LatLong> rutt = new ArrayList<>();
-        long ts = System.currentTimeMillis();
-
-        double latitude = 51.844;
-        double longitude = -8.311;
-
-
-        double END_LATITUDE = 40.313;
-        double END_LONGITUDE = -73.740;
-
-        while (true) {
-
-            if (latitude >= END_LATITUDE)
-                latitude = latitude - distanceBetweenPositions;
-            if (longitude >= END_LONGITUDE)
-                longitude = longitude - distanceBetweenPositions;
-            if (latitude < END_LATITUDE && longitude < END_LONGITUDE)
-                break;
-            rutt.add(new LatLong(latitude, longitude, getDate(ts += movementTimeDeltaInMillis)));
-        }
-
-        // now when we have a route we must calculate heading and speed
-        rutt = calculateReportedDataForRoute(rutt);
-
-        if (numberPositions == -1) {
-            return rutt;
-        } else {
-            return rutt.subList(0, numberPositions);
-        }
-    }
-
-    private Random rnd = new Random();
-
     private List<LatLong> createRuttSmallFishingTourFromVarberg() {
 
         int movementTimeDeltaInMillis = 30000;
         List<LatLong> rutt = new ArrayList<>();
-        long ts = System.currentTimeMillis();
+        Instant ts = Instant.now();
 
         double randomFactorLat = rnd.nextDouble() ;
         double randomFactorLong = rnd.nextDouble() ;
@@ -247,29 +195,25 @@ public class MovementHelpers {
                 longitude = longitude - 0.004;
             if (latitude < END_LATITUDE && longitude < END_LONGITUDE)
                 break;
-            rutt.add(new LatLong(latitude, longitude, getDate(ts += movementTimeDeltaInMillis)));
+            rutt.add(new LatLong(latitude, longitude, ts.plusMillis(movementTimeDeltaInMillis)));
         }
         // do some fishing
         for (int i = 0; i < 15; i++) {
             latitude = latitude - 0.001;
             longitude = longitude - 0.002;
-            rutt.add(new LatLong(latitude, longitude, getDate(ts += movementTimeDeltaInMillis)));
+            rutt.add(new LatLong(latitude, longitude, ts.plusMillis(movementTimeDeltaInMillis)));
         }
         // go home
         int n = rutt.size();
         List<LatLong> ruttHome = new ArrayList<>();
         for(int i = n - 1 ; i > 0 ; i--){
             LatLong wrk = rutt.get(i);
-            ruttHome.add(new LatLong(wrk.latitude + 0.001, wrk.longitude, getDate(ts += movementTimeDeltaInMillis)));
+            ruttHome.add(new LatLong(wrk.latitude + 0.001, wrk.longitude, ts.plusMillis(movementTimeDeltaInMillis)));
         }
 
         rutt.addAll(ruttHome);
         rutt = calculateReportedDataForRoute(rutt);
         return rutt;
-    }
-
-    private Instant getDate(Long millis) {
-        return Instant.ofEpochMilli(millis);
     }
 
     private Double bearing(LatLong src, LatLong dst) {
@@ -317,14 +261,6 @@ public class MovementHelpers {
         } catch (RuntimeException e) {
             return 0.0;
         }
-    }
-
-    private double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-
-    private double rad2deg(double rad) {
-        return (rad * 180.0 / Math.PI);
     }
     
     public static String getRandomIntegers(int length) {

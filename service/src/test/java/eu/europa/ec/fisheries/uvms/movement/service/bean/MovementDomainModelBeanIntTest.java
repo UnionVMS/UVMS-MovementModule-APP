@@ -56,16 +56,19 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     private Random rnd = new Random();
 
 	@EJB
-	MovementBatchModelBean movementBatchModelBean;
+	private MovementBatchModelBean movementBatchModelBean;
 	
 	@Inject
 	private IncomingMovementBean incomingMovementBean;
 
 	@EJB
-	MovementDao movementDao;
+	private MovementDao movementDao;
+	
+    @EJB
+    private AreaDao areaDao;
 	
 	@EJB
-    MovementService movementService;
+    private MovementService movementService;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -536,9 +539,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	assertTrue(output.isEmpty());
     }
     
-    @EJB
-    private AreaDao areaDao;
-    
     @Test
     public void testGetAreas() {
         int areasBefore = movementService.getAreas().size();
@@ -601,7 +601,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 		area.setAreaUpuser("TestUser");
 		area.setAreaType(areaType);
 		
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
     	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
 		
 		Area createdArea = areaDao.createMovementArea(area);
@@ -662,7 +662,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementServiceException {
-    	MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+    	MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
     	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
     	for (Movement movement : varbergGrena) {
             incomingMovementBean.processMovement(movement);

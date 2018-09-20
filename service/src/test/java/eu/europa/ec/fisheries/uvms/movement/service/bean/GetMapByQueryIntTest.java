@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementEventTestHelper;
+import eu.europa.ec.fisheries.uvms.movement.service.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -27,7 +27,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
     public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryIsNotAllowed() throws MovementServiceException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(true, false, false);
+        MovementQuery movementQuery = MovementTestHelper.createMovementQuery(true, false, false);
         movementServiceBean.getMapByQuery(movementQuery);
     }
 
@@ -36,7 +36,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
     public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryThrowsMovementServiceException() throws MovementServiceException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(true, false, false);
+        MovementQuery movementQuery = MovementTestHelper.createMovementQuery(true, false, false);
         movementServiceBean.getMapByQuery(movementQuery);
     }
 
@@ -48,7 +48,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
-        MovementQuery movementQuery = MovementEventTestHelper.createMovementQuery(false, true, false);
+        MovementQuery movementQuery = MovementTestHelper.createMovementQuery(false, true, false);
         movementServiceBean.getMapByQuery(movementQuery);
     }
 }

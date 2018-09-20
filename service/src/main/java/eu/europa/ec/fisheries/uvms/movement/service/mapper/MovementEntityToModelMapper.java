@@ -19,8 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
@@ -49,8 +47,6 @@ public class MovementEntityToModelMapper {
     
     private MovementEntityToModelMapper() {}
 
-    private static final Logger LOG = LoggerFactory.getLogger(MovementEntityToModelMapper.class);
-
     public static MovementBaseType mapToMovementBaseType(Movement movement) {
         MovementBaseType model = new MovementBaseType();
         model.setReportedSpeed(movement.getSpeed());
@@ -76,7 +72,6 @@ public class MovementEntityToModelMapper {
         MovementType model = new MovementType();
         model.setReportedSpeed(movement.getSpeed());
         model.setGuid(movement.getGuid());
-        //TODO Fix this to double or int
         model.setReportedCourse(movement.getHeading());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
@@ -205,23 +200,17 @@ public class MovementEntityToModelMapper {
 
     public static List<MovementType> mapToMovementType(List<Movement> movements) {
         List<MovementType> mappedMovements = new ArrayList<>();
-        long start = System.currentTimeMillis();
         for (Movement movement : movements) {
             mappedMovements.add(mapToMovementType(movement));
         }
-        long diff = System.currentTimeMillis() - start;
-        LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff + "ms");
         return mappedMovements;
     }
 
     public static List<MovementType> mapToMovementTypeFromLatestMovement(List<LatestMovement> movements) {
         List<MovementType> mappedMovements = new ArrayList<>();
-        long start = System.currentTimeMillis();
         for (LatestMovement movement : movements) {
             mappedMovements.add(mapToMovementType(movement.getMovement()));
         }
-        long diff = System.currentTimeMillis() - start;
-        LOG.debug("mapToMovementType: " + " ---- TIME ---- " + diff + "ms");
         return mappedMovements;
     }
 
@@ -233,13 +222,10 @@ public class MovementEntityToModelMapper {
     }
 
     public static List<MovementSegment> mapToMovementSegment(List<Segment> segments) {
-        long start = System.currentTimeMillis();
         List<MovementSegment> mappedSegments = new ArrayList<>();
         for (Segment segment : segments) {
             mappedSegments.add(mapToMovementSegment(segment));
         }
-        long diff = System.currentTimeMillis() - start;
-        LOG.debug("mapToMovementSegment: " + " ---- TIME ---- " + diff + "ms");
         return mappedSegments;
     }
 
@@ -268,7 +254,6 @@ public class MovementEntityToModelMapper {
 
     public static Map<String, List<Movement>> orderMovementsByConnectId(List<Movement> movements) {
         Map<String, List<Movement>> orderedMovements = new HashMap<>();
-        long start = System.currentTimeMillis();
         for (Movement movement : movements) {
             if (orderedMovements.get(movement.getMovementConnect().getValue()) == null) {
                 orderedMovements.put(movement.getMovementConnect().getValue(), new ArrayList<>(Collections.singletonList(movement)));
@@ -276,13 +261,10 @@ public class MovementEntityToModelMapper {
                 orderedMovements.get(movement.getMovementConnect().getValue()).add(movement);
             }
         }
-        long diff = System.currentTimeMillis() - start;
-        LOG.debug("orderMovementByConnectID: " + " ---- TIME ---- " + diff + "ms");
         return orderedMovements;
     }
 
     public static List<MovementTrack> extractTracks(List<Segment> segments) {
-        long start = System.currentTimeMillis();
         Set<Track> tracks = new HashSet<>();
         for (Segment segment : segments) {
             tracks.add(segment.getTrack());
@@ -291,15 +273,11 @@ public class MovementEntityToModelMapper {
         for (Track track : tracks) {
             movementTracks.add(mapToMovementTrack(track));
         }
-
-        long diff = System.currentTimeMillis() - start;
-        LOG.debug("extractTracks: " + " ---- TIME ---- " + diff + "ms");
         return movementTracks;
     }
 
     public static ArrayList<Segment> extractSegments(ArrayList<Movement> movements, boolean excludeFirstLastSegment) {
         Set<Segment> segments = new HashSet<>();
-        long start = System.currentTimeMillis();
         if (movements.size() == 1 && excludeFirstLastSegment) {
             return new ArrayList<>(segments);
         }
@@ -334,9 +312,6 @@ public class MovementEntityToModelMapper {
                 }
             }
         }
-
-        long diff = System.currentTimeMillis() - start;
-        LOG.debug("extractSegments: " + " ---- TIME ---- " + diff + "ms");
         return new ArrayList<>(segments);
     }
     

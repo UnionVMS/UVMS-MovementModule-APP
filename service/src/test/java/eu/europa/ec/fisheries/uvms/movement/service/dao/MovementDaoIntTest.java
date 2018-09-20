@@ -489,7 +489,6 @@ public class MovementDaoIntTest extends TransactionalTests {
         List<Movement> movementListByAreaAndTimeInterval = movementDao.getMovementListByAreaAndTimeInterval(null);
     }
 
-    // don't want to use JodaTime in tests . . .
     @Test
     public void getMovementListPaginated() throws MovementServiceException {
 

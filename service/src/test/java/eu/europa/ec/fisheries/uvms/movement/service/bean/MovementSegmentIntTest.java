@@ -10,7 +10,6 @@ import javax.ejb.EJB;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
@@ -38,7 +37,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     public void createThreeMovementTrackInOrder() throws MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         String connectId = UUID.randomUUID().toString();
 
@@ -46,9 +45,9 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Instant dateSecondMovement = dateFirstMovement.plusMillis(300000);
         Instant dateThirdMovement = dateSecondMovement.plusMillis(300000);
 
-        Movement firstMovement = movementHelpers.createMovement(0d, 0d, 0, SegmentCategoryType.EXIT_PORT, connectId, "ONE", dateFirstMovement);
-        Movement secondMovement = movementHelpers.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, "TWO", dateSecondMovement);
-        Movement thirdMovement = movementHelpers.createMovement(2d, 2d, 0, SegmentCategoryType.GAP, connectId, "THREE", dateThirdMovement);
+        Movement firstMovement = movementHelpers.createMovement(0d, 0d, connectId, "ONE", dateFirstMovement);
+        Movement secondMovement = movementHelpers.createMovement(1d, 1d, connectId, "TWO", dateSecondMovement);
+        Movement thirdMovement = movementHelpers.createMovement(2d, 2d, connectId, "THREE", dateThirdMovement);
 
         incomingMovementBean.processMovement(firstMovement);
         incomingMovementBean.processMovement(secondMovement);
@@ -72,7 +71,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     public void createFourMovementTrackInOrder() throws MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         String connectId = UUID.randomUUID().toString();
 
@@ -81,10 +80,10 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Instant thirdMovementDate  = firstMovementDate.plusMillis(600000);
         Instant forthMovementDate  = firstMovementDate.plusMillis(900000);
 
-        Movement firstMovement = movementHelpers.createMovement(0d, 0d, 0, SegmentCategoryType.EXIT_PORT, connectId, "ONE", firstMovementDate);
-        Movement secondMovement = movementHelpers.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, "TWO", secondMovementDate);
-        Movement thirdMovement = movementHelpers.createMovement(2d, 2d, 0, SegmentCategoryType.GAP, connectId, "THREE", thirdMovementDate);
-        Movement forthMovement = movementHelpers.createMovement(3d, 3d, 0, SegmentCategoryType.GAP, connectId, "FORTH", forthMovementDate);
+        Movement firstMovement = movementHelpers.createMovement(0d, 0d, connectId, "ONE", firstMovementDate);
+        Movement secondMovement = movementHelpers.createMovement(1d, 1d, connectId, "TWO", secondMovementDate);
+        Movement thirdMovement = movementHelpers.createMovement(2d, 2d, connectId, "THREE", thirdMovementDate);
+        Movement forthMovement = movementHelpers.createMovement(3d, 3d, connectId, "FORTH", forthMovementDate);
 
         incomingMovementBean.processMovement(firstMovement);
         incomingMovementBean.processMovement(secondMovement);
@@ -112,7 +111,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     public void createFourMovementTrackOutOfOrder() throws MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         String connectId = UUID.randomUUID().toString();
 
@@ -121,10 +120,10 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Instant thirdMovementDate  = firstMovementDate.plusMillis(600000);
         Instant forthMovementDate  = firstMovementDate.plusMillis(900000);
 
-        Movement firstMovement = movementHelpers.createMovement(0d, 0d, 0, SegmentCategoryType.EXIT_PORT, connectId, "ONE", firstMovementDate);
-        Movement secondMovement = movementHelpers.createMovement(2d, 2d, 0, SegmentCategoryType.GAP, connectId, "THREE", thirdMovementDate);
-        Movement thirdMovement = movementHelpers.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, "TWO", secondMovementDate);
-        Movement forthMovement = movementHelpers.createMovement(3d, 3d, 0, SegmentCategoryType.GAP, connectId, "FORTH", forthMovementDate);
+        Movement firstMovement = movementHelpers.createMovement(0d, 0d, connectId, "ONE", firstMovementDate);
+        Movement secondMovement = movementHelpers.createMovement(2d, 2d, connectId, "THREE", thirdMovementDate);
+        Movement thirdMovement = movementHelpers.createMovement(1d, 1d, connectId, "TWO", secondMovementDate);
+        Movement forthMovement = movementHelpers.createMovement(3d, 3d, connectId, "FORTH", forthMovementDate);
 
         incomingMovementBean.processMovement(firstMovement);
         incomingMovementBean.processMovement(forthMovement);
@@ -151,7 +150,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     public void createVarbergGrenaNormal() throws MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
         String connectId = UUID.randomUUID().toString();
 
         List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(ORDER_NORMAL, ALL, connectId);
@@ -172,7 +171,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     private void testVarbergGrenaBasedOnOrdering(int order) throws MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
         String connectId = UUID.randomUUID().toString();
 
         List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(order, ALL, connectId);
@@ -211,7 +210,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     public void createFishingTourVarberg() throws MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
         String connectId = UUID.randomUUID().toString();
 
         List<Movement> movementList = movementHelpers.createFishingTourVarberg(ORDER_NORMAL ,connectId);

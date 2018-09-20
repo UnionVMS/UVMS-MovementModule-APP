@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
@@ -76,7 +75,7 @@ public class GeometryUtilTest extends TransactionalTests {
 
 	@Test
 	public void testGetCoordinateSequenceFromMovements() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
@@ -85,8 +84,8 @@ public class GeometryUtilTest extends TransactionalTests {
 		input[1] = new Coordinate(11.629729, 57.618091);
 		
 		
-		Movement start =  movementHelpers.createMovement(input[0].x, input[0].y, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
-		Movement end =  movementHelpers.createMovement(input[1].x, input[1].y, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement.plusSeconds(10));
+		Movement start =  movementHelpers.createMovement(input[0].x, input[0].y, connectId, "ONE", dateStartMovement);
+		Movement end =  movementHelpers.createMovement(input[1].x, input[1].y, connectId, "ONE", dateStartMovement.plusSeconds(10));
 		
 		Coordinate[] output = GeometryUtil.getCoordinateSequenceFromMovements(start, end);
 		
@@ -102,7 +101,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	
 	@Test
 	public void testGetLineStringFromMovments() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		
 		List<Movement> varbergGrenaTourReverse = movementHelpers.createVarbergGrenaMovements(2, 100, connectId);

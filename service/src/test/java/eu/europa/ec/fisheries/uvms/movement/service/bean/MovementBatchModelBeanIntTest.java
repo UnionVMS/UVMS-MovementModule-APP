@@ -44,8 +44,6 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     private Random rnd = new Random();
 
-    private final static String TEST_USER_NAME = "Arquillian";
-
     @EJB
     private MovementBatchModelBean movementBatchModelBean;
 
@@ -59,7 +57,6 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     public void getMovementConnect() {
-
         // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
         String randomUUID = UUID.randomUUID().toString();
         MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(randomUUID);
@@ -70,7 +67,6 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     public void getMovementConnect_ZEROISH_GUID() {
-
         String guid = "100000-0000-0000-0000-000000000000";
         // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
         MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(guid);
@@ -85,8 +81,6 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     public void createMovement() throws MovementServiceException {
-
-        Instant now = DateUtil.nowUTC();
         double longitude = rnd.nextDouble();
         double latitude = rnd.nextDouble();
 
@@ -95,69 +89,5 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
         movement.getMovementConnect().setValue(randomUUID);
 
         movementBatchModelBean.createMovement(movement);
-    }
-
-    /*
-    @Test
-    public void getAreaType() throws MovementServiceException {
-
-        Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
-        areaTransition.setMovementType(MovementTypeType.MAN);
-        areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
-        MovementMetaDataAreaType movementMetaDataAreaType = MovementEntityToModelMapper.mapToMovementMetaDataAreaType(areaTransition);
-        AreaType areaType = movementBatchModelBean.getAreaType(movementMetaDataAreaType);
-        assertNotNull(areaType);
-    }
-
-    @Test
-    public void getAreaType_AREATYPE_AS_NULL() throws MovementServiceException {
-
-        expectedException.expect(Exception.class);
-
-        Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
-        areaTransition.setMovementType(MovementTypeType.MAN);
-        areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
-        MovementMetaDataAreaType movementMetaDataAreaType = MovementEntityToModelMapper.mapToMovementMetaDataAreaType(areaTransition);
-        assertNotNull(movementMetaDataAreaType);
-        movementBatchModelBean.getAreaType(null);
-    }
-     */
-
-    /******************************************************************************************************************
-     *   HELPER FUNCTIONS
-     ******************************************************************************************************************/
-
-    private Movement createMovementTypeHelper(Instant timeStamp, double longitude, double latitude) {
-        Movement movementType = new Movement();
-        movementType.setTimestamp(timeStamp);
-
-        Coordinate coordinate = new Coordinate(longitude, latitude);
-        GeometryFactory factory = new GeometryFactory();
-        Point point = factory.createPoint(coordinate);
-        point.setSRID(4326);
-        movementType.setLocation(point);
-        
-//        movementType.setComChannelType(MovementComChannelType.MANUAL);
-        //movementType.setInternalReferenceNumber( );
-        movementType.setTripNumber(rnd.nextDouble());
-        movementType.setMovementType(MovementTypeType.POS);
-
-        return movementType;
-    }
-
-    public static MovementMetaData getMappedMovementHelper(int numberOfAreas) {
-        MovementMetaData metaData = new MovementMetaData();
-        for (int i = 0; i < numberOfAreas; i++) {
-            metaData.getAreas().add(getMovementMetadataTypeHelper("AREA" + i));
-        }
-        return metaData;
-    }
-
-    public static MovementMetaDataAreaType getMovementMetadataTypeHelper(String areaCode) {
-        MovementMetaDataAreaType area = new MovementMetaDataAreaType();
-        area.setCode(areaCode);
-        area.setName(areaCode);
-        area.setAreaType(areaCode);
-        return area;
     }
 }

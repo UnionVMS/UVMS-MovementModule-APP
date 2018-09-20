@@ -34,24 +34,42 @@ import com.vividsolutions.jts.geom.Point;
 
 public class MockData {
 
-    public static Areatransition getAreaTransition(String code, MovementTypeType transitionType) {
+    public static Areatransition getAreaTransition(Area area, MovementTypeType transitionType) {
         Areatransition transition = new Areatransition();
-        transition.setAreatranAreaId(getArea(code));
+        transition.setAreatranAreaId(area);
         return transition;
     }
 
-    private static Area getArea(String areaCode) {
-        Area area = new Area();
-        area.setAreaCode(areaCode);
-        area.setAreaName(areaCode);
-        area.setAreaType(getAreaType(areaCode));
-        return area;
+    public static AreaType createAreaType() {
+        AreaType areaType = new AreaType();
+        String input = "TestAreaType";
+        areaType.setName(input);
+        areaType.setUpdatedTime(Instant.now());
+        areaType.setUpdatedUser("TestUser");
+        return areaType;
     }
 
-    private static AreaType getAreaType(String name) {
-        AreaType areaType = new AreaType();
-        areaType.setName(name);
-        return areaType;
+    public static Area createArea() {
+        AreaType areaType = createAreaType();
+        return createArea(areaType);
+    }
+    
+    public static Area createArea(String code) {
+        AreaType areaType = createAreaType();
+        Area area = createArea(areaType);
+        area.setAreaCode(code);
+        return area;
+    }
+    
+    public static Area createArea(AreaType areaType) {
+        Area area = new Area();
+        area.setAreaName("TestArea");
+        area.setAreaCode("AreaCode" + MovementHelpers.getRandomIntegers(10));
+        area.setRemoteId("TestRemoteId");
+        area.setAreaUpdattim(Instant.now());
+        area.setAreaUpuser("TestUser");
+        area.setAreaType(areaType);
+        return area;
     }
 
     /**
@@ -105,17 +123,17 @@ public class MockData {
     }
 
     public static Movement createMovement(double longitude, double latitude, String connectId) {
-        return createMovement(longitude, latitude, 1, SegmentCategoryType.OTHER, connectId, 0d, "Test");
+        return createMovement(longitude, latitude, connectId, 0d, "Test");
     }
     
-    public static Movement createMovement(double longitude, double latitude, int altitude, SegmentCategoryType segmentCategoryType, String connectId, double reportedCourse, String username) {
+    public static Movement createMovement(double longitude, double latitude, String connectId, double reportedCourse, String username) {
 
         LatLong latLong = new LatLong(latitude, longitude, DateUtil.nowUTC());
         latLong.bearing = reportedCourse;
-        return createMovement(latLong, segmentCategoryType, connectId, altitude, username);
+        return createMovement(latLong, connectId, username);
     }
 
-    public static Movement createMovement(LatLong latlong, SegmentCategoryType segmentCategoryType, String connectId, int altitude, String username) {
+    public static Movement createMovement(LatLong latlong, String connectId, String username) {
 
         Activity activityType = new Activity();
         activityType.setCallback("TEST");
@@ -137,7 +155,7 @@ public class MockData {
         Point point = factory.createPoint(coordinate);
         point.setSRID(4326);
         movement.setLocation(point);
-        movement.setAltitude(altitude);
+        movement.setAltitude(0);
         movement.setHeading(latlong.bearing);
         movement.setSpeed(latlong.speed);
         movement.setMovementSource(MovementSourceType.NAF);

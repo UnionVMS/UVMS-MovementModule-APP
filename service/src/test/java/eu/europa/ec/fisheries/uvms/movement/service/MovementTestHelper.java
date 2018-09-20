@@ -26,55 +26,9 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Created by roblar on 2017-03-08.
- */
-public class MovementEventTestHelper {
+public class MovementTestHelper {
 
     public static final String ZERO_GUID = "00000000-0000-0000-0000-000000000000";
-
-
-    public static MovementBaseType createMovementBaseType() {
-        return MovementEventTestHelper.createMovementBaseType(0D,0D);
-    }
-
-    public static MovementBaseType createMovementBaseType(Double longitude , Double latitude) {
-
-        MovementActivityType activityType = new MovementActivityType();
-        activityType.setCallback("TEST");
-        activityType.setMessageId("TEST");
-        activityType.setMessageType(MovementActivityTypeType.AUT);
-
-        AssetId assetId = new AssetId();
-        assetId.setAssetType(AssetType.VESSEL);
-        assetId.setIdType(AssetIdType.GUID);
-        assetId.setValue("TEST");
-
-        MovementPoint movementPoint = new MovementPoint();
-        movementPoint.setLongitude(longitude);
-        movementPoint.setLatitude(latitude);
-        movementPoint.setAltitude(2D);
-
-
-
-        MovementBaseType movementBaseType = new MovementBaseType();
-        movementBaseType.setGuid(ZERO_GUID);
-        movementBaseType.setMovementType(MovementTypeType.POS);
-        movementBaseType.setActivity(activityType);
-        movementBaseType.setConnectId("TEST");
-        movementBaseType.setAssetId(assetId);
-        movementBaseType.setDuplicates("false");
-        movementBaseType.setInternalReferenceNumber("TEST");
-        movementBaseType.setPosition(movementPoint);
-        movementBaseType.setReportedCourse(0d);
-        movementBaseType.setReportedSpeed(0d);
-        movementBaseType.setSource(MovementSourceType.NAF);
-        movementBaseType.setStatus("TEST");
-        movementBaseType.setPositionTime(Calendar.getInstance().getTime());
-        movementBaseType.setTripNumber(0d);
-
-        return movementBaseType;
-    }
 
     public static MovementQuery createMovementQuery(boolean useListPagination, boolean useListCriteria, boolean useRangeCriteria) {
 
@@ -139,9 +93,4 @@ public class MovementEventTestHelper {
         return Arrays.asList(rangeCriteria1, rangeCriteria2);
     }
 
-    public static TextMessage createTextMessage(String text) throws JMSException {
-        TextMessage textMessage = mock(TextMessage.class);
-        when(textMessage.getText()).thenReturn(text);
-        return textMessage;
-    }
 }

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertThat;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -17,9 +16,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
@@ -28,25 +24,13 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementEventTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
@@ -323,104 +307,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     /******************************************************************************************************************
      *   HELPER FUNCTIONS
      ******************************************************************************************************************/
-
-    private Areatransition getAreaTransition(String code, MovementTypeType transitionType) {
-        Areatransition transition = new Areatransition();
-        transition.setMovementType(transitionType);
-        transition.setAreatranAreaId(getAreaHelper(code));
-        return transition;
-    }
-
-    private Area getAreaHelper(String areaCode) {
-        Area area = new Area();
-        area.setAreaCode(areaCode);
-        area.setAreaName(areaCode);
-        area.setAreaType(getAraTypeHelper(areaCode));
-        return area;
-    }
-
-    private AreaType getAraTypeHelper(String name) {
-        AreaType areaType = new AreaType();
-        areaType.setName(name);
-        return areaType;
-    }
-
-    private MovementType createMovementTypeHelper(Instant timeStamp, double longitude, double latitude) {
-        MovementType movementType = new MovementType();
-        movementType.setPositionTime(Date.from(timeStamp));
-        MovementPoint point = new MovementPoint();
-        point.setLatitude(latitude);
-        point.setLongitude(longitude);
-
-        movementType.setPosition(point);
-        movementType.setComChannelType(MovementComChannelType.MANUAL);
-        //movementType.setInternalReferenceNumber( );
-        movementType.setTripNumber(rnd.nextDouble());
-        movementType.setMovementType(MovementTypeType.POS);
-        return movementType;
-    }
-    
-    private MovementType createMovementTypeHelper(Date timeStamp, double longitude, double latitude, double tripNumber) {
-        MovementType movementType = new MovementType();
-        movementType.setPositionTime(timeStamp);
-        MovementPoint point = new MovementPoint();
-        point.setLatitude(latitude);
-        point.setLongitude(longitude);
-
-        movementType.setPosition(point);
-        movementType.setComChannelType(MovementComChannelType.MANUAL);
-        //movementType.setInternalReferenceNumber( );
-        movementType.setTripNumber(tripNumber);
-        movementType.setMovementType(MovementTypeType.POS);
-        return movementType;
-    }
-
-    public static MovementMetaData getMappedMovementHelper(int numberOfAreas) {
-        MovementMetaData metaData = new MovementMetaData();
-        for (int i = 0; i < numberOfAreas; i++) {
-            metaData.getAreas().add(getMovementMetadataTypeHelper("AREA" + i));
-        }
-        return metaData;
-    }
-
-    public static MovementMetaDataAreaType getMovementMetadataTypeHelper(String areaCode) {
-        MovementMetaDataAreaType area = new MovementMetaDataAreaType();
-        area.setCode(areaCode);
-        area.setName(areaCode);
-        area.setAreaType(areaCode);
-        return area;
-    }
-
-    private List<Movement> createBaseTypeList() {
-        List<Movement> query = new ArrayList<>();
-        String connectId = UUID.randomUUID().toString();
-        for (int i = 0; i < 5; i++) {
-            query.add(createMovementBaseType(i, connectId));
-        }
-        return query;
-    }
-
-    private Movement createMovementBaseType(Integer i, String connectId) {
-        Movement movement = new Movement();
-        MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setValue(connectId);
-        movement.setMovementConnect(movementConnect);
-        movement.setMovementSource(MovementSourceType.AIS);
-        movement.setMovementType(MovementTypeType.MAN);
-        movement.setLocation(position());
-        return movement;
-    }
-
-    private Point position() {
-        Double longitude = rnd.nextDouble();
-        Double latitude = rnd.nextDouble();
-        Coordinate coordinate = new Coordinate(longitude, latitude);
-        GeometryFactory factory = new GeometryFactory();
-        Point point = factory.createPoint(coordinate);
-        point.setSRID(4326);
-        return point;
-    }
-
+ 
     private MovementQuery createMovementQuery(boolean usePagination) {
 
         MovementQuery query = new MovementQuery();

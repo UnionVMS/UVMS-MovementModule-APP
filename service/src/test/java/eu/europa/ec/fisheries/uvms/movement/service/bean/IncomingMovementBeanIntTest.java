@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
@@ -48,7 +47,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     public void testCreatingMovement() {
         String uuid = UUID.randomUUID().toString();
 
-        Movement movementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid, 0, "TEST");
+        Movement movementType = MockData.createMovement(0d, 1d, uuid, 0, "TEST");
         movementType = movementBatchModelBean.createMovement(movementType);
         assertNotNull("MovementType creation was successful.", movementType.getGuid());
         em.flush();
@@ -71,7 +70,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         String uuid = UUID.randomUUID().toString();
 
-        Movement movementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid, 0, "TEST");
+        Movement movementType = MockData.createMovement(0d, 1d, uuid, 0, "TEST");
         movementType = movementBatchModelBean.createMovement(movementType);
         incomingMovementBean.processMovement(movementType);
         em.flush();
@@ -95,7 +94,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         String uuid = UUID.randomUUID().toString();
 
-        Movement movementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid, 0, "TEST");
+        Movement movementType = MockData.createMovement(0d, 1d, uuid, 0, "TEST");
         movementType = movementBatchModelBean.createMovement(movementType);
         em.flush();
 
@@ -118,7 +117,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         // Given: Create a movement with the exact same timestamp as a movement that exists in the database.
         String firstUuid = UUID.randomUUID().toString();
 
-        Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, firstUuid, 0, "TEST");
+        Movement firstMovementType = MockData.createMovement(0d, 1d, firstUuid, 0, "TEST");
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         em.flush();
 
@@ -247,12 +246,12 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @Test
     public void testMovementAndSegmentRelation() throws MovementServiceException {
     	String connectId = UUID.randomUUID().toString();
-    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
         incomingMovementBean.processMovement(firstMovementType);
        
-        Movement secondMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        Movement secondMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
         secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
         incomingMovementBean.processMovement(secondMovementType);
@@ -275,17 +274,17 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     @Test
     public void testMovementAndSegmentRelationThreeMovements() throws MovementServiceException {
     	String connectId = UUID.randomUUID().toString();
-    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
         incomingMovementBean.processMovement(firstMovementType);
        
-        Movement secondMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        Movement secondMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
         secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
         incomingMovementBean.processMovement(secondMovementType);
 
-        Movement thirdMovementType = MockData.createMovement(1d, 2d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        Movement thirdMovementType = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
         thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType);
         assertNotNull(thirdMovementType);
         incomingMovementBean.processMovement(thirdMovementType);
@@ -321,19 +320,19 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     	int tenMinutes = 600000;
     	String connectId = UUID.randomUUID().toString();
     	Instant positionTime = Instant.now();
-    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
     	firstMovementType.setTimestamp(positionTime);
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
         incomingMovementBean.processMovement(firstMovementType);
 
-        Movement thirdMovementType = MockData.createMovement(1d, 2d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        Movement thirdMovementType = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
         thirdMovementType.setTimestamp(positionTime.plusMillis(2*tenMinutes));
         thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType);
         assertNotNull(thirdMovementType);
         incomingMovementBean.processMovement(thirdMovementType);
 
-        Movement secondMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        Movement secondMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
         secondMovementType.setTimestamp(positionTime.plusMillis(tenMinutes));
         secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
@@ -369,19 +368,19 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     public void testTrackWithThreeMovements() throws MovementServiceException {
     	String connectId = UUID.randomUUID().toString();
     	Instant timestamp = Instant.now();
-    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
     	firstMovementType.setTimestamp(timestamp);
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
         incomingMovementBean.processMovement(firstMovementType);
        
-        Movement secondMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        Movement secondMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
         secondMovementType.setTimestamp(timestamp.plusSeconds(10));
         secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
         incomingMovementBean.processMovement(secondMovementType);
 
-        Movement thirdMovementType = MockData.createMovement(1d, 2d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        Movement thirdMovementType = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
         thirdMovementType.setTimestamp(timestamp.plusSeconds(20));
         thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType);
         assertNotNull(thirdMovementType);
@@ -415,19 +414,19 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     	int tenMinutes = 600000;
     	String connectId = UUID.randomUUID().toString();
     	Instant positionTime = Instant.now();
-    	Movement firstMovementType = MockData.createMovement(0d, 1d, 0, SegmentCategoryType.EXIT_PORT, connectId, 0, "TEST");
+    	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
     	firstMovementType.setTimestamp(positionTime);
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
         incomingMovementBean.processMovement(firstMovementType);
        
-        Movement secondMovementType = MockData.createMovement(2d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        Movement secondMovementType = MockData.createMovement(2d, 1d, connectId, 0, "TEST");
 		secondMovementType.setTimestamp(positionTime.plusMillis(2*tenMinutes));
         secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
         assertNotNull(secondMovementType);
         incomingMovementBean.processMovement(secondMovementType);
 
-        Movement thirdMovementType = MockData.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, 0, "TEST");
+        Movement thirdMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
         thirdMovementType.setTimestamp(positionTime.plusMillis(tenMinutes));
         thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType);
         assertNotNull(thirdMovementType);

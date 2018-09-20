@@ -15,7 +15,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
@@ -41,7 +40,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void createSegmentOnFirstMovement() throws MovementServiceException, MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         String connectId = UUID.randomUUID().toString();
 
@@ -50,8 +49,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant date2 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
-        Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement toMovement = movementHelpers.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "ONE", date1);
+        Movement toMovement = movementHelpers.createMovement(1d, 1d, connectId, "TWO", date2);
         segmentBean.createSegmentAndTrack(fromMovement, toMovement);
         em.flush();
 
@@ -83,13 +82,13 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementServiceException, MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         String connectId = UUID.randomUUID().toString();
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();;
 
-        Movement movement = movementHelpers.createMovement(0d, 0d, 0, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
+        Movement movement = movementHelpers.createMovement(0d, 0d, connectId, "ONE", date1);
         segmentBean.createSegmentAndTrack(movement, movement);
         em.flush();
 
@@ -124,7 +123,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void splitSegment() throws MovementServiceException, MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         // TODO nothing indicates that this splitFunction actually works
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
@@ -135,8 +134,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = movementHelpers.createMovement(2d, 2d, 0, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement toMovement = movementHelpers.createMovement(3d, 3d, 0, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        Movement fromMovement = movementHelpers.createMovement(2d, 2d, connectId, "ONE", date1);
+        Movement toMovement = movementHelpers.createMovement(3d, 3d, connectId, "TWO", date2);
         Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
@@ -150,7 +149,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
 //--------------------------------------------------------------------------
 
-        Movement newMovement = movementHelpers.createMovement(.5d, .5d, 0, SegmentCategoryType.GAP, connectId, "THREE", date3);
+        Movement newMovement = movementHelpers.createMovement(.5d, .5d, connectId, "THREE", date3);
         em.flush();
 
         segmentBean.splitSegment(toMovement, newMovement);
@@ -184,7 +183,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void createNewTrack() throws MovementServiceException, MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         String connectId = UUID.randomUUID().toString();
 
@@ -192,8 +191,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Instant date2 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();;
 
-        Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
-        Movement toMovement = movementHelpers.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, "two", date2);
+        Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "one", date1);
+        Movement toMovement = movementHelpers.createMovement(1d, 1d, connectId, "two", date2);
 
         Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
@@ -238,12 +237,12 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void createNewTrack_onSegmentMovement() throws MovementServiceException, MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0, SegmentCategoryType.EXIT_PORT, connectId, "TEST", DateUtil.nowUTC());
-        Movement toMovement = movementHelpers.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, "TEST", DateUtil.nowUTC());
+        Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "TEST", DateUtil.nowUTC());
+        Movement toMovement = movementHelpers.createMovement(1d, 1d, connectId, "TEST", DateUtil.nowUTC());
 
         Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
@@ -261,7 +260,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void upsertTrack() throws MovementServiceException, MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant date2 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
@@ -269,8 +268,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
-        Movement toMovement = movementHelpers.createMovement(5d, 5d, 0, SegmentCategoryType.GAP, connectId, "two", date2);
+        Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "one", date1);
+        Movement toMovement = movementHelpers.createMovement(5d, 5d, connectId, "two", date2);
         Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         assertNotNull(track);
@@ -280,7 +279,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         em.flush();
 
-        Movement newMovement = movementHelpers.createMovement(10d, 10d, 0, SegmentCategoryType.GAP, connectId, "three", date3);
+        Movement newMovement = movementHelpers.createMovement(10d, 10d, connectId, "three", date3);
         segment = segmentBean.createSegment(toMovement, newMovement);
 
         Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
@@ -300,7 +299,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void upsertTrack5() throws MovementServiceException, MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant date2 = OffsetDateTime.of(1925, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
@@ -311,8 +310,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = movementHelpers.createMovement(0d, 0d, 0, SegmentCategoryType.EXIT_PORT, connectId, "one", date1);
-        Movement toMovement = movementHelpers.createMovement(5d, 5d, 0, SegmentCategoryType.GAP, connectId, "two", date2);
+        Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "one", date1);
+        Movement toMovement = movementHelpers.createMovement(5d, 5d, connectId, "two", date2);
         Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
@@ -320,23 +319,23 @@ public class SegmentBeanIntTest extends TransactionalTests {
         em.flush();
         assertNotNull(track);
 
-        Movement newMovement = movementHelpers.createMovement(10d, 10d, 0, SegmentCategoryType.GAP, connectId, "three", date3);
+        Movement newMovement = movementHelpers.createMovement(10d, 10d, connectId, "three", date3);
         segment = segmentBean.createSegment(toMovement, newMovement);
         Track createdTrack = segmentBean.upsertTrack(track, segment, newMovement);
         assertEquals(createdTrack.getId(), track.getId());
 
         Movement oldMovement = newMovement;
-        newMovement = movementHelpers.createMovement(20d, 20d, 0, SegmentCategoryType.GAP, connectId, "four", date4);
+        newMovement = movementHelpers.createMovement(20d, 20d, connectId, "four", date4);
         segment = segmentBean.createSegment(oldMovement, newMovement);
         segmentBean.upsertTrack(track, segment, newMovement);
 
         oldMovement = newMovement;
-        newMovement = movementHelpers.createMovement(30d, 30d, 0, SegmentCategoryType.GAP, connectId, "five", date5);
+        newMovement = movementHelpers.createMovement(30d, 30d, connectId, "five", date5);
         segment = segmentBean.createSegment(oldMovement, newMovement);
         segmentBean.upsertTrack(track, segment, newMovement);
 
         oldMovement = newMovement;
-        newMovement = movementHelpers.createMovement(40d, 40d, 0, SegmentCategoryType.GAP, connectId, "six", date6);
+        newMovement = movementHelpers.createMovement(40d, 40d, connectId, "six", date6);
         segment = segmentBean.createSegment(oldMovement, newMovement);
         segmentBean.upsertTrack(track, segment, newMovement);
 
@@ -354,7 +353,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void updateTrack() throws MovementServiceException, MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant date2 = OffsetDateTime.of(1925, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
@@ -362,15 +361,15 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement fromMovement = movementHelpers.createMovement(0d, 0d, 1, SegmentCategoryType.EXIT_PORT, connectId, "user1", date1);
-        Movement toMovement = movementHelpers.createMovement(5d, 5d, 2, SegmentCategoryType.GAP, connectId, "user2", date2);
+        Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "user1", date1);
+        Movement toMovement = movementHelpers.createMovement(5d, 5d, connectId, "user2", date2);
         Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
         assertNotNull(track);
 
-        Movement newMovement = movementHelpers.createMovement(10d, 10d, 3, SegmentCategoryType.GAP, connectId, "user3", date3);
+        Movement newMovement = movementHelpers.createMovement(10d, 10d, connectId, "user3", date3);
         segment = segmentBean.createSegment(toMovement, newMovement);
         segmentBean.updateTrack(track, newMovement, segment);
 
@@ -388,7 +387,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("normal")
     public void addMovementBeforeFirst() throws MovementServiceException, MovementServiceException {
-        MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+        MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         // TODO better evaluation of results
 
@@ -398,8 +397,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         String connectId = UUID.randomUUID().toString();
 
-        Movement firstMovement = movementHelpers.createMovement(2d, 2d, 0, SegmentCategoryType.EXIT_PORT, connectId, "ONE", date1);
-        Movement secondMovement = movementHelpers.createMovement(3d, 3d, 0, SegmentCategoryType.GAP, connectId, "TWO", date2);
+        Movement firstMovement = movementHelpers.createMovement(2d, 2d, connectId, "ONE", date1);
+        Movement secondMovement = movementHelpers.createMovement(3d, 3d, connectId, "TWO", date2);
         Segment segment = segmentBean.createSegment(firstMovement, secondMovement);
         assertNotNull(segment);
         Track track = segmentBean.createNewTrack(segment);
@@ -419,7 +418,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         assertEquals(1, secondMovement.getTrack().getSegmentList().size());
         assertEquals(2, secondMovement.getTrack().getMovementList().size());
 
-        Movement beforeFirstMovement = movementHelpers.createMovement(1d, 1d, 0, SegmentCategoryType.GAP, connectId, "BEFORE_ONE", date_before);
+        Movement beforeFirstMovement = movementHelpers.createMovement(1d, 1d, connectId, "BEFORE_ONE", date_before);
 
         segmentBean.addMovementBeforeFirst(firstMovement, beforeFirstMovement);
         em.flush();

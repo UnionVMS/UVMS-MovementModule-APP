@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
 import org.jboss.arquillian.junit.Arquillian;
@@ -27,7 +26,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
@@ -39,18 +37,15 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
 public class MovementEntityToModelTest extends TransactionalTests {
 
-    private Random rnd = new Random();
-    
 	@EJB
     private MovementBatchModelBean movementBatchModelBean;
 
@@ -62,12 +57,12 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
 	public void testMovementBaseType() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
-		Movement movement =  movementHelpers.createMovement(lon, lat, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
+		Movement movement =  movementHelpers.createMovement(lon, lat, connectId, "ONE", dateStartMovement);
 		
 		MovementBaseType output = MovementEntityToModelMapper.mapToMovementBaseType(movement);
 		
@@ -84,14 +79,11 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
-		
 	}
 	
-	@Test //TODO make this into an actual test, just need to understand minimal movement first
+	@Test
 	public void testMapToMovementTypeWithMinimalMovementInput() {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
 		String connectId = UUID.randomUUID().toString();
-		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
 		MinimalMovement movement = new MinimalMovement();
@@ -99,16 +91,25 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		movement.setLocation(gf.createPoint(new Coordinate(lon, lat)));
 		movement.setMovementSource(MovementSourceType.IRIDIUM);
 		movement.setMovementType(MovementTypeType.POS);
+		MovementConnect movementConnect = new MovementConnect();
+		movementConnect.setValue(connectId);
+        movement.setMovementConnect(movementConnect);
+        movement.setTimestamp(Instant.now());
 		//movement.setStatus(status);
+		MovementType movementType = MovementEntityToModelMapper.mapToMovementType(movement);
+		assertEquals(movement.getGuid(), movementType.getGuid());
+        assertEquals(lat, movementType.getPosition().getLatitude(), 0D);
+        assertEquals(lon, movementType.getPosition().getLongitude(), 0D);
+        assertEquals(connectId, movementType.getConnectId());
 	}
 	@Test
 	public void testMapToMovementTypeWithMovementInput() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
-		Movement movement =  movementHelpers.createMovement(lon, lat, 0, SegmentCategoryType.GAP, connectId, "ONE", dateStartMovement);
+		Movement movement =  movementHelpers.createMovement(lon, lat, connectId, "ONE", dateStartMovement);
 		
 		MovementType output = MovementEntityToModelMapper.mapToMovementType(movement);
 		
@@ -166,7 +167,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
 	public void testMapToMovementTypeWithAListOfMovements() throws MovementServiceException {
 		//Most of the method is tested by testMapToMovementType
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
@@ -187,7 +188,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
 	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
@@ -215,7 +216,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
 	public void testMapToMovementSegment() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
@@ -247,14 +248,14 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
 	public void testOrderMovementsByConnectId() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		List<String> connectId = new ArrayList<>();
 		List<Movement> input = new ArrayList<>();
 		String ID;
 		for(int i = 0 ; i < 20 ; i++) {
 			ID = UUID.randomUUID().toString();
 			connectId.add(ID);
-			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, 0 , SegmentCategoryType.GAP, ID, "ONE", Instant.now().plusMillis((long)(Math.random() * 5000))));
+			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, ID , "ONE", Instant.now().plusMillis((long)(Math.random() * 5000))));
 		}
 		
 		Map<String, List<Movement>> output = MovementEntityToModelMapper.orderMovementsByConnectId(input);
@@ -274,7 +275,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
 	public void testExtractSegments() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		//srsly......
@@ -320,7 +321,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
 	public void testExtractTracks() throws MovementServiceException {
-		MovementHelpers movementHelpers = new MovementHelpers(em, movementBatchModelBean, movementDao);
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		String connectId = UUID.randomUUID().toString();
 		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));
 		for (Movement movement : movementList) {
@@ -355,7 +356,8 @@ public class MovementEntityToModelTest extends TransactionalTests {
     public void testEnrichAreasSameArea() {
         MovementType mappedMovement = MockData.getMappedMovement(2);
         List<Areatransition> transitions = new ArrayList<>();
-        transitions.add(MockData.getAreaTransition("AREA1", MovementTypeType.ENT));
+        MovementMetaDataAreaType existingArea = mappedMovement.getMetaData().getAreas().get(0);
+        transitions.add(MockData.getAreaTransition(MockData.createArea(existingArea.getCode()), MovementTypeType.ENT));
         MovementEntityToModelMapper.enrichAreas(mappedMovement, transitions);
         assertEquals(" AreaSize should be 2", 2, mappedMovement.getMetaData().getAreas().size());
     }
@@ -369,73 +371,39 @@ public class MovementEntityToModelTest extends TransactionalTests {
     public void testEnrichAreasNotSameArea() {
         MovementType mappedMovement = MockData.getMappedMovement(2);
         List<Areatransition> transitions = new ArrayList<>();
-        transitions.add(MockData.getAreaTransition("AREA3", MovementTypeType.ENT));
+        transitions.add(MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT));
         MovementEntityToModelMapper.enrichAreas(mappedMovement, transitions);
         assertEquals("AreaSize should be 3", 3,mappedMovement.getMetaData().getAreas().size());
     }
     
     @Test
     public void enrichAreasSameArea() {
-
-        // this test is migrated from the old testsuite
-        Instant now = DateUtil.nowUTC();
-        double longitude = rnd.nextDouble();
-        double latitude = rnd.nextDouble();
-
         MovementType movementType = MockData.getMappedMovement(2);
 
         List<Areatransition> areaTransitionList = new ArrayList<>();
-        areaTransitionList.add(getAreaTransition("AREA1", MovementTypeType.ENT));
+        MovementMetaDataAreaType existingArea = movementType.getMetaData().getAreas().get(0);
+        areaTransitionList.add(MockData.getAreaTransition(MockData.createArea(existingArea.getCode()), MovementTypeType.ENT));
         MovementEntityToModelMapper.enrichAreas(movementType, areaTransitionList);
         assertEquals(" AreaSize should be 2", 2, movementType.getMetaData().getAreas().size());
     }
 
     @Test
     public void enrichAreasNotSameArea() {
-
-        // this test is migrated from the old testsuite
-        Instant now = DateUtil.nowUTC();
-        double longitude = rnd.nextDouble();
-        double latitude = rnd.nextDouble();
-
         MovementType movementType = MockData.getMappedMovement(2);
 
         List<Areatransition> areaTransitionList = new ArrayList<>();
-        areaTransitionList.add(getAreaTransition("AREA3", MovementTypeType.ENT));
+        areaTransitionList.add(MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT));
         MovementEntityToModelMapper.enrichAreas(movementType, areaTransitionList);
         assertEquals(" AreaSize should be 3", 3, movementType.getMetaData().getAreas().size());
     }
 
-
     @Test
     public void mapToMovementMetaDataAreaType() {
-
         // TODO  maybe like this ?
-        Areatransition areaTransition = getAreaTransition("AREA51", MovementTypeType.ENT);
+        Areatransition areaTransition = MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT);
         areaTransition.setMovementType(MovementTypeType.MAN);
         areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
         MovementMetaDataAreaType movementMetaDataAreaType = MovementEntityToModelMapper.mapToMovementMetaDataAreaType(areaTransition);
         assertNotNull(movementMetaDataAreaType);
-    }
-    
-    private Areatransition getAreaTransition(String code, MovementTypeType transitionType) {
-        Areatransition transition = new Areatransition();
-        transition.setMovementType(transitionType);
-        transition.setAreatranAreaId(getAreaHelper(code));
-        return transition;
-    }
-
-    private Area getAreaHelper(String areaCode) {
-        Area area = new Area();
-        area.setAreaCode(areaCode);
-        area.setAreaName(areaCode);
-        area.setAreaType(getAraTypeHelper(areaCode));
-        return area;
-    }
-
-    private AreaType getAraTypeHelper(String name) {
-        AreaType areaType = new AreaType();
-        areaType.setName(name);
-        return areaType;
     }
 }
