@@ -14,6 +14,8 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -23,6 +25,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
@@ -182,11 +190,16 @@ public class MovementRestResource {
     public ResponseDto getById(@PathParam(value = "id") final String id) {
         LOG.debug("Get by id invoked in rest layer");
         try {
-            return new ResponseDto(serviceLayer.getById(id), ResponseCode.OK);
-        } catch (NullPointerException ex) {
+            Movement movement = serviceLayer.getById(id);
+            MovementType response = MovementEntityToModelMapper.mapToMovementType(movement);
+            if (response == null) {
+                throw new MovementServiceRuntimeException("Error when getting movement by id: " + id, ErrorCode.NO_RESULT_ERROR);
+            }
+            return new ResponseDto<>(response, ResponseCode.OK);
+        } catch (MovementServiceRuntimeException ex) {
             LOG.error("[ Error when getting by id. ] ", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (Exception ex) {
+        } catch (NonUniqueResultException ex) {
             LOG.error("[ Error when getting by id. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }

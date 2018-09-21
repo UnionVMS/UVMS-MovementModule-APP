@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import static org.junit.Assert.assertThat;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -33,6 +32,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
+import static org.junit.Assert.*;
+
 @RunWith(Arquillian.class)
 public class MovementServiceIntTest extends TransactionalTests {
 
@@ -44,7 +45,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementListByAreaAndTimeInterval_EmptyCriteria() throws MovementServiceException {
+    public void getMovementListByAreaAndTimeInterval_EmptyCriteria() {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
         movementService.getMovementListByAreaAndTimeInterval(criteria);
     }
@@ -68,12 +69,12 @@ public class MovementServiceIntTest extends TransactionalTests {
         criteria.setToDate(formattedDate);
 
         GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
-        Assert.assertTrue(list != null);
+        assertNotNull(list);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementListByAreaAndTimeIntervalTimeIntervalNoCode() throws MovementServiceException {
+    public void getMovementListByAreaAndTimeIntervalTimeIntervalNoCode() {
         MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
 
         Instant curDate = DateUtil.nowUTC();
@@ -103,7 +104,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         Movement movementType = MockData.createMovement(longitude, latitude, connectId);
         try {
             Movement createdMovementType = movementService.createMovement(movementType, "Test");
-            Assert.assertTrue(createdMovementType != null);
+            assertNotNull(createdMovementType);
         } catch (Exception e) {
             Assert.fail();
         }
@@ -129,7 +130,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             Assert.fail("The above call should throw an exception since query is incomplete");
         } catch (EJBTransactionRolledbackException e) {
             //Assert.fail();
-        	Assert.assertTrue(true);
+        	assertTrue(true);
         } catch (Exception e) {
             Assert.fail();
         }
@@ -148,7 +149,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         query.getMovementSearchCriteria().add(listCriteria);
         try {
             GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
-            Assert.assertTrue(response != null);
+            assertNotNull(response);
         } catch (MovementServiceException e) {
             Assert.fail();
         } catch (Exception e) {
@@ -171,15 +172,15 @@ public class MovementServiceIntTest extends TransactionalTests {
             movementService.getMapByQuery(query);
             Assert.fail();
         } catch (MovementServiceException e) {
-            Assert.assertTrue(e != null);
+            assertNotNull(e);
         } catch (Exception e) {
-            Assert.assertTrue(e != null);
+            assertNotNull(e);
         }
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createBatch() throws MovementServiceException {
+    public void createBatch() {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         Double longitude = rnd.nextDouble();
@@ -192,13 +193,13 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
 
         SimpleResponse simpleResponse = movementService.createMovementBatch(movementTypeList, "TEST").getResponse();
-        Assert.assertNotNull(simpleResponse);
-        Assert.assertEquals(SimpleResponse.OK, simpleResponse);
+        assertNotNull(simpleResponse);
+        assertEquals(SimpleResponse.OK, simpleResponse);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void triggerBatchEventWithBrokenJMS() throws MovementServiceException {
+    public void triggerBatchEventWithBrokenJMS() {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
         Double longitude = rnd.nextDouble();
@@ -219,7 +220,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void getAreas() {
         List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> response = movementService.getAreas();
-        Assert.assertTrue(response != null);
+        assertNotNull(response);
     }
 
     @Test
@@ -234,19 +235,19 @@ public class MovementServiceIntTest extends TransactionalTests {
             // create a MovementConnect
             String connectId = UUID.randomUUID().toString();
             Movement movementType = MockData.createMovement(longitude, latitude, connectId);
-            Assert.assertTrue(movementService != null);
+            assertNotNull(movementService);
             Movement createdMovementType = movementService.createMovement(movementType, "TEST");
             em.flush();
-            Assert.assertTrue(createdMovementType != null);
+            assertNotNull(createdMovementType);
 
             String guid = createdMovementType.getGuid();
-            Assert.assertTrue(guid != null);
+            assertNotNull(guid);
 
-            MovementType fetchedMovementType = movementService.getById(guid);
-            Assert.assertTrue(fetchedMovementType != null);
-            String fetchedGuid = fetchedMovementType.getGuid();
-            Assert.assertTrue(fetchedGuid != null);
-            Assert.assertTrue(fetchedGuid.equals(guid));
+            Movement fetchedMovement = movementService.getById(guid);
+            assertNotNull(fetchedMovement);
+            String fetchedGuid = fetchedMovement.getGuid();
+            assertNotNull(fetchedGuid);
+            assertEquals(fetchedGuid, guid);
 
         } catch (Exception e) {
             // TODO  check this it is suspect
@@ -257,22 +258,17 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getById_Null_ID() {
-
         String connectId = null;
-        try {
-            movementService.getById(connectId);
-            Assert.fail();
+        Movement byId = movementService.getById(connectId);
+        assertNull(byId);
 
-        } catch (Exception e) {
-            Assert.assertTrue(e != null);
-        }
     }
 
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements() {
         List<MovementDto> listMovementDto = movementService.getLatestMovements(5);
-        Assert.assertTrue(listMovementDto != null);
+        assertNotNull(listMovementDto);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
@@ -288,7 +284,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             movementService.getLatestMovements(-3);
             Assert.fail();
         } catch (Exception e) {
-            Assert.assertTrue(e != null);
+            assertNotNull(e);
         }
     }
 
@@ -296,12 +292,8 @@ public class MovementServiceIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void getById_emptyGUID() {
         String connectId = "";
-        try {
-            movementService.getById(connectId);
-            Assert.fail();
-        } catch (Exception e) {
-            Assert.assertTrue(e != null);
-        }
+        Movement byId = movementService.getById(connectId);
+        assertNull(byId);
     }
 
     /******************************************************************************************************************

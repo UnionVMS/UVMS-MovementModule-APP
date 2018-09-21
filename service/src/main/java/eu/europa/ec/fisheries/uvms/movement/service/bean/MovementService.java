@@ -323,14 +323,8 @@ public class MovementService {
      * @return
      * @throws MovementServiceException
      */
-    public MovementType getById(String id) {
-        Movement latestMovements = dao.getMovementByGUID(id);
-        MovementType response = MovementEntityToModelMapper.mapToMovementType(latestMovements);
-
-        if (response == null) {
-            throw new MovementServiceRuntimeException("Error when getting movement by id: " + id, ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-        }
-        return response;
+    public Movement getById(String id) {
+        return dao.getMovementByGUID(id);
     }
 
 
