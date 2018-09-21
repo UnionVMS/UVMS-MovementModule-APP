@@ -115,7 +115,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void getLatestMovementsByConnectIds_EmptyList() {
 
         List<String> connectionIds = new ArrayList<>();
-        List<MovementDto> movements =  movementService.getLatestMovementsByConnectIds(connectionIds);
+        List<Movement> movements =  movementService.getLatestMovementsByConnectIds(connectionIds);
         assertThat(movements.size(), CoreMatchers.is(0));
     }
 

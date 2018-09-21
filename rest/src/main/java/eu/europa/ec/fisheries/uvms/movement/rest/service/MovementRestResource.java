@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -31,6 +32,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
@@ -138,7 +140,10 @@ public class MovementRestResource {
             return new ResponseDto("ConnectIds cannot be empty" , ResponseCode.ERROR);
         }
         try {
-            return new ResponseDto(serviceLayer.getLatestMovementsByConnectIds(connectIds), ResponseCode.OK);
+            List<Movement> latestMovements = serviceLayer.getLatestMovementsByConnectIds(connectIds);
+            List<MovementType> movementTypeList = MovementEntityToModelMapper.mapToMovementType(latestMovements);
+            List<MovementDto> movementDtoList = MovementMapper.mapToMovementDtoList(movementTypeList);
+            return new ResponseDto<>(movementDtoList, ResponseCode.OK);
         } catch (NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);

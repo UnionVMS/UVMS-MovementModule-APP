@@ -526,10 +526,10 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	List<String> input = new ArrayList<>();
     	input.add(connectID);
     	
-    	List<MovementDto> output = movementService.getLatestMovementsByConnectIds(input);
+    	List<Movement> output = movementService.getLatestMovementsByConnectIds(input);
     	
     	assertEquals(1, output.size());
-    	assertEquals(control.get(9).getGuid(), output.get(0).getMovementGUID());
+    	assertEquals(control.get(9).getGuid(), output.get(0).getGuid());
     	
     	input.add(connectID2);
     	output = movementService.getLatestMovementsByConnectIds(input);
