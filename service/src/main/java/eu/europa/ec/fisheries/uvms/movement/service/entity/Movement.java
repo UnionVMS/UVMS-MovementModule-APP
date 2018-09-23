@@ -77,7 +77,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
     @NamedQuery(name = Movement.FIND_BY_UPDATED, query = "SELECT m FROM Movement m WHERE m.updated = :updated AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_UPDATED_BY, query = "SELECT m FROM Movement m WHERE m.updatedBy = :updatedBy AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select max(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.timestamp < :date and mm.processed = true) AND mc2.value = :id and m.processed = true"),
+    @NamedQuery(name = Movement.FIND_PREVIOUS, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select max(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.timestamp < :date and mm.processed = true) AND mc2.value = :id and m.processed = true"),
     @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.duplicate = false and mm.processed = true) AND mc2.value = :id and m.processed = true"),
     @NamedQuery(name = Movement.LIST_BY_AREA_TIME_INTERVAL, query = "SELECT m FROM Movement m INNER JOIN m.movementareaList mal WHERE (m.timestamp BETWEEN :fromDate AND :toDate) AND m.duplicate = false AND mal.movareaMoveId.id = m.id AND mal.movareaAreaId.areaId = :areaId"),
     																			   //SELECT mo FROM Movement mo INNER JOIN mo.movementarea ma WHERE (mo.timestamp BETWEEN :fromDate AND :toDate) AND mo.move_duplicate = false AND ma.movareaId = mo.id AND ma.movareaId = :areaId 	
@@ -100,7 +100,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_BY_UPDATED = "Movement.findByUpdated";
     public static final String FIND_BY_UPDATED_BY = "Movement.findByUpdatedBy";
     public static final String FIND_LATEST_BY_MOVEMENT_CONNECT = "Movement.findLatestByMovementConnect";
-    public static final String FIND_LATEST = "Movement.findLatest";
+    public static final String FIND_PREVIOUS = "Movement.findPrevious";
     public static final String FIND_FIRST = "Movement.findFirst";
     public static final String LIST_BY_AREA_TIME_INTERVAL = "Movement.findMovementByAreaAndTimestampInterval";
     public static final String FIND_EXISTING_DATE = "Movement.findExistingDate";

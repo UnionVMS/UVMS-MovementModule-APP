@@ -1,6 +1,8 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import static junit.framework.TestCase.assertNotNull;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -15,6 +17,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.peertopark.java.geocalc.Coordinate;
+import com.peertopark.java.geocalc.DegreeCoordinate;
+import com.peertopark.java.geocalc.EarthCalc;
+import com.peertopark.java.geocalc.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
@@ -25,6 +31,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 
 /**
  * Created by andreasw on 2017-03-09.
@@ -400,10 +407,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         
         assertThat(track.getMovementList().size(), is(3));
 
-//        assertThat(track.getMovementList(), hasItem(firstMovement));
-//        assertThat(track.getMovementList(), hasItem(secondMovement));
-//        assertThat(track.getMovementList(), hasItem(thirdMovement));
-
         assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
         assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
         assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
@@ -444,12 +447,221 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(thirdMovement.getTrack()));
         
         assertThat(track.getMovementList().size(), is(3));
-//        assertThat(track.getMovementList(), hasItem(firstMovement));
-//        assertThat(track.getMovementList(), hasItem(secondMovement));
-//        assertThat(track.getMovementList(), hasItem(thirdMovement));
 
         assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
         assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
         assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
+    }
+    
+    @Test
+    public void testTrackWithThreeMovementsReversed() throws MovementServiceException {
+        int tenMinutes = 600000;
+        String connectId = UUID.randomUUID().toString();
+        Instant positionTime = Instant.now();
+        Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovementType.setTimestamp(positionTime.plusMillis(2*tenMinutes));
+        firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
+        assertNotNull(firstMovementType);
+        incomingMovementBean.processMovement(firstMovementType);
+       
+        Movement secondMovementType = MockData.createMovement(2d, 1d, connectId, 0, "TEST");
+        secondMovementType.setTimestamp(positionTime.plusMillis(tenMinutes));
+        secondMovementType = movementBatchModelBean.createMovement(secondMovementType);
+        assertNotNull(secondMovementType);
+        incomingMovementBean.processMovement(secondMovementType);
+
+        Movement thirdMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        thirdMovementType.setTimestamp(positionTime);
+        thirdMovementType = movementBatchModelBean.createMovement(thirdMovementType);
+        assertNotNull(thirdMovementType);
+        incomingMovementBean.processMovement(thirdMovementType);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+ 
+        Movement firstMovement = movementList.get(0);
+        Movement secondMovement = movementList.get(1);
+        Movement thirdMovement = movementList.get(2);
+        
+        Track track = firstMovement.getTrack();
+        assertThat(track, is(secondMovement.getTrack()));
+        assertThat(track, is(thirdMovement.getTrack()));
+        
+        assertThat(track.getMovementList().size(), is(3));
+
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
+    }
+    
+    @Test
+    public void testProcessingThreeMovements() throws MovementServiceException {
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+       
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        assertSegmentsAndTrack(movementList);
+    }
+    
+    @Test
+    public void testProcessingThreeMovementsUnordered() throws MovementServiceException {
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+       
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        assertSegmentsAndTrack(movementList);
+    }
+    
+    @Test
+    public void testProcessingThreeMovementsReversed() throws MovementServiceException {
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+       
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        assertSegmentsAndTrack(movementList);
+    }
+    
+    @Test
+    public void testProcessingMovementsAllAlgorithmCases() throws MovementServiceException {
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+
+        // First
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp.plusSeconds(10));
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+        
+        // Second
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(20));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        // Normal case
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(40));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        // Before first
+        Movement fourthMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        fourthMovement.setTimestamp(timestamp);
+        fourthMovement = movementBatchModelBean.createMovement(fourthMovement);
+        incomingMovementBean.processMovement(fourthMovement);
+       
+        // Between two positions
+        Movement fifthMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        fifthMovement.setTimestamp(timestamp.plusSeconds(30));
+        fifthMovement = movementBatchModelBean.createMovement(fifthMovement);
+        incomingMovementBean.processMovement(fifthMovement);
+        
+        // Between two positions
+        Movement sixthMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        sixthMovement.setTimestamp(timestamp.plusSeconds(5));
+        sixthMovement = movementBatchModelBean.createMovement(sixthMovement);
+        incomingMovementBean.processMovement(sixthMovement);
+        
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(6));
+        
+        assertSegmentsAndTrack(movementList);
+    }
+    
+    /*
+     * Validate segments and track for movements with same connectId
+     */
+    private void assertSegmentsAndTrack(List<Movement> movements) {
+        movements.sort(MovementComparator.MOVEMENT);
+
+        Movement firstMovement = movements.get(0);
+        // Tracks
+        Track track = firstMovement.getTrack();
+        if (movements.size() > 1) {
+            assertThat(track, is(notNullValue()));
+            assertThat(track.getMovementList().size(), is(movements.size()));
+            
+            for (Movement movement : movements) {
+                assertThat(movement.getTrack(), is(track));
+                assertTrue(track.getMovementList().contains(movement));
+            }
+
+            assertThat(track.getSegmentList().size(), is(movements.size() - 1));
+            for (Movement movement : movements.subList(0, movements.size() - 1)) {
+                assertTrue(track.getSegmentList().contains(movement.getToSegment()));
+            }
+        }
+
+        // Segments
+        assertThat(firstMovement.getFromSegment(), is(nullValue()));
+        if (movements.size() > 1) {
+            Movement previous = null;
+            for (Movement movement : movements) {
+                if (previous == null) {
+                    previous = movement;
+                } else {
+                    Segment segment = previous.getToSegment();
+                    assertThat(movement.getFromSegment(), is(segment));
+                    assertThat(segment.getFromMovement(), is(previous));
+                    assertThat(segment.getToMovement(), is(movement));
+                    assertThat(segment.getTrack(), is(track));
+                    previous = movement;
+                }
+            }
+        }
+        assertThat(movements.get(movements.size()-1).getToSegment(), is(nullValue()));
     }
 }

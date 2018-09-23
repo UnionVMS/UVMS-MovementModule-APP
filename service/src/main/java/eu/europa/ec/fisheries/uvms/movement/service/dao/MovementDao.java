@@ -79,15 +79,11 @@ public class MovementDao {
         if(amount < 1) {
             throw new MovementServiceRuntimeException("Amount can't have 0 or negative value.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         } else if (amount == 1) {
-            // TODO  not stable
             LatestMovement latestMovement = getLatestMovement(connectId);
-            if(latestMovement == null)
-                return null;
-            Movement movement = latestMovement.getMovement();
-            if(movement != null)
-                return Collections.singletonList(movement);
+            if(latestMovement != null && latestMovement.getMovement() != null)
+                return Collections.singletonList(latestMovement.getMovement());
             else
-                return null;
+                return Collections.emptyList();
         } else {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, Movement.class);
             query.setParameter("connectId", connectId);
@@ -147,10 +143,10 @@ public class MovementDao {
         return rs;
     }
 
-    public Movement getLatestMovement(String id, Instant date) {
+    public Movement getPreviousMovement(String id, Instant date) {
         Movement singleResult = null;
         try {
-            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST, Movement.class);
+            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_PREVIOUS, Movement.class);
             query.setParameter("id", id);
             query.setParameter("date", date);
             singleResult = query.getSingleResult();

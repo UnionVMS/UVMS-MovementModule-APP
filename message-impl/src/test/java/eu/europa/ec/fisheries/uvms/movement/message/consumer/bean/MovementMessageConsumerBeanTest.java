@@ -206,13 +206,16 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @RunAsClient
     public void getMovementListByConnectIdTwoPositions() throws Exception {
         String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
 
         MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
         movementBaseType1.setConnectId(connectId);
+        movementBaseType1.setPositionTime(Date.from(timestamp));
         jmsHelper.createMovement(movementBaseType1, "test user");
         
         MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
         movementBaseType2.setConnectId(connectId);
+        movementBaseType1.setPositionTime(Date.from(timestamp.plusSeconds(10)));
         jmsHelper.createMovement(movementBaseType2, "test user");
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);

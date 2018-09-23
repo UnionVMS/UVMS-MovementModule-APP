@@ -176,6 +176,7 @@ public class SegmentBean {
         segment.setTrack(track);
         return track;
     }
+    
 
     /**
      * @param previousMovement
@@ -233,8 +234,7 @@ public class SegmentBean {
         LineString segmentLineString = GeometryUtil.getLineStringFromMovements(previousMovement, currentMovement);
         theSegmentToBeBroken.setLocation(segmentLineString);
 
-        theSegmentToBeBroken = dao.persist(theSegmentToBeBroken);
-        dao.flush();
+        theSegmentToBeBroken = dao.merge(theSegmentToBeBroken);
 
         //and creating a new one
         Segment segment = createSegment(currentMovement, oldToMovement);
@@ -255,16 +255,12 @@ public class SegmentBean {
      * @throws MovementServiceException
      */
     public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementServiceException {
-        Segment segment = firstMovement.getFromSegment();
-        if (segment == null) {
-            segment = createSegment(currentMovement, firstMovement);
-        } else {
-            segment.setFromMovement(currentMovement);
-        }
+        Segment segment = createSegment(currentMovement, firstMovement);
         Track track = upsertTrack(firstMovement.getTrack(), segment, currentMovement);
         if (firstMovement.getTrack() == null) {
             firstMovement.setTrack(track);
-            dao.persist(firstMovement);
         }
+        currentMovement.setTrack(track);
+        dao.persist(segment);
     }
 }

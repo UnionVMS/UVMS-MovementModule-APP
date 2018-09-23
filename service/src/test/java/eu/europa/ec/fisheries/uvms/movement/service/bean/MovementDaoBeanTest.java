@@ -125,9 +125,8 @@ public class MovementDaoBeanTest extends TransactionalTests {
 //		} catch (MovementDomainRuntimeException e) {
 //			assertTrue(true);
 //		}
-		//should result in a no result output akka null
 		output = movementDaoBean.getLatestMovementsByConnectId("0", 1);
-		assertNull(output);
+		assertTrue(output.isEmpty());
 		
 		//funnily enough this is only true if you are only expecting 1 result.......
 		output = movementDaoBean.getLatestMovementsByConnectId("0", 2);
