@@ -13,11 +13,9 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.math.BigInteger;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
@@ -26,7 +24,6 @@ import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
@@ -45,7 +42,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -55,9 +51,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.AreaMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -116,9 +110,7 @@ public class MovementService {
             LOG.debug("ENRICHING MOVEMENTS BATCH WITH SPATIAL DATA");
             List<Movement> enrichedMovements = spatial.enrichMovementBatchWithSpatialData(movements);
             List<Movement> savedBatchMovements = new ArrayList<>();
-            for (Movement enrichedMovement : enrichedMovements) {
-                savedBatchMovements.add(movementBatch.createMovement(enrichedMovement));
-            }
+            enrichedMovements.forEach(movement -> savedBatchMovements.add(movementBatch.createMovement(movement)));
             SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(savedBatchMovements) ? SimpleResponse.OK : SimpleResponse.NOK;
             auditService.sendMovementBatchCreatedAudit(simpleResponse.name(), username);
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
@@ -148,11 +140,11 @@ public class MovementService {
 
         boolean getLatestReports = SearchFieldMapper.containsCriteria(query.getMovementSearchCriteria(), SearchKey.NR_OF_LATEST_REPORTS);
 
-        Integer numberOfLatestReports = 0;
+        int numberOfLatestReports = 0;
         if (getLatestReports) {
             String value = SearchFieldMapper.getCriteriaValue(query.getMovementSearchCriteria(), SearchKey.NR_OF_LATEST_REPORTS);
             if (value != null) {
-                numberOfLatestReports = Integer.valueOf(value);
+                numberOfLatestReports = Integer.parseInt(value);
             } else {
                 throw new MovementServiceRuntimeException(SearchKey.NR_OF_LATEST_REPORTS.name()
                         + " Is in the query but no value could be found!, VALUE = null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
@@ -233,8 +225,8 @@ public class MovementService {
             ListResponseDto response = new ListResponseDto();
             List<MovementType> movementList = new ArrayList<>();
 
-            Integer page = query.getPagination().getPage().intValue();
-            Integer listSize = query.getPagination().getListSize().intValue();
+            int page = query.getPagination().getPage().intValue();
+            int listSize = query.getPagination().getListSize().intValue();
 
             List<SearchValue> searchKeyValues = new ArrayList<>();
             List<SearchValue> searchKeyValuesList = SearchFieldMapper.mapListCriteriaToSearchValue(query.getMovementSearchCriteria());
@@ -251,9 +243,7 @@ public class MovementService {
             //List<Movement> movementEntityList = dao.getMovementList(sql, searchKeyValues);
             //int numberMatches = movementEntityList.size();
 
-            for (Movement move : movementEntityList){
-                movementList.add(MovementEntityToModelMapper.mapToMovementType(move));
-            }
+            movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMovementType(movement)));
 
             response.setCurrentPage(BigInteger.valueOf(page));
             response.setMovementList(movementList);
@@ -284,8 +274,8 @@ public class MovementService {
             ListResponseDto response = new ListResponseDto();
             List<MovementType> movementList = new ArrayList<>();
 
-            Integer page = query.getPagination().getPage().intValue();
-            Integer listSize = query.getPagination().getListSize().intValue();
+            int page = query.getPagination().getPage().intValue();
+            int listSize = query.getPagination().getListSize().intValue();
 
             List<SearchValue> searchKeyValues = new ArrayList<>();
             List<SearchValue> searchKeyValuesList = SearchFieldMapper.mapListCriteriaToSearchValue(query.getMovementSearchCriteria());
@@ -302,9 +292,7 @@ public class MovementService {
             List<MinimalMovement> movementEntityList = dao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
             LOG.debug("Get got {} matches", movementEntityList.size());
 
-            for (MinimalMovement move : movementEntityList){
-                movementList.add(MovementEntityToModelMapper.mapToMovementType(move));
-            }
+            movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMovementType(movement)));
 
             response.setCurrentPage(BigInteger.valueOf(page));
             response.setMovementList(movementList);
@@ -314,7 +302,6 @@ public class MovementService {
             throw new MovementServiceException("Error when getting movement list by query", ex, ErrorCode.PARSING_ERROR);
         }
     }
-
 
     /**
      * {@inheritDoc}
@@ -367,13 +354,9 @@ public class MovementService {
     }
 	
     private List<SearchValue> getConnectedIdsFromSearchKeyValues(List<SearchValue> searchKeyValues){
-        List<SearchValue> connetedIds = new ArrayList<>();
-        for(SearchValue searchValue : searchKeyValues){
-            if(SearchField.CONNECT_ID.getFieldName().equals(searchValue.getField().getFieldName())){
-                connetedIds.add(searchValue);
-            }
-        }
-        return connetedIds;
+        return searchKeyValues.stream()
+                .filter(searchValue -> SearchField.CONNECT_ID.getFieldName().equals(searchValue.getField().getFieldName()))
+                .collect(Collectors.toList());
     }
     
     /**
@@ -389,29 +372,24 @@ public class MovementService {
         if(tracks == null || movements == null) {
             throw new MovementServiceRuntimeException("MovementTrack list or Movement list is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
-        Set<MovementTrack> tracksToSave = new HashSet<>();
-        for (Movement movement : movements) {
-            if (movement.getTrack() == null) {
-                continue;
-            }
-            Long allowedTrackId = movement.getTrack().getId();
-            for (MovementTrack track : tracks) {
-                if (Long.valueOf(track.getId()).equals(allowedTrackId)) {
-                    tracksToSave.add(track);
-                }
-            }
-        }
+        Set<Long> trackIds = movements.stream()
+                .filter(movement -> movement.getTrack() != null)
+                .map(movement -> movement.getTrack().getId())
+                .collect(Collectors.toSet());
+
+        Set<MovementTrack> tracksToSave = tracks.stream()
+                .filter(track -> trackIds.contains(Long.valueOf(track.getId())))
+                .collect(Collectors.toSet());
+
         tracks.removeIf(track -> !tracksToSave.contains(track));
     }
     
     public ArrayList<MovementSegment> filterSegments(List<MovementSegment> movementSegments, List<SearchValue> searchKeyValuesRange) {
         Set<MovementSegment> segments = new HashSet<>();
         if (movementSegments != null) {
-            for (MovementSegment segment : movementSegments) {
-                if (keepSegment(segment, searchKeyValuesRange)) {
-                    segments.add(segment);
-                }
-            }
+            segments = movementSegments.stream()
+                    .filter(segment -> keepSegment(segment, searchKeyValuesRange))
+                    .collect(Collectors.toSet());
         }
         return new ArrayList<>(segments);
     }
@@ -422,8 +400,7 @@ public class MovementService {
         String sql;
         List<SearchValue> searchValuesWithoutConnectedIds = removeConnectedIdsFromSearchKeyValues(searchKeys);
         for (SearchValue connectedId : connectedIdsFromSearchKeyValues) {
-            List<SearchValue> searchValues = new ArrayList<>();
-            searchValues.addAll(searchValuesWithoutConnectedIds);
+            List<SearchValue> searchValues = new ArrayList<>(searchValuesWithoutConnectedIds);
             searchValues.add(connectedId);
             sql = SearchFieldMapper.createSelectSearchSql(searchValues, true);
             movementEntityList.addAll(dao.getMovementList(sql, searchKeys, numberOfLatestReports));
@@ -431,13 +408,10 @@ public class MovementService {
     }
     
     private List<SearchValue> removeConnectedIdsFromSearchKeyValues(List<SearchValue> searchKeyValues){
-        List<SearchValue> searchKeyValuesWithoutConnectedId = new ArrayList<>();
-        for(SearchValue searchValue : searchKeyValues){
-            if(!(SearchField.CONNECT_ID.getFieldName().equals(searchValue.getField().getFieldName()))){
-                searchKeyValuesWithoutConnectedId.add(searchValue);
-            }
-        }
-        return searchKeyValuesWithoutConnectedId;
+        return searchKeyValues
+                .stream()
+                .filter(searchValue -> !(SearchField.CONNECT_ID.getFieldName().equals(searchValue.getField().getFieldName())))
+                .collect(Collectors.toList());
     }
 	
 	public boolean keepSegment(MovementSegment segment, List<SearchValue> searchKeyValuesRange) {
