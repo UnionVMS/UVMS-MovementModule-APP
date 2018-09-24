@@ -28,6 +28,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
@@ -175,9 +176,11 @@ public class MovementRestResource {
             return new ResponseDto("numberOfMovements cannot be null and must be greater than 0" , ResponseCode.ERROR);
         }
         try {
-            List<MovementDto> response = serviceLayer.getLatestMovements(numberOfMovements);
+            List<LatestMovement> movements = serviceLayer.getLatestMovements(numberOfMovements);
+            List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
+            List<MovementDto> response = MovementMapper.mapToMovementDtoList(latestMovements);
             LOG.debug("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
-            return new ResponseDto(response, ResponseCode.OK);
+            return new ResponseDto<>(response, ResponseCode.OK);
         } catch (NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);

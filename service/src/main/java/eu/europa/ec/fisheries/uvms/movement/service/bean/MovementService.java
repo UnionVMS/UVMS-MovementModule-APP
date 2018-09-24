@@ -340,10 +340,8 @@ public class MovementService {
         return dao.getLatestMovementsByConnectIdList(connectIds);
     }
 
-    public List<MovementDto> getLatestMovements(Integer numberOfMovements) {
-        List<LatestMovement> movements = dao.getLatestMovements(numberOfMovements);
-        List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
-        return MovementMapper.mapToMovementDtoList(latestMovements);
+    public List<LatestMovement> getLatestMovements(Integer numberOfMovements) {
+        return dao.getLatestMovements(numberOfMovements);
     }
 
     public GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) {

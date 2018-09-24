@@ -12,6 +12,8 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import org.hamcrest.core.StringContains;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -103,20 +105,20 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
     @Test
     public void getLatestMovements_0() {
-        List<MovementDto> movementTypes = movementService.getLatestMovements(0);
-        assertNotNull(movementTypes);
+        List<LatestMovement> movements = movementService.getLatestMovements(0);
+        assertNotNull(movements);
     }
 
     @Test
     public void getLatestMovements_5() {
-        List<MovementDto> movementTypes = movementService.getLatestMovements(5);
-        assertNotNull(movementTypes);
+        List<LatestMovement> movements = movementService.getLatestMovements(5);
+        assertNotNull(movements);
     }
 
     @Test
     public void getLatestMovements_5000000() {
-        List<MovementDto> movementTypes = movementService.getLatestMovements(5000000);
-        assertNotNull(movementTypes);
+        List<LatestMovement> movements = movementService.getLatestMovements(5000000);
+        assertNotNull(movements);
     }
 
     @Test

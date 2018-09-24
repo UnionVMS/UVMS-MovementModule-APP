@@ -9,6 +9,8 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
+
+import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -261,14 +263,13 @@ public class MovementServiceIntTest extends TransactionalTests {
         String connectId = null;
         Movement byId = movementService.getById(connectId);
         assertNull(byId);
-
     }
 
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements() {
-        List<MovementDto> listMovementDto = movementService.getLatestMovements(5);
-        assertNotNull(listMovementDto);
+        List<LatestMovement> movements = movementService.getLatestMovements(5);
+        assertNotNull(movements);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
