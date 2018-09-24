@@ -11,8 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.model.mapper;
 
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-
 import javax.xml.bind.DatatypeConverter;
 import java.time.LocalDate;
 import java.time.Instant;
@@ -20,18 +18,19 @@ import java.util.Date;  //leave be for now
 
 
 public class XsdDateTimeConverter {
-    private static String DataTypeConverterCalendarFormat = "%Y-%M-%DT%h:%m:%s%z";
 
     public static Date unmarshal(String dateTime) {
         return DatatypeConverter.parseDate(dateTime).getTime();
     }
 
     public static String marshalDate(Date date) {
-        return DateUtil.convertUtilDateToString(date, DataTypeConverterCalendarFormat);
+        Instant i = date.toInstant();
+        return i.toString();
     }
 
     public static String marshalDateTime(Date dateTime) {
-        return DateUtil.convertUtilDateToString(dateTime, DataTypeConverterCalendarFormat);
+        Instant i = dateTime.toInstant();
+        return i.toString();
     }
 
 
