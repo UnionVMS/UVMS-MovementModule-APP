@@ -11,6 +11,7 @@ import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
 
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -221,7 +222,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getAreas() {
-        List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> response = movementService.getAreas();
+        List<Area> response = movementService.getAreas();
         assertNotNull(response);
     }
 

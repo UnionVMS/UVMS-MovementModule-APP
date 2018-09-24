@@ -353,9 +353,9 @@ public class MovementService {
         return MovementDataSourceResponseMapper.mapMovementListAreaAndTimeIntervalResponse(movementListByAreaAndTimeInterval);
     }
 
-	public List<AreaType> getAreas() {
+	public List<Area> getAreas() {
 	    List<Area> areas = areaDao.getAreas();
-        return AreaMapper.mapToAreaTypes(areas);
+        return areas;
 	}
 	
 	private int getNumberOfPages(Long numberOfMovements, int listSize){

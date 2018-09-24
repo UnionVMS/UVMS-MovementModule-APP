@@ -18,6 +18,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.AreaMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
@@ -32,7 +35,7 @@ import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 @RequiresFeature(UnionVMSFeature.viewMovements)
 public class AreaRestResource {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementRestResource.class);
+    private final static Logger LOG = LoggerFactory.getLogger(MovementRestResource.class);
 
     @EJB
     private MovementService movementService;
@@ -41,8 +44,9 @@ public class AreaRestResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     public ResponseDto getAreas() {
         try {
-            List<AreaType> areas = movementService.getAreas();
-            return new ResponseDto(areas, ResponseCode.OK);
+            List<Area> areas = movementService.getAreas();
+            List<AreaType> response = AreaMapper.mapToAreaTypes(areas);
+            return new ResponseDto<>(response, ResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when getting areas. ] {}", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);

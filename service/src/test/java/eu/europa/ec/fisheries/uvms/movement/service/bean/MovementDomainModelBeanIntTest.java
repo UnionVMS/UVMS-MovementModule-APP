@@ -99,7 +99,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
     @Test
     public void getAreas() {
-        List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> areas = movementService.getAreas();
+        List<Area> areas = movementService.getAreas();
         assertNotNull(areas);
     }
 
@@ -562,7 +562,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 		Area createdArea = areaDao.createMovementArea(area);
         areaDao.flushMovementAreas();
         
-        List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> output = movementService.getAreas();
+        List<Area> output = movementService.getAreas();
         assertEquals(areasBefore + 1, output.size());
         
         area = new Area();
