@@ -62,7 +62,7 @@ public class IncomingMovementBean {
                 if (latestMovement.getFromSegment() == null) {
                     segmentBean.createSegmentAndTrack(latestMovement, currentMovement); // Second position
                 } else {
-                    segmentBean.splitSegment(latestMovement, currentMovement); // Normal case (latest position), create segment
+                    segmentBean.newSegment(latestMovement, currentMovement); // Normal case (latest position)
                 }
                 currentMovement.setAreatransitionList(populateTransitions(currentMovement, latestMovement));
             } else {

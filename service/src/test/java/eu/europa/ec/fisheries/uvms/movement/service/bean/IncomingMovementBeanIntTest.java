@@ -3,33 +3,37 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.peertopark.java.geocalc.Coordinate;
-import com.peertopark.java.geocalc.DegreeCoordinate;
-import com.peertopark.java.geocalc.EarthCalc;
-import com.peertopark.java.geocalc.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 
@@ -49,6 +53,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     @EJB
     private MovementDao movementDao;
+    
+    @Inject
+    private AreaDao areaDao;
 
     @Test
     public void testCreatingMovement() {
@@ -619,6 +626,497 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(movementList.size(), is(6));
         
         assertSegmentsAndTrack(movementList);
+    }
+    
+    @Test
+    public void testProcessinghreeMovementsValidateAreaTransitions() throws MovementServiceException {
+        
+        // Areas
+        AreaType areaType = MockData.createAreaType();
+        Area areaA = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaB = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaC = areaDao.createMovementArea(MockData.createArea(areaType));
+        
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        Movementarea movementArea1 = MockData.getMovementArea(areaA, firstMovement);
+        firstMovement.setMovementareaList(Arrays.asList(movementArea1));
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+       
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        Movementarea movementArea2 = MockData.getMovementArea(areaB, secondMovement);
+        secondMovement.setMovementareaList(Arrays.asList(movementArea2));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        Movementarea movementArea3 = MockData.getMovementArea(areaC, thirdMovement);
+        thirdMovement.setMovementareaList(Arrays.asList(movementArea3));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        movementList.sort(MovementComparator.MOVEMENT);
+        Movement firstMovementProcessed = movementList.get(0);
+        Movement secondMovementProcessed = movementList.get(1);
+        Movement thirdMovementProcessed = movementList.get(2);
+        
+        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
+        assertThat(firstMovementAreatransitionList.size(), is(1));
+        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        
+        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
+        assertThat(secondMovementAreatransitionList.size(), is(2));
+        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(secondMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        
+        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
+        assertThat(thirdMovementAreatransitionList.size(), is(2));
+        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(thirdMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+    }
+    
+    @Test
+    public void testProcessingThreeMovementsOneAreaValidateAreaTransitions() throws MovementServiceException {
+        
+        // Areas
+        AreaType areaType = MockData.createAreaType();
+        Area areaA = areaDao.createMovementArea(MockData.createArea(areaType));
+        
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        Movementarea movementArea1 = MockData.getMovementArea(areaA, firstMovement);
+        firstMovement.setMovementareaList(Arrays.asList(movementArea1));
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+       
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        Movementarea movementArea2 = MockData.getMovementArea(areaA, secondMovement);
+        secondMovement.setMovementareaList(Arrays.asList(movementArea2));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        Movementarea movementArea3 = MockData.getMovementArea(areaA, thirdMovement);
+        thirdMovement.setMovementareaList(Arrays.asList(movementArea3));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        movementList.sort(MovementComparator.MOVEMENT);
+        Movement firstMovementProcessed = movementList.get(0);
+        Movement secondMovementProcessed = movementList.get(1);
+        Movement thirdMovementProcessed = movementList.get(2);
+        
+        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
+        assertThat(firstMovementAreatransitionList.size(), is(1));
+        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        
+        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
+        assertThat(secondMovementAreatransitionList.size(), is(1));
+        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+        
+        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
+        assertThat(thirdMovementAreatransitionList.size(), is(1));
+        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+    }
+    
+    @Test
+    public void testProcessingThreeMovementsValidateAreaTransitionsUnordered() throws MovementServiceException {
+        // Areas
+        AreaType areaType = MockData.createAreaType();
+        Area areaA = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaB = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaC = areaDao.createMovementArea(MockData.createArea(areaType));
+        
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        Movementarea movementArea1 = MockData.getMovementArea(areaA, firstMovement);
+        firstMovement.setMovementareaList(Arrays.asList(movementArea1));
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        Movementarea movementArea3 = MockData.getMovementArea(areaC, thirdMovement);
+        thirdMovement.setMovementareaList(Arrays.asList(movementArea3));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+       
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        Movementarea movementArea2 = MockData.getMovementArea(areaB, secondMovement);
+        secondMovement.setMovementareaList(Arrays.asList(movementArea2));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        movementList.sort(MovementComparator.MOVEMENT);
+        Movement firstMovementProcessed = movementList.get(0);
+        Movement secondMovementProcessed = movementList.get(1);
+        Movement thirdMovementProcessed = movementList.get(2);
+        
+        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
+        assertThat(firstMovementAreatransitionList.size(), is(1));
+        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        
+        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
+        assertThat(secondMovementAreatransitionList.size(), is(2));
+        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(secondMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        
+        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
+        assertThat(thirdMovementAreatransitionList.size(), is(2));
+        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(thirdMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+    }
+    
+    @Test
+    public void testProcessingThreeMovementsOneAreaValidateAreaTransitionsUnordered() throws MovementServiceException {
+        
+        // Areas
+        AreaType areaType = MockData.createAreaType();
+        Area areaA = areaDao.createMovementArea(MockData.createArea(areaType));
+        
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        Movementarea movementArea1 = MockData.getMovementArea(areaA, firstMovement);
+        firstMovement.setMovementareaList(Arrays.asList(movementArea1));
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+       
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        Movementarea movementArea3 = MockData.getMovementArea(areaA, thirdMovement);
+        thirdMovement.setMovementareaList(Arrays.asList(movementArea3));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        Movementarea movementArea2 = MockData.getMovementArea(areaA, secondMovement);
+        secondMovement.setMovementareaList(Arrays.asList(movementArea2));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        movementList.sort(MovementComparator.MOVEMENT);
+        Movement firstMovementProcessed = movementList.get(0);
+        Movement secondMovementProcessed = movementList.get(1);
+        Movement thirdMovementProcessed = movementList.get(2);
+        
+        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
+        assertThat(firstMovementAreatransitionList.size(), is(1));
+        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        
+        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
+        assertThat(secondMovementAreatransitionList.size(), is(1));
+        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+        
+        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
+        assertThat(thirdMovementAreatransitionList.size(), is(1));
+        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+    }
+    
+    @Test
+    public void testProcessingThreeMovementsValidateAreaTransitionsReversed() throws MovementServiceException {
+        // Areas
+        AreaType areaType = MockData.createAreaType();
+        Area areaA = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaB = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaC = areaDao.createMovementArea(MockData.createArea(areaType));
+        
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        Movementarea movementArea3 = MockData.getMovementArea(areaC, thirdMovement);
+        thirdMovement.setMovementareaList(Arrays.asList(movementArea3));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+       
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        Movementarea movementArea2 = MockData.getMovementArea(areaB, secondMovement);
+        secondMovement.setMovementareaList(Arrays.asList(movementArea2));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        Movementarea movementArea1 = MockData.getMovementArea(areaA, firstMovement);
+        firstMovement.setMovementareaList(Arrays.asList(movementArea1));
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        movementList.sort(MovementComparator.MOVEMENT);
+        Movement firstMovementProcessed = movementList.get(0);
+        Movement secondMovementProcessed = movementList.get(1);
+        Movement thirdMovementProcessed = movementList.get(2);
+
+        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
+        assertThat(firstMovementAreatransitionList.size(), is(1));
+        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        
+        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
+        assertThat(secondMovementAreatransitionList.size(), is(2));
+        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(secondMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        
+        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
+        assertThat(thirdMovementAreatransitionList.size(), is(2));
+        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(thirdMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+    }
+    
+    @Test
+    public void testProcessingThreeMovementsOneAreaValidateAreaTransitionsReversed() throws MovementServiceException {
+        
+        // Areas
+        AreaType areaType = MockData.createAreaType();
+        Area areaA = areaDao.createMovementArea(MockData.createArea(areaType));
+        
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+       
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        Movementarea movementArea3 = MockData.getMovementArea(areaA, thirdMovement);
+        thirdMovement.setMovementareaList(Arrays.asList(movementArea3));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        Movementarea movementArea2 = MockData.getMovementArea(areaA, secondMovement);
+        secondMovement.setMovementareaList(Arrays.asList(movementArea2));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        Movementarea movementArea1 = MockData.getMovementArea(areaA, firstMovement);
+        firstMovement.setMovementareaList(Arrays.asList(movementArea1));
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        movementList.sort(MovementComparator.MOVEMENT);
+        Movement firstMovementProcessed = movementList.get(0);
+        Movement secondMovementProcessed = movementList.get(1);
+        Movement thirdMovementProcessed = movementList.get(2);
+        
+        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
+        assertThat(firstMovementAreatransitionList.size(), is(1));
+        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        
+        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
+        assertThat(secondMovementAreatransitionList.size(), is(1));
+        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+        
+        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
+        assertThat(thirdMovementAreatransitionList.size(), is(1));
+        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+    }
+    
+    @Test
+    public void testProcessingMovementsAllAlgorithmCasesValidateAreaTransitions() throws MovementServiceException {
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+
+        AreaType areaType = MockData.createAreaType();
+        Area areaA = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaB = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaC = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaD = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaE = areaDao.createMovementArea(MockData.createArea(areaType));
+        Area areaF = areaDao.createMovementArea(MockData.createArea(areaType));
+        
+        // First
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp.plusSeconds(10));
+        Movementarea movementArea1 = MockData.getMovementArea(areaC, firstMovement);
+        firstMovement.setMovementareaList(Arrays.asList(movementArea1));
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+        
+        // Second
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(20));
+        Movementarea movementArea2 = MockData.getMovementArea(areaD, secondMovement);
+        secondMovement.setMovementareaList(Arrays.asList(movementArea2));
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        // Normal case
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(40));
+        Movementarea movementArea3 = MockData.getMovementArea(areaF, thirdMovement);
+        thirdMovement.setMovementareaList(Arrays.asList(movementArea3));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        // Before first
+        Movement fourthMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        fourthMovement.setTimestamp(timestamp);
+        Movementarea movementArea4 = MockData.getMovementArea(areaA, fourthMovement);
+        fourthMovement.setMovementareaList(Arrays.asList(movementArea4));
+        fourthMovement = movementBatchModelBean.createMovement(fourthMovement);
+        incomingMovementBean.processMovement(fourthMovement);
+       
+        // Between two positions
+        Movement fifthMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        fifthMovement.setTimestamp(timestamp.plusSeconds(30));
+        Movementarea movementArea5 = MockData.getMovementArea(areaE, fifthMovement);
+        fifthMovement.setMovementareaList(Arrays.asList(movementArea5));
+        fifthMovement = movementBatchModelBean.createMovement(fifthMovement);
+        incomingMovementBean.processMovement(fifthMovement);
+        
+        // Between two positions
+        Movement sixthMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        sixthMovement.setTimestamp(timestamp.plusSeconds(5));
+        Movementarea movementArea6 = MockData.getMovementArea(areaB, sixthMovement);
+        sixthMovement.setMovementareaList(Arrays.asList(movementArea6));
+        sixthMovement = movementBatchModelBean.createMovement(sixthMovement);
+        incomingMovementBean.processMovement(sixthMovement);
+        
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(6));
+        
+        movementList.sort(MovementComparator.MOVEMENT);
+        Movement firstMovementProcessed = movementList.get(0);
+        Movement secondMovementProcessed = movementList.get(1);
+        Movement thirdMovementProcessed = movementList.get(2);
+        Movement fourthMovementProcessed = movementList.get(3);
+        Movement fifthMovementProcessed = movementList.get(4);
+        Movement sixthMovementProcessed = movementList.get(5);
+        
+        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
+        assertThat(firstMovementAreatransitionList.size(), is(1));
+        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        
+        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
+        assertThat(secondMovementAreatransitionList.size(), is(2));
+        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(secondMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        
+        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
+        assertThat(thirdMovementAreatransitionList.size(), is(2));
+        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(thirdMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(thirdMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        
+        List<Areatransition> fourthMovementAreatransitionList = fourthMovementProcessed.getAreatransitionList();
+        assertThat(fourthMovementAreatransitionList.size(), is(2));
+        assertThat(fourthMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaD.getAreaCode()));
+        assertThat(fourthMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(fourthMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(fourthMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        
+        List<Areatransition> fifthMovementAreatransitionList = fifthMovementProcessed.getAreatransitionList();
+        assertThat(fifthMovementAreatransitionList.size(), is(2));
+        assertThat(fifthMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaE.getAreaCode()));
+        assertThat(fifthMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(fifthMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaD.getAreaCode()));
+        assertThat(fifthMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        
+        List<Areatransition> sixthMovementAreatransitionList = sixthMovementProcessed.getAreatransitionList();
+        assertThat(sixthMovementAreatransitionList.size(), is(2));
+        assertThat(sixthMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaF.getAreaCode()));
+        assertThat(sixthMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(sixthMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaE.getAreaCode()));
+        assertThat(sixthMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+    }
+    
+    @Test
+    public void newTrackShouldBeCreatedWhenLeavingPort() throws MovementServiceException {
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementBatchModelBean.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+       
+        // Second position is in port
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        secondMovement.getMetadata().setClosestPortDistance(0d);
+        secondMovement = movementBatchModelBean.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementConnect.getMovementList();
+        assertThat(movementList.size(), is(3));
+        
+        assertThat(movementList.get(0).getTrack(), is(movementList.get(1).getTrack()));
+        assertThat(movementList.get(2).getTrack(), is(not(movementList.get(1).getTrack())));
     }
     
     /*

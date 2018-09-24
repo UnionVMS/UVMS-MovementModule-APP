@@ -19,6 +19,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
@@ -70,6 +71,15 @@ public class MockData {
         area.setAreaUpuser("TestUser");
         area.setAreaType(areaType);
         return area;
+    }
+    
+    public static Movementarea getMovementArea(Area area, Movement movement) {
+        Movementarea movementArea = new Movementarea();
+        movementArea.setMovareaAreaId(area);
+        movementArea.setMovareaMoveId(movement);
+        movementArea.setMovareaUpdattim(Instant.now());
+        movementArea.setMovareaUpuser("Test");
+        return movementArea;
     }
 
     /**
@@ -162,6 +172,11 @@ public class MockData {
         movement.setStatus("TEST");
         movement.setUpdated(Instant.now());
         movement.setUpdatedBy(username);
+        
+        Movementmetadata metadata = new Movementmetadata();
+        metadata.setMovemetUpdattim(Instant.now());
+        metadata.setMovemetUpuser("Test");
+        movement.setMetadata(metadata);
 
         movement.setTimestamp(latlong.positionTime);
         movement.setTripNumber(0d);

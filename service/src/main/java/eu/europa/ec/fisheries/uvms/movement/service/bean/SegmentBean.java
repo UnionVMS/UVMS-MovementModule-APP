@@ -1,11 +1,8 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.util.ArrayList;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.inject.Inject;
 import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
@@ -20,40 +17,71 @@ import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.util.GeometryUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.util.SegmentCalculationUtil;
 
-/**
- * Created by andreasw on 2017-03-08.
- */
-@LocalBean
 @Stateless
 public class SegmentBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SegmentBean.class);
-
-    @EJB
+    @Inject
     private MovementDao dao;
 
-    public Segment createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementServiceException {
+    public void newSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
+        Segment segment = createSegment(previousMovement, currentMovement);
+        upsertTrack(previousMovement.getTrack(), segment, currentMovement);
+        dao.persist(segment);
+    }
+
+    public void createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementServiceException {
         Segment segment = createSegment(fromMovement, toMovement);
         Track track = upsertTrack(fromMovement.getTrack(), segment, toMovement);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
-        return segment;
+        dao.persist(segment);
     }
 
-    /**
-     *
-     * @param fromMovement
-     * @param toMovement
-     * @return
-     * @throws MovementServiceException
-     */
-    public Segment createSegment(Movement fromMovement, Movement toMovement) throws MovementServiceException {
-        Segment segment = new Segment();
+    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementServiceException {
+        Segment segment = createSegment(currentMovement, firstMovement);
+        Track track = upsertTrack(firstMovement.getTrack(), segment, currentMovement);
+        if (firstMovement.getTrack() == null) {
+            firstMovement.setTrack(track);
+        }
+        currentMovement.setTrack(track);
+        dao.persist(segment);
+    }
 
-        if (toMovement == null && fromMovement == null) {
-            LOG.error("[ ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null <createSegment> ]");
+    public void splitSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
+        if (currentMovement == null || previousMovement == null) {
+            throw new IllegalArgumentException("Error when splitting segment, currentPosition and previousPosition cannot be null");
+        }
+        
+        Segment theSegmentToBeBroken = previousMovement.getToSegment();
+        
+        if (theSegmentToBeBroken == null) {
+            throw new MovementServiceException("PREVIOUS MOVEMENT MUST HAVE A SEGMENT BUT IT DOESN'T, SOME LOGICAL ERROR HAS OCCURRED",
+                    ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+        }
+        
+        Movement oldToMovement = theSegmentToBeBroken.getToMovement();
+        
+        //calculating and setting new segment values
+        populateSegment(theSegmentToBeBroken, previousMovement, currentMovement);
+        
+        theSegmentToBeBroken = dao.merge(theSegmentToBeBroken);
+        
+        Segment segment = createSegment(currentMovement, oldToMovement);
+        
+        upsertTrack(theSegmentToBeBroken.getTrack(), segment, currentMovement);
+        dao.persist(segment);
+    }
+    
+    protected Segment createSegment(Movement fromMovement, Movement toMovement) throws MovementServiceException {
+        if (toMovement == null || fromMovement == null) {
             throw new MovementServiceException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null", ErrorCode.DAO_MAPPING_ERROR);
         }
+        Segment segment = new Segment();
+        populateSegment(segment, fromMovement, toMovement);
+        return segment;
+    }
+    
+    private void populateSegment(Segment segment, Movement fromMovement, Movement toMovement) throws MovementServiceException {
         //calculations for segment
         SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
 
@@ -76,30 +104,15 @@ public class SegmentBean {
         
         fromMovement.setToSegment(segment);
         toMovement.setFromSegment(segment);
-
-        return segment;
     }
 
-    /**
-     *
-     * @param track
-     * @param segment
-     * @param newMovement
-     * @return
-     *
-     * @throws MovementServiceException
-     */
-    public Track upsertTrack(Track track, Segment segment, Movement newMovement) throws MovementServiceException {
+    protected Track upsertTrack(Track track, Segment segment, Movement newMovement) throws MovementServiceException {
         if (track == null) {        //if there is no tracks
-        	Track newTrack = createNewTrack(segment);
-            dao.persist(newMovement);
-            return newTrack;
+        	return createNewTrack(segment);
         } else {
             switch (segment.getSegmentCategory()) {     //if a segment is is an area transition out of a port, then create a new track, else add to the old one
                 case EXIT_PORT:
-                	Track newTrack = createNewTrack(segment);
-                    dao.persist(newMovement);
-                    return newTrack;
+                	return createNewTrack(segment);
                 case GAP:
                 case JUMP:
                 case IN_PORT:
@@ -117,25 +130,11 @@ public class SegmentBean {
         return track;
     }
 
-    /**
-     *
-     * @param track
-     * @param newMovement
-     * @param segment
-     */
-    public void updateTrack(Track track, Movement newMovement, Segment segment)  {
-        //TODO: This needs som serious overlooking
-        LOG.debug("UPDATING TRACK ");
-
-        if (track.getMovementList() == null) {
-            track.setMovementList(new ArrayList<>());
-        }
-
-        //add things to each other
+    protected void updateTrack(Track track, Movement newMovement, Segment segment)  {
         track.getMovementList().add(newMovement);
+        track.getSegmentList().add(segment);
         segment.setTrack(track);
         newMovement.setTrack(track);
-        track.getSegmentList().add(segment);
 
         //add segments values to those of the track
         double calculatedDistance = track.getDistance() + segment.getDistance();
@@ -143,6 +142,7 @@ public class SegmentBean {
         double calculatedDurationInSeconds = track.getDuration() + segment.getDuration();
         track.setDuration(calculatedDurationInSeconds);
 
+        // TODO calculate whole line string each update?
         if(track.getMovementList().size() > 1) {    //if there is more then one movement, create a string of movements, aka a string of positions
             LineString updatedTrackLineString = GeometryUtil.getLineStringFromMovements(track.getMovementList());
             track.setLocation(updatedTrackLineString);
@@ -152,16 +152,9 @@ public class SegmentBean {
             double totalTimeAtSea = track.getTotalTimeAtSea();                                                                                               //this makes it so that the last segment of a track is not counted towards the total time of a track
             track.setTotalTimeAtSea(totalTimeAtSea + segment.getDuration());
         }
-
-        //do you really need three persists here?
-        dao.persist(track);
-        dao.persist(segment);
-        dao.persist(newMovement);
     }
 
-    public Track createNewTrack(Segment segment) {
-        LOG.debug("CREATING NEW TRACK ");
-
+    protected Track createNewTrack(Segment segment) {
         Track track = new Track();
         track.setDistance(segment.getDistance());
         track.setDuration(segment.getDuration());
@@ -175,92 +168,5 @@ public class SegmentBean {
         track.getSegmentList().add(segment);
         segment.setTrack(track);
         return track;
-    }
-    
-
-    /**
-     * @param previousMovement
-     * @param currentMovement
-     *
-     * @throws MovementServiceException
-     */
-    public void splitSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
-
-        Segment theSegmentToBeBroken = dao.findByFromMovement(previousMovement);
-
-        if (theSegmentToBeBroken == null) {         //if there is no segment with the previous movement as From
-
-            theSegmentToBeBroken = dao.findByToMovement(previousMovement);
-            if (theSegmentToBeBroken == null) {     //if there also is no segment with the previous movement as To
-                throw new MovementServiceException("PREVIOUS MOVEMENT MUST HAVE A SEGMENT BUT IT DOESN'T, SOME LOGICAL ERROR HAS OCCURRED",
-                        ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-            } else {
-                Segment segment = createSegment(theSegmentToBeBroken.getToMovement(), currentMovement); //create a new segment and fill it
-                upsertTrack(theSegmentToBeBroken.getTrack(), segment, currentMovement);                 //connect to track
-                return;
-            }
-        }
-
-        // If we are here then it means that current movement is not the youngest movement there is for this connectID,
-        // but that it is somewhere in the middle and that we need to rearange two segments to incorporate this new movement
-        LOG.debug("Splitting segment {}", theSegmentToBeBroken.getId());
-
-        Movement oldToMovement = theSegmentToBeBroken.getToMovement();
-
-        if (currentMovement == null && previousMovement == null) {
-            LOG.error("[ ERROR when updating Segment entity: currentPosition AND previous Position cannot be null <updateSegment> ]");
-            throw new MovementServiceException("ERROR when updating Segment entity: currentPosition AND previous Position cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-        }
-        //calculating and setting new segment values
-        SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, currentMovement);
-
-        SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, previousMovement, currentMovement);
-        theSegmentToBeBroken.setSegmentCategory(segCat);
-
-        theSegmentToBeBroken.setDistance(positionCalculations.getDistanceBetweenPoints());
-        theSegmentToBeBroken.setSpeedOverGround(positionCalculations.getAvgSpeed());
-        theSegmentToBeBroken.setCourseOverGround(positionCalculations.getCourse());
-        theSegmentToBeBroken.setDuration(positionCalculations.getDurationBetweenPoints());
-
-        theSegmentToBeBroken.setUpdated(DateUtil.nowUTC());
-        theSegmentToBeBroken.setUpdatedBy("UVMS");
-
-        theSegmentToBeBroken.setFromMovement(previousMovement);
-        theSegmentToBeBroken.setToMovement(currentMovement);
-        
-        previousMovement.setToSegment(theSegmentToBeBroken);
-        currentMovement.setFromSegment(theSegmentToBeBroken);
-
-        LineString segmentLineString = GeometryUtil.getLineStringFromMovements(previousMovement, currentMovement);
-        theSegmentToBeBroken.setLocation(segmentLineString);
-
-        theSegmentToBeBroken = dao.merge(theSegmentToBeBroken);
-
-        //and creating a new one
-        Segment segment = createSegment(currentMovement, oldToMovement);
-        segment.setTrack(theSegmentToBeBroken.getTrack());
-        dao.persist(segment);
-
-        LOG.debug("OLD SEGMENT FROM {} TO {}", theSegmentToBeBroken.getFromMovement().getId(), theSegmentToBeBroken.getToMovement().getId());
-        LOG.debug("NEW SEGMENT FROM {} TO {}", segment.getFromMovement().getId(), segment.getToMovement().getId());
-
-        upsertTrack(theSegmentToBeBroken.getTrack(), segment, currentMovement);
-    }
-
-    /**
-     *
-     * @param firstMovement
-     * @param currentMovement
-     *
-     * @throws MovementServiceException
-     */
-    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementServiceException {
-        Segment segment = createSegment(currentMovement, firstMovement);
-        Track track = upsertTrack(firstMovement.getTrack(), segment, currentMovement);
-        if (firstMovement.getTrack() == null) {
-            firstMovement.setTrack(track);
-        }
-        currentMovement.setTrack(track);
-        dao.persist(segment);
     }
 }
