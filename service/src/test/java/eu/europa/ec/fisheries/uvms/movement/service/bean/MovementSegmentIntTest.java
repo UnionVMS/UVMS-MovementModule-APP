@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
+
+import com.google.common.collect.ImmutableList;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -233,6 +235,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
             }
             Track track = currentMovement.getTrack();
             List<Segment> segments = movementDao.getSegmentsByTrack(track);
+            segments = ImmutableList.copyOf(segments).reverse();
             Segment segment = segments.get(i - 1);
             assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
             assertEquals(segment.getToMovement().getId(), currentMovement.getId());
