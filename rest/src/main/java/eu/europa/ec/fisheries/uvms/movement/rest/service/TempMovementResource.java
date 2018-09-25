@@ -23,6 +23,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementServiceBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,10 +164,10 @@ public class TempMovementResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewManualMovements)
-    public ResponseDto<TempMovementListResponseDto> getTempMovements(MovementQuery query) {
+    public ResponseDto<GetTempMovementListResponse> getTempMovements(MovementQuery query) {
         LOG.debug("List all active temp movement invoked in rest layer");
         try {
-            return new ResponseDto(service.getTempMovements(query), ResponseCode.OK);
+            return new ResponseDto<>(service.getTempMovements(query), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when listing active temp movements. ] {} ", ex.getStackTrace());
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
