@@ -1,9 +1,12 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
@@ -131,11 +134,8 @@ public class SegmentBean {
     }
 
     protected void updateTrack(Track track, Movement newMovement, Segment segment)  {
-        track.getMovementList().add(newMovement);
-        track.getSegmentList().add(segment);
         segment.setTrack(track);
         newMovement.setTrack(track);
-
         //add segments values to those of the track
         double calculatedDistance = track.getDistance() + segment.getDistance();
         track.setDistance(calculatedDistance);
@@ -143,8 +143,9 @@ public class SegmentBean {
         track.setDuration(calculatedDurationInSeconds);
 
         // TODO calculate whole line string each update?
-        if(track.getMovementList().size() > 1) {    //if there is more then one movement, create a string of movements, aka a string of positions
-            LineString updatedTrackLineString = GeometryUtil.getLineStringFromMovements(track.getMovementList());
+        List<Geometry> points = dao.getPointsFromTrack(track);
+        if(points.size() > 1) {    //if there is more then one movement, create a string of movements, aka a string of positions
+            LineString updatedTrackLineString = GeometryUtil.getLineStringFromPoints(points);
             track.setLocation(updatedTrackLineString);
         }
 
@@ -161,11 +162,6 @@ public class SegmentBean {
         track.setUpdated(DateUtil.nowUTC());
         track.setLocation(segment.getLocation());
         track.setUpdatedBy("UVMS");
-        track.setMovementList(new ArrayList<Movement>());
-        track.getMovementList().add(segment.getFromMovement());
-        track.getMovementList().add(segment.getToMovement());
-        track.setSegmentList(new ArrayList<Segment>());
-        track.getSegmentList().add(segment);
         segment.setTrack(track);
         return track;
     }

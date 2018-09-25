@@ -85,9 +85,6 @@ public class MovementSource implements Serializable {
     @Column(name = "movesour_upuser")
     private String updatedBy;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "movementSource", fetch = FetchType.LAZY)
-    private List<Movement> movementList;
-
     public MovementSource() {
     }
 
@@ -141,15 +138,6 @@ public class MovementSource implements Serializable {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    @XmlTransient
-    public List<Movement> getMovementList() {
-        return movementList;
-    }
-
-    public void setMovementList(List<Movement> movementList) {
-        this.movementList = movementList;
     }
 
     @Override

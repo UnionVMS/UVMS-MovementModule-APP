@@ -92,9 +92,6 @@ public class Movementmetadata implements Serializable {
     @Column(name = "movemet_upuser")
     private String movemetUpuser;
 
-    @OneToMany(mappedBy = "metadata", fetch = FetchType.LAZY)
-    private List<Movement> movementList;
-
     public Movementmetadata() {
     }
 
@@ -184,15 +181,6 @@ public class Movementmetadata implements Serializable {
 
     public void setMovemetUpuser(String movemetUpuser) {
         this.movemetUpuser = movemetUpuser;
-    }
-
-    @XmlTransient
-    public List<Movement> getMovementList() {
-        return movementList;
-    }
-
-    public void setMovementList(List<Movement> movementList) {
-        this.movementList = movementList;
     }
 
 }

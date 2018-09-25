@@ -81,9 +81,6 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     @Column(name = "moveconn_upuser")
     private String updatedBy;
 
-    @OneToMany(mappedBy = "movementConnect", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private List<Movement> movementList;
-
     public MovementConnect() {
     }
 
@@ -128,14 +125,6 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public List<Movement> getMovementList() {
-        return movementList;
-    }
-
-    public void setMovementList(List<Movement> movementList) {
-        this.movementList = movementList;
     }
 
 	@Override

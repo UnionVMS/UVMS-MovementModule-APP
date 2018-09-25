@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -95,7 +96,41 @@ public class WKTUtilTest extends TransactionalTests {
 			assertTrue(true);
 		}
 	}
-	
+
+	@Test
+	public void testGetWktLineStringFromMovementGeometryList() throws MovementServiceException {
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		String connectId = UUID.randomUUID().toString();
+		Instant dateStartMovement = Instant.now();
+
+		List<Movement> input = movementHelpers.createVarbergGrenaMovements(1, 10, connectId);
+
+		List<Geometry> geometries = new ArrayList<>();
+		for(Movement each : input) {
+			geometries.add(each.getLocation());
+		}
+
+		String output = WKTUtil.getWktLineString(geometries);
+		String correct = "LINESTRING (12.241 57.107, 12.238 57.104, 12.235 57.101, 12.232 57.098, 12.229 57.095, 12.225999999999999 57.092,"
+				+ " 12.222999999999999 57.089, 12.219999999999999 57.086, 12.216999999999999 57.083, 12.213999999999999 57.08)";
+		assertEquals(correct, output);
+
+		try {
+			input.get(((int)Math.random() * 10)).setLocation(null);
+			output = WKTUtil.getWktLineStringFromMovementList(input);
+			fail("A random null in the input should generate an exception");
+		} catch (NullPointerException e) {
+			assertTrue(true);
+		}
+
+		try {
+			output = WKTUtil.getWktLineStringFromMovementList(null);
+			fail("Null as input should generate an exception");
+		} catch (NullPointerException e) {
+			assertTrue(true);
+		}
+	}
+
 	@Test
 	public void testGetGeometryFromWKTSrring() throws ParseException {
 		String input = "LINESTRING (12.241 57.107, 12.238 57.104, 12.235 57.101, 12.232 57.098, 12.229 57.095, 12.225999999999999 57.092,"

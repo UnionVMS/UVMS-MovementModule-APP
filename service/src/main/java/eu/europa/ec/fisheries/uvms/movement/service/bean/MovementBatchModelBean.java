@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.util.ArrayList;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -40,10 +39,6 @@ public class MovementBatchModelBean {
                 throw new MovementServiceRuntimeException("Couldn't find movementConnect!", ErrorCode.NO_MOVEMENT_CONNECT);
             }
             movement.setMovementConnect(moveConnect);
-            if (moveConnect.getMovementList() == null) {
-                moveConnect.setMovementList(new ArrayList<>());
-            }
-            moveConnect.getMovementList().add(movement);
             dao.create(movement);
             return movement;
         } catch (Exception e) {

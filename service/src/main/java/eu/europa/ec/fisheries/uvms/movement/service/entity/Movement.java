@@ -44,8 +44,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -55,9 +53,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
-import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 
 /**
  **/
@@ -66,6 +61,9 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = Movement.FIND_ALL, query = "SELECT m FROM Movement m WHERE m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT m FROM Movement m WHERE m.duplicate = false and m.track = :track ORDER BY m.timestamp ASC"),
+    @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.duplicate = false and m.track = :track ORDER BY m.timestamp ASC"),
+    @NamedQuery(name = Movement.FIND_ALL_BY_MOVEMENTCONNECT, query = "SELECT m FROM Movement m WHERE m.duplicate = false and m.movementConnect = :movementConnect ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_UNPROCESSED, query = "SELECT m FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_UNPROCESSED_ID, query = "SELECT m.id FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id AND m.duplicate = false"),
@@ -89,6 +87,9 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 public class Movement implements Serializable, Comparable<Movement> {
 
     public static final String FIND_ALL = "Movement.findAll";
+    public static final String FIND_ALL_BY_TRACK = "Movement.findAllByTrack";
+    public static final String FIND_ALL_LOCATIONS_BY_TRACK = "Movement.findAllPointsByTrack";
+    public static final String FIND_ALL_BY_MOVEMENTCONNECT = "Movement.findAllByMovementConnect";
     public static final String FIND_UNPROCESSED = "Movement.findUnprocessed";
     public static final String FIND_UNPROCESSED_ID = "Movement.findUnprocessedId";
     public static final String FIND_BY_ID = "Movement.findById";

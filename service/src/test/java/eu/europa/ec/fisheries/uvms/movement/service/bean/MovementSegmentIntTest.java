@@ -57,14 +57,16 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
         Movement firstAfter = movementDao.getMovementById(firstMovement.getId());
 
-        assertEquals(2, firstAfter.getTrack().getSegmentList().size());
-
         Track track = firstAfter.getTrack();
-        Segment s1 = track.getSegmentList().get(0);
+
+        List<Segment> segments = movementDao.getSegmentsByTrack(track);
+        assertEquals(2, segments.size());
+
+        Segment s1 = segments.get(0);
         assertEquals(s1.getFromMovement().getId(), firstMovement.getId());
         assertEquals(s1.getToMovement().getId(), secondMovement.getId());
 
-        Segment s2 = track.getSegmentList().get(1);
+        Segment s2 = segments.get(1);
         assertEquals(s2.getFromMovement().getId(), secondMovement.getId());
         assertEquals(s2.getToMovement().getId(), thirdMovement.getId());
     }
@@ -92,19 +94,20 @@ public class MovementSegmentIntTest extends TransactionalTests {
         em.flush();
 
         Movement firstAfter = movementDao.getMovementById(firstMovement.getId());
-
-        assertEquals(3, firstAfter.getTrack().getSegmentList().size());
-
         Track track = firstAfter.getTrack();
-        Segment s1 = track.getSegmentList().get(0);
+
+        List<Segment> segments = movementDao.getSegmentsByTrack(track);
+        assertEquals(3, segments.size());
+
+        Segment s1 = segments.get(0);
         assertEquals(s1.getFromMovement().getId(), firstMovement.getId());
         assertEquals(s1.getToMovement().getId(), secondMovement.getId());
 
-        Segment s2 = track.getSegmentList().get(1);
+        Segment s2 = segments.get(1);
         assertEquals(s2.getFromMovement().getId(), secondMovement.getId());
         assertEquals(s2.getToMovement().getId(), thirdMovement.getId());
 
-        Segment s3 = track.getSegmentList().get(2);
+        Segment s3 = segments.get(2);
         assertEquals(s3.getFromMovement().getId(), thirdMovement.getId());
         assertEquals(s3.getToMovement().getId(), forthMovement.getId());
     }
@@ -132,18 +135,18 @@ public class MovementSegmentIntTest extends TransactionalTests {
         
         Movement firstAfter = movementDao.getMovementById(firstMovement.getId());
 
-        assertEquals(3, firstAfter.getTrack().getSegmentList().size());
 
         Track track = firstAfter.getTrack();
-        Segment s1 = track.getSegmentList().get(0);
+        List<Segment> segments = movementDao.getSegmentsByTrack(track);
+        Segment s1 = segments.get(0);
         assertEquals(s1.getFromMovement().getId(), firstMovement.getId());
         assertEquals(s1.getToMovement().getId(), thirdMovement.getId());
 
-        Segment s2 = track.getSegmentList().get(1);
+        Segment s2 = segments.get(1);
         assertEquals(s2.getFromMovement().getId(), thirdMovement.getId());
         assertEquals(s2.getToMovement().getId(), secondMovement.getId());
 
-        Segment s3 = track.getSegmentList().get(2);
+        Segment s3 = segments.get(2);
         assertEquals(s3.getFromMovement().getId(), secondMovement.getId());
         assertEquals(s3.getToMovement().getId(), forthMovement.getId());
     }
@@ -181,16 +184,12 @@ public class MovementSegmentIntTest extends TransactionalTests {
         
         Movement aMovement = movementList.get(movementList.size() - 1);
         Track track = aMovement.getTrack();
-        List<Segment> segmentList = track.getSegmentList();
+        List<Segment> segmentList = movementDao.getSegmentsByTrack(track);
         int n = segmentList.size();
         int i = 0;
         assertEquals(segmentList.size(), movementList.size() - 1);
 
-        Collections.sort(segmentList, new Comparator<Segment>(){
-            public int compare(Segment s1, Segment s2) {
-                return s1.getFromMovement().getTimestamp().compareTo(s2.getFromMovement().getTimestamp());
-            }
-        });
+        Collections.sort(segmentList, Comparator.comparing(s -> s.getFromMovement().getTimestamp()));
 
         Segment previousSegment = null;
         Segment currentSegment = null;
@@ -233,7 +232,8 @@ public class MovementSegmentIntTest extends TransactionalTests {
                 continue;
             }
             Track track = currentMovement.getTrack();
-            Segment segment = track.getSegmentList().get(i - 1);
+            List<Segment> segments = movementDao.getSegmentsByTrack(track);
+            Segment segment = segments.get(i - 1);
             assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
             assertEquals(segment.getToMovement().getId(), currentMovement.getId());
             i++;

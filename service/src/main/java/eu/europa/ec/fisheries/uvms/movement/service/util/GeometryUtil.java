@@ -13,11 +13,10 @@ package eu.europa.ec.fisheries.uvms.movement.service.util;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import com.vividsolutions.jts.geom.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
@@ -83,6 +82,26 @@ public class GeometryUtil {
         LineString lineString = getLineString(coordinateArray);
 
         LOG.debug("LineString From Movement List {}", WKTUtil.getWktLineStringFromMovementList(movements));
+
+        return lineString;
+    }
+
+    /**
+     * Creates a new Linestring with the points ordered by the dates of the
+     * movements
+     *
+     * @param geometries
+     * @return LineString instance
+     */
+    public static LineString getLineStringFromPoints(List<Geometry> geometries) {
+
+        LinkedList<Coordinate> coordinates = new LinkedList<>();
+        for (Geometry movement : geometries) {
+            coordinates.add(movement.getCoordinate());
+        }
+
+        Coordinate[] coordinateArray = coordinates.toArray(new Coordinate[coordinates.size()]);
+        LineString lineString = getLineString(coordinateArray);
 
         return lineString;
     }

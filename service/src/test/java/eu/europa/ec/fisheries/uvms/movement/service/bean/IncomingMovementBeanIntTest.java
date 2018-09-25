@@ -68,7 +68,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getValue());
         assertNotNull("MovementConnect creation was successful.", movementConnect);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertNotNull("List of Movement creation was successful.", movementList);
         assertTrue("The list of Movement contains exactly one Movement object. It has: " + movementList.size() + " movements", movementList.size() == 1);
 
@@ -90,7 +90,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         em.flush();
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getValue());
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         Long id = movementList.get(0).getId();
 
         //Then: Test that the Movement is processed properly.
@@ -113,7 +113,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         em.flush();
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getValue());
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         Long id = movementList.get(0).getId();
 
         //Then: Test that the Movement is processed properly.
@@ -137,7 +137,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         MovementConnect firstMovementConnect = movementDao.getMovementConnectByConnectId(firstMovementType.getMovementConnect().getValue());
 
-        List<Movement> firstMovementList = firstMovementConnect.getMovementList();
+        List<Movement> firstMovementList = movementDao.getMovementListByMovementConnect(firstMovementConnect);
 
         Movement firstMovement = firstMovementList.get(0);
         Long firstMovementId = firstMovementList.get(0).getId();
@@ -271,8 +271,8 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(secondMovementType);
         
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
-        
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
+
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
         
@@ -304,7 +304,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(thirdMovementType);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
@@ -353,11 +353,12 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(secondMovementType);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        // This list is now sorted by timestamp now...
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
 
         Movement firstMovement = movementList.get(0);
-        Movement thirdMovement = movementList.get(1);
-        Movement secondMovement = movementList.get(2);
+        Movement secondMovement = movementList.get(1);
+        Movement thirdMovement = movementList.get(2);
         
         // First segment
         assertNotNull(firstMovement.getToSegment());
@@ -401,9 +402,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(thirdMovementType);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
-        
-        
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
+
+
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
         Movement thirdMovement = movementList.get(2);
@@ -411,12 +412,14 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Track track = firstMovement.getTrack();
         assertThat(track, is(secondMovement.getTrack()));
         assertThat(track, is(thirdMovement.getTrack()));
-        
-        assertThat(track.getMovementList().size(), is(3));
 
-        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
-        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
-        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
+        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track);
+
+        assertThat(trackMovementList.size(), is(3));
+
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
     
     @Test
@@ -443,7 +446,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(thirdMovementType);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
  
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
@@ -452,12 +455,13 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Track track = firstMovement.getTrack();
         assertThat(track, is(secondMovement.getTrack()));
         assertThat(track, is(thirdMovement.getTrack()));
-        
-        assertThat(track.getMovementList().size(), is(3));
 
-        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
-        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
-        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
+        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track);
+        assertThat(trackMovementList.size(), is(3));
+
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
     
     @Test
@@ -484,7 +488,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(thirdMovementType);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
  
         Movement firstMovement = movementList.get(0);
         Movement secondMovement = movementList.get(1);
@@ -493,12 +497,13 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Track track = firstMovement.getTrack();
         assertThat(track, is(secondMovement.getTrack()));
         assertThat(track, is(thirdMovement.getTrack()));
-        
-        assertThat(track.getMovementList().size(), is(3));
 
-        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
-        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
-        assertTrue(track.getMovementList().stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
+        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track);
+        assertThat(trackMovementList.size(), is(3));
+
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
     
     @Test
@@ -521,7 +526,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(thirdMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         assertSegmentsAndTrack(movementList);
@@ -547,7 +552,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(secondMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         assertSegmentsAndTrack(movementList);
@@ -574,7 +579,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(firstMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         assertSegmentsAndTrack(movementList);
@@ -622,7 +627,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(sixthMovement);
         
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(6));
         
         assertSegmentsAndTrack(movementList);
@@ -661,7 +666,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(thirdMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         movementList.sort(MovementComparator.MOVEMENT);
@@ -720,7 +725,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(thirdMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         movementList.sort(MovementComparator.MOVEMENT);
@@ -776,7 +781,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(secondMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         movementList.sort(MovementComparator.MOVEMENT);
@@ -835,7 +840,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(secondMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         movementList.sort(MovementComparator.MOVEMENT);
@@ -892,7 +897,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(firstMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         movementList.sort(MovementComparator.MOVEMENT);
@@ -952,7 +957,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(firstMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         movementList.sort(MovementComparator.MOVEMENT);
@@ -1038,7 +1043,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(sixthMovement);
         
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(6));
         
         movementList.sort(MovementComparator.MOVEMENT);
@@ -1112,7 +1117,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(thirdMovement);
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementConnect.getMovementList();
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertThat(movementList.size(), is(3));
         
         assertThat(movementList.get(0).getTrack(), is(movementList.get(1).getTrack()));
@@ -1130,16 +1135,18 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Track track = firstMovement.getTrack();
         if (movements.size() > 1) {
             assertThat(track, is(notNullValue()));
-            assertThat(track.getMovementList().size(), is(movements.size()));
+            List<Movement> movementList = movementDao.getMovementsByTrack(track);
+            assertThat(movementList.size(), is(movements.size()));
             
             for (Movement movement : movements) {
                 assertThat(movement.getTrack(), is(track));
-                assertTrue(track.getMovementList().contains(movement));
+                assertTrue(movementList.contains(movement));
             }
 
-            assertThat(track.getSegmentList().size(), is(movements.size() - 1));
+            List<Segment> segmentList = movementDao.getSegmentsByTrack(track);
+            assertThat(segmentList.size(), is(movements.size() - 1));
             for (Movement movement : movements.subList(0, movements.size() - 1)) {
-                assertTrue(track.getSegmentList().contains(movement.getToSegment()));
+                assertTrue(segmentList.contains(movement.getToSegment()));
             }
         }
 

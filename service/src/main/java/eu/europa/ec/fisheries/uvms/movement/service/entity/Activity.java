@@ -93,9 +93,6 @@ public class Activity implements Serializable {
     @Column(name = "act_upuser")
     private String updatedBy;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "activity", fetch = FetchType.LAZY)
-    private List<Movement> movementList;
-
     @Column(name = "act_acttyp_id")
     @Enumerated(EnumType.ORDINAL)
     private MovementActivityTypeType activityType;
@@ -138,14 +135,6 @@ public class Activity implements Serializable {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public List<Movement> getMovementList() {
-        return movementList;
-    }
-
-    public void setMovementList(List<Movement> movementList) {
-        this.movementList = movementList;
     }
 
     public MovementActivityTypeType getActivityType() {

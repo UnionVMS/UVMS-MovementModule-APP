@@ -17,19 +17,18 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.io.ParseException;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
@@ -45,7 +44,32 @@ public class MovementDao {
 
     @PersistenceContext
     private EntityManager em;
-    
+
+
+    public List<Geometry> getPointsFromTrack(Track track) {
+        TypedQuery<Geometry> query = em.createNamedQuery(Movement.FIND_ALL_LOCATIONS_BY_TRACK, Geometry.class);
+        query.setParameter("track", track);
+        return query.getResultList();
+    }
+
+    public List<Movement> getMovementListByMovementConnect(MovementConnect movementConnect) {
+        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_BY_MOVEMENTCONNECT, Movement.class);
+        query.setParameter("movementConnect", movementConnect);
+        return query.getResultList();
+    }
+
+    public List<Movement> getMovementsByTrack(Track track) {
+        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_BY_TRACK, Movement.class);
+        query.setParameter("track", track);
+        return query.getResultList();
+    }
+
+    public List<Segment> getSegmentsByTrack(Track track) {
+        TypedQuery<Segment> query = em.createNamedQuery(Segment.FIND_ALL_BY_TRACK, Segment.class);
+        query.setParameter("track", track);
+        return query.getResultList();
+    }
+
     public Movement getMovementByGUID(String guid) {
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_BY_GUID, Movement.class);

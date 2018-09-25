@@ -40,7 +40,6 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = "Track.findByDistance", query = "SELECT t FROM Track t WHERE t.distance = :distance"),
     @NamedQuery(name = "Track.findByDuration", query = "SELECT t FROM Track t WHERE t.duration = :duration"),
     @NamedQuery(name = "Track.findByUpdated", query = "SELECT t FROM Track t WHERE t.updated = :updated"),
-    @NamedQuery(name = "Track.findByMovementId", query = "SELECT t FROM Track t join t.segmentList sg WHERE sg.fromMovement = :movement"),
     @NamedQuery(name = "Track.findByUpdatedBy", query = "SELECT t FROM Track t WHERE t.updatedBy = :updatedBy")})
 @DynamicUpdate
 @DynamicInsert
@@ -84,13 +83,6 @@ public class Track implements Serializable {
     @Size(min = 1, max = 60)
     @Column(name = "trac_upuser")
     private String updatedBy;
-
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "track", fetch = FetchType.LAZY)
-    private List<Segment> segmentList;
-
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "track", fetch = FetchType.LAZY)
-    @OrderBy("timestamp ASC")
-    private List<Movement> movementList;
 
     @Type(type = "org.hibernate.spatial.GeometryType")
     @Column(name = "trac_geom", columnDefinition = "Geometry")
@@ -136,14 +128,6 @@ public class Track implements Serializable {
         this.updatedBy = updatedBy;
     }
 
-    public List<Segment> getSegmentList() {
-        return segmentList;
-    }
-
-    public void setSegmentList(List<Segment> segmentList) {
-        this.segmentList = segmentList;
-    }
-
     public LineString getLocation() {
         return location;
     }
@@ -166,15 +150,6 @@ public class Track implements Serializable {
 
     public void setAverageSpeed(double averageSpeed) {
         this.averageSpeed = averageSpeed;
-    }
-
-
-    public List<Movement> getMovementList() {
-        return movementList;
-    }
-
-    public void setMovementList(List<Movement> movementList) {
-        this.movementList = movementList;
     }
 
 }
