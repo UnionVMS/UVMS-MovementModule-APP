@@ -221,9 +221,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(movementBaseType1.getConnectId());
+        criteria.setValue(connectId);
         query.getMovementSearchCriteria().add(criteria);
-        
+
         GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query);
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
