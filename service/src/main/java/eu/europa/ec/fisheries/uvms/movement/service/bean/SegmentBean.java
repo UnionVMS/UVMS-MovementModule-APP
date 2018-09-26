@@ -29,7 +29,7 @@ public class SegmentBean {
     public void newSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
         Segment segment = createSegment(previousMovement, currentMovement);
         upsertTrack(previousMovement.getTrack(), segment, currentMovement);
-        dao.persist(segment);
+        dao.createSegment(segment);
     }
 
     public void createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementServiceException {
@@ -37,7 +37,7 @@ public class SegmentBean {
         Track track = upsertTrack(fromMovement.getTrack(), segment, toMovement);
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
-        dao.persist(segment);
+        dao.createSegment(segment);
     }
 
     public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementServiceException {
@@ -47,7 +47,7 @@ public class SegmentBean {
             firstMovement.setTrack(track);
         }
         currentMovement.setTrack(track);
-        dao.persist(segment);
+        dao.createSegment(segment);
     }
 
     public void splitSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
@@ -72,7 +72,7 @@ public class SegmentBean {
         Segment segment = createSegment(currentMovement, oldToMovement);
         
         upsertTrack(theSegmentToBeBroken.getTrack(), segment, currentMovement);
-        dao.persist(segment);
+        dao.createSegment(segment);
     }
     
     protected Segment createSegment(Movement fromMovement, Movement toMovement) throws MovementServiceException {

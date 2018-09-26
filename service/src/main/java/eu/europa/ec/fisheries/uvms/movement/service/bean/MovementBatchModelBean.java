@@ -60,7 +60,7 @@ public class MovementBatchModelBean {
             connect.setUpdated(DateUtil.nowUTC());
             connect.setUpdatedBy("UVMS");
             connect.setValue(connectId);
-            return dao.create(connect);
+            return dao.createMovementConnect(connect);
         }
         return movementConnect;
     }

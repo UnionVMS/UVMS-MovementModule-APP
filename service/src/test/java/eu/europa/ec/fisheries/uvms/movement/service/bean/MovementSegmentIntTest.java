@@ -7,8 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
-
-import com.google.common.collect.ImmutableList;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +60,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Track track = firstAfter.getTrack();
 
         List<Segment> segments = movementDao.getSegmentsByTrack(track);
+        segments.sort((s1, s2) -> s1.getFromMovement().compareTo(s2.getFromMovement()));
         assertEquals(2, segments.size());
 
         Segment s1 = segments.get(0);
@@ -99,6 +98,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Track track = firstAfter.getTrack();
 
         List<Segment> segments = movementDao.getSegmentsByTrack(track);
+        segments.sort((s1, s2) -> s1.getFromMovement().compareTo(s2.getFromMovement()));
         assertEquals(3, segments.size());
 
         Segment s1 = segments.get(0);
@@ -140,6 +140,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
         Track track = firstAfter.getTrack();
         List<Segment> segments = movementDao.getSegmentsByTrack(track);
+        segments.sort((s1, s2) -> s1.getFromMovement().compareTo(s2.getFromMovement()));
         Segment s1 = segments.get(0);
         assertEquals(s1.getFromMovement().getId(), firstMovement.getId());
         assertEquals(s1.getToMovement().getId(), thirdMovement.getId());
@@ -235,7 +236,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
             }
             Track track = currentMovement.getTrack();
             List<Segment> segments = movementDao.getSegmentsByTrack(track);
-            segments = ImmutableList.copyOf(segments).reverse();
+            segments.sort((s1, s2) -> s1.getFromMovement().compareTo(s2.getFromMovement()));
             Segment segment = segments.get(i - 1);
             assertEquals(segment.getFromMovement().getId(), previousMovement.getId());
             assertEquals(segment.getToMovement().getId(), currentMovement.getId());

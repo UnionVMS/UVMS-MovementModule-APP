@@ -239,7 +239,7 @@ public class MovementService {
             String sql = SearchFieldMapper.createSelectSearchSql(searchKeyValues, true);
 
             Long numberMatches = dao.getMovementListSearchCount(countSql, searchKeyValues);
-            List<Movement> movementEntityList = dao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
+            List<Movement> movementEntityList = dao.getMovementListPaginated(page, listSize, sql, searchKeyValues, Movement.class);
             //List<Movement> movementEntityList = dao.getMovementList(sql, searchKeyValues);
             //int numberMatches = movementEntityList.size();
 
@@ -289,7 +289,7 @@ public class MovementService {
 
             Long numberMatches = dao.getMovementListSearchCount(countSql, searchKeyValues);
             LOG.debug("Count found {} matches", numberMatches);
-            List<MinimalMovement> movementEntityList = dao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
+            List<MinimalMovement> movementEntityList = dao.getMovementListPaginated(page, listSize, sql, searchKeyValues, MinimalMovement.class);
             LOG.debug("Get got {} matches", movementEntityList.size());
 
             movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMovementType(movement)));

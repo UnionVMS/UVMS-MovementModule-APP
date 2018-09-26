@@ -151,7 +151,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         firstMovement.setDuplicate(false);
         firstMovement.setMovementType(MovementTypeType.ENT);
 
-        movementDao.persist(firstMovement);
+        movementDao.create(firstMovement);
         firstMovement = movementDao.getMovementById(firstMovementId);
 
         //Then: Expected is that movement processed flag and duplication flag are both set to true and a duplication id has been set.

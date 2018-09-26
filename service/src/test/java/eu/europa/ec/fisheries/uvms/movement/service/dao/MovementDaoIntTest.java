@@ -200,55 +200,6 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void getListAll() {
-
-        int n = rnd.nextInt(50);
-        for (int i = 0; i < n; i++) {
-            MovementConnect movementConnect = createMovementConnectHelper();
-            MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-            movementDao.flush();
-            assertNotNull(createdMovementConnect);
-
-            Movement movement = createMovementHelper();
-            movement.setMovementConnect(createdMovementConnect);
-            Movement createdMovement = movementDao.create(movement);
-            movementDao.flush();
-            assertNotNull(createdMovement);
-        }
-
-        List<Movement> all = movementDao.getListAll();
-        assertNotNull(all);
-        assertTrue(all.size() >= n);
-    }
-
-    @Test
-    public void getListAll_NO_PositionalDups() {
-
-        double longitude = 8.140625D;
-        double latitude = 56.683804D;
-
-        int n = rnd.nextInt(50);
-        for (int i = 0; i < n; i++) {
-            MovementConnect movementConnect = createMovementConnectHelper();
-            MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-            movementDao.flush();
-            assertNotNull(createdMovementConnect);
-
-            Movement movement = createMovementHelper(longitude, latitude);
-            movement.setMovementConnect(createdMovementConnect);
-            Movement createdMovement = movementDao.create(movement);
-            movementDao.flush();
-            assertNotNull(createdMovement);
-
-            longitude += 10;
-            latitude+= 10;
-        }
-        List<Movement> all = movementDao.getListAll();
-        assertNotNull(all);
-        assertTrue(all.size() >= n);
-    }
-
-    @Test
     public void getMinimalMovementListPaginated() throws MovementServiceException {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
@@ -256,7 +207,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         Integer listSize = 10;
         String sql = "select distinct m  from  MinimalMovement m";
 
-        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
+        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues, MinimalMovement.class);
         assertNotNull(minimalMovementList);
         assertTrue(minimalMovementList.size() <= 10);
     }
@@ -269,7 +220,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         Integer listSize = 10;
         String sql = "select distinct m  from  MinimalMovement m where m.speed < 0";
 
-        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
+        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues, MinimalMovement.class);
         assertNotNull(minimalMovementList);
         assertEquals(0, minimalMovementList.size());
     }
@@ -508,7 +459,7 @@ public class MovementDaoIntTest extends TransactionalTests {
             listSize = allMovements.size();
 
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
-        List<Movement> movementList = movementDao.getMovementListPaginated(page, listSize, sql, searchValues);
+        List<Movement> movementList = movementDao.getMovementListPaginated(page, listSize, sql, searchValues, Movement.class);
         assertNotNull(movementList);
     }
 
@@ -529,34 +480,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         String sql = SearchFieldMapper.createCountSearchSql(null, true);
         movementDao.getMovementListSearchCount(sql,null);
     }
-
-    @Test
-    public void getUnprocessedMovementIds() {
-
-        List<Long> unprocessedMovementIds = movementDao.getUnprocessedMovementIds();
-        assertNotNull(unprocessedMovementIds);
-    }
-
-    @Test
-    public void getUnprocessedMovements() {
-
-        List<Movement> unprocessedMovements = movementDao.getUnprocessedMovements();
-        assertNotNull(unprocessedMovements);
-    }
-
-    @Test
-    public void merge() {
-        thrown.expect(EJBTransactionRolledbackException.class);
-        expectedMessage("attempt to create merge event with null entity");
-        movementDao.merge(null);
-    }
-
-    @Test
-    public void persist() {
-        thrown.expect(EJBTransactionRolledbackException.class);
-        movementDao.persist(null);
-    }
-
+    
     @Test
     public void upsertLatestMovementOnExisting() {
 
