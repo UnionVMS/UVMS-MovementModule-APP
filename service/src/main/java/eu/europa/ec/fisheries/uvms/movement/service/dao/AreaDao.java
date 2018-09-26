@@ -38,6 +38,7 @@ public class AreaDao {
 
     public Area createMovementArea(Area area) {
         em.persist(area);
+        em.flush();
         return area;
     }
     
