@@ -15,22 +15,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
@@ -45,7 +47,9 @@ public class MovementDao {
 
     @PersistenceContext
     private EntityManager em;
-
+    
+    @Inject
+    private AreaDao areaDao;
 
     public List<Geometry> getPointsFromTrack(Track track) {
         TypedQuery<Geometry> query = em.createNamedQuery(Movement.FIND_ALL_LOCATIONS_BY_TRACK, Geometry.class);
@@ -77,7 +81,7 @@ public class MovementDao {
             query.setParameter("guid", guid);
             return query.getSingleResult();
         } catch (NoResultException e) {
-            LOG.debug("No result when retrieving movements by GUID");
+            LOG.debug("No result when retrieving movements by GUID: {}", guid);
             return null;
         }
     }
@@ -114,32 +118,6 @@ public class MovementDao {
             query.setParameter("connectId", connectId);
             query.setMaxResults(amount);
             return query.getResultList();
-        }
-    }
-
-    public AreaType getAreaTypeByCode(String code) {
-        try {
-            TypedQuery<AreaType> query = em.createNamedQuery(AreaType.FIND_BY_CODE, AreaType.class);
-            query.setParameter("code", code);
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            LOG.debug("No result when retrieving AreaType By code: {}", code);
-            return null;
-        }
-    }
-
-    public Area getAreaByRemoteIdAndCode(String code, String remoteId) {
-        try {
-            if (code == null || code.isEmpty()) {
-                throw new MovementServiceRuntimeException("No valid input parameters to method getAreaByRemoteIdAndCode",
-                        ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-            }
-            TypedQuery<Area> query = em.createNamedQuery(Area.FIND_BY_CODE, Area.class);
-            query.setParameter("code", code);
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            LOG.debug("Could not get AreaType By code: {} and remoteId: {}", code, remoteId);
-            return null;
         }
     }
 
@@ -189,28 +167,6 @@ public class MovementDao {
             latestMovementQuery.setParameter("connectId", connectId);
             return latestMovementQuery.getSingleResult();
         } catch (NoResultException nre) {
-            return null;
-        }
-    }
-
-    public Segment findByFromMovement(Movement movement) {
-        try {
-            TypedQuery<Segment> query = em.createNamedQuery(Segment.FIND_FIND_BY_FROM_MOVEMENT, Segment.class);
-            query.setParameter("movement", movement);
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            LOG.debug("Could not get Segment by fromMovement, no result of movementId: {}", movement.getId());
-            return null;
-        }
-    }
-
-    public Segment findByToMovement(Movement movement) {
-        try {
-            TypedQuery<Segment> query = em.createNamedQuery(Segment.FIND_BY_TO_MOVEMENT, Segment.class);
-            query.setParameter("movement", movement);
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            LOG.debug("Could not get Segment by fromMovement, no result of movementId: {}", movement.getId());
             return null;
         }
     }
@@ -269,7 +225,7 @@ public class MovementDao {
 
     public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues) throws MovementServiceException {
         try {
-            LOG.debug("SQL QUERY IN LIST PAGINATED: " + sql);
+            LOG.debug("SQL QUERY IN LIST PAGINATED: {}", sql);
             TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues, Movement.class);
             return query.getResultList();
         } catch (Exception e) {
@@ -290,9 +246,8 @@ public class MovementDao {
                     movements.addAll(latestMovementsByConnectId);
                 }
             } else {
-                LOG.debug("Searchvalues is NOT empty, getting latest reports for the query ( TOP( " + numberOfReports + " ) )");
+                LOG.debug("Searchvalues is NOT empty, getting latest reports for the query ( TOP( {} ) )", numberOfReports);
                 TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues, Movement.class);
-//                query.setFetchSize(numberOfReports);
                 query.setMaxResults(numberOfReports);
                 movements = query.getResultList();
             }
@@ -337,7 +292,7 @@ public class MovementDao {
 
     public List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) {
         List<Movement> resultList = new ArrayList<>();
-        Area areaResult = getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
+        Area areaResult = areaDao.getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
         if(areaResult!=null) {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.LIST_BY_AREA_TIME_INTERVAL, Movement.class);
             query.setParameter("fromDate", DateUtil.convertDateTimeInUTC(criteria.getFromDate()));

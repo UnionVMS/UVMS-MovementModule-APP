@@ -30,7 +30,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageExc
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
@@ -62,7 +62,7 @@ public class MovementSpatialServiceBean implements SpatialService {
     private MessageProducer producer;
     
     @Inject
-    private MovementDao dao;
+    private AreaDao areaDao;
 
     @Override
     public Movement enrichMovementWithSpatialData(Movement movement) throws MovementServiceException {
@@ -115,11 +115,12 @@ public class MovementSpatialServiceBean implements SpatialService {
         }
     }
     
+    // TODO check this
     private void mapAreas(Movement movement, SpatialEnrichmentRS spatialData) {
         if (spatialData.getAreasByLocation() != null) {
             for (AreaExtendedIdentifierType area : spatialData.getAreasByLocation().getAreas()) {
                 Movementarea movementArea = new Movementarea();
-                Area areaEntity = dao.getAreaByRemoteIdAndCode(area.getCode(), area.getId());
+                Area areaEntity = areaDao.getAreaByRemoteIdAndCode(area.getCode(), area.getId());
 
                 if (areaEntity != null) {
                     String wrkRemoteId = areaEntity.getRemoteId();
@@ -133,12 +134,12 @@ public class MovementSpatialServiceBean implements SpatialService {
                     AreaType areaType = getAreaType(area);
                     Area newArea = maptoArea(area, areaType);
                     try {
-                        dao.create(newArea);
+                        areaDao.createMovementArea(newArea);
                         movementArea.setMovareaAreaId(newArea);
                     } catch (ConstraintViolationException e) {
                         // Area was created while we tried to create it.
                         LOG.info("Area \"{}\"was created while we tried to create it. Trying to fetch it.", area.getCode());
-                        areaEntity = dao.getAreaByRemoteIdAndCode(area.getCode(), area.getId());
+                        areaEntity = areaDao.getAreaByRemoteIdAndCode(area.getCode(), area.getId());
                         if (areaEntity != null) {
                             if (!areaEntity.getRemoteId().equals(area.getId())) {
                                 areaEntity.setRemoteId(area.getId());
@@ -161,10 +162,10 @@ public class MovementSpatialServiceBean implements SpatialService {
     }
     
     private AreaType getAreaType(AreaExtendedIdentifierType areaIdentifierType) {
-        AreaType areaType = dao.getAreaTypeByCode(areaIdentifierType.getAreaType().value());
+        AreaType areaType = areaDao.getAreaTypeByCode(areaIdentifierType.getAreaType().value());
         if (areaType == null) {
             AreaType newAreaType = mapToAreaType(areaIdentifierType);
-            return dao.create(newAreaType);
+            return areaDao.createAreaType(newAreaType);
         } else {
             return areaType;
         }

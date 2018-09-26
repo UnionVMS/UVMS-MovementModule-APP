@@ -336,7 +336,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Test
     @RunAsClient
     public void getMovementListByDateTwoMovements() throws Exception {
-        Instant timestampBefore = Instant.now().minusSeconds(1);
+        Instant timestampBefore = Instant.now().minusSeconds(60);
         
         MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
         jmsHelper.createMovement(movementBaseType1, "test user");
@@ -344,7 +344,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
         jmsHelper.createMovement(movementBaseType2, "test user");
 
-        Instant timestampAfter = Instant.now().plusSeconds(1);
+        Instant timestampAfter = Instant.now().plusSeconds(60);
         
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         RangeCriteria criteria = new RangeCriteria();
