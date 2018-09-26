@@ -58,29 +58,8 @@ public class AreaDaoIntTest extends TransactionalTests {
 
         // Persist the Area entity
         Area createdArea = areaDao.createMovementArea(area);
-        areaDao.flushMovementAreas();
 
         assertNotNull(createdArea);
-    }
-
-    @Test
-    public void testGetArea() throws MovementServiceException {
-
-        AreaType areaType = createAreaTypeHelper();
-        areaType.setName("testGetArea");
-        em.persist(areaType);
-        em.flush();
-
-        Area area = createAreaHelper();
-        area.setAreaCode("testGetArea");
-        area.setAreaType(areaType);
-        Area createdArea = areaDao.createMovementArea(area);
-        areaDao.flushMovementAreas();
-
-        Area readAreaFromDatabase = areaDao.readMovementAreaById(area.getAreaId());
-
-        assertNotNull(readAreaFromDatabase);
-        assertEquals(readAreaFromDatabase.getAreaId(), area.getAreaId());
     }
 
     @Test
@@ -98,7 +77,6 @@ public class AreaDaoIntTest extends TransactionalTests {
             area.setAreaCode("areaCode_testGetAllAreas_" + i);
             area.setAreaType(areaType);
             Area createdArea = areaDao.createMovementArea(area);
-            areaDao.flushMovementAreas();
         }
         readAllAreasFromDatabase = areaDao.getAreas();
 
@@ -225,12 +203,6 @@ public class AreaDaoIntTest extends TransactionalTests {
         failingArea.setAreaUpuser("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"); //61 characters.
         em.persist(failingArea);
         em.flush();
-    }
-
-    @Test
-    public void failGetArea() throws MovementServiceException {
-        Area failingAreaRead = areaDao.readMovementAreaById(-42L);
-        assertNull(failingAreaRead);
     }
 
     private Area createAreaHelper() {

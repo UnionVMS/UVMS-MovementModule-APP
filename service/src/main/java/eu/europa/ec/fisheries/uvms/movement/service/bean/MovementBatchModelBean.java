@@ -39,7 +39,7 @@ public class MovementBatchModelBean {
                 throw new MovementServiceRuntimeException("Couldn't find movementConnect!", ErrorCode.NO_MOVEMENT_CONNECT);
             }
             movement.setMovementConnect(moveConnect);
-            dao.create(movement);
+            dao.createMovement(movement);
             return movement;
         } catch (Exception e) {
             throw new EJBException("Could not create movement.", e);

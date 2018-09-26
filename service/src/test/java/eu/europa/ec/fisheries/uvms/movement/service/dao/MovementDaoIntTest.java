@@ -76,13 +76,11 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-        movementDao.flush();
         assertNotNull(createdMovementConnect);
 
         Movement movement = createMovementHelper();
         movement.setMovementConnect(createdMovementConnect);
-        Movement createdMovement = movementDao.create(movement);
-        movementDao.flush();
+        Movement createdMovement = movementDao.createMovement(movement);
         assertNotNull(createdMovement);
 
         Long createdMovementId = createdMovement.getId();
@@ -97,24 +95,16 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
-    public void flush() {
-        movementDao.flush();
-        assertTrue("We assume hibernate native functions actually works", true);
-    }
-
-    @Test
     public void getFirstMovement() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-        movementDao.flush();
         assertNotNull(createdMovementConnect);
 
         Movement movement = createMovementHelper();
         movement.setMovementConnect(createdMovementConnect);
-        Movement createdMovement = movementDao.create(movement);
+        Movement createdMovement = movementDao.createMovement(movement);
         createdMovement.setProcessed(true);
-        movementDao.flush();
         assertNotNull(createdMovement);
 
         Long createdMovementId = createdMovement.getId();
@@ -230,13 +220,11 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-        movementDao.flush();
         assertNotNull(createdMovementConnect);
 
         Movement movement = createMovementHelper();
         movement.setMovementConnect(createdMovementConnect);
-        Movement createdMovement = movementDao.create(movement);
-        movementDao.flush();
+        Movement createdMovement = movementDao.createMovement(movement);
         assertNotNull(createdMovement);
         assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
 
@@ -267,13 +255,11 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-        movementDao.flush();
         assertNotNull(createdMovementConnect);
 
         Movement movement = createMovementHelper();
         movement.setMovementConnect(createdMovementConnect);
-        Movement createdMovement = movementDao.create(movement);
-        movementDao.flush();
+        Movement createdMovement = movementDao.createMovement(movement);
         assertNotNull(createdMovement);
         assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
 
@@ -486,18 +472,15 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-        movementDao.flush();
 
         Movement movement = createMovementHelper();
         movement.setMovementConnect(createdMovementConnect);
-        Movement createdMovement = movementDao.create(movement);
-        movementDao.flush();
+        Movement createdMovement = movementDao.createMovement(movement);
 
         Long createdMovementId = createdMovement.getId();
 
         // the upsert creates one if it is not there
         movementDao.upsertLatestMovement(createdMovement, createdMovementConnect);
-        movementDao.flush();
 
         List<LatestMovement> all = movementDao.getLatestMovements(10000);
         Boolean found = findLatestMovements(createdMovementId, all);
@@ -509,7 +492,6 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         MovementConnect movementConnect = createMovementConnectHelper();
         MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-        movementDao.flush();
 
         Movement DOES_NOT_EXIST_IN_DB = createMovementHelper();
         DOES_NOT_EXIST_IN_DB.setMovementConnect(createdMovementConnect);
@@ -520,7 +502,6 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         // the upsert creates one if it is not there
         movementDao.upsertLatestMovement(DOES_NOT_EXIST_IN_DB, createdMovementConnect);
-        movementDao.flush();
 
         List<LatestMovement> listAfter = movementDao.getLatestMovements(10000);
 

@@ -120,7 +120,7 @@ public class MovementSpatialServiceBean implements SpatialService {
         if (spatialData.getAreasByLocation() != null) {
             for (AreaExtendedIdentifierType area : spatialData.getAreasByLocation().getAreas()) {
                 Movementarea movementArea = new Movementarea();
-                Area areaEntity = areaDao.getAreaByRemoteIdAndCode(area.getCode(), area.getId());
+                Area areaEntity = areaDao.getAreaByCode(area.getCode());
 
                 if (areaEntity != null) {
                     String wrkRemoteId = areaEntity.getRemoteId();
@@ -139,7 +139,7 @@ public class MovementSpatialServiceBean implements SpatialService {
                     } catch (ConstraintViolationException e) {
                         // Area was created while we tried to create it.
                         LOG.info("Area \"{}\"was created while we tried to create it. Trying to fetch it.", area.getCode());
-                        areaEntity = areaDao.getAreaByRemoteIdAndCode(area.getCode(), area.getId());
+                        areaEntity = areaDao.getAreaByCode(area.getCode());
                         if (areaEntity != null) {
                             if (!areaEntity.getRemoteId().equals(area.getId())) {
                                 areaEntity.setRemoteId(area.getId());

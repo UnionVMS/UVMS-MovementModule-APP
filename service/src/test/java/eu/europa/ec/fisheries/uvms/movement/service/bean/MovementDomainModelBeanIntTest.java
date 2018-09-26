@@ -560,7 +560,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 		area.setAreaType(areaType);
 		
 		Area createdArea = areaDao.createMovementArea(area);
-        areaDao.flushMovementAreas();
         
         List<Area> output = movementService.getAreas();
         assertEquals(areasBefore + 1, output.size());
@@ -574,7 +573,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 		area.setAreaType(areaType);
 		
 		createdArea = areaDao.createMovementArea(area);
-        areaDao.flushMovementAreas();
         
         output = movementService.getAreas();
         assertEquals(areasBefore + 2, output.size());
@@ -607,7 +605,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
 		
 		Area createdArea = areaDao.createMovementArea(area);
-        areaDao.flushMovementAreas();
     	List<Movementarea> movementAreaList = new ArrayList<Movementarea>();
     	Movementarea movementarea = new Movementarea();
     	movementarea.setMovareaUpdattim(DateUtil.nowUTC());

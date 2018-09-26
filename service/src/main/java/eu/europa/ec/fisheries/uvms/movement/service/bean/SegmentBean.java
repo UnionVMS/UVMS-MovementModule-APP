@@ -67,7 +67,7 @@ public class SegmentBean {
         //calculating and setting new segment values
         populateSegment(theSegmentToBeBroken, previousMovement, currentMovement);
         
-        theSegmentToBeBroken = dao.merge(theSegmentToBeBroken);
+        theSegmentToBeBroken = dao.updateSegment(theSegmentToBeBroken);
         
         Segment segment = createSegment(currentMovement, oldToMovement);
         

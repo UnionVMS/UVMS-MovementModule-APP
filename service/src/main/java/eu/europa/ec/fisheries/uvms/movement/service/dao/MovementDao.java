@@ -253,7 +253,6 @@ public class MovementDao {
             }
             return movements;
         } catch (ParseException e) {
-            LOG.error("[ Error getting movement list paginated ]  {}", e.getMessage());
             throw new MovementServiceException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
@@ -264,35 +263,29 @@ public class MovementDao {
             query.setParameter("value", id);
             return query.getSingleResult();
         } catch (NoResultException ex) {
-            // Not logged as an error, since this will be the case for the first position for every asset.
-            LOG.info("[ No result when retrieving MovementConnect from DAO {}]", id);
             return null;
         }
     }
 
-    public <T> T merge(T entity) {
-        T updated = em.merge(entity);
-        em.flush();
-        return updated;
-    }
-
-    public <T> T create(T entity) {
+    public Movement createMovement(Movement entity) {
         em.persist(entity);
         return entity;
     }
 
-    public void flush() {
-        em.flush();
-    }
-    
     public Segment createSegment(Segment segment) {
         em.persist(segment);
         return segment;
     }
+    
+    public Segment updateSegment(Segment segment) {
+        Segment updated = em.merge(segment);
+        em.flush();
+        return updated;
+    }
 
     public List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) {
         List<Movement> resultList = new ArrayList<>();
-        Area areaResult = areaDao.getAreaByRemoteIdAndCode(criteria.getAreaCode(), null);
+        Area areaResult = areaDao.getAreaByCode(criteria.getAreaCode());
         if(areaResult!=null) {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.LIST_BY_AREA_TIME_INTERVAL, Movement.class);
             query.setParameter("fromDate", DateUtil.convertDateTimeInUTC(criteria.getFromDate()));

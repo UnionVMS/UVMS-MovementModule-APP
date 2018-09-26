@@ -38,7 +38,6 @@ public class AreaDao {
 
     public Area createMovementArea(Area area) {
         em.persist(area);
-        em.flush();
         return area;
     }
     
@@ -46,15 +45,7 @@ public class AreaDao {
         em.persist(area);
         return area;
     }
-
-    public void flushMovementAreas() {
-        em.flush();
-    }
-
-    public Area readMovementAreaById(Long id) {
-        return em.find(Area.class, id);
-    }
-
+    
     public AreaType getAreaTypeByCode(String code) {
         try {
             TypedQuery<AreaType> query = em.createNamedQuery(AreaType.FIND_BY_CODE, AreaType.class);
@@ -66,7 +57,7 @@ public class AreaDao {
         }
     }
 
-    public Area getAreaByRemoteIdAndCode(String code, String remoteId) {
+    public Area getAreaByCode(String code) {
         try {
             if (code == null || code.isEmpty()) {
                 throw new MovementServiceRuntimeException("No valid input parameters to method getAreaByRemoteIdAndCode",
@@ -76,7 +67,7 @@ public class AreaDao {
             query.setParameter("code", code);
             return query.getSingleResult();
         } catch (NoResultException e) {
-            LOG.debug("Could not get AreaType By code: {} and remoteId: {}", code, remoteId);
+            LOG.debug("Could not get Area by code: {}", code);
             return null;
         }
     }

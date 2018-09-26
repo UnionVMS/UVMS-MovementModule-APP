@@ -60,12 +60,11 @@ public class AreaDaoTest extends TransactionalTests {
         Area area = MockData.createArea(areaType);
         
         Area createdArea = areaDao.createMovementArea(area);
-        areaDao.flushMovementAreas();
 
-        Area output = areaDao.getAreaByRemoteIdAndCode(area.getAreaCode(), null); //remoteId is not used at all  TestAreaCode
+        Area output = areaDao.getAreaByCode(area.getAreaCode()); //remoteId is not used at all  TestAreaCode
         assertEquals(createdArea.getAreaId(), output.getAreaId());
         
-        output = areaDao.getAreaByRemoteIdAndCode("ShouldNotExist", null);
+        output = areaDao.getAreaByCode("ShouldNotExist");
         assertNull(output);
     }
 
@@ -83,9 +82,8 @@ public class AreaDaoTest extends TransactionalTests {
         Area area = MockData.createArea(areaType);
 
         areaDao.createMovementArea(area);
-        areaDao.flushMovementAreas();
 
-        areaDao.getAreaByRemoteIdAndCode(null, null);
+        areaDao.getAreaByCode(null);
     }
     
     private void expectedMessage(String message) {
