@@ -157,7 +157,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             createdMovement = movementService.createMovement(movementType, "Test");
             assertNotNull(createdMovement);
         } catch (Exception e) {
-            fail();
+            fail(e.getMessage());
         }
 
         MovementQuery query = createMovementQuery(true);
@@ -174,7 +174,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             assertTrue(!movementList.isEmpty());
             assertEquals(connectId, movementList.get(0).getConnectId());
         } catch (Exception e) {
-            fail();
+            fail(e.getMessage());
         }
     }
 
@@ -256,6 +256,8 @@ public class MovementServiceIntTest extends TransactionalTests {
             movementService.createMovementBatch(movementTypeList, "TEST").getResponse();
             fail("This should produce an EJBException and trigger rollback");
         } catch (EJBException ignore) {}
+        
+        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
     }
 
     @Test
