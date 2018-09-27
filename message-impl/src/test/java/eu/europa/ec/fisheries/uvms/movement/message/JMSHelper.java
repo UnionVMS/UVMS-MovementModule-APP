@@ -59,13 +59,13 @@ public class JMSHelper {
         try {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Queue responseQueue = session.createQueue(RESPONSE_QUEUE);
-            Queue assetQueue = session.createQueue(MOVEMENT_QUEUE);
+            Queue movementQueue = session.createQueue(MOVEMENT_QUEUE);
 
             TextMessage message = session.createTextMessage();
             message.setJMSReplyTo(responseQueue);
             message.setText(text);
 
-            session.createProducer(assetQueue).send(message);
+            session.createProducer(movementQueue).send(message);
 
             return message.getJMSMessageID();
         } finally {

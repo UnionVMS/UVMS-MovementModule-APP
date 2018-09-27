@@ -10,6 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
 
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import org.hamcrest.CoreMatchers;
@@ -109,7 +110,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             Movement createdMovementType = movementService.createMovement(movementType, "Test");
             assertNotNull(createdMovementType);
         } catch (Exception e) {
-            Assert.fail();
+            fail();
         }
     }
 
@@ -130,12 +131,50 @@ public class MovementServiceIntTest extends TransactionalTests {
         try {
             movementService.getList(query);
             //Assert.assertTrue(getMovementListByQueryResponse != null); //changes to the error handling a few functions down means that the above call will throw an exception
-            Assert.fail("The above call should throw an exception since query is incomplete");
+            fail("The above call should throw an exception since query is incomplete");
         } catch (EJBTransactionRolledbackException e) {
+            e.printStackTrace();
             //Assert.fail();
         	assertTrue(true);
         } catch (Exception e) {
-            Assert.fail();
+            fail();
+        }
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getListByMovementQuery() {
+
+        Movement createdMovement = null;
+
+        double longitude = 9.140625D;
+        double latitude = 57.683804D;
+
+        // create a MovementConnect
+        String connectId = UUID.randomUUID().toString();
+        Movement movementType = MockData.createMovement(longitude, latitude, connectId);
+        try {
+            createdMovement = movementService.createMovement(movementType, "Test");
+            assertNotNull(createdMovement);
+        } catch (Exception e) {
+            fail();
+        }
+
+        MovementQuery query = createMovementQuery(true);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(createdMovement.getMovementConnect().getValue());
+        query.getMovementSearchCriteria().add(criteria);
+
+        try {
+            GetMovementListByQueryResponse list = movementService.getList(query);
+            assertNotNull(list);
+            List<MovementType> movementList = list.getMovement();
+            assertNotNull(movementList);
+            assertTrue(!movementList.isEmpty());
+            assertEquals(connectId, movementList.get(0).getConnectId());
+        } catch (Exception e) {
+            fail();
         }
     }
 
@@ -154,9 +193,9 @@ public class MovementServiceIntTest extends TransactionalTests {
             GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
             assertNotNull(response);
         } catch (MovementServiceException e) {
-            Assert.fail();
+            fail();
         } catch (Exception e) {
-            Assert.fail();
+            fail();
         }
     }
 
@@ -173,7 +212,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         query.getMovementSearchCriteria().add(listCriteria);
         try {
             movementService.getMapByQuery(query);
-            Assert.fail();
+            fail();
         } catch (MovementServiceException e) {
             assertNotNull(e);
         } catch (Exception e) {
@@ -215,7 +254,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
         try {
             movementService.createMovementBatch(movementTypeList, "TEST").getResponse();
-            Assert.fail("This should produce an EJBException and trigger rollback");
+            fail("This should produce an EJBException and trigger rollback");
         } catch (EJBException ignore) {}
     }
 
@@ -284,7 +323,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void getLatestMovements_NegativeNumber() {
         try {
             movementService.getLatestMovements(-3);
-            Assert.fail();
+            fail();
         } catch (Exception e) {
             assertNotNull(e);
         }
