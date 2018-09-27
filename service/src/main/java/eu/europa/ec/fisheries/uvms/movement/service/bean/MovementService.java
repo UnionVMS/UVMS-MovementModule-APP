@@ -104,24 +104,17 @@ public class MovementService {
         }
     }
 
-    public CreateMovementBatchResponse createMovementBatch(List<Movement> movements, String username) {
+    public List<Movement> createMovementBatch(List<Movement> movements, String username) throws MovementServiceException {
         LOG.debug("Create invoked in service layer");
         try {
             LOG.debug("ENRICHING MOVEMENTS BATCH WITH SPATIAL DATA");
             List<Movement> enrichedMovements = spatial.enrichMovementBatchWithSpatialData(movements);
             List<Movement> savedBatchMovements = new ArrayList<>();
             enrichedMovements.forEach(movement -> savedBatchMovements.add(movementBatch.createMovement(movement)));
-            SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(savedBatchMovements) ? SimpleResponse.OK : SimpleResponse.NOK;
-            auditService.sendMovementBatchCreatedAudit(simpleResponse.name(), username);
-            CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
-            createMovementBatchResponse.setResponse(simpleResponse);
-            createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementType(savedBatchMovements));
-            return createMovementBatchResponse;
+            return savedBatchMovements;
         } catch (MovementServiceRuntimeException mdre) {
             LOG.warn("Didn't find movement connect for the just received movement so NOT going to save anything!");
-            CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
-            createMovementBatchResponse.setResponse(SimpleResponse.NOK);
-            return createMovementBatchResponse;
+            throw new MovementServiceException("Didn't find movement connect for the just received movement so NOT going to save anything!", mdre, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
         } catch (MovementServiceException ex) {
             throw new EJBException("createMovementBatch failed", ex);
         }

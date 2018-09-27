@@ -192,8 +192,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         try {
             GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
             assertNotNull(response);
-        } catch (MovementServiceException e) {
-            fail();
         } catch (Exception e) {
             fail();
         }
@@ -213,8 +211,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         try {
             movementService.getMapByQuery(query);
             fail();
-        } catch (MovementServiceException e) {
-            assertNotNull(e);
         } catch (Exception e) {
             assertNotNull(e);
         }
@@ -222,11 +218,11 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createBatch() {
+    public void createBatch() throws MovementServiceException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
-        Double longitude = rnd.nextDouble();
-        Double latitude = rnd.nextDouble();
+        double longitude = rnd.nextDouble();
+        double latitude = rnd.nextDouble();
         List<Movement> movementTypeList = new ArrayList<>();
         for(int i = 0 ; i < NumberOfMovements ; i++){
             movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID().toString()));
@@ -234,18 +230,18 @@ public class MovementServiceIntTest extends TransactionalTests {
             latitude = latitude +  0.05;
         }
 
-        SimpleResponse simpleResponse = movementService.createMovementBatch(movementTypeList, "TEST").getResponse();
-        assertNotNull(simpleResponse);
-        assertEquals(SimpleResponse.OK, simpleResponse);
+        List<Movement> movementBatch = movementService.createMovementBatch(movementTypeList, "TEST");
+        assertNotNull(movementBatch);
+        assertTrue(!movementBatch.isEmpty());
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void triggerBatchEventWithBrokenJMS() {
+    public void triggerBatchEventWithBrokenJMS() throws MovementServiceException {
 
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
-        Double longitude = rnd.nextDouble();
-        Double latitude = rnd.nextDouble();
+        double longitude = rnd.nextDouble();
+        double latitude = rnd.nextDouble();
         List<Movement> movementTypeList = new ArrayList<>();
         for(int i = 0 ; i < NumberOfMovements ; i++){
             movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID().toString()));
@@ -253,7 +249,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             latitude += 0.05;
         }
         try {
-            movementService.createMovementBatch(movementTypeList, "TEST").getResponse();
+            movementService.createMovementBatch(movementTypeList, "TEST");
             fail("This should produce an EJBException and trigger rollback");
         } catch (EJBException ignore) {}
         

@@ -10,6 +10,10 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.uvms.movement.service.bean.AuditService;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchRequest;
@@ -26,6 +30,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper;
+import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 
 /**
  * Created by thofan on 2017-04-21.
@@ -43,6 +48,9 @@ public class CreateMovementBatchBean {
     private MessageProducer messageProducer;
 
     @Inject
+    private AuditService auditService;
+
+    @Inject
     @ErrorEvent
     private Event<EventMessage> errorEvent;
 
@@ -53,14 +61,21 @@ public class CreateMovementBatchBean {
             for (MovementBaseType movementBaseType : request.getMovement()) {
                 movements.add(MovementModelToEntityMapper.mapNewMovementEntity(movementBaseType, request.getUsername()));
             }
-            CreateMovementBatchResponse createdMovement = movementService.createMovementBatch(movements, request.getUsername());
-            String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createdMovement);
+            List<Movement> movementBatch = movementService.createMovementBatch(movements, request.getUsername());
+            SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(movementBatch) ? SimpleResponse.OK : SimpleResponse.NOK;
+            auditService.sendMovementBatchCreatedAudit(simpleResponse.name(), request.getUsername());
+            CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
+            createMovementBatchResponse.setResponse(simpleResponse);
+            createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementType(movementBatch));
+            String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createMovementBatchResponse);
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
-        } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {
+        } catch (EJBException | MovementMessageException | JMSException | MovementModelException ex) {
             LOG.error("[ Error when creating movement batch ] ", ex);
             errorEvent.fire(new EventMessage(jmsMessage, "Error when receiving message in movement: " + ex.getMessage()));
             throw new EJBException(ex);
+        } catch (MovementServiceException e) {
+            e.printStackTrace();
         }
     }
 }
