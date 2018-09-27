@@ -8,5 +8,7 @@
     <include file="v0.1\db-changelog-createSequence_0.1.xml" relativeToChangelogFile="true"/>
     <include file="v0.1\db-changelog-createTables_postgres_0.1.xml" relativeToChangelogFile="true"/>
     <include file="v0.1\db-changelog-insertStaticValues_0.1.xml" relativeToChangelogFile="true"/>
+    
+    <include file="v4.0.17\db-changelog-4.0.17.xml" relativeToChangelogFile="true"/>
         
 </databaseChangeLog>
