@@ -29,7 +29,7 @@ public class MovementBatchModelBean {
     private static final Logger LOG = LoggerFactory.getLogger(MovementBatchModelBean.class);
 
     @Inject
-    private MovementDao dao;
+    private MovementDao movementDao;
 
     public Movement createMovement(Movement movement) {
         String connectId = movement.getMovementConnect().getValue();
@@ -39,8 +39,7 @@ public class MovementBatchModelBean {
                 throw new MovementServiceRuntimeException("Couldn't find movementConnect!", ErrorCode.NO_MOVEMENT_CONNECT);
             }
             movement.setMovementConnect(moveConnect);
-            dao.createMovement(movement);
-            return movement;
+            return movementDao.createMovement(movement);
         } catch (Exception e) {
             throw new EJBException("Could not create movement.", e);
         }
@@ -52,7 +51,7 @@ public class MovementBatchModelBean {
         if (connectId == null) {
             return null;
         }
-        movementConnect = dao.getMovementConnectByConnectId(connectId);
+        movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         
         if (movementConnect == null) {
             LOG.info("Creating new MovementConnect");
@@ -60,7 +59,7 @@ public class MovementBatchModelBean {
             connect.setUpdated(DateUtil.nowUTC());
             connect.setUpdatedBy("UVMS");
             connect.setValue(connectId);
-            return dao.createMovementConnect(connect);
+            return movementDao.createMovementConnect(connect);
         }
         return movementConnect;
     }

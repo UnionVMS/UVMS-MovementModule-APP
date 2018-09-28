@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 import java.io.Serializable;
@@ -209,8 +209,8 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_upuser")
     private String updatedBy;
 
-    @OneToMany(mappedBy = "areatranMoveId", fetch = FetchType.LAZY)
-    private List<Areatransition> areatransitionList;
+    @OneToMany(mappedBy = "movementId", fetch = FetchType.LAZY)
+    private List<AreaTransition> areaTransitionList;
 
     @Column(name = "move_processed")
     private Boolean processed;
@@ -419,12 +419,12 @@ public class Movement implements Serializable, Comparable<Movement> {
     }
 
     @XmlTransient
-    public List<Areatransition> getAreatransitionList() {
-        return areatransitionList;
+    public List<AreaTransition> getAreaTransitionList() {
+        return areaTransitionList;
     }
 
-    public void setAreatransitionList(List<Areatransition> areatransitionList) {
-        this.areatransitionList = areatransitionList;
+    public void setAreaTransitionList(List<AreaTransition> areaTransitionList) {
+        this.areaTransitionList = areaTransitionList;
     }
 
     public Boolean isProcessed() {

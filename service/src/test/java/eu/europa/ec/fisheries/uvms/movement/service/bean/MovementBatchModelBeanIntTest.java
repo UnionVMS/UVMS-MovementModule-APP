@@ -4,10 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+
 import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
@@ -16,23 +13,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementComChannelType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**

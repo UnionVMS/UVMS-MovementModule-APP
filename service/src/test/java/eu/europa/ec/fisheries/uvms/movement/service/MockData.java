@@ -21,8 +21,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import java.sql.Date;
 import java.time.Instant;
@@ -35,9 +35,9 @@ import com.vividsolutions.jts.geom.Point;
 
 public class MockData {
 
-    public static Areatransition getAreaTransition(Area area, MovementTypeType transitionType) {
-        Areatransition transition = new Areatransition();
-        transition.setAreatranAreaId(area);
+    public static AreaTransition getAreaTransition(Area area, MovementTypeType transitionType) {
+        AreaTransition transition = new AreaTransition();
+        transition.setAreaId(area);
         return transition;
     }
 
@@ -122,13 +122,13 @@ public class MockData {
 
     public static Movement getPreviousMovement(int areaId, MovementTypeType movementType) {
         Movement previousMovement = new Movement();
-        Areatransition priviousTransition = new Areatransition();
+        AreaTransition priviousTransition = new AreaTransition();
         Area previousArea = new Area();
         previousArea.setAreaId((long) areaId);
-        priviousTransition.setAreatranAreaId(previousArea);
+        priviousTransition.setAreaId(previousArea);
         priviousTransition.setMovementType(movementType);
-        List<Areatransition> previousMoveAreaList = Collections.singletonList(priviousTransition);
-        previousMovement.setAreatransitionList(previousMoveAreaList);
+        List<AreaTransition> previousMoveAreaList = Collections.singletonList(priviousTransition);
+        previousMovement.setAreaTransitionList(previousMoveAreaList);
         return previousMovement;
     }
 

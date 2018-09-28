@@ -59,8 +59,8 @@ public class Area implements Serializable {
     public static final String FIND_BY_CODE = "Area.findByCode";
     public static final String FIND_BY_REMOTE_ID_AND_CODE = "Area.findByRemoteIdAndCode";
     
-    @OneToMany(mappedBy = "areatranAreaId", fetch = FetchType.LAZY)
-    private List<Areatransition> areatransitionList;
+    @OneToMany(mappedBy = "areaId", fetch = FetchType.LAZY)
+    private List<AreaTransition> areaTransitionList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -168,12 +168,12 @@ public class Area implements Serializable {
     }
 
     @XmlTransient
-    public List<Areatransition> getAreatransitionList() {
-        return areatransitionList;
+    public List<AreaTransition> getAreaTransitionList() {
+        return areaTransitionList;
     }
 
-    public void setAreatransitionList(List<Areatransition> areatransitionList) {
-        this.areatransitionList = areatransitionList;
+    public void setAreaTransitionList(List<AreaTransition> areaTransitionList) {
+        this.areaTransitionList = areaTransitionList;
     }
 
 }

@@ -13,6 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -89,20 +90,20 @@ public class MovementSpatialServiceBean implements SpatialService {
 
     @Override
     public List<Movement> enrichMovementBatchWithSpatialData(List<Movement> movements) throws MovementServiceException {
-        List<SpatialEnrichmentRQListElement> batchReqLements = new ArrayList<>();
+        List<SpatialEnrichmentRQListElement> batchReqElements = new ArrayList<>();
         for (Movement movement : movements) {
             PointType point = new PointType();
             point.setCrs(4326);
             point.setLatitude(movement.getLocation().getY());
             point.setLongitude(movement.getLocation().getX());
-            List<LocationType> locationTypes = Arrays.asList(LocationType.PORT);
-            List<eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType> areaTypes = Arrays.asList(eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType.COUNTRY);
+            List<LocationType> locationTypes = Collections.singletonList(LocationType.PORT);
+            List<eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType> areaTypes = Collections.singletonList(eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType.COUNTRY);
             SpatialEnrichmentRQListElement spatialEnrichmentRQListElement = SpatialModuleRequestMapper.mapToCreateSpatialEnrichmentRQElement(point, UnitType.NAUTICAL_MILES, locationTypes, areaTypes);
-            batchReqLements.add(spatialEnrichmentRQListElement);
+            batchReqElements.add(spatialEnrichmentRQListElement);
         }
         try {
             LOG.debug("Enrich movement Batch with spatial data envoked in MovementSpatialServiceBean");
-            String spatialRequest = SpatialModuleRequestMapper.mapToCreateBatchSpatialEnrichmentRequest(batchReqLements);
+            String spatialRequest = SpatialModuleRequestMapper.mapToCreateBatchSpatialEnrichmentRequest(batchReqElements);
             String spatialMessageId = producer.sendModuleMessage(spatialRequest, ModuleQueue.SPATIAL);
             TextMessage spatialJmsMessageRS = consumer.getMessage(spatialMessageId, TextMessage.class);
             LOG.debug("Got response from Spatial " + spatialJmsMessageRS.getText());
@@ -132,7 +133,7 @@ public class MovementSpatialServiceBean implements SpatialService {
                     movementArea.setMovareaAreaId(areaEntity);
                 } else {
                     AreaType areaType = getAreaType(area);
-                    Area newArea = maptoArea(area, areaType);
+                    Area newArea = mapToArea(area, areaType);
                     try {
                         areaDao.createMovementArea(newArea);
                         movementArea.setMovareaAreaId(newArea);
@@ -179,7 +180,7 @@ public class MovementSpatialServiceBean implements SpatialService {
         return newAreaType;
     }
     
-    public static Area maptoArea(AreaExtendedIdentifierType area, AreaType areaType) {
+    private Area mapToArea(AreaExtendedIdentifierType area, AreaType areaType) {
         Area newArea = new Area();
         newArea.setAreaCode(area.getCode());
         newArea.setAreaName(area.getName());

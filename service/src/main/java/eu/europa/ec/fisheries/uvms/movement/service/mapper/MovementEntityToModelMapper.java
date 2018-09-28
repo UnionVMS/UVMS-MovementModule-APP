@@ -38,7 +38,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
@@ -151,7 +151,7 @@ public class MovementEntityToModelMapper {
 
         model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
 
-        enrichAreas(model, movement.getAreatransitionList());
+        enrichAreas(model, movement.getAreaTransitionList());
         
         return model;
     }
@@ -324,7 +324,7 @@ public class MovementEntityToModelMapper {
      * @param areaTransitionList the list of transitions that will enrich the
      * mapped movementType
      */
-    protected static void enrichAreas(MovementType mappedMovement, List<Areatransition> areaTransitionList) {
+    protected static void enrichAreas(MovementType mappedMovement, List<AreaTransition> areaTransitionList) {
 
         if(mappedMovement.getMetaData() == null) {
             mappedMovement.setMetaData(new MovementMetaData());
@@ -336,9 +336,9 @@ public class MovementEntityToModelMapper {
         }
 
         if (areaTransitionList != null) {
-            for (Areatransition areaTransition : areaTransitionList) {
-                if (areas.containsKey(areaTransition.getAreatranAreaId().getAreaCode())) {
-                    areas.get(areaTransition.getAreatranAreaId().getAreaCode()).setTransitionType(areaTransition.getMovementType());
+            for (AreaTransition areaTransition : areaTransitionList) {
+                if (areas.containsKey(areaTransition.getAreaId().getAreaCode())) {
+                    areas.get(areaTransition.getAreaId().getAreaCode()).setTransitionType(areaTransition.getMovementType());
                 } else {
                     MovementMetaDataAreaType newArea = mapToMovementMetaDataAreaType(areaTransition);
                     areas.put(newArea.getCode(), newArea);
@@ -349,13 +349,13 @@ public class MovementEntityToModelMapper {
         mappedMovement.getMetaData().getAreas().addAll(areas.values());
     }
     
-    protected static MovementMetaDataAreaType mapToMovementMetaDataAreaType(Areatransition areaTransition) {
+    protected static MovementMetaDataAreaType mapToMovementMetaDataAreaType(AreaTransition areaTransition) {
         MovementMetaDataAreaType newArea = new MovementMetaDataAreaType();
         newArea.setTransitionType(areaTransition.getMovementType());
-        newArea.setCode(areaTransition.getAreatranAreaId().getAreaCode());
-        newArea.setName(areaTransition.getAreatranAreaId().getAreaName());
-        newArea.setRemoteId(areaTransition.getAreatranAreaId().getRemoteId());
-        newArea.setAreaType(areaTransition.getAreatranAreaId().getAreaType().getName());
+        newArea.setCode(areaTransition.getAreaId().getAreaCode());
+        newArea.setName(areaTransition.getAreaId().getAreaName());
+        newArea.setRemoteId(areaTransition.getAreaId().getRemoteId());
+        newArea.setAreaType(areaTransition.getAreaId().getAreaType().getName());
         return newArea;
     }
 }

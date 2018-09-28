@@ -36,25 +36,21 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- **/
 @Entity
 @Table(name = "areatransition")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Areatransition.findAll", query = "SELECT a FROM Areatransition a"),
-    @NamedQuery(name = "Areatransition.findByAreatranId", query = "SELECT a FROM Areatransition a WHERE a.areatranId = :areatranId"),
-    @NamedQuery(name = "Areatransition.findByAreatranUpdattim", query = "SELECT a FROM Areatransition a WHERE a.areatranUpdattim = :areatranUpdattim"),
-    @NamedQuery(name = "Areatransition.findByAreatranUpuser", query = "SELECT a FROM Areatransition a WHERE a.areatranUpuser = :areatranUpuser")})
+    @NamedQuery(name = "AreaTransition.findAll", query = "SELECT a FROM AreaTransition a"),
+    @NamedQuery(name = "AreaTransition.findById", query = "SELECT a FROM AreaTransition a WHERE a.id = :areatranId"),
+    @NamedQuery(name = "AreaTransition.findByUpdateTime", query = "SELECT a FROM AreaTransition a WHERE a.updateTime = :areatranUpdattim"),
+    @NamedQuery(name = "AreaTransition.findByUpdateUser", query = "SELECT a FROM AreaTransition a WHERE a.updateUser = :areatranUpuser")})
 @DynamicUpdate
 @DynamicInsert
-public class Areatransition implements Serializable {
+public class AreaTransition implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,19 +58,19 @@ public class Areatransition implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)
     @Column(name = "areatran_id")
-    private Long areatranId;
+    private Long id;
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "areatran_updattim")
-    private Instant areatranUpdattim;
+    private Instant updateTime;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 60)
     @Column(name = "areatran_upuser")
-    private String areatranUpuser;
+    private String updateUser;
    
     @Column(name = "areatran_movetype_id")
     @Enumerated(EnumType.ORDINAL)
@@ -82,56 +78,49 @@ public class Areatransition implements Serializable {
 
     @JoinColumn(name = "areatran_move_id", referencedColumnName = "move_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Movement areatranMoveId;
+    private Movement movementId;
 
     @JoinColumn(name = "areatran_area_id", referencedColumnName = "area_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Area areatranAreaId;
+    private Area areaId;
 
-    public Areatransition() {
+    public AreaTransition() {
     }
 
-    public Areatransition(Long areatranId) {
-        this.areatranId = areatranId;
+    public AreaTransition(Long id) {
+        this.id = id;
     }
 
-    public Areatransition(Long areatranId, Instant areatranUpdattim, String areatranUpuser) {
-        this.areatranId = areatranId;
-        this.areatranUpdattim = areatranUpdattim;
-        this.areatranUpuser = areatranUpuser;
+    public AreaTransition(Long id, Instant updateTime, String updateUser) {
+        this.id = id;
+        this.updateTime = updateTime;
+        this.updateUser = updateUser;
     }
 
-    public Long getAreatranId() {
-        return areatranId;
+    public Long getId() {
+        return id;
     }
 
-    public void setAreatranId(Long areatranId) {
-        this.areatranId = areatranId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Instant getAreatranUpdattim() {
-        return areatranUpdattim;
+    public Instant getUpdateTime() {
+        return updateTime;
     }
 
-    public void setAreatranUpdattim(Instant areatranUpdattim) {
-        this.areatranUpdattim = areatranUpdattim;
+    public void setUpdateTime(Instant updateTime) {
+        this.updateTime = updateTime;
     }
 
-    public String getAreatranUpuser() {
-        return areatranUpuser;
+    public String getUpdateUser() {
+        return updateUser;
     }
 
-    public void setAreatranUpuser(String areatranUpuser) {
-        this.areatranUpuser = areatranUpuser;
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
     }
 
-    /*public MovementType getAreatranMovetypeId() {
-     return areatranMovetypeId;
-     }
-
-     public void setAreatranMovetypeId(MovementType areatranMovetypeId) {
-     this.areatranMovetypeId = areatranMovetypeId;
-     }*/
     public MovementTypeType getMovementType() {
         return movementType;
     }
@@ -140,37 +129,38 @@ public class Areatransition implements Serializable {
         this.movementType = movementType;
     }
 
-    public Movement getAreatranMoveId() {
-        return areatranMoveId;
+    public Movement getMovementId() {
+        return movementId;
     }
 
-    public void setAreatranMoveId(Movement areatranMoveId) {
-        this.areatranMoveId = areatranMoveId;
+    public void setMovementId(Movement movementId) {
+        this.movementId = movementId;
     }
 
-    public Area getAreatranAreaId() {
-        return areatranAreaId;
+    public Area getAreaId() {
+        return areaId;
     }
 
-    public void setAreatranAreaId(Area areatranAreaId) {
-        this.areatranAreaId = areatranAreaId;
+    public void setAreaId(Area areaId) {
+        this.areaId = areaId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (areatranId != null ? areatranId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Areatransition)) {
+        if (!(object instanceof AreaTransition)) {
             return false;
         }
-        Areatransition other = (Areatransition) object;
-        if ((this.areatranId == null && other.areatranId != null) || (this.areatranId != null && !this.areatranId.equals(other.areatranId))) {
+        AreaTransition other = (AreaTransition) object;
+
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -178,7 +168,7 @@ public class Areatransition implements Serializable {
 
     @Override
     public String toString() {
-        return "eu.europa.ec.fisheries.uvms.movement.entity.area.Areatransition[ areatranId=" + areatranId + " ]";
+        return "eu.europa.ec.fisheries.uvms.movement.entity.area.AreaTransition[ id = " + id + " ]";
     }
 
 }

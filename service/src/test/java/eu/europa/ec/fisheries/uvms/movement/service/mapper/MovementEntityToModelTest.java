@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.ejb.EJB;
+
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +42,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
@@ -355,7 +356,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
     @Test
     public void testEnrichAreasSameArea() {
         MovementType mappedMovement = MockData.getMappedMovement(2);
-        List<Areatransition> transitions = new ArrayList<>();
+        List<AreaTransition> transitions = new ArrayList<>();
         MovementMetaDataAreaType existingArea = mappedMovement.getMetaData().getAreas().get(0);
         transitions.add(MockData.getAreaTransition(MockData.createArea(existingArea.getCode()), MovementTypeType.ENT));
         MovementEntityToModelMapper.enrichAreas(mappedMovement, transitions);
@@ -370,7 +371,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
     @Test
     public void testEnrichAreasNotSameArea() {
         MovementType mappedMovement = MockData.getMappedMovement(2);
-        List<Areatransition> transitions = new ArrayList<>();
+        List<AreaTransition> transitions = new ArrayList<>();
         transitions.add(MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT));
         MovementEntityToModelMapper.enrichAreas(mappedMovement, transitions);
         assertEquals("AreaSize should be 3", 3,mappedMovement.getMetaData().getAreas().size());
@@ -380,7 +381,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
     public void enrichAreasSameArea() {
         MovementType movementType = MockData.getMappedMovement(2);
 
-        List<Areatransition> areaTransitionList = new ArrayList<>();
+        List<AreaTransition> areaTransitionList = new ArrayList<>();
         MovementMetaDataAreaType existingArea = movementType.getMetaData().getAreas().get(0);
         areaTransitionList.add(MockData.getAreaTransition(MockData.createArea(existingArea.getCode()), MovementTypeType.ENT));
         MovementEntityToModelMapper.enrichAreas(movementType, areaTransitionList);
@@ -391,7 +392,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
     public void enrichAreasNotSameArea() {
         MovementType movementType = MockData.getMappedMovement(2);
 
-        List<Areatransition> areaTransitionList = new ArrayList<>();
+        List<AreaTransition> areaTransitionList = new ArrayList<>();
         areaTransitionList.add(MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT));
         MovementEntityToModelMapper.enrichAreas(movementType, areaTransitionList);
         assertEquals(" AreaSize should be 3", 3, movementType.getMetaData().getAreas().size());
@@ -400,9 +401,9 @@ public class MovementEntityToModelTest extends TransactionalTests {
     @Test
     public void mapToMovementMetaDataAreaType() {
         // TODO  maybe like this ?
-        Areatransition areaTransition = MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT);
+        AreaTransition areaTransition = MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT);
         areaTransition.setMovementType(MovementTypeType.MAN);
-        areaTransition.setAreatranAreaId(areaTransition.getAreatranAreaId());
+        areaTransition.setAreaId(areaTransition.getAreaId());
         MovementMetaDataAreaType movementMetaDataAreaType = MovementEntityToModelMapper.mapToMovementMetaDataAreaType(areaTransition);
         assertNotNull(movementMetaDataAreaType);
     }

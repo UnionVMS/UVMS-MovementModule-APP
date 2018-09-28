@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -27,12 +29,10 @@ import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Areatransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
@@ -173,7 +173,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement current = MockData.getCurrentMovement(1);
         Movement previous = MockData.getPreviousMovement(1, MovementTypeType.ENT);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+        List<AreaTransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
         assertNotNull(transitions);
         assertEquals(1, transitions.size());
@@ -190,7 +190,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement current = MockData.getCurrentMovement(1);
         Movement previous = MockData.getPreviousMovement(1, MovementTypeType.POS);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+        List<AreaTransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
         assertNotNull(transitions);
         assertEquals(1, transitions.size());
@@ -207,7 +207,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement current = MockData.getCurrentMovement(1);
         Movement previous = MockData.getPreviousMovement(2, MovementTypeType.ENT);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+        List<AreaTransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
         assertNotNull(transitions);
         assertEquals(2, transitions.size());
@@ -215,7 +215,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertEquals(MovementTypeType.ENT, transitions.get(0).getMovementType());
 
         assertEquals(MovementTypeType.EXI, transitions.get(1).getMovementType());
-        assertTrue(transitions.get(1).getAreatranAreaId().getAreaId() == 2);
+        assertTrue(transitions.get(1).getAreaId().getAreaId() == 2);
     }
 
     /**
@@ -228,7 +228,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement current = MockData.getCurrentMovement(1);
         Movement previous = MockData.getPreviousMovement(2, MovementTypeType.POS);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, previous);
+        List<AreaTransition> transitions = incomingMovementBean.populateTransitions(current, previous);
 
         assertNotNull(transitions);
         assertEquals(2, transitions.size());
@@ -236,7 +236,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertEquals(MovementTypeType.ENT, transitions.get(0).getMovementType());
 
         assertEquals(MovementTypeType.EXI, transitions.get(1).getMovementType());
-        assertTrue(transitions.get(1).getAreatranAreaId().getAreaId() == 2);
+        assertTrue(transitions.get(1).getAreaId().getAreaId() == 2);
     }
 
     /**
@@ -248,13 +248,13 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         Movement current = MockData.getCurrentMovement(1);
 
-        List<Areatransition> transitions = incomingMovementBean.populateTransitions(current, null);
+        List<AreaTransition> transitions = incomingMovementBean.populateTransitions(current, null);
 
         assertNotNull(transitions);
         assertEquals(1, transitions.size());
 
         assertEquals(MovementTypeType.ENT, transitions.get(0).getMovementType());
-        assertTrue(transitions.get(0).getAreatranAreaId().getAreaId() == 1);
+        assertTrue(transitions.get(0).getAreaId().getAreaId() == 1);
     }
     
     @Test
@@ -674,24 +674,24 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement secondMovementProcessed = movementList.get(1);
         Movement thirdMovementProcessed = movementList.get(2);
         
-        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
-        assertThat(firstMovementAreatransitionList.size(), is(1));
-        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        List<AreaTransition> firstMovementAreaTransitionList = firstMovementProcessed.getAreaTransitionList();
+        assertThat(firstMovementAreaTransitionList.size(), is(1));
+        assertThat(firstMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
         
-        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
-        assertThat(secondMovementAreatransitionList.size(), is(2));
-        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(secondMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> secondMovementAreaTransitionList = secondMovementProcessed.getAreaTransitionList();
+        assertThat(secondMovementAreaTransitionList.size(), is(2));
+        assertThat(secondMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(secondMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
         
-        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
-        assertThat(thirdMovementAreatransitionList.size(), is(2));
-        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(thirdMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> thirdMovementAreaTransitionList = thirdMovementProcessed.getAreaTransitionList();
+        assertThat(thirdMovementAreaTransitionList.size(), is(2));
+        assertThat(thirdMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(thirdMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
     }
     
     @Test
@@ -733,20 +733,20 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement secondMovementProcessed = movementList.get(1);
         Movement thirdMovementProcessed = movementList.get(2);
         
-        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
-        assertThat(firstMovementAreatransitionList.size(), is(1));
-        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        List<AreaTransition> firstMovementAreaTransitionList = firstMovementProcessed.getAreaTransitionList();
+        assertThat(firstMovementAreaTransitionList.size(), is(1));
+        assertThat(firstMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
         
-        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
-        assertThat(secondMovementAreatransitionList.size(), is(1));
-        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+        List<AreaTransition> secondMovementAreaTransitionList = secondMovementProcessed.getAreaTransitionList();
+        assertThat(secondMovementAreaTransitionList.size(), is(1));
+        assertThat(secondMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
         
-        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
-        assertThat(thirdMovementAreatransitionList.size(), is(1));
-        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+        List<AreaTransition> thirdMovementAreaTransitionList = thirdMovementProcessed.getAreaTransitionList();
+        assertThat(thirdMovementAreaTransitionList.size(), is(1));
+        assertThat(thirdMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
     }
     
     @Test
@@ -789,24 +789,24 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement secondMovementProcessed = movementList.get(1);
         Movement thirdMovementProcessed = movementList.get(2);
         
-        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
-        assertThat(firstMovementAreatransitionList.size(), is(1));
-        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        List<AreaTransition> firstMovementAreaTransitionList = firstMovementProcessed.getAreaTransitionList();
+        assertThat(firstMovementAreaTransitionList.size(), is(1));
+        assertThat(firstMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
         
-        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
-        assertThat(secondMovementAreatransitionList.size(), is(2));
-        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(secondMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> secondMovementAreaTransitionList = secondMovementProcessed.getAreaTransitionList();
+        assertThat(secondMovementAreaTransitionList.size(), is(2));
+        assertThat(secondMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(secondMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
         
-        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
-        assertThat(thirdMovementAreatransitionList.size(), is(2));
-        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(thirdMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> thirdMovementAreaTransitionList = thirdMovementProcessed.getAreaTransitionList();
+        assertThat(thirdMovementAreaTransitionList.size(), is(2));
+        assertThat(thirdMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(thirdMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
     }
     
     @Test
@@ -848,20 +848,20 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement secondMovementProcessed = movementList.get(1);
         Movement thirdMovementProcessed = movementList.get(2);
         
-        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
-        assertThat(firstMovementAreatransitionList.size(), is(1));
-        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        List<AreaTransition> firstMovementAreaTransitionList = firstMovementProcessed.getAreaTransitionList();
+        assertThat(firstMovementAreaTransitionList.size(), is(1));
+        assertThat(firstMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
         
-        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
-        assertThat(secondMovementAreatransitionList.size(), is(1));
-        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+        List<AreaTransition> secondMovementAreaTransitionList = secondMovementProcessed.getAreaTransitionList();
+        assertThat(secondMovementAreaTransitionList.size(), is(1));
+        assertThat(secondMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
         
-        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
-        assertThat(thirdMovementAreatransitionList.size(), is(1));
-        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+        List<AreaTransition> thirdMovementAreaTransitionList = thirdMovementProcessed.getAreaTransitionList();
+        assertThat(thirdMovementAreaTransitionList.size(), is(1));
+        assertThat(thirdMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
     }
     
     @Test
@@ -905,24 +905,24 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement secondMovementProcessed = movementList.get(1);
         Movement thirdMovementProcessed = movementList.get(2);
 
-        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
-        assertThat(firstMovementAreatransitionList.size(), is(1));
-        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        List<AreaTransition> firstMovementAreaTransitionList = firstMovementProcessed.getAreaTransitionList();
+        assertThat(firstMovementAreaTransitionList.size(), is(1));
+        assertThat(firstMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
         
-        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
-        assertThat(secondMovementAreatransitionList.size(), is(2));
-        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(secondMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> secondMovementAreaTransitionList = secondMovementProcessed.getAreaTransitionList();
+        assertThat(secondMovementAreaTransitionList.size(), is(2));
+        assertThat(secondMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(secondMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
         
-        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
-        assertThat(thirdMovementAreatransitionList.size(), is(2));
-        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(thirdMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> thirdMovementAreaTransitionList = thirdMovementProcessed.getAreaTransitionList();
+        assertThat(thirdMovementAreaTransitionList.size(), is(2));
+        assertThat(thirdMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(thirdMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
     }
     
     @Test
@@ -965,20 +965,20 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement secondMovementProcessed = movementList.get(1);
         Movement thirdMovementProcessed = movementList.get(2);
         
-        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
-        assertThat(firstMovementAreatransitionList.size(), is(1));
-        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        List<AreaTransition> firstMovementAreaTransitionList = firstMovementProcessed.getAreaTransitionList();
+        assertThat(firstMovementAreaTransitionList.size(), is(1));
+        assertThat(firstMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
         
-        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
-        assertThat(secondMovementAreatransitionList.size(), is(1));
-        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+        List<AreaTransition> secondMovementAreaTransitionList = secondMovementProcessed.getAreaTransitionList();
+        assertThat(secondMovementAreaTransitionList.size(), is(1));
+        assertThat(secondMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
         
-        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
-        assertThat(thirdMovementAreatransitionList.size(), is(1));
-        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
+        List<AreaTransition> thirdMovementAreaTransitionList = thirdMovementProcessed.getAreaTransitionList();
+        assertThat(thirdMovementAreaTransitionList.size(), is(1));
+        assertThat(thirdMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.POS));
     }
     
     @Test
@@ -1054,45 +1054,45 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Movement fifthMovementProcessed = movementList.get(4);
         Movement sixthMovementProcessed = movementList.get(5);
         
-        List<Areatransition> firstMovementAreatransitionList = firstMovementProcessed.getAreatransitionList();
-        assertThat(firstMovementAreatransitionList.size(), is(1));
-        assertThat(firstMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(firstMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        List<AreaTransition> firstMovementAreaTransitionList = firstMovementProcessed.getAreaTransitionList();
+        assertThat(firstMovementAreaTransitionList.size(), is(1));
+        assertThat(firstMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(firstMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
         
-        List<Areatransition> secondMovementAreatransitionList = secondMovementProcessed.getAreatransitionList();
-        assertThat(secondMovementAreatransitionList.size(), is(2));
-        assertThat(secondMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(secondMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaA.getAreaCode()));
-        assertThat(secondMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> secondMovementAreaTransitionList = secondMovementProcessed.getAreaTransitionList();
+        assertThat(secondMovementAreaTransitionList.size(), is(2));
+        assertThat(secondMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(secondMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaA.getAreaCode()));
+        assertThat(secondMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
         
-        List<Areatransition> thirdMovementAreatransitionList = thirdMovementProcessed.getAreatransitionList();
-        assertThat(thirdMovementAreatransitionList.size(), is(2));
-        assertThat(thirdMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(thirdMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaB.getAreaCode()));
-        assertThat(thirdMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> thirdMovementAreaTransitionList = thirdMovementProcessed.getAreaTransitionList();
+        assertThat(thirdMovementAreaTransitionList.size(), is(2));
+        assertThat(thirdMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(thirdMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaB.getAreaCode()));
+        assertThat(thirdMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
         
-        List<Areatransition> fourthMovementAreatransitionList = fourthMovementProcessed.getAreatransitionList();
-        assertThat(fourthMovementAreatransitionList.size(), is(2));
-        assertThat(fourthMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaD.getAreaCode()));
-        assertThat(fourthMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(fourthMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaC.getAreaCode()));
-        assertThat(fourthMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> fourthMovementAreaTransitionList = fourthMovementProcessed.getAreaTransitionList();
+        assertThat(fourthMovementAreaTransitionList.size(), is(2));
+        assertThat(fourthMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaD.getAreaCode()));
+        assertThat(fourthMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(fourthMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaC.getAreaCode()));
+        assertThat(fourthMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
         
-        List<Areatransition> fifthMovementAreatransitionList = fifthMovementProcessed.getAreatransitionList();
-        assertThat(fifthMovementAreatransitionList.size(), is(2));
-        assertThat(fifthMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaE.getAreaCode()));
-        assertThat(fifthMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(fifthMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaD.getAreaCode()));
-        assertThat(fifthMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> fifthMovementAreaTransitionList = fifthMovementProcessed.getAreaTransitionList();
+        assertThat(fifthMovementAreaTransitionList.size(), is(2));
+        assertThat(fifthMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaE.getAreaCode()));
+        assertThat(fifthMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(fifthMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaD.getAreaCode()));
+        assertThat(fifthMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
         
-        List<Areatransition> sixthMovementAreatransitionList = sixthMovementProcessed.getAreatransitionList();
-        assertThat(sixthMovementAreatransitionList.size(), is(2));
-        assertThat(sixthMovementAreatransitionList.get(0).getAreatranAreaId().getAreaCode(), is(areaF.getAreaCode()));
-        assertThat(sixthMovementAreatransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
-        assertThat(sixthMovementAreatransitionList.get(1).getAreatranAreaId().getAreaCode(), is(areaE.getAreaCode()));
-        assertThat(sixthMovementAreatransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
+        List<AreaTransition> sixthMovementAreaTransitionList = sixthMovementProcessed.getAreaTransitionList();
+        assertThat(sixthMovementAreaTransitionList.size(), is(2));
+        assertThat(sixthMovementAreaTransitionList.get(0).getAreaId().getAreaCode(), is(areaF.getAreaCode()));
+        assertThat(sixthMovementAreaTransitionList.get(0).getMovementType(), is(MovementTypeType.ENT));
+        assertThat(sixthMovementAreaTransitionList.get(1).getAreaId().getAreaCode(), is(areaE.getAreaCode()));
+        assertThat(sixthMovementAreaTransitionList.get(1).getMovementType(), is(MovementTypeType.EXI));
     }
     
     @Test
