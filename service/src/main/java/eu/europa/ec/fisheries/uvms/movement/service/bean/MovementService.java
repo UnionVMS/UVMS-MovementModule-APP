@@ -21,15 +21,13 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.schema.movement.search.v1.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
@@ -130,17 +128,23 @@ public class MovementService {
         if (query.getPagination() != null) {
             throw new MovementServiceRuntimeException("Pagination not supported in get movement map by query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
-
-        boolean getLatestReports = SearchFieldMapper.containsCriteria(query.getMovementSearchCriteria(), SearchKey.NR_OF_LATEST_REPORTS);
+        boolean getLatestReports = query.getMovementSearchCriteria()
+                .stream()
+                .anyMatch(criteria -> criteria.getKey().equals(SearchKey.NR_OF_LATEST_REPORTS));
 
         int numberOfLatestReports = 0;
+
         if (getLatestReports) {
-            String value = SearchFieldMapper.getCriteriaValue(query.getMovementSearchCriteria(), SearchKey.NR_OF_LATEST_REPORTS);
-            if (value != null) {
-                numberOfLatestReports = Integer.parseInt(value);
+            Optional<String> first = query.getMovementSearchCriteria()
+                    .stream()
+                    .filter(criteria -> criteria.getKey().equals(SearchKey.NR_OF_LATEST_REPORTS))
+                    .map(ListCriteria::getValue)
+                    .findFirst();
+            if (first.isPresent()) {
+                numberOfLatestReports = Integer.parseInt(first.get());
             } else {
                 throw new MovementServiceRuntimeException(SearchKey.NR_OF_LATEST_REPORTS.name()
-                        + " Is in the query but no value could be found!, VALUE = null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+                        + " is in the query but no value could be found!, VALUE = null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
         }
         try {

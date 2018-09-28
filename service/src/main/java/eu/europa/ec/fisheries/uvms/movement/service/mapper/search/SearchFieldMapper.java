@@ -653,7 +653,7 @@ public class SearchFieldMapper {
      * @return
      * @throws MovementServiceException
      */
-    public static List<SearchValue> mapListCriteriaToSearchValue(List<ListCriteria> listCriteria) throws MovementServiceException {
+    public static List<SearchValue> mapListCriteriaToSearchValue(List<ListCriteria> listCriteria) {
 
         if (listCriteria == null || listCriteria.isEmpty()) {
             LOG.debug(" Non valid search criteria when mapping ListCriteria to SearchValue, List is null or empty");
@@ -762,23 +762,4 @@ public class SearchFieldMapper {
                 throw new MovementServiceException("No field found: " + key.name(), ErrorCode.DAO_SEARCH_MAPPER_ERROR);
         }
     }
-
-    public static boolean containsCriteria(List<ListCriteria> criteria, SearchKey compare) {
-        for (ListCriteria lc : criteria) {
-            if (lc.getKey().equals(compare)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static String getCriteriaValue(List<ListCriteria> criteria, SearchKey compare) {
-        for (ListCriteria lc : criteria) {
-            if (lc.getKey().equals(compare)) {
-                return lc.getValue();
-            }
-        }
-        return null;
-    }
-
 }
