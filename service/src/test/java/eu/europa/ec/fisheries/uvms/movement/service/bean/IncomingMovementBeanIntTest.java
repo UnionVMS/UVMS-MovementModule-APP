@@ -70,7 +70,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertNotNull("MovementConnect creation was successful.", movementConnect);
         List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertNotNull("List of Movement creation was successful.", movementList);
-        assertTrue("The list of Movement contains exactly one Movement object. It has: " + movementList.size() + " movements", movementList.size() == 1);
+        assertEquals("The list of Movement contains exactly one Movement object. It has: " + movementList.size() + " movements", 1, movementList.size());
 
         Movement movement = movementDao.getMovementById(movementList.get(0).getId());
         assertNotNull("Movement object was successfully created.", movement);

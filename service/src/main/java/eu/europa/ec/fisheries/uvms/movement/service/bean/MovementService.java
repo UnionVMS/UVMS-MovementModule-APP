@@ -25,6 +25,8 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -344,6 +346,16 @@ public class MovementService {
 	    List<Area> areas = areaDao.getAreas();
         return areas;
 	}
+
+	public AreaType getAreaTypesByCode(String code) {
+        AreaType areaType = areaDao.getAreaTypeByCode(code);
+        return areaType;
+    }
+
+    public Area getAreaByCode(String code) {
+        Area area = areaDao.getAreaByCode(code);
+        return area;
+    }
 	
 	private int getNumberOfPages(Long numberOfMovements, int listSize){
         int numberOfPages = (int) (numberOfMovements / listSize);

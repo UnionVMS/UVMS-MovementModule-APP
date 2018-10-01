@@ -41,11 +41,11 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
     @Test
     public void getMovementConnect() {
-        // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
+        // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batch import to succeed)
         String randomUUID = UUID.randomUUID().toString();
         MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(randomUUID);
-        assertTrue(fetchedMovementConnect != null);
-        assertTrue(fetchedMovementConnect.getValue().equals(randomUUID));
+        assertNotNull(fetchedMovementConnect);
+        assertEquals(fetchedMovementConnect.getValue(), randomUUID);
     }
 
 
@@ -54,8 +54,8 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
         String guid = "100000-0000-0000-0000-000000000000";
         // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
         MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(guid);
-        assertTrue(fetchedMovementConnect != null);
-        assertTrue(fetchedMovementConnect.getValue().equals(guid));
+        assertNotNull(fetchedMovementConnect);
+        assertEquals(fetchedMovementConnect.getValue(), guid);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    public void createMovement() throws MovementServiceException {
+    public void createMovement() {
         double longitude = rnd.nextDouble();
         double latitude = rnd.nextDouble();
 
@@ -72,6 +72,9 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
         Movement movement = MockData.createMovement(longitude, latitude, randomUUID);
         movement.getMovementConnect().setValue(randomUUID);
 
-        movementBatchModelBean.createMovement(movement);
+        Movement created = movementBatchModelBean.createMovement(movement);
+        assertNotNull(created);
+        assertEquals(randomUUID, created.getMovementConnect().getValue());
+
     }
 }

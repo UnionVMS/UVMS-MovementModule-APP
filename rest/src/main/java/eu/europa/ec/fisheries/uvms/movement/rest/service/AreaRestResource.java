@@ -16,6 +16,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -52,4 +53,34 @@ public class AreaRestResource {
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
     }
+
+    @GET
+    @Path("/{code}")
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public ResponseDto<AreaType> getAreaByCode(@PathParam(value = "code") final String areaCode) {
+        try {
+            Area area = movementService.getAreaByCode(areaCode);
+            AreaType response = AreaMapper.mapToAreaType(area);
+            return new ResponseDto<>(response, ResponseCode.OK);
+        } catch (Exception e) {
+            LOG.error("[ Error when getting AreaType. ] {}", e);
+            return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
+        }
+
+    }
+
+    // TODO: Same path as above. Use Query param instead?
+//    @GET
+//    @Path("/{code}")
+//    @Produces(value = {MediaType.APPLICATION_JSON})
+//    public ResponseDto getAreaTypeByCode(@PathParam(value = "code") final String areaCode) {
+//        try {
+//            eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType areaType = movementService.getAreaTypesByCode(areaCode);
+//            return new ResponseDto<>(areaType, ResponseCode.OK);
+//        } catch (Exception e) {
+//            LOG.error("[ Error when getting AreaType. ] {}", e);
+//            return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
+//        }
+//
+//    }
 }
