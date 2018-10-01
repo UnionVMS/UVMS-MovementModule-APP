@@ -52,7 +52,11 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>AuthenticationFilter</filter-name>
-		<url-pattern>/rest/*</url-pattern>
+		<url-pattern>/rest/areas/*</url-pattern>
+		<url-pattern>/rest/config/*</url-pattern>
+		<url-pattern>/rest/movement/*</url-pattern>
+		<url-pattern>/rest/search/*</url-pattern>
+		<url-pattern>/rest/tempmovement/*</url-pattern>
 	</filter-mapping>
 
 </web-app>
