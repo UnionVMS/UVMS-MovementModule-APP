@@ -32,14 +32,12 @@ import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
-/**
- **/
 @Path("/config")
 @Stateless
 @RequiresFeature(UnionVMSFeature.viewMovements)
 public class ConfigResource {
 
-    final static Logger LOG = LoggerFactory.getLogger(ConfigResource.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ConfigResource.class);
 
     @GET
     @Consumes(value = {MediaType.APPLICATION_JSON})
@@ -47,10 +45,10 @@ public class ConfigResource {
     @Path(value = "/movementTypes")
     public ResponseDto getMovementTypes() {
         try {
-            return new ResponseDto(MovementTypeType.values(), ResponseCode.OK);
+            return new ResponseDto<>(MovementTypeType.values(), ResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         }
     }
 
@@ -58,12 +56,12 @@ public class ConfigResource {
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/segmentCategoryTypes")
-    public ResponseDto getSegmetTypes() {
+    public ResponseDto getSegmentTypes() {
         try {
-            return new ResponseDto(SegmentCategoryType.values(), ResponseCode.OK);
+            return new ResponseDto<>(SegmentCategoryType.values(), ResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         }
     }
 
@@ -73,10 +71,10 @@ public class ConfigResource {
     @Path(value = "/searchKeys")
     public ResponseDto getMovementSearchKeys() {
         try {
-            return new ResponseDto(SearchKeyType.values(), ResponseCode.OK);
+            return new ResponseDto<>(SearchKeyType.values(), ResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         }
     }
 
@@ -86,10 +84,10 @@ public class ConfigResource {
     @Path(value = "/movementSourceTypes")
     public ResponseDto getMovementSourceTypes() {
         try {
-            return new ResponseDto(MovementSourceType.values(), ResponseCode.OK);
+            return new ResponseDto<>(MovementSourceType.values(), ResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         }
     }
 
