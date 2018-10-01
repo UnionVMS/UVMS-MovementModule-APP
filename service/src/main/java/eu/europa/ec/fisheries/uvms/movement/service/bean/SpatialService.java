@@ -12,25 +12,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
 import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.SpatialService;
+import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialClient;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
@@ -39,79 +30,40 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import eu.europa.ec.fisheries.uvms.spatial.model.exception.SpatialModelMapperException;
-import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.PointType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRQListElement;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.UnitType;
 
-@LocalBean
 @Stateless
-public class MovementSpatialServiceBean implements SpatialService {
+public class SpatialService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MovementSpatialServiceBean.class);
-
-    @EJB
-    private MessageConsumer consumer;
-
-    @EJB
-    private MessageProducer producer;
+    private static final Logger LOG = LoggerFactory.getLogger(SpatialService.class);
     
     @Inject
-    private AreaDao areaDao;
+    private SpatialClient spatialClient;
 
-    @Override
+    @Inject
+    private AreaDao areaDao;
+    
     public Movement enrichMovementWithSpatialData(Movement movement) throws MovementServiceException {
         try {
-            LOG.debug("Enrich movement with spatial data envoked in MovementSpatialServiceBean");
-            PointType point = new PointType();
-            point.setCrs(4326); //this magical int is the World Geodetic System 1984, aka EPSG:4326. See: https://en.wikipedia.org/wiki/World_Geodetic_System or http://spatialreference.org/ref/epsg/wgs-84/
-            point.setLatitude(movement.getLocation().getY());
-            point.setLongitude(movement.getLocation().getX());
-            List<LocationType> locationTypes = Arrays.asList(LocationType.PORT);
-            List<eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType> areaTypes = Arrays.asList(eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType.COUNTRY);
-            String spatialRequest = SpatialModuleRequestMapper.mapToCreateSpatialEnrichmentRequest(point, UnitType.NAUTICAL_MILES, locationTypes, areaTypes);
-            String spatialMessageId = producer.sendModuleMessage(spatialRequest, ModuleQueue.SPATIAL);
-            TextMessage spatialResponse = consumer.getMessage(spatialMessageId, TextMessage.class);
-            LOG.debug("Got response from Spatial " + spatialResponse.getText());
-            SpatialEnrichmentRS enrichment = SpatialModuleResponseMapper.mapToSpatialEnrichmentRSFromResponse(spatialResponse, spatialMessageId);
+            SpatialEnrichmentRS enrichment = spatialClient.getEnrichment(movement.getLocation());
             Movement enrichedMovement = MovementMapper.enrichMovement(movement, enrichment);
             mapAreas(enrichedMovement, enrichment);
             return enrichedMovement;
-        } catch (JMSException | SpatialModelMapperException | MovementMessageException | MessageException ex) {
+        } catch (Exception ex) {
             throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
 
-    @Override
     public List<Movement> enrichMovementBatchWithSpatialData(List<Movement> movements) throws MovementServiceException {
-        List<SpatialEnrichmentRQListElement> batchReqElements = new ArrayList<>();
-        for (Movement movement : movements) {
-            PointType point = new PointType();
-            point.setCrs(4326);
-            point.setLatitude(movement.getLocation().getY());
-            point.setLongitude(movement.getLocation().getX());
-            List<LocationType> locationTypes = Collections.singletonList(LocationType.PORT);
-            List<eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType> areaTypes = Collections.singletonList(eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType.COUNTRY);
-            SpatialEnrichmentRQListElement spatialEnrichmentRQListElement = SpatialModuleRequestMapper.mapToCreateSpatialEnrichmentRQElement(point, UnitType.NAUTICAL_MILES, locationTypes, areaTypes);
-            batchReqElements.add(spatialEnrichmentRQListElement);
-        }
+        List<Point> locations = movements.stream().map(Movement::getLocation).collect(Collectors.toList());
         try {
-            LOG.debug("Enrich movement Batch with spatial data envoked in MovementSpatialServiceBean");
-            String spatialRequest = SpatialModuleRequestMapper.mapToCreateBatchSpatialEnrichmentRequest(batchReqElements);
-            String spatialMessageId = producer.sendModuleMessage(spatialRequest, ModuleQueue.SPATIAL);
-            TextMessage spatialJmsMessageRS = consumer.getMessage(spatialMessageId, TextMessage.class);
-            LOG.debug("Got response from Spatial " + spatialJmsMessageRS.getText());
-            BatchSpatialEnrichmentRS enrichment = SpatialModuleResponseMapper.mapToBatchSpatialEnrichmentRSFromResponse(spatialJmsMessageRS, spatialMessageId);
+            BatchSpatialEnrichmentRS enrichment = spatialClient.getBatchEnrichment(locations);
             List<Movement> enrichedMovements = MovementMapper.enrichAndMapToMovementTypes(movements, enrichment);
             // TODO mapAreas
             return enrichedMovements;
-        } catch (JMSException | SpatialModelMapperException | MovementMessageException | MessageException ex) {
+        } catch (Exception ex) {
             throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
@@ -125,14 +77,12 @@ public class MovementSpatialServiceBean implements SpatialService {
 
                 if (areaEntity != null) {
                     String wrkRemoteId = areaEntity.getRemoteId();
-                    if(wrkRemoteId != null) {
-                        if (!wrkRemoteId.equals(area.getId())) {
-                            areaEntity.setRemoteId(area.getId());
-                        }
+                    if (wrkRemoteId != null && !wrkRemoteId.equals(area.getId())) {
+                        areaEntity.setRemoteId(area.getId());
                     }
                     movementArea.setMovareaAreaId(areaEntity);
                 } else {
-                    AreaType areaType = getAreaType(area);
+                    AreaType areaType = getAreaType(area.getAreaType().value());
                     Area newArea = mapToArea(area, areaType);
                     try {
                         areaDao.createMovementArea(newArea);
@@ -162,19 +112,19 @@ public class MovementSpatialServiceBean implements SpatialService {
         }
     }
     
-    private AreaType getAreaType(AreaExtendedIdentifierType areaIdentifierType) {
-        AreaType areaType = areaDao.getAreaTypeByCode(areaIdentifierType.getAreaType().value());
+    private AreaType getAreaType(String areaTypeCode) {
+        AreaType areaType = areaDao.getAreaTypeByCode(areaTypeCode);
         if (areaType == null) {
-            AreaType newAreaType = mapToAreaType(areaIdentifierType);
+            AreaType newAreaType = mapToAreaType(areaTypeCode);
             return areaDao.createAreaType(newAreaType);
         } else {
             return areaType;
         }
     }
     
-    private AreaType mapToAreaType(AreaExtendedIdentifierType areaIdentifierType) {
+    private AreaType mapToAreaType(String areaTypeCode) {
         AreaType newAreaType = new AreaType();
-        newAreaType.setName(areaIdentifierType.getAreaType().value());
+        newAreaType.setName(areaTypeCode);
         newAreaType.setUpdatedUser("UVMS");
         newAreaType.setUpdatedTime(DateUtil.nowUTC());
         return newAreaType;

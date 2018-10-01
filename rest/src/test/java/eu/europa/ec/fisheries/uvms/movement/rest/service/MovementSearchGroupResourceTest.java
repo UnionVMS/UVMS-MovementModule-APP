@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment {
     
     @Test
+    @OperateOnDeployment("movement")
     public void createMovementSearchGroup() throws Exception {
         MovementSearchGroup movementSearchGroup = MovementTestHelper.createBasicMovementSearchGroup();
         GroupListCriteria criteria = new GroupListCriteria();
@@ -38,6 +40,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
     }
     
     @Test
+    @OperateOnDeployment("movement")
     public void getMovementSearchGroupById() throws Exception {
         MovementSearchGroup movementSearchGroup = MovementTestHelper.createBasicMovementSearchGroup();
         GroupListCriteria criteria = new GroupListCriteria();
@@ -52,6 +55,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
     }
     
     @Test
+    @OperateOnDeployment("movement")
     public void updateMovementSearchGroup() throws Exception {
         MovementSearchGroup movementSearchGroup = MovementTestHelper.createBasicMovementSearchGroup();
         GroupListCriteria criteria = new GroupListCriteria();
@@ -71,6 +75,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
     }
     
     @Test
+    @OperateOnDeployment("movement")
     public void getMovementSearchGroupByUser() throws Exception {
         MovementSearchGroup movementSearchGroup = MovementTestHelper.createBasicMovementSearchGroup();
         GroupListCriteria criteria = new GroupListCriteria();

@@ -10,7 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.container.test.api.ShouldThrowException;
@@ -43,7 +43,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @EJB
-    private TempMovementServiceBean tempMovementService;
+    private TempMovementService tempMovementService;
 
     @Test
     @OperateOnDeployment("movementservice")

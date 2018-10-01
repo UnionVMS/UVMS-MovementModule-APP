@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,6 +27,7 @@ import java.math.BigInteger;
 public class TempMovementResourceTest extends BuildMovementRestDeployment {
 
     @Test
+    @OperateOnDeployment("movement")
     public void createTempMovement() throws Exception {
         TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
         TempMovementType createdTempMovement = createTempMovement(tempMovement);
@@ -36,6 +38,7 @@ public class TempMovementResourceTest extends BuildMovementRestDeployment {
     }
     
     @Test
+    @OperateOnDeployment("movement")
     public void getTempMovementById() throws Exception {
         TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
         TempMovementType createdTempMovement = createTempMovement(tempMovement);
@@ -47,6 +50,7 @@ public class TempMovementResourceTest extends BuildMovementRestDeployment {
     // TODO: Peter should look into this.
     @Test
     @Ignore
+    @OperateOnDeployment("movement")
     public void getTempMovements() throws Exception {
 
         TempMovementType tempMovement = MovementTestHelper.createTempMovementType();

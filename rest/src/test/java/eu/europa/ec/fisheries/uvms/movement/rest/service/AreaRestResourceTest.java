@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ public class AreaRestResourceTest extends BuildMovementRestDeployment {
     private AreaDao areaDao;
 
     @Test
+    @OperateOnDeployment("movement")
     public void getAreasTest() throws Exception {
 
         AreaType areaType = createAreaType();

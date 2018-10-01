@@ -26,7 +26,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 @ArquillianSuiteDeployment
 public abstract class BuildMovementRestDeployment {
-    @Deployment(name = "normal", order = 1)
+    @Deployment(name = "movement", order = 2)
     public static Archive<?> createDeployment() {
 
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
@@ -49,6 +49,22 @@ public abstract class BuildMovementRestDeployment {
         return testWar;
     }
 
+    @Deployment(name = "uvms", order = 1)
+    public static Archive<?> createSpatialMock() {
+
+        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "unionvms.war");
+
+        File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
+                .resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12")
+                .withTransitivity().asFile();
+        testWar.addAsLibraries(files);
+
+        testWar.addClass(UnionVMSMock.class);
+        testWar.addClass(SpatialModuleMock.class);
+
+        return testWar;
+    }
+    
     protected WebTarget getWebTarget() {
 
         ObjectMapper objectMapper = new ObjectMapper();

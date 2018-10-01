@@ -25,7 +25,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class TempMovementResource {
     private final static Logger LOG = LoggerFactory.getLogger(TempMovementResource.class);
 
     @EJB
-    TempMovementServiceBean service;
+    TempMovementService service;
 
     @Context
     private HttpServletRequest request;

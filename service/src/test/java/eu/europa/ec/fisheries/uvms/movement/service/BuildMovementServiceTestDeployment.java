@@ -9,7 +9,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSpatialServiceBean;
+import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialRestClient;
 
 @ArquillianSuiteDeployment
 public abstract class BuildMovementServiceTestDeployment {
@@ -28,8 +28,8 @@ public abstract class BuildMovementServiceTestDeployment {
         
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service");
         
-        testWar.deleteClass(MovementSpatialServiceBean.class);
-        testWar.addClass(SpatialServiceMockedBean.class);
+        testWar.deleteClass(SpatialRestClient.class);
+        testWar.addClass(SpatialClientMock.class);
         
         testWar.addAsResource("persistence-integration.xml", "META-INF/persistence.xml");
         
