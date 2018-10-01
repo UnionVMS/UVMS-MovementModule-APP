@@ -11,11 +11,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -27,6 +25,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -234,6 +234,23 @@ public class MovementRestResource {
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
+            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+        }
+    }
+
+    @POST
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path("/movementMap")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public ResponseDto<GetMovementMapByQueryResponse> getMapByQuery(MovementQuery query) {
+        try {
+            return new ResponseDto(serviceLayer.getMapByQuery(query), ResponseCode.OK);
+        } catch (MovementServiceException | MovementServiceRuntimeException ex) {
+            LOG.error("[ Error when getting movement map. {}] {}",query, ex);
+            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+        } catch (Exception ex) {
+            LOG.error("[ Error when getting movement map. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
