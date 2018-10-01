@@ -26,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,6 +198,26 @@ public class TempMovementResource {
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
+            LOG.error("[ Error when sending temp movement. ] {} ", ex.getStackTrace());
+            return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR);
+        } catch (Exception e) {
+            LOG.error("[ Error: Cannot create duplicate movement] {} ", e.getStackTrace());
+            return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+        }
+    }
+
+    @GET
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path("/archive/{guid}")
+    @RequiresFeature(UnionVMSFeature.manageManualMovements)
+    public ResponseDto archiveTempMovement(@PathParam("guid") String guid) {
+        LOG.debug("Archive movement");
+        try {
+            TempMovement tempMovement = service.archiveTempMovement(guid, request.getRemoteUser());
+            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            return new ResponseDto<>(tempMovementType, ResponseCode.OK);
+        } catch (MovementServiceException | MovementServiceRuntimeException ex) {
             LOG.error("[ Error when sending temp movement. ] {} ", ex.getStackTrace());
             return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception e) {
