@@ -124,6 +124,10 @@ public class MovementModelToEntityMapper {
                 Point point = factory.createPoint(coordinate);
                 point.setSRID(4326);
                 entity.setLocation(point);
+                
+                if (movement.getPosition().getAltitude() != null) {
+                    entity.setAltitude(movement.getPosition().getAltitude().intValue());
+                }
             }
 
             entity.setUpdated(DateUtil.nowUTC());

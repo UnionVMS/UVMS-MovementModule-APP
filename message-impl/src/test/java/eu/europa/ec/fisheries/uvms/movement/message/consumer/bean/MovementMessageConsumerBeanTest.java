@@ -67,6 +67,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 //        assertThat(createdMovement.getAssetId(), is(movementBaseType.getAssetId()));
         assertThat(createdMovement.getPosition().getLongitude(), is(movementBaseType.getPosition().getLongitude()));
         assertThat(createdMovement.getPosition().getLatitude(), is(movementBaseType.getPosition().getLatitude()));
+        assertThat(createdMovement.getPosition().getAltitude(), is(movementBaseType.getPosition().getAltitude()));
         assertThat(createdMovement.getPositionTime(), is(movementBaseType.getPositionTime()));
         assertThat(createdMovement.getStatus(), is(movementBaseType.getStatus()));
         assertThat(createdMovement.getReportedSpeed(), is(movementBaseType.getReportedSpeed()));
@@ -74,9 +75,19 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(createdMovement.getMovementType(), is(movementBaseType.getMovementType()));
         assertThat(createdMovement.getSource(), is(movementBaseType.getSource()));
         assertThat(createdMovement.getActivity(), is(movementBaseType.getActivity()));
-        // Not working @ version 4.0.15
-//        assertThat(createdMovement.getTripNumber(), is(movementBaseType.getTripNumber()));
+        assertThat(createdMovement.getTripNumber(), is(movementBaseType.getTripNumber()));
         assertThat(createdMovement.getInternalReferenceNumber(), is(movementBaseType.getInternalReferenceNumber()));
+    }
+    
+    @Test
+    @RunAsClient
+    public void createMovementVerifyNullAltitudeData() throws Exception {
+        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
+        movementBaseType.getPosition().setAltitude(null);
+        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
+        MovementType createdMovement = response.getMovement();
+        assertThat(createdMovement.getGuid(), is(notNullValue()));
+        assertThat(createdMovement.getPosition().getAltitude(), is(movementBaseType.getPosition().getAltitude()));
     }
     
     @Test

@@ -114,6 +114,9 @@ public class MovementEntityToModelMapper {
 
         movementPoint.setLatitude(point.getY());
         movementPoint.setLongitude(point.getX());
+        if (movement.getAltitude() != null) {
+            movementPoint.setAltitude(movement.getAltitude().doubleValue());
+        }
         model.setPosition(movementPoint);
 
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
@@ -133,10 +136,6 @@ public class MovementEntityToModelMapper {
             model.setMetaData(mapToMovementMetaData(movement.getMetadata()));
         }
 
-        //Duplicated code from 20 lines above?
-
-        model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-
         if (model.getMetaData() != null) {
             model.getMetaData().getAreas().addAll(mapToMovementMetaDataAreaTypeList(movement.getMovementareaList()));
         }
@@ -150,6 +149,7 @@ public class MovementEntityToModelMapper {
         model.setDuplicates(movement.getDuplicateId());
 
         model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
+        model.setTripNumber(movement.getTripNumber());
 
         enrichAreas(model, movement.getAreaTransitionList());
         
