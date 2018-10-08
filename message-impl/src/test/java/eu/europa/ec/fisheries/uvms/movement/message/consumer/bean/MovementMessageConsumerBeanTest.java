@@ -2,13 +2,17 @@ package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import eu.europa.ec.fisheries.uvms.movement.message.BuildMovementServiceTestDeployment;
+import javax.jms.Message;
+import javax.jms.TextMessage;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
@@ -26,8 +30,11 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.movement.message.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.message.JMSHelper;
 import eu.europa.ec.fisheries.uvms.movement.message.MovementTestHelper;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 
 @RunWith(Arquillian.class)
@@ -364,5 +371,133 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query);
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
+    }
+    
+    @Test
+    @RunAsClient
+    public void createMovementConcurrentProcessing() throws Exception {
+        int numberOfPositions = 20;
+        String connectId = UUID.randomUUID().toString();
+        
+        List<String> correlationIds = new ArrayList<>();
+        
+        Instant timestamp = Instant.now();
+        
+        // Send positions to movement
+        for (int i = 0; i < numberOfPositions; i++) {
+            MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
+            movementBaseType.setConnectId(connectId);
+            movementBaseType.setPositionTime(Date.from(timestamp));
+            timestamp = timestamp.plusSeconds(10);
+            String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "Test");
+            String correlationId = jmsHelper.sendMovementMessage(request);
+            correlationIds.add(correlationId);
+        }
+        
+        // Check responses
+        for (String correlationId : correlationIds) {
+            Message response = jmsHelper.listenForResponse(correlationId);
+            JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementResponse.class);
+        }
+        
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        query.getPagination().setListSize(BigInteger.valueOf(100l));
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId);
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse movementResponse = jmsHelper.getMovementListByQuery(query);
+        List<MovementType> movements = movementResponse.getMovement();
+
+        movements.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
+        MovementType previous = null;
+        for (MovementType movementType : movements) {
+            if (previous == null) {
+                previous = movementType;
+            } else {
+                assertFalse(Collections.disjoint(previous.getSegmentIds(), movementType.getSegmentIds()));
+                previous = movementType;
+            }
+        }
+    }
+    
+    @Test
+    @RunAsClient
+    public void createMovementConcurrentProcessingTwoConnectIds() throws Exception {
+        int numberOfPositions = 20;
+        String connectId1 = UUID.randomUUID().toString();
+        String connectId2 = UUID.randomUUID().toString();
+        
+        List<String> correlationIds = new ArrayList<>();
+        
+        Instant timestamp = Instant.now();
+        
+        // Send positions to movement
+        for (int i = 0; i < numberOfPositions; i++) {
+            MovementBaseType movementBaseTypeC1 = MovementTestHelper.createMovementBaseType();
+            movementBaseTypeC1.setConnectId(connectId1);
+            movementBaseTypeC1.setPositionTime(Date.from(timestamp));
+            String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseTypeC1, "Test");
+            String correlationId = jmsHelper.sendMovementMessage(request);
+            correlationIds.add(correlationId);
+            
+            MovementBaseType movementBaseTypeC2 = MovementTestHelper.createMovementBaseType();
+            movementBaseTypeC2.setConnectId(connectId2);
+            movementBaseTypeC2.setPositionTime(Date.from(timestamp));
+            String request2 = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseTypeC2, "Test");
+            String correlationId2 = jmsHelper.sendMovementMessage(request2);
+            correlationIds.add(correlationId2);
+
+            timestamp = timestamp.plusSeconds(10);
+        }
+        
+        // Check responses
+        for (String correlationId : correlationIds) {
+            Message response = jmsHelper.listenForResponse(correlationId);
+            JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementResponse.class);
+        }
+        
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        query.getPagination().setListSize(BigInteger.valueOf(100l));
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId1);
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse movementResponse = jmsHelper.getMovementListByQuery(query);
+        List<MovementType> movements = movementResponse.getMovement();
+
+        movements.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
+        MovementType previous = null;
+        for (MovementType movementType : movements) {
+            if (previous == null) {
+                previous = movementType;
+            } else {
+                assertFalse(Collections.disjoint(previous.getSegmentIds(), movementType.getSegmentIds()));
+                previous = movementType;
+            }
+        }
+        
+        MovementQuery query2 = MovementTestHelper.createMovementQuery(true, false, false);
+        query2.getPagination().setListSize(BigInteger.valueOf(100l));
+        ListCriteria criteria2 = new ListCriteria();
+        criteria2.setKey(SearchKey.CONNECT_ID);
+        criteria2.setValue(connectId2);
+        query2.getMovementSearchCriteria().add(criteria2);
+
+        GetMovementListByQueryResponse movementResponse2 = jmsHelper.getMovementListByQuery(query2);
+        List<MovementType> movements2 = movementResponse2.getMovement();
+
+        movements2.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
+        MovementType previous2 = null;
+        for (MovementType movementType : movements2) {
+            if (previous2 == null) {
+                previous2 = movementType;
+            } else {
+                assertFalse(Collections.disjoint(previous2.getSegmentIds(), movementType.getSegmentIds()));
+                previous2 = movementType;
+            }
+        }
     }
 }
