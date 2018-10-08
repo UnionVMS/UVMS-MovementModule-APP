@@ -16,8 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -65,8 +63,6 @@ public class SpatialRestClient implements SpatialClient {
         webTarget = client.target(url);
     }
     
-    // TODO wat?
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public SpatialEnrichmentRS getEnrichment(Point location) {
         PointType point = new PointType();
         point.setCrs(4326); //this magical int is the World Geodetic System 1984, aka EPSG:4326. See: https://en.wikipedia.org/wiki/World_Geodetic_System or http://spatialreference.org/ref/epsg/wgs-84/

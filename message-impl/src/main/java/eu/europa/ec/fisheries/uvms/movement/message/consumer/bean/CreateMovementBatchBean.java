@@ -61,7 +61,7 @@ public class CreateMovementBatchBean {
             for (MovementBaseType movementBaseType : request.getMovement()) {
                 movements.add(MovementModelToEntityMapper.mapNewMovementEntity(movementBaseType, request.getUsername()));
             }
-            List<Movement> movementBatch = movementService.createMovementBatch(movements, request.getUsername());
+            List<Movement> movementBatch = movementService.createMovementBatch(movements);
             SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(movementBatch) ? SimpleResponse.OK : SimpleResponse.NOK;
             auditService.sendMovementBatchCreatedAudit(simpleResponse.name(), request.getUsername());
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();

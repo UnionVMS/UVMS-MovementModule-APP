@@ -35,7 +35,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getListByQueryByConnectId() throws Exception {
         Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createMovement(movementBaseType, "Test");
+        Movement createdMovement = movementService.createMovement(movementBaseType);
         
         MovementQuery query = MovementTestHelper.createMovementQuery();
         ListCriteria criteria = new ListCriteria();
@@ -56,7 +56,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getMinimalListByQueryByConnectId() throws Exception {
         Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createMovement(movementBaseType, "Test");
+        Movement createdMovement = movementService.createMovement(movementBaseType);
         
         MovementQuery query = MovementTestHelper.createMovementQuery();
         ListCriteria criteria = new ListCriteria();
@@ -77,7 +77,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getLatestMovementsByConnectIds() throws Exception {
         Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createMovement(movementBaseType, "Test");
+        Movement createdMovement = movementService.createMovement(movementBaseType);
         
         List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement.getMovementConnect().getValue()));
         assertThat(latestMovements.size(), is(1));
@@ -92,11 +92,11 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         movementBaseType1.getMovementConnect().setValue(connectId);
         movementBaseType1.setTimestamp(Instant.now().minusSeconds(60));
-        movementService.createMovement(movementBaseType1, "Test");
+        movementService.createMovement(movementBaseType1);
         
         Movement movementBaseType2 = MovementTestHelper.createMovement();
         movementBaseType1.getMovementConnect().setValue(connectId);
-        Movement createdMovement2 = movementService.createMovement(movementBaseType2, "Test");
+        Movement createdMovement2 = movementService.createMovement(movementBaseType2);
         
         List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement2.getMovementConnect().getValue()));
         assertThat(latestMovements.size(), is(1));
@@ -110,12 +110,12 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         movementBaseType1.getMovementConnect().setValue(connectId);
-        Movement createdMovement1 = movementService.createMovement(movementBaseType1, "Test");
+        Movement createdMovement1 = movementService.createMovement(movementBaseType1);
         
         Movement movementBaseType2 = MovementTestHelper.createMovement();
         movementBaseType1.getMovementConnect().setValue(connectId);
         movementBaseType2.setTimestamp(Instant.now().minusSeconds(60));
-        movementService.createMovement(movementBaseType2, "Test");
+        movementService.createMovement(movementBaseType2);
         
         List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement1.getMovementConnect().getValue()));
         assertThat(latestMovements.size(), is(1));
@@ -126,10 +126,10 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getLatestMovements() throws Exception {
         Movement movementBaseType1 = MovementTestHelper.createMovement();
-        movementService.createMovement(movementBaseType1, "Test");
+        movementService.createMovement(movementBaseType1);
         
         Movement movementBaseType2 = MovementTestHelper.createMovement();
-        movementService.createMovement(movementBaseType2, "Test");
+        movementService.createMovement(movementBaseType2);
         
         List<MovementDto> latestMovements = getLatestMovements(1);
         assertThat(latestMovements.size(), is(1));
@@ -139,7 +139,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getMovementById() throws Exception {
         Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createMovement(movementBaseType, "Test");
+        Movement createdMovement = movementService.createMovement(movementBaseType);
 
         MovementType fetchedMovement = getMovementById(createdMovement.getGuid());
         assertThat(fetchedMovement, is(notNullValue()));

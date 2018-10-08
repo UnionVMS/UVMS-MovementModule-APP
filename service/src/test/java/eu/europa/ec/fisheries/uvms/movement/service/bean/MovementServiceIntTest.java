@@ -107,7 +107,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         String connectId = UUID.randomUUID().toString();
         Movement movementType = MockData.createMovement(longitude, latitude, connectId);
         try {
-            Movement createdMovementType = movementService.createMovement(movementType, "Test");
+            Movement createdMovementType = movementService.createMovement(movementType);
             assertNotNull(createdMovementType);
         } catch (Exception e) {
             fail();
@@ -154,7 +154,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         String connectId = UUID.randomUUID().toString();
         Movement movementType = MockData.createMovement(longitude, latitude, connectId);
         try {
-            createdMovement = movementService.createMovement(movementType, "Test");
+            createdMovement = movementService.createMovement(movementType);
             assertNotNull(createdMovement);
         } catch (Exception e) {
             fail(e.getMessage());
@@ -230,7 +230,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             latitude = latitude +  0.05;
         }
 
-        List<Movement> movementBatch = movementService.createMovementBatch(movementTypeList, "TEST");
+        List<Movement> movementBatch = movementService.createMovementBatch(movementTypeList);
         assertNotNull(movementBatch);
         assertTrue(!movementBatch.isEmpty());
     }
@@ -249,7 +249,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             latitude += 0.05;
         }
         try {
-            movementService.createMovementBatch(movementTypeList, "TEST");
+            movementService.createMovementBatch(movementTypeList);
             fail("This should produce an EJBException and trigger rollback");
         } catch (EJBException ignore) {}
         
@@ -276,7 +276,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             String connectId = UUID.randomUUID().toString();
             Movement movementType = MockData.createMovement(longitude, latitude, connectId);
             assertNotNull(movementService);
-            Movement createdMovementType = movementService.createMovement(movementType, "TEST");
+            Movement createdMovementType = movementService.createMovement(movementType);
             em.flush();
             assertNotNull(createdMovementType);
 

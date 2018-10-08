@@ -3,10 +3,8 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
@@ -28,15 +26,11 @@ public class SegmentBean {
 
     public void newSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
         Segment segment = createSegment(previousMovement, currentMovement);
-        upsertTrack(previousMovement.getTrack(), segment, currentMovement);
-        dao.createSegment(segment);
-    }
-
-    public void createSegmentAndTrack(Movement fromMovement, Movement toMovement) throws MovementServiceException {
-        Segment segment = createSegment(fromMovement, toMovement);
-        Track track = upsertTrack(fromMovement.getTrack(), segment, toMovement);
-        fromMovement.setTrack(track);
-        toMovement.setTrack(track);
+        Track track = upsertTrack(previousMovement.getTrack(), segment, currentMovement);
+        if (previousMovement.getTrack() == null) {
+            previousMovement.setTrack(track);
+            currentMovement.setTrack(track);
+        }
         dao.createSegment(segment);
     }
 

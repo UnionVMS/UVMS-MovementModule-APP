@@ -51,7 +51,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "ONE", date1);
         Movement toMovement = movementHelpers.createMovement(1d, 1d, connectId, "TWO", date2);
-        segmentBean.createSegmentAndTrack(fromMovement, toMovement);
+        segmentBean.newSegment(fromMovement, toMovement);
         em.flush();
 
         TypedQuery<Movement> queryMovement =
@@ -90,7 +90,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();;
 
         Movement movement = movementHelpers.createMovement(0d, 0d, connectId, "ONE", date1);
-        segmentBean.createSegmentAndTrack(movement, movement);
+        segmentBean.newSegment(movement, movement);
         em.flush();
 
         // get movement from db

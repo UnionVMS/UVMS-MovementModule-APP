@@ -66,21 +66,5 @@ public class AreaRestResource {
             LOG.error("[ Error when getting AreaType. ] {}", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
-
     }
-
-    // TODO: Same path as above. Use Query param instead?
-//    @GET
-//    @Path("/{code}")
-//    @Produces(value = {MediaType.APPLICATION_JSON})
-//    public ResponseDto getAreaTypeByCode(@PathParam(value = "code") final String areaCode) {
-//        try {
-//            eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType areaType = movementService.getAreaTypesByCode(areaCode);
-//            return new ResponseDto<>(areaType, ResponseCode.OK);
-//        } catch (Exception e) {
-//            LOG.error("[ Error when getting AreaType. ] {}", e);
-//            return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
-//        }
-//
-//    }
 }

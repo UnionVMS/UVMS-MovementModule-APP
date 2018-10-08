@@ -47,7 +47,7 @@ public class CreateMovementBean {
         try {
             CreateMovementRequest createMovementRequest = JAXBMarshaller.unmarshallTextMessage(jmsMessage, CreateMovementRequest.class);
             Movement movement = MovementModelToEntityMapper.mapNewMovementEntity(createMovementRequest.getMovement(), createMovementRequest.getUsername());
-            Movement createdMovement = movementService.createMovement(movement, createMovementRequest.getUsername());
+            Movement createdMovement = movementService.createMovement(movement);
             String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(MovementEntityToModelMapper.mapToMovementType(createdMovement));
 
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);

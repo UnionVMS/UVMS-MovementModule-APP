@@ -91,23 +91,23 @@ public class MovementService {
      * @param movement
      * @throws MovementServiceException
      */
-    public Movement createMovement(Movement movement, String username) {
+    public Movement createMovement(Movement movement) {
         try {
             //enrich with closest port, closest country and areas
-            Movement enrichedMovement = spatial.enrichMovementWithSpatialData(movement);
-            Movement createdMovement = movementBatch.createMovement(enrichedMovement);
-            incomingMovementBean.processMovement(createdMovement);
-            if(createdMovement != null){
-                fireMovementEvent(createdMovement);
-                auditService.sendMovementCreatedAudit(createdMovement, username);
+            spatial.enrichMovementWithSpatialData(movement);
+            movementBatch.createMovement(movement);
+            incomingMovementBean.processMovement(movement);
+            if(movement != null){
+                fireMovementEvent(movement);
+                auditService.sendMovementCreatedAudit(movement, movement.getUpdatedBy());
             }
-            return createdMovement;
+            return movement;
         } catch (MovementServiceException ex) {
             throw new EJBException(ex);
         }
     }
 
-    public List<Movement> createMovementBatch(List<Movement> movements, String username) throws MovementServiceException {
+    public List<Movement> createMovementBatch(List<Movement> movements) throws MovementServiceException {
         LOG.debug("Create invoked in service layer");
         try {
             LOG.debug("ENRICHING MOVEMENTS BATCH WITH SPATIAL DATA");
@@ -343,18 +343,11 @@ public class MovementService {
     }
 
 	public List<Area> getAreas() {
-	    List<Area> areas = areaDao.getAreas();
-        return areas;
+	    return areaDao.getAreas();
 	}
 
-	public AreaType getAreaTypesByCode(String code) {
-        AreaType areaType = areaDao.getAreaTypeByCode(code);
-        return areaType;
-    }
-
     public Area getAreaByCode(String code) {
-        Area area = areaDao.getAreaByCode(code);
-        return area;
+        return areaDao.getAreaByCode(code);
     }
 	
 	private int getNumberOfPages(Long numberOfMovements, int listSize){
@@ -396,7 +389,7 @@ public class MovementService {
         tracks.removeIf(track -> !tracksToSave.contains(track));
     }
     
-    public ArrayList<MovementSegment> filterSegments(List<MovementSegment> movementSegments, List<SearchValue> searchKeyValuesRange) {
+    public List<MovementSegment> filterSegments(List<MovementSegment> movementSegments, List<SearchValue> searchKeyValuesRange) {
         Set<MovementSegment> segments = new HashSet<>();
         if (movementSegments != null) {
             segments = movementSegments.stream()

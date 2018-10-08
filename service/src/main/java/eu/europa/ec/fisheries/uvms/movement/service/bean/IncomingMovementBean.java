@@ -60,11 +60,7 @@ public class IncomingMovementBean {
         } else {
             Movement latestMovement = latestMovements.get(0);
             if (currentMovement.getTimestamp().isAfter(latestMovement.getTimestamp())) {
-                if (latestMovement.getFromSegment() == null) {
-                    segmentBean.createSegmentAndTrack(latestMovement, currentMovement); // Second position
-                } else {
-                    segmentBean.newSegment(latestMovement, currentMovement); // Normal case (latest position)
-                }
+                segmentBean.newSegment(latestMovement, currentMovement); // Normal case (latest position)
                 currentMovement.setAreaTransitionList(populateTransitions(currentMovement, latestMovement));
             } else {
                 Movement previousMovement = dao.getPreviousMovement(connectId, timeStamp);

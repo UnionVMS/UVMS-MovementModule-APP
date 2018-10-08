@@ -93,7 +93,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         movementSegments.add(createMovementSegmentDurationHelper(15,1500, 150));
         movementSegments.add(createMovementSegmentDurationHelper(21,2100, 210));
 
-        ArrayList<MovementSegment> segments = movementService.filterSegments(movementSegments, searchKeyValuesRange);
+        List<MovementSegment> segments = movementService.filterSegments(movementSegments, searchKeyValuesRange);
         assertEquals(1,segments.size());
     }
 
