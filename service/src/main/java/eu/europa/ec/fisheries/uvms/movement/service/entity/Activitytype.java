@@ -54,7 +54,7 @@ public class Activitytype implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "activity_type_seq")
     @Basic(optional = false)
     @Column(name = "acttyp_id")
     private Long acttypId;

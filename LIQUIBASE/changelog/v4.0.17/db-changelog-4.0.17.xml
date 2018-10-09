@@ -63,4 +63,7 @@
     <changeSet author="peerik (generated)" id="1538049626880-24">
         <modifyDataType columnName="trac_updattim" newDataType="timestamp with time zone" tableName="track"/>
     </changeSet>
+
+    <include file="db-changelog-create-seqs.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

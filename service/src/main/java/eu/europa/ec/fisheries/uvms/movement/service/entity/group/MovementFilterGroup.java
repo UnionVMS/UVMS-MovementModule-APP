@@ -50,7 +50,7 @@ public class MovementFilterGroup implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "movement_filter_group_seq")
     @Column(name = "movefiltgrp_id")
     private Long id;
 

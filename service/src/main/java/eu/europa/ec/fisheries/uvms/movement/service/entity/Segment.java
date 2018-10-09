@@ -80,7 +80,7 @@ public class Segment implements Serializable {
     public static final String FIND_BY_MOVEMENT = "Segment.findByMovement";
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "segment_seq")
     @Basic(optional = false)
     @Column(name = "seg_id")
     private Long id;

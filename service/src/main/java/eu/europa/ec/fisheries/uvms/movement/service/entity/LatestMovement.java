@@ -49,7 +49,7 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "latest_movement_seq")
     @Basic(optional = false)
     @Column(name = "movelate_id")
     private Long id;

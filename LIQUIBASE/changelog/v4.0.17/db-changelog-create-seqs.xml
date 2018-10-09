@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+
+    <changeSet author="anwall" id="Add misssing hibernate seqs">
+        <createSequence sequenceName="area_seq" startValue="1"/>
+        <createSequence sequenceName="area_trans_seq" startValue="1"/>
+        <createSequence sequenceName="areatype_seq" startValue="1"/>
+        <createSequence sequenceName="movarea_seq" startValue="1"/>
+        <createSequence sequenceName="movement_filter_seq" startValue="1"/>
+        <createSequence sequenceName="movement_filter_group_seq" startValue="1"/>
+        <createSequence sequenceName="activity_seq" startValue="1"/>
+        <createSequence sequenceName="activity_type_seq" startValue="1"/>
+        <createSequence sequenceName="latest_movement_seq" startValue="1"/>
+        <createSequence sequenceName="minimal_mov_seq" startValue="1"/>
+        <createSequence sequenceName="movement_connect_seq" startValue="1"/>
+        <createSequence sequenceName="movement_meta_seq" startValue="1"/>
+        <createSequence sequenceName="segment_seq" startValue="1"/>
+        <createSequence sequenceName="track_seq" startValue="1"/>
+
+        <rollback>
+            <dropSequence sequenceName="area_seq"/>
+            <dropSequence sequenceName="area_trans_seq"/>
+            <dropSequence sequenceName="areatype_seq"/>
+            <dropSequence sequenceName="movarea_seq"/>
+            <dropSequence sequenceName="movement_filter_seq"/>
+            <dropSequence sequenceName="movement_filter_group_seq"/>
+            <dropSequence sequenceName="activity_seq"/>
+            <dropSequence sequenceName="activity_type_seq"/>
+            <dropSequence sequenceName="latest_movement_seq"/>
+            <dropSequence sequenceName="minimal_mov_seq"/>
+            <dropSequence sequenceName="movement_connect_seq"/>
+            <dropSequence sequenceName="movement_meta_seq"/>
+            <dropSequence sequenceName="segment_seq"/>
+            <dropSequence sequenceName="track_seq"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

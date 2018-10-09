@@ -54,7 +54,7 @@ public class Movementarea implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "movarea_seq")
     @Column(name = "movarea_id")
     private Long movareaId;
 

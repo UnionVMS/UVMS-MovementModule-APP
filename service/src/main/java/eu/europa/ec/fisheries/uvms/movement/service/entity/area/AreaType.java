@@ -53,7 +53,7 @@ public class AreaType implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "areatype_seq")
     @Basic(optional = false)
     @Column(name = "areatype_id")
     private Long id;

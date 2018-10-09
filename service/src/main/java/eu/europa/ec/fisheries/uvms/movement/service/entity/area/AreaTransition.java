@@ -55,7 +55,7 @@ public class AreaTransition implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "area_trans_seq")
     @Basic(optional = false)
     @Column(name = "areatran_id")
     private Long id;
