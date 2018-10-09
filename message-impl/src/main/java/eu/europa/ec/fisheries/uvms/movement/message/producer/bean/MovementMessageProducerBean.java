@@ -89,7 +89,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException {
+    public void sendErrorMessageBackToRecipient(/*@Observes @ErrorEvent*/ EventMessage message) throws MovementMessageException {
         try {
             ExceptionType exception = new ExceptionType();
             int errorCode = 0;
