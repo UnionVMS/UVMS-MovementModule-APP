@@ -29,13 +29,6 @@ import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@MessageDriven(mappedName = MessageConstants.QUEUE_MODULE_MOVEMENT, activationConfig = {
-        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR, propertyValue = MessageConstants.DESTINATION_TYPE_QUEUE),
-        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR, propertyValue = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE_NAME),
-        @ActivationConfigProperty(propertyName = "maxSessions", propertyValue = "1"),
-        @ActivationConfigProperty(propertyName = "maximumRedeliveries", propertyValue = "6"),
-        @ActivationConfigProperty(propertyName = "initialRedeliveryDelay", propertyValue = "100")
-})
 public class MovementMessageConsumerBean implements MessageListener {
 
     private final static Logger LOG = LoggerFactory.getLogger(MovementMessageConsumerBean.class);
