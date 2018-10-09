@@ -41,6 +41,14 @@
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
 				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
 			</activation-config>
 		</message-driven>
 		<message-driven>
@@ -58,6 +66,14 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -77,6 +93,14 @@
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
 				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
 			</activation-config>
 		</message-driven>
 		<message-driven>
@@ -94,6 +118,14 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -113,9 +145,17 @@
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
 				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
 			</activation-config>
 		</message-driven>
-				<message-driven>
+		<message-driven>
 			<ejb-name>Worker6</ejb-name>
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
 			<activation-config>
@@ -130,6 +170,14 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -149,6 +197,14 @@
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
 				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
 			</activation-config>
 		</message-driven>
 		<message-driven>
@@ -166,6 +222,14 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -185,6 +249,14 @@
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
 				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
 			</activation-config>
 		</message-driven>
 		<message-driven>
@@ -203,8 +275,275 @@
 					<activation-config-property-name>maxSessions</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
 				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker11</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker12</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker13</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker14</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker15</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker16</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker17</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker18</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker19</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
+			</activation-config>
+		</message-driven>
+		<message-driven>
+			<ejb-name>Worker20</ejb-name>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<activation-config>
+				<activation-config-property>
+					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>destinationType</activation-config-property-name>
+					<activation-config-property-value>javax.jms.Queue</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maxSessions</activation-config-property-name>
+					<activation-config-property-value>1</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
+					<activation-config-property-value>6</activation-config-property-value>
+				</activation-config-property>
+				<activation-config-property>
+					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
+					<activation-config-property-value>100</activation-config-property-value>
+				</activation-config-property>
 			</activation-config>
 		</message-driven>
 	</enterprise-beans>
-	
 </ejb-jar>
