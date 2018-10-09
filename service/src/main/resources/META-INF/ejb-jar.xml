@@ -11,10 +11,6 @@
 	
 	<assembly-descriptor>
 		<interceptor-binding>
-			<ejb-name>MovementEventServiceBean</ejb-name>
-			<interceptor-class>net.bull.javamelody.MonitoringInterceptor</interceptor-class>
-		</interceptor-binding>
-		<interceptor-binding>
 			<ejb-name>MovementSearchGroupService</ejb-name>
 			<interceptor-class>net.bull.javamelody.MonitoringInterceptor</interceptor-class>
 		</interceptor-binding>
@@ -23,11 +19,11 @@
 			<interceptor-class>net.bull.javamelody.MonitoringInterceptor</interceptor-class>
 		</interceptor-binding>
 		<interceptor-binding>
-			<ejb-name>SpatialServiceBean</ejb-name>
+			<ejb-name>SpatialService</ejb-name>
 			<interceptor-class>net.bull.javamelody.MonitoringInterceptor</interceptor-class>
 		</interceptor-binding>
 		<interceptor-binding>
-			<ejb-name>TempMovementServiceBean</ejb-name>
+			<ejb-name>TempMovementService</ejb-name>
 			<interceptor-class>net.bull.javamelody.MonitoringInterceptor</interceptor-class>
 		</interceptor-binding>
 		<interceptor-binding>
