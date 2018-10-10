@@ -390,7 +390,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             movementBaseType.setPositionTime(Date.from(timestamp));
             timestamp = timestamp.plusSeconds(10);
             String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "Test");
-            String correlationId = jmsHelper.sendMovementMessage(request);
+            String correlationId = jmsHelper.sendMovementMessage(request, connectId);
             correlationIds.add(correlationId);
         }
         
@@ -439,14 +439,14 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             movementBaseTypeC1.setConnectId(connectId1);
             movementBaseTypeC1.setPositionTime(Date.from(timestamp));
             String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseTypeC1, "Test");
-            String correlationId = jmsHelper.sendMovementMessage(request);
+            String correlationId = jmsHelper.sendMovementMessage(request, connectId1);
             correlationIds.add(correlationId);
             
             MovementBaseType movementBaseTypeC2 = MovementTestHelper.createMovementBaseType();
             movementBaseTypeC2.setConnectId(connectId2);
             movementBaseTypeC2.setPositionTime(Date.from(timestamp));
             String request2 = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseTypeC2, "Test");
-            String correlationId2 = jmsHelper.sendMovementMessage(request2);
+            String correlationId2 = jmsHelper.sendMovementMessage(request2, connectId2);
             correlationIds.add(correlationId2);
 
             timestamp = timestamp.plusSeconds(10);
