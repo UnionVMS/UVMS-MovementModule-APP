@@ -11,16 +11,6 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.Message;
@@ -28,28 +18,19 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
+import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
+import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 
 public class MovementMessageConsumerBean implements MessageListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger(MovementMessageConsumerBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementMessageConsumerBean.class);
 
-    @EJB
-    private CreateMovementBean createMovementBean;
-
-    @EJB
-    private GetMovementListByQueryBean getMovementListByQueryBean;
-
-    @EJB
-    private CreateMovementBatchBean createMovementBatchBean;
-
-    @EJB
-    private GetMovementMapByQueryBean getMovementMapByQueryBean;
-
-    @EJB
-    private GetMovementListByAreaAndTimeIntervalBean getMovementListByAreaAndTimeIntervalBean;
-
-    @EJB
-    private PingBean pingBean;
+    @Inject
+    private MovementEventBean movementEventBean;
 
     @Inject
     @ErrorEvent
@@ -70,22 +51,22 @@ public class MovementMessageConsumerBean implements MessageListener {
             }
             switch (movementMethod) {
                 case MOVEMENT_LIST:
-                    getMovementListByQueryBean.getMovementListByQuery(textMessage);
+                    movementEventBean.getMovementListByQuery(textMessage);
                     break;
                 case CREATE:
-                    createMovementBean.createMovement(textMessage);
+                    movementEventBean.createMovement(textMessage);
                     break;
                 case CREATE_BATCH:
-                    createMovementBatchBean.createMovementBatch(textMessage);
+                    movementEventBean.createMovementBatch(textMessage);
                     break;
                 case MOVEMENT_MAP:
-                    getMovementMapByQueryBean.getMovementMapByQuery(textMessage);
+                    movementEventBean.getMovementMapByQuery(textMessage);
                     break;
                 case PING:
-                    pingBean.ping(textMessage);
+                    movementEventBean.ping(textMessage);
                     break;
                 case MOVEMENT_LIST_BY_AREA_TIME_INTERVAL:
-                    getMovementListByAreaAndTimeIntervalBean.getMovementListByAreaAndTimeInterval(textMessage);
+                    movementEventBean.getMovementListByAreaAndTimeInterval(textMessage);
                     break;
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:

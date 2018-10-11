@@ -11,6 +11,10 @@
 	
 	<assembly-descriptor>
 		<interceptor-binding>
+			<ejb-name>MovementEventBean</ejb-name>
+			<interceptor-class>net.bull.javamelody.MonitoringInterceptor</interceptor-class>
+		</interceptor-binding>
+		<interceptor-binding>
 			<ejb-name>Worker1</ejb-name>
 			<interceptor-class>net.bull.javamelody.MonitoringInterceptor</interceptor-class>
 		</interceptor-binding>
