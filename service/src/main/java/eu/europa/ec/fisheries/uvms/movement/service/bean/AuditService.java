@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import org.slf4j.Logger;

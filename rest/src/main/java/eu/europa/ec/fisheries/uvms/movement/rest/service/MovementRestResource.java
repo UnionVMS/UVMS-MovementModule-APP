@@ -13,6 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.NonUniqueResultException;
@@ -136,13 +137,14 @@ public class MovementRestResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto<List<MovementDto>> getLatestMovementsByConnectIds(List<UUID> connectIds) {
+    public ResponseDto<List<MovementDto>> getLatestMovementsByConnectIds(List<String> connectIds) {
         LOG.debug("GetLatestMovementsByConnectIds invoked in rest layer");
         if (connectIds == null || connectIds.isEmpty()) {
             return new ResponseDto("ConnectIds cannot be empty" , ResponseCode.ERROR);
         }
         try {
-            List<Movement> latestMovements = serviceLayer.getLatestMovementsByConnectIds(connectIds);
+            List<UUID> uuids = connectIds.stream().map(UUID::fromString).collect(Collectors.toList());
+            List<Movement> latestMovements = serviceLayer.getLatestMovementsByConnectIds(uuids);
             List<MovementType> movementTypeList = MovementEntityToModelMapper.mapToMovementType(latestMovements);
             List<MovementDto> movementDtoList = MovementMapper.mapToMovementDtoList(movementTypeList);
             return new ResponseDto<>(movementDtoList, ResponseCode.OK);
