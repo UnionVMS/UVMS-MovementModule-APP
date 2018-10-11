@@ -26,24 +26,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -54,10 +37,19 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 
-/**
- **/
 @Entity
-@Table(name = "movement")
+@Table(name = "movement", indexes = {
+        @Index(columnList = "move_act_id", name = "movement_act_fk_idx", unique = false),
+        @Index(columnList = "move_duplicate", name = "movement_duplicate_idx", unique = false),
+        @Index(columnList = "move_guid", name = "movement_guid_idx", unique = false),
+        @Index(columnList = "move_moveconn_id", name = "movement_moveconn_fk_idx", unique = false),
+        @Index(columnList = "move_movemet_id", name = "movement_movemet_fk_idx", unique = false),
+        @Index(columnList = "move_movesour_id", name = "movement_movesour_fk_idx", unique = false),
+        @Index(columnList = "move_movetyp_id", name = "movement_movetyp_fk_idx", unique = false),
+        @Index(columnList = "move_processed", name = "movement_processed_idx", unique = false),
+        @Index(columnList = "move_timestamp", name = "movement_timestamp_idx", unique = false),
+        @Index(columnList = "move_trac_id", name = "movement_trac_fk_idx", unique = false)
+})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = Movement.FIND_ALL, query = "SELECT m FROM Movement m WHERE m.duplicate = false"),

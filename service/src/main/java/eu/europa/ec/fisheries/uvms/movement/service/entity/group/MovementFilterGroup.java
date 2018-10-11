@@ -15,15 +15,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -31,11 +24,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 
-/**
- * The persistent class for the movementfiltergroup database table.
- * 
- */
 @Entity
+@Table(name = "movementfiltergroup")
 @NamedQueries({
     @NamedQuery(name = MovementFilterGroup.GROUP_VESSEL_FIND_ALL, query = "SELECT f FROM MovementFilterGroup f"),
     @NamedQuery(name = MovementFilterGroup.GROUP_VESSEL_BY_USER, query="SELECT f FROM MovementFilterGroup f WHERE f.user = :user")
