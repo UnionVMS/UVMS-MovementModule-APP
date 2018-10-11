@@ -47,9 +47,9 @@ public class JMSHelper {
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementResponse.class);
     }
     
-    public GetMovementListByQueryResponse getMovementListByQuery(MovementQuery movementQuery) throws Exception {
+    public GetMovementListByQueryResponse getMovementListByQuery(MovementQuery movementQuery, String groupId) throws Exception {
         String request = MovementModuleRequestMapper.mapToGetMovementListByQueryRequest(movementQuery);
-        String correlationId = sendMovementMessage(request, null);
+        String correlationId = sendMovementMessage(request, groupId);
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, GetMovementListByQueryResponse.class);
     }

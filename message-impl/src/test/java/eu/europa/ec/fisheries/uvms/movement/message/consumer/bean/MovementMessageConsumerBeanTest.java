@@ -136,7 +136,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria.setKey(SearchKey.CONNECT_ID);
         criteria.setValue(connectId);
         query.getMovementSearchCriteria().add(criteria);
-        GetMovementListByQueryResponse movementList = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse movementList = jmsHelper.getMovementListByQuery(query, connectId);
         List<MovementType> movements = movementList.getMovement();
         
         assertThat(movements.size(), is(2));
@@ -200,7 +200,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria.setValue(movementBaseType.getConnectId());
         query.getMovementSearchCriteria().add(criteria);
         
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, createdMovement.getConnectId());
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(1));
         assertThat(movements.get(0).getConnectId(), is(createdMovement.getConnectId()));
@@ -231,7 +231,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria.setValue(connectId);
         query.getMovementSearchCriteria().add(criteria);
 
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, connectId);
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
     }
@@ -255,7 +255,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria2.setValue(movementBaseType2.getConnectId());
         query.getMovementSearchCriteria().add(criteria2);
         
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movementBaseType2.getConnectId());
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
     }
@@ -275,7 +275,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria.setValue(movementBaseType.getGuid());
         query.getMovementSearchCriteria().add(criteria);
         
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, createdMovement.getConnectId());
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(1));
         assertThat(movements.get(0).getConnectId(), is(createdMovement.getConnectId()));
@@ -304,7 +304,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria2.setValue(movementBaseType2.getGuid());
         query.getMovementSearchCriteria().add(criteria2);
         
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movementBaseType2.getConnectId());
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
     }
@@ -331,7 +331,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria1.setValue(movementBaseType.getConnectId());
         query.getMovementSearchCriteria().add(criteria1);
         
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, createdMovement.getConnectId());
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(1));
         assertThat(movements.get(0).getConnectId(), is(createdMovement.getConnectId()));
@@ -368,7 +368,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria2.setValue(movementBaseType2.getConnectId());
         query.getMovementSearchCriteria().add(criteria2);
         
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movementBaseType2.getConnectId());
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
     }
@@ -407,7 +407,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria.setValue(connectId);
         query.getMovementSearchCriteria().add(criteria);
 
-        GetMovementListByQueryResponse movementResponse = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse movementResponse = jmsHelper.getMovementListByQuery(query, connectId);
         List<MovementType> movements = movementResponse.getMovement();
 
         movements.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
@@ -465,7 +465,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria.setValue(connectId1);
         query.getMovementSearchCriteria().add(criteria);
 
-        GetMovementListByQueryResponse movementResponse = jmsHelper.getMovementListByQuery(query);
+        GetMovementListByQueryResponse movementResponse = jmsHelper.getMovementListByQuery(query, connectId1);
         List<MovementType> movements = movementResponse.getMovement();
 
         movements.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
@@ -486,7 +486,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria2.setValue(connectId2);
         query2.getMovementSearchCriteria().add(criteria2);
 
-        GetMovementListByQueryResponse movementResponse2 = jmsHelper.getMovementListByQuery(query2);
+        GetMovementListByQueryResponse movementResponse2 = jmsHelper.getMovementListByQuery(query2, connectId2);
         List<MovementType> movements2 = movementResponse2.getMovement();
 
         movements2.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
