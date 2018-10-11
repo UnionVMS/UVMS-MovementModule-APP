@@ -18,6 +18,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
@@ -510,5 +511,26 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
                 previous2 = movementType;
             }
         }
+    }
+    
+    @Test
+    @RunAsClient
+    public void testMaxRedeliveries() throws Exception {
+        int dlqBefore = jmsHelper.checkQueueSize("ActiveMQ.DLQ");
+        int responseQueueBefore = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
+        
+        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
+        movementBaseType.setPosition(null);
+        String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "Test");
+        String correlationId = jmsHelper.sendMovementMessage(request, movementBaseType.getConnectId());
+        
+        Message response = jmsHelper.listenForResponse(correlationId);
+        JAXBMarshaller.unmarshallTextMessage((TextMessage) response, ExceptionType.class);
+        
+        int dlqAfter = jmsHelper.checkQueueSize("ActiveMQ.DLQ");
+        int responseQueueAfter = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
+        
+        assertThat(dlqAfter, is(dlqBefore + 1));
+        assertThat(responseQueueBefore, is(responseQueueAfter));
     }
 }

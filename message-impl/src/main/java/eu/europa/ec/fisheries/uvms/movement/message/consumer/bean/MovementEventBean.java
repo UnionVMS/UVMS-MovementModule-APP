@@ -51,6 +51,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntity
 public class MovementEventBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementEventBean.class);
+    
+    private static final int MAXIMUM_REDELIVERIES = 6;
 
     @Inject
     private MovementService movementService;
@@ -65,7 +67,7 @@ public class MovementEventBean {
     @ErrorEvent
     private Event<EventMessage> errorEvent;
 
-
+    
     public void getMovementListByQuery(TextMessage jmsMessage) {
         try {
             GetMovementListByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementListByQueryRequest.class);
@@ -75,8 +77,10 @@ public class MovementEventBean {
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (MovementModelException | MovementMessageException | MovementServiceException | JMSException ex) {
             LOG.error("[ Error on getMovementListByQuery ] ", ex);
-            EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
-            errorEvent.fire(eventMessage);
+            if (maxRedeliveriesReached(jmsMessage)) {
+                EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
+                errorEvent.fire(eventMessage);
+            }
             throw new EJBException(ex);
         }
     }
@@ -92,8 +96,10 @@ public class MovementEventBean {
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {
             LOG.error("[ Error when creating movement ] ", ex);
-            EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
-            errorEvent.fire(eventMessage);
+            if (maxRedeliveriesReached(jmsMessage)) {
+                EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
+                errorEvent.fire(eventMessage);
+            }
             throw new EJBException(ex);
         }
     }
@@ -116,7 +122,9 @@ public class MovementEventBean {
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {
             LOG.error("[ Error when creating movement batch ] ", ex);
-            errorEvent.fire(new EventMessage(jmsMessage, "Error when receiving message in movement: " + ex.getMessage()));
+            if (maxRedeliveriesReached(jmsMessage)) {
+                errorEvent.fire(new EventMessage(jmsMessage, "Error when receiving message in movement: " + ex.getMessage()));
+            }            
             throw new EJBException(ex);
         }
     }
@@ -132,8 +140,10 @@ public class MovementEventBean {
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (MovementModelException | MovementMessageException | MovementServiceException | JMSException ex) {
             LOG.error("[ Error when creating getMovementMapByQuery ] ", ex);
-            EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
-            errorEvent.fire(eventMessage);
+            if (maxRedeliveriesReached(jmsMessage)) {
+                EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
+                errorEvent.fire(eventMessage);
+            }
             throw new EJBException(ex);
         }
     }
@@ -156,11 +166,23 @@ public class MovementEventBean {
             String responseString = MovementModuleResponseMapper.mapTogetMovementListByAreaAndTimeIntervalResponse(response.getMovement());
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
         } catch (MovementMessageException | MovementModelException ex) {
-
             LOG.error("[ Error in GetMovementListByAreaAndTimeIntervalBean.getMovementListByAreaAndTimeInterval ] ", ex);
-            EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
-            errorEvent.fire(eventMessage);
+            if (maxRedeliveriesReached(jmsMessage)) {
+                EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
+                errorEvent.fire(eventMessage);
+            }
             throw new EJBException(ex);
+        }
+    }
+    
+    private boolean maxRedeliveriesReached(TextMessage message) {
+        try {
+            if (message != null) {
+                return message.getIntProperty("JMSXDeliveryCount") > MAXIMUM_REDELIVERIES;
+            }
+            return false;
+        } catch (JMSException e) {
+            return false;
         }
     }
 }

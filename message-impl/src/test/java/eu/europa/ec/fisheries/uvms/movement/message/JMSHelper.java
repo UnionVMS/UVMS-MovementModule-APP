@@ -10,10 +10,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message;
 
+import java.util.Enumeration;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.Queue;
+import javax.jms.QueueBrowser;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -29,7 +31,7 @@ public class JMSHelper {
 
     private static final long TIMEOUT = 20000;
     private static final String MOVEMENT_QUEUE = "UVMSMovementEvent";
-    private static final String RESPONSE_QUEUE = "MovementTestQueue";
+    public static final String RESPONSE_QUEUE = "MovementTestQueue";
 
     private ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
@@ -86,5 +88,26 @@ public class JMSHelper {
         } finally {
             connection.close();
         }
+    }
+    
+    public int checkQueueSize(String queue) throws Exception {
+        int messages = 0;
+        Connection connection = connectionFactory.createConnection();
+        try {
+            connection.start();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Queue responseQueue = session.createQueue(queue);
+
+            QueueBrowser browser = session.createBrowser(responseQueue);
+            
+            Enumeration enumeration = browser.getEnumeration();
+            while(enumeration.hasMoreElements()) {
+                enumeration.nextElement();
+                messages++;
+            }
+        } finally {
+            connection.close();
+        }
+        return messages;
     }
 }
