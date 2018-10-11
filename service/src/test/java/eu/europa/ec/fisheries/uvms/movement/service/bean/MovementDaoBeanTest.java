@@ -41,7 +41,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		Movement output = movementDao.getMovementByGUID(UUID.randomUUID());
 		assertNull(output);
 		
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		Movement move = movementHelpers.createMovement(20D, 20D, connectId, "TEST", Instant.now());
 		
@@ -55,9 +55,9 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		UUID connectID = UUID.randomUUID();
 		UUID connectID2 = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID.toString(), "TEST", Instant.now());
-		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID.toString(), "TEST", Instant.now().plusSeconds(1));
-		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID2.toString(), "TEST", Instant.now().plusSeconds(2));
+		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
+		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.now().plusSeconds(1));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID2, "TEST", Instant.now().plusSeconds(2));
 		
 		incomingMovementBean.processMovement(move1);
 		incomingMovementBean.processMovement(move2);
@@ -93,9 +93,9 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	public void testGetLatestMovementsByConnectID() throws MovementServiceException {
 		UUID connectID = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID.toString(), "TEST", Instant.now());
-		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID.toString(), "TEST", Instant.now().plusSeconds(1));
-		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID.toString(), "TEST42", Instant.now().plusSeconds(2));
+		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
+		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.now().plusSeconds(1));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID, "TEST42", Instant.now().plusSeconds(2));
 
         incomingMovementBean.processMovement(move1);
         incomingMovementBean.processMovement(move2);
@@ -129,9 +129,9 @@ public class MovementDaoBeanTest extends TransactionalTests {
 
 		UUID connectID = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID.toString(), "TEST", Instant.now());
-		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID.toString(), "TEST", Instant.ofEpochMilli(System.currentTimeMillis() + 100L));
-		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID.toString(), "TEST42", Instant.ofEpochMilli(System.currentTimeMillis() + 200L));
+		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
+		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.ofEpochMilli(System.currentTimeMillis() + 100L));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID, "TEST42", Instant.ofEpochMilli(System.currentTimeMillis() + 200L));
 
 		incomingMovementBean.processMovement(move1);
 		incomingMovementBean.processMovement(move2);

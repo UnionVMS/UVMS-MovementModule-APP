@@ -229,14 +229,14 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
     	input.setPagination(listPagination);
     	
-    	String connectID = UUID.randomUUID().toString();
-    	String connectID2 = UUID.randomUUID().toString();
+    	UUID connectID = UUID.randomUUID();
+    	UUID connectID2 = UUID.randomUUID();
     	createAndProcess10MovementsFromVarbergGrena(connectID);
     	createAndProcess10MovementsFromVarbergGrena(connectID2);
     	
     	ListCriteria listCriteria = new ListCriteria();
     	listCriteria.setKey(SearchKey.CONNECT_ID);
-    	listCriteria.setValue(connectID);
+    	listCriteria.setValue(connectID.toString());
     	input.getMovementSearchCriteria().add(listCriteria);
     	
     	output = movementService.getList(input);
@@ -244,7 +244,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	listCriteria = new ListCriteria();
     	listCriteria.setKey(SearchKey.CONNECT_ID);
-    	listCriteria.setValue(connectID2);
+    	listCriteria.setValue(connectID2.toString());
     	input.getMovementSearchCriteria().add(listCriteria);
     	output = movementService.getList(input);
     	assertEquals(20, output.getMovement().size());
@@ -285,14 +285,14 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 		listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
 		input.setPagination(listPagination);
 
-		String connectID = UUID.randomUUID().toString();
-		String connectID2 = UUID.randomUUID().toString();
+		UUID connectID = UUID.randomUUID();
+		UUID connectID2 = UUID.randomUUID();
 		createAndProcess10MovementsFromVarbergGrena(connectID);
 		createAndProcess10MovementsFromVarbergGrena(connectID2);
 
 		ListCriteria listCriteria = new ListCriteria();
 		listCriteria.setKey(SearchKey.CONNECT_ID);
-		listCriteria.setValue(connectID);
+		listCriteria.setValue(connectID.toString());
 		input.getMovementSearchCriteria().add(listCriteria);
 
 		input.getMovementRangeSearchCriteria().add(new RangeCriteria());
@@ -350,14 +350,14 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	input.setPagination(listPagination);
 
 
-    	String connectID = UUID.randomUUID().toString();
-    	String connectID2 = UUID.randomUUID().toString();
+    	UUID connectID = UUID.randomUUID();
+    	UUID connectID2 = UUID.randomUUID();
     	createAndProcess10MovementsFromVarbergGrena(connectID);
     	createAndProcess10MovementsFromVarbergGrena(connectID2);
     	
     	ListCriteria listCriteria = new ListCriteria();
     	listCriteria.setKey(SearchKey.CONNECT_ID);
-    	listCriteria.setValue(connectID);
+    	listCriteria.setValue(connectID.toString());
     	input.getMovementSearchCriteria().add(listCriteria);
     	
     	output = movementService.getMinimalList(input);
@@ -365,7 +365,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	listCriteria = new ListCriteria();
     	listCriteria.setKey(SearchKey.CONNECT_ID);
-    	listCriteria.setValue(connectID2);
+    	listCriteria.setValue(connectID2.toString());
     	input.getMovementSearchCriteria().add(listCriteria);
     	output = movementService.getMinimalList(input);
     	assertEquals(20, output.getMovement().size());
@@ -427,14 +427,14 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	MovementQuery input = new MovementQuery();
     	input.setExcludeFirstAndLastSegment(true);
     	
-    	String connectID = UUID.randomUUID().toString();
-    	String connectID2 = UUID.randomUUID().toString();
+    	UUID connectID = UUID.randomUUID();
+    	UUID connectID2 = UUID.randomUUID();
     	createAndProcess10MovementsFromVarbergGrena(connectID);
     	createAndProcess10MovementsFromVarbergGrena(connectID2);
     	
     	ListCriteria listCriteria = new ListCriteria();
     	listCriteria.setKey(SearchKey.CONNECT_ID);
-    	listCriteria.setValue(connectID);
+    	listCriteria.setValue(connectID.toString());
     	input.getMovementSearchCriteria().add(listCriteria);
     	
     	output = movementService.getMapByQuery(input);
@@ -443,7 +443,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	listCriteria = new ListCriteria();
     	listCriteria.setKey(SearchKey.CONNECT_ID);
-    	listCriteria.setValue(connectID2);
+    	listCriteria.setValue(connectID2.toString());
     	input.getMovementSearchCriteria().add(listCriteria);
     	output = movementService.getMapByQuery(input);
     	assertEquals(2, output.getMovementMap().size());
@@ -491,7 +491,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     
     @Test
     public void testRemoveTrackMismatches() throws MovementServiceException {
-    	String connectID = UUID.randomUUID().toString();
+    	UUID connectID = UUID.randomUUID();
     	List<Movement> varbergGrena = createAndProcess10MovementsFromVarbergGrena(connectID);
     	List<MovementTrack> input = new ArrayList<>();
     	MovementTrack movementTrack = new MovementTrack();
@@ -522,8 +522,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     public void testGetLatestMovementsByConnectID() throws MovementServiceException {
         UUID connectID = UUID.randomUUID();
         UUID connectID2 = UUID.randomUUID();
-    	List<Movement> control = createAndProcess10MovementsFromVarbergGrena(connectID.toString());
-    	createAndProcess10MovementsFromVarbergGrena(connectID2.toString());
+    	List<Movement> control = createAndProcess10MovementsFromVarbergGrena(connectID);
+    	createAndProcess10MovementsFromVarbergGrena(connectID2);
     	
     	List<UUID> input = new ArrayList<>();
     	input.add(connectID);
@@ -581,7 +581,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     
     @Test
     public void testGetMovementListByAreaAndTimeInterval() throws MovementServiceException {
-    	String connectID = UUID.randomUUID().toString();
+    	UUID connectID = UUID.randomUUID();
     	
     	MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
     	movementAreaAndTimeIntervalCriteria.setFromDate(DateUtil.parseUTCDateToString(DateUtil.nowUTC()));
@@ -660,7 +660,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         return new SearchValue(SearchField.SEGMENT_SPEED, "100", "200");
     }
 
-    private List<Movement> createAndProcess10MovementsFromVarbergGrena(String connectID) throws MovementServiceException {
+    private List<Movement> createAndProcess10MovementsFromVarbergGrena(UUID connectID) throws MovementServiceException {
     	MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
     	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
     	for (Movement movement : varbergGrena) {

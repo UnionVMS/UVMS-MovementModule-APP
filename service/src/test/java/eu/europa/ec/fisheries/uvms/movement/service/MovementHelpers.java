@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import com.peertopark.java.geocalc.Coordinate;
 import com.peertopark.java.geocalc.DegreeCoordinate;
 import com.peertopark.java.geocalc.EarthCalc;
@@ -29,7 +30,7 @@ public class MovementHelpers {
      *  helpers
      *****************************************************************************************************************/
 
-    public Movement createMovement(double longitude, double latitude, String connectId, String userName,
+    public Movement createMovement(double longitude, double latitude, UUID connectId, String userName,
                                    Instant positionTime) throws MovementServiceException {
 
         try {
@@ -43,7 +44,7 @@ public class MovementHelpers {
 
     }
 
-    private Movement createMovement(LatLong latlong,  String connectId, String userName, Instant positionTime) throws MovementServiceException {
+    private Movement createMovement(LatLong latlong,  UUID connectId, String userName, Instant positionTime) throws MovementServiceException {
 
         try {
             Movement movement = MockData.createMovement(latlong,  connectId, userName);
@@ -67,17 +68,17 @@ public class MovementHelpers {
      *
      * @throws MovementServiceException
      */
-    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, String connectId) throws MovementServiceException {
+    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, UUID connectId) throws MovementServiceException {
         List<LatLong> positions = createRuttVarbergGrena(numberPositions);
         return getMovements(order, connectId, positions);
     }
 
-    public List<Movement> createFishingTourVarberg(int order,  String connectId) throws MovementServiceException {
+    public List<Movement> createFishingTourVarberg(int order, UUID connectId) throws MovementServiceException {
         List<LatLong> positions = createRuttSmallFishingTourFromVarberg();
         return getMovements(order, connectId, positions);
     }
 
-    private List<Movement> getMovements(int order, String connectId, List<LatLong> positions) throws MovementServiceException {
+    private List<Movement> getMovements(int order, UUID connectId, List<LatLong> positions) throws MovementServiceException {
         List<Movement> createdRoute = new ArrayList<>();
         String userName = "TEST";
 

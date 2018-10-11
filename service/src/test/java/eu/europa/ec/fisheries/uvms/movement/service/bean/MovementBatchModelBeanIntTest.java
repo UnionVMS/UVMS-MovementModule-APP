@@ -69,7 +69,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
         double latitude = rnd.nextDouble();
 
         UUID randomUUID = UUID.randomUUID();
-        Movement movement = MockData.createMovement(longitude, latitude, randomUUID.toString());
+        Movement movement = MockData.createMovement(longitude, latitude, randomUUID);
         movement.getMovementConnect().setValue(randomUUID);
 
         Movement created = movementBatchModelBean.createMovement(movement);

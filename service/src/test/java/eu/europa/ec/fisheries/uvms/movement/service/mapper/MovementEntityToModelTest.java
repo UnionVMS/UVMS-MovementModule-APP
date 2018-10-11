@@ -59,7 +59,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
 	public void testMovementBaseType() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
@@ -72,7 +72,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		assertEquals(movement.getGuid().toString(), output.getGuid());
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
-		assertEquals(connectId, output.getConnectId());
+		assertEquals(connectId.toString(), output.getConnectId());
 		
 		try {
 			output = MovementEntityToModelMapper.mapToMovementBaseType(null);
@@ -106,7 +106,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
 	public void testMapToMovementTypeWithMovementInput() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
 		double lat = 57.632304;
@@ -119,7 +119,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		assertEquals(movement.getGuid().toString(), output.getGuid());
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
-		assertEquals(connectId, output.getConnectId());
+		assertEquals(connectId.toString(), output.getConnectId());
 		assertEquals("POINT ( 11.641982 57.632304 )" , output.getWkt());
 //		assertEquals("MovementMetaData[closestPort=ClosestLocationType[distance=<null>,remoteId=<null>,code=<null>,name=<null>],closestCountry=ClosestLocationType"
 //				+ "[distance=<null>,remoteId=<null>,code=<null>,name=<null>],areas=[],previousMovementId=<null>,fromSegmentType=<null>]" , output.getMetaData().toString());
@@ -169,7 +169,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementTypeWithAListOfMovements() throws MovementServiceException {
 		//Most of the method is tested by testMapToMovementType
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		List<Movement> input = movementHelpers.createFishingTourVarberg(1, connectId);
@@ -190,7 +190,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
 	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
@@ -218,7 +218,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
 	public void testMapToMovementSegment() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		
@@ -256,7 +256,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		for(int i = 0 ; i < 20 ; i++) {
 			ID = UUID.randomUUID();
 			connectId.add(ID);
-			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, ID.toString() , "ONE", Instant.now().plusMillis((long)(Math.random() * 5000))));
+			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, ID, "ONE", Instant.now().plusMillis((long)(Math.random() * 5000))));
 		}
 		
 		Map<UUID, List<Movement>> output = MovementEntityToModelMapper.orderMovementsByConnectId(input);
@@ -277,7 +277,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
 	public void testExtractSegments() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		//srsly......
 		ArrayList<Movement> input = new ArrayList<>(movementList);
@@ -323,7 +323,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
 	public void testExtractTracks() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));
 		for (Movement movement : movementList) {
             incomingMovementBean.processMovement(movement);

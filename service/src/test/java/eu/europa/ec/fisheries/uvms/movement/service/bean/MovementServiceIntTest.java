@@ -104,7 +104,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         double latitude = 57.683804D;
 
         // create a MovementConnect
-        String connectId = UUID.randomUUID().toString();
+        UUID connectId = UUID.randomUUID();
         Movement movementType = MockData.createMovement(longitude, latitude, connectId);
         try {
             Movement createdMovementType = movementService.createMovement(movementType);
@@ -151,7 +151,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         double latitude = 57.683804D;
 
         // create a MovementConnect
-        String connectId = UUID.randomUUID().toString();
+        UUID connectId = UUID.randomUUID();
         Movement movementType = MockData.createMovement(longitude, latitude, connectId);
         try {
             createdMovement = movementService.createMovement(movementType);
@@ -172,7 +172,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             List<MovementType> movementList = list.getMovement();
             assertNotNull(movementList);
             assertTrue(!movementList.isEmpty());
-            assertEquals(connectId, movementList.get(0).getConnectId());
+            assertEquals(connectId.toString(), movementList.get(0).getConnectId());
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -225,7 +225,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         double latitude = rnd.nextDouble();
         List<Movement> movementTypeList = new ArrayList<>();
         for(int i = 0 ; i < NumberOfMovements ; i++){
-            movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID().toString()));
+            movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID()));
             longitude = longitude  + 0.05;
             latitude = latitude +  0.05;
         }
@@ -244,7 +244,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         double latitude = rnd.nextDouble();
         List<Movement> movementTypeList = new ArrayList<>();
         for(int i = 0 ; i < NumberOfMovements ; i++){
-            movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID().toString()));
+            movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID()));
             longitude += 0.05;
             latitude += 0.05;
         }
@@ -273,7 +273,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             double latitude = 57.683804D;
 
             // create a MovementConnect
-            String connectId = UUID.randomUUID().toString();
+            UUID connectId = UUID.randomUUID();
             Movement movementType = MockData.createMovement(longitude, latitude, connectId);
             assertNotNull(movementService);
             Movement createdMovementType = movementService.createMovement(movementType);

@@ -117,7 +117,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	@Test
 	public void testGetPositionCalculations () throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		double startLon = 11.695033;
