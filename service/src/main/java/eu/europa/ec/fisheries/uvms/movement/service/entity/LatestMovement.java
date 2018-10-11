@@ -21,6 +21,7 @@ import org.hibernate.annotations.*;
 import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -30,7 +31,10 @@ import java.io.Serializable;
 import java.time.Instant;
 
 @Entity
-@Table(name = "latestmovement")
+@Table(name = "latestmovement", indexes = {
+        @Index(columnList = "movelate_move_id", name = "movelate_move_fk_idx", unique = false),
+        @Index(columnList = "movelate_moveconn_id", name = "movelate_moveconnect_fk_idx", unique = false)
+})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value = :connectId"),

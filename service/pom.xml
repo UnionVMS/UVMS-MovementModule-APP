@@ -21,6 +21,7 @@
         <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
 
         <docker.dev.start.phase>test-compile</docker.dev.start.phase>
+        <docker.liquibase.phase>test-compile</docker.liquibase.phase>
 		<docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
     </properties>
 

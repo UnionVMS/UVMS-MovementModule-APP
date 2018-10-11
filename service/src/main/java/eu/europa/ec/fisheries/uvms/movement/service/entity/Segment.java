@@ -19,24 +19,13 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import java.io.Serializable;
 import java.time.Instant;
 
-import javax.persistence.Basic;
+import javax.persistence.*;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -44,10 +33,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.*;
 
-/**
- **/
 @Entity
-@Table(name = "segment")
+@Table(name = "segment", indexes = {
+        @Index(columnList = "seg_frommove_id", name = "seg_move_from_to_idx", unique = false),
+        @Index(columnList = "seg_tomove_id", name = "seg_move_from_to_idx", unique = false),
+        @Index(columnList = "seg_segcat_id", name = "seg_segcat_fk_idx", unique = false),
+        @Index(columnList = "seg_trac_id", name = "seg_trac_fk_idx", unique = false)
+}, uniqueConstraints = {
+        @UniqueConstraint(name = "segment_seg_frommove_id_key", columnNames = "seg_frommove_id"),
+        @UniqueConstraint(name = "segment_seg_tomove_id_key", columnNames = "seg_tomove_id")
+})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = Segment.FIND_ALL, query = "SELECT s FROM Segment s"),

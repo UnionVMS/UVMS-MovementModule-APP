@@ -19,14 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -176,13 +175,13 @@ public class MovementService {
                 movementEntityList = dao.getMovementList(sql, searchKeys);
             }
 
-            Map<String, List<Movement>> orderMovementsByConnectId = MovementEntityToModelMapper.orderMovementsByConnectId(movementEntityList);
+            Map<UUID, List<Movement>> orderMovementsByConnectId = MovementEntityToModelMapper.orderMovementsByConnectId(movementEntityList);
 
-            for (Map.Entry<String, List<Movement>> entries : orderMovementsByConnectId.entrySet()) {
+            for (Map.Entry<UUID, List<Movement>> entries : orderMovementsByConnectId.entrySet()) {
 
                 MovementMapResponseType responseType = new MovementMapResponseType();
 
-                responseType.setKey(entries.getKey());
+                responseType.setKey(entries.getKey().toString());
 
                 ArrayList<Segment> extractSegments = MovementEntityToModelMapper.extractSegments(new ArrayList<>(entries.getValue()), query.isExcludeFirstAndLastSegment());
                 List<MovementSegment> segmentList = MovementEntityToModelMapper.mapToMovementSegment(extractSegments);
@@ -312,7 +311,7 @@ public class MovementService {
      * @return
      * @throws MovementServiceException
      */
-    public Movement getById(String id) {
+    public Movement getById(UUID id) {
         return dao.getMovementByGUID(id);
     }
 
@@ -325,7 +324,7 @@ public class MovementService {
         }
     }
 
-    public List<Movement> getLatestMovementsByConnectIds(List<String> connectIds) {
+    public List<Movement> getLatestMovementsByConnectIds(List<UUID> connectIds) {
         return dao.getLatestMovementsByConnectIdList(connectIds);
     }
 

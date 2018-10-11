@@ -24,11 +24,11 @@ import java.time.Instant;
 
 import javax.persistence.*;
 
-/**
- * The persistent class for the filter database table.
- *
- */
 @Entity
+@Table(name = "movementfilter", indexes = {
+        @Index(columnList = "movefilt_movefiltgrp_id", name = "movementfilter_i_1", unique = false),
+        @Index(columnList = "movefilt_movefilttyp_id", name = "movementfilter_i_2", unique = false)
+})
 @NamedQuery(name = "Filter.findAll", query = "SELECT f FROM MovementFilter f")
 @DynamicUpdate
 @DynamicInsert

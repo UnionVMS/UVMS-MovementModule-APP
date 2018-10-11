@@ -15,22 +15,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -43,11 +28,10 @@ import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-
-/**
- **/
 @Entity
-@Table(name = "activity")
+@Table(name = "activity", indexes = {
+        @Index(columnList = "act_acttyp_id", name = "activity_i_1", unique = false)
+})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Activity.findAll", query = "SELECT a FROM Activity a"),

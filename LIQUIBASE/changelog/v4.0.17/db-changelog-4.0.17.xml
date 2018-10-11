@@ -63,7 +63,17 @@
     <changeSet author="peerik (generated)" id="1538049626880-24">
         <modifyDataType columnName="trac_updattim" newDataType="timestamp with time zone" tableName="track"/>
     </changeSet>
-
+    
+    <changeSet id="change_move_guid_to_uuid" author="peerik">
+    	<modifyDataType tableName="movement" columnName="move_guid" newDataType="UUID"/>
+    </changeSet>
+    <changeSet id="change_moveconn_value_to_uuid" author="peerik">
+    	<modifyDataType tableName="movementconnect" columnName="moveconn_value" newDataType="UUID"/>
+    </changeSet>
+    <changeSet id="change_move_duplicate_id_to_uuid" author="peerik">
+    	<modifyDataType tableName="movement" columnName="move_duplicate_id" newDataType="UUID"/>
+    </changeSet>
+    
     <include file="db-changelog-create-seqs.xml" relativeToChangelogFile="true"/>
-
+    
 </databaseChangeLog>

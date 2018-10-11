@@ -25,7 +25,7 @@ public class MovementConnectIntTest extends TransactionalTests {
 
         for(int i = 0 ; i < 10 ; i++) {
             MovementConnect movementConnect = new MovementConnect();
-            movementConnect.setValue(UUID.randomUUID().toString());
+            movementConnect.setValue(UUID.randomUUID());
             movementConnect.setUpdatedBy("arquillian");
             movementConnect.setUpdated(DateUtil.nowUTC());
             em.persist(movementConnect);
