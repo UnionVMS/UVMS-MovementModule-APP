@@ -12,6 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import java.util.List;
+import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.NonUniqueResultException;
@@ -135,7 +136,7 @@ public class MovementRestResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto<List<MovementDto>> getLatestMovementsByConnectIds(List<String> connectIds) {
+    public ResponseDto<List<MovementDto>> getLatestMovementsByConnectIds(List<UUID> connectIds) {
         LOG.debug("GetLatestMovementsByConnectIds invoked in rest layer");
         if (connectIds == null || connectIds.isEmpty()) {
             return new ResponseDto("ConnectIds cannot be empty" , ResponseCode.ERROR);
@@ -198,7 +199,7 @@ public class MovementRestResource {
     public ResponseDto getById(@PathParam(value = "id") final String id) {
         LOG.debug("Get by id invoked in rest layer");
         try {
-            Movement movement = serviceLayer.getById(id);
+            Movement movement = serviceLayer.getById(UUID.fromString(id));
             MovementType response = MovementEntityToModelMapper.mapToMovementType(movement);
             if (response == null) {
                 throw new MovementServiceRuntimeException("Error when getting movement by id: " + id, ErrorCode.NO_RESULT_ERROR);

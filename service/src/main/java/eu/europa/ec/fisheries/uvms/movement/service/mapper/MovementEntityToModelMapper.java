@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
@@ -51,7 +52,7 @@ public class MovementEntityToModelMapper {
         MovementBaseType model = new MovementBaseType();
         model.setReportedSpeed(movement.getSpeed());
         model.setReportedCourse(movement.getHeading());
-        model.setGuid(movement.getGuid());
+        model.setGuid(movement.getGuid().toString());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
@@ -101,7 +102,7 @@ public class MovementEntityToModelMapper {
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
         model.setReportedSpeed(movement.getSpeed());
-        model.setGuid(movement.getGuid());
+        model.setGuid(movement.getGuid().toString());
         model.setReportedCourse(movement.getHeading());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setActivity(mapToActivityType(movement.getActivity()));
@@ -146,7 +147,9 @@ public class MovementEntityToModelMapper {
         } else {
             model.setDuplicate(false);
         }
-        model.setDuplicates(movement.getDuplicateId());
+        if (movement.getDuplicateId() != null) {
+            model.setDuplicates(movement.getDuplicateId().toString());
+        }
 
         model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
         model.setTripNumber(movement.getTripNumber());
@@ -216,7 +219,7 @@ public class MovementEntityToModelMapper {
 
     private static String mapToConnectId(MovementConnect connect) {
         if (connect != null) {
-            return connect.getValue();
+            return connect.getValue().toString();
         }
         return null;
     }
@@ -252,8 +255,8 @@ public class MovementEntityToModelMapper {
         return movementTrack;
     }
 
-    public static Map<String, List<Movement>> orderMovementsByConnectId(List<Movement> movements) {
-        Map<String, List<Movement>> orderedMovements = new HashMap<>();
+    public static Map<UUID, List<Movement>> orderMovementsByConnectId(List<Movement> movements) {
+        Map<UUID, List<Movement>> orderedMovements = new HashMap<>();
         for (Movement movement : movements) {
             if (orderedMovements.get(movement.getMovementConnect().getValue()) == null) {
                 orderedMovements.put(movement.getMovementConnect().getValue(), new ArrayList<>(Collections.singletonList(movement)));

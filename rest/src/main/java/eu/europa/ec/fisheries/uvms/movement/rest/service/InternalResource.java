@@ -1,14 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
-
+import java.util.List;
+import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -17,7 +10,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 @Path("/internal")
 @Stateless
@@ -52,7 +52,7 @@ public class InternalResource {
 
     @POST
     @Path("/latest")
-    public Response getLatestMovementsByConnectIds(List<String> connectIds) {
+    public Response getLatestMovementsByConnectIds(List<UUID> connectIds) {
         if (connectIds == null || connectIds.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("No connectIds found").build();
         }

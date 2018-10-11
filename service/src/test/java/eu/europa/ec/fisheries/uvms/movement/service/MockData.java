@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
@@ -157,7 +158,7 @@ public class MockData {
         movement.setMovementType(MovementTypeType.POS);
         movement.setActivity(activityType);
         MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setValue(connectId);
+        movementConnect.setValue(UUID.fromString(connectId));
         movement.setMovementConnect(movementConnect);
         movement.setInternalReferenceNumber("TEST");
         Coordinate coordinate = new Coordinate(latlong.longitude, latlong.latitude);

@@ -69,7 +69,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		
 		assertEquals(0.0, output.getReportedSpeed(), 0D);
 		assertEquals(0.0, output.getReportedCourse(), 0D);
-		assertEquals(movement.getGuid(), output.getGuid());
+		assertEquals(movement.getGuid().toString(), output.getGuid());
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId, output.getConnectId());
@@ -84,7 +84,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
 	public void testMapToMovementTypeWithMinimalMovementInput() {
-		String connectId = UUID.randomUUID().toString();
+		UUID connectId = UUID.randomUUID();
 		double lon = 11.641982;
 		double lat = 57.632304;
 		MinimalMovement movement = new MinimalMovement();
@@ -101,7 +101,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		assertEquals(movement.getGuid(), movementType.getGuid());
         assertEquals(lat, movementType.getPosition().getLatitude(), 0D);
         assertEquals(lon, movementType.getPosition().getLongitude(), 0D);
-        assertEquals(connectId, movementType.getConnectId());
+        assertEquals(connectId.toString(), movementType.getConnectId());
 	}
 	@Test
 	public void testMapToMovementTypeWithMovementInput() throws MovementServiceException {
@@ -116,7 +116,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		
 		assertEquals(0.0, output.getReportedSpeed(), 0D);
 		assertEquals(0.0, output.getReportedCourse(), 0D);
-		assertEquals(movement.getGuid(), output.getGuid());
+		assertEquals(movement.getGuid().toString(), output.getGuid());
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId, output.getConnectId());
@@ -250,19 +250,19 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
 	public void testOrderMovementsByConnectId() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		List<String> connectId = new ArrayList<>();
+		List<UUID> connectId = new ArrayList<>();
 		List<Movement> input = new ArrayList<>();
-		String ID;
+		UUID ID;
 		for(int i = 0 ; i < 20 ; i++) {
-			ID = UUID.randomUUID().toString();
+			ID = UUID.randomUUID();
 			connectId.add(ID);
-			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, ID , "ONE", Instant.now().plusMillis((long)(Math.random() * 5000))));
+			input.add(movementHelpers.createMovement(Math.random()* 90, Math.random()* 90, ID.toString() , "ONE", Instant.now().plusMillis((long)(Math.random() * 5000))));
 		}
 		
-		Map<String, List<Movement>> output = MovementEntityToModelMapper.orderMovementsByConnectId(input);
+		Map<UUID, List<Movement>> output = MovementEntityToModelMapper.orderMovementsByConnectId(input);
 		
 		assertEquals(connectId.size(),output.keySet().size());
-		for(String s : connectId) {
+		for(UUID s : connectId) {
 			assertTrue(output.containsKey(s));
 		}
 		

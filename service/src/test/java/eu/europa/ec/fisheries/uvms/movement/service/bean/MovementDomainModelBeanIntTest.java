@@ -520,12 +520,12 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     
     @Test
     public void testGetLatestMovementsByConnectID() throws MovementServiceException {
-    	String connectID = UUID.randomUUID().toString();
-    	String connectID2 = UUID.randomUUID().toString();
-    	List<Movement> control = createAndProcess10MovementsFromVarbergGrena(connectID);
-    	createAndProcess10MovementsFromVarbergGrena(connectID2);
+        UUID connectID = UUID.randomUUID();
+        UUID connectID2 = UUID.randomUUID();
+    	List<Movement> control = createAndProcess10MovementsFromVarbergGrena(connectID.toString());
+    	createAndProcess10MovementsFromVarbergGrena(connectID2.toString());
     	
-    	List<String> input = new ArrayList<>();
+    	List<UUID> input = new ArrayList<>();
     	input.add(connectID);
     	
     	List<Movement> output = movementService.getLatestMovementsByConnectIds(input);
@@ -620,7 +620,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 		GetMovementListByAreaAndTimeIntervalResponse output = movementService.getMovementListByAreaAndTimeInterval(movementAreaAndTimeIntervalCriteria);
     	
     	assertEquals(1, output.getMovement().size());
-    	assertEquals(varbergGrena.get(6).getGuid(), output.getMovement().get(0).getGuid());
+    	assertEquals(varbergGrena.get(6).getGuid().toString(), output.getMovement().get(0).getGuid());
     	
     	try {
     		output = movementService.getMovementListByAreaAndTimeInterval(null);

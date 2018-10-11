@@ -118,7 +118,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void getLatestMovementsByConnectIds_EmptyList() {
 
-        List<String> connectionIds = new ArrayList<>();
+        List<UUID> connectionIds = new ArrayList<>();
         List<Movement> movements =  movementService.getLatestMovementsByConnectIds(connectionIds);
         assertThat(movements.size(), CoreMatchers.is(0));
     }
@@ -163,7 +163,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         MovementQuery query = createMovementQuery(true);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(createdMovement.getMovementConnect().getValue());
+        criteria.setValue(createdMovement.getMovementConnect().getValue().toString());
         query.getMovementSearchCriteria().add(criteria);
 
         try {
@@ -280,12 +280,12 @@ public class MovementServiceIntTest extends TransactionalTests {
             em.flush();
             assertNotNull(createdMovementType);
 
-            String guid = createdMovementType.getGuid();
+            UUID guid = createdMovementType.getGuid();
             assertNotNull(guid);
 
             Movement fetchedMovement = movementService.getById(guid);
             assertNotNull(fetchedMovement);
-            String fetchedGuid = fetchedMovement.getGuid();
+            UUID fetchedGuid = fetchedMovement.getGuid();
             assertNotNull(fetchedGuid);
             assertEquals(fetchedGuid, guid);
 
@@ -298,7 +298,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getById_Null_ID() {
-        String connectId = null;
+        UUID connectId = null;
         Movement byId = movementService.getById(connectId);
         assertNull(byId);
     }
@@ -325,14 +325,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         } catch (Exception e) {
             assertNotNull(e);
         }
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getById_emptyGUID() {
-        String connectId = "";
-        Movement byId = movementService.getById(connectId);
-        assertNull(byId);
     }
 
     /******************************************************************************************************************

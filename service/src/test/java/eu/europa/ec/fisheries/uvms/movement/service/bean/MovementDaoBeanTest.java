@@ -38,7 +38,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@Test
 	public void testGetMovementsByGUID() throws MovementServiceException {
-		Movement output = movementDao.getMovementByGUID("");
+		Movement output = movementDao.getMovementByGUID(UUID.randomUUID());
 		assertNull(output);
 		
 		String connectId = UUID.randomUUID().toString();
@@ -52,18 +52,18 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@Test
 	public void testGetLatestMovementByConnectIdList() throws MovementServiceException {
-		String connectID = UUID.randomUUID().toString();
-		String connectID2 = UUID.randomUUID().toString();
+		UUID connectID = UUID.randomUUID();
+		UUID connectID2 = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
-		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.now().plusSeconds(1));
-		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID2, "TEST", Instant.now().plusSeconds(2));
+		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID.toString(), "TEST", Instant.now());
+		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID.toString(), "TEST", Instant.now().plusSeconds(1));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID2.toString(), "TEST", Instant.now().plusSeconds(2));
 		
 		incomingMovementBean.processMovement(move1);
 		incomingMovementBean.processMovement(move2);
 		incomingMovementBean.processMovement(move3);
 		
-		List<String> input = new ArrayList<>();
+		List<UUID> input = new ArrayList<>();
 		input.add(connectID);
 		List<Movement> output = movementDao.getLatestMovementsByConnectIdList(input);
 		assertEquals(1, output.size());
@@ -84,18 +84,18 @@ public class MovementDaoBeanTest extends TransactionalTests {
 			
 		//random input should result in an empty set
 		input = new ArrayList<>();
-		input.add(UUID.randomUUID().toString());
+		input.add(UUID.randomUUID());
 		output = movementDao.getLatestMovementsByConnectIdList(input);
 		assertTrue(output.isEmpty());
 	}
 	
 	@Test
 	public void testGetLatestMovementsByConnectID() throws MovementServiceException {
-		String connectID = UUID.randomUUID().toString();
+		UUID connectID = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
-		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.now().plusSeconds(1));
-		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID, "TEST42", Instant.now().plusSeconds(2));
+		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID.toString(), "TEST", Instant.now());
+		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID.toString(), "TEST", Instant.now().plusSeconds(1));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID.toString(), "TEST42", Instant.now().plusSeconds(2));
 
         incomingMovementBean.processMovement(move1);
         incomingMovementBean.processMovement(move2);
@@ -114,11 +114,11 @@ public class MovementDaoBeanTest extends TransactionalTests {
 //		} catch (MovementDomainRuntimeException e) {
 //			assertTrue(true);
 //		}
-		output = movementDao.getLatestMovementsByConnectId("0", 1);
+		output = movementDao.getLatestMovementsByConnectId(UUID.randomUUID(), 1);
 		assertTrue(output.isEmpty());
 		
 		//funnily enough this is only true if you are only expecting 1 result.......
-		output = movementDao.getLatestMovementsByConnectId("0", 2);
+		output = movementDao.getLatestMovementsByConnectId(UUID.randomUUID(), 2);
 		assertTrue(output.isEmpty());
 	}
 
@@ -127,17 +127,16 @@ public class MovementDaoBeanTest extends TransactionalTests {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
 
-		String connectID = UUID.randomUUID().toString();
+		UUID connectID = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
-		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.ofEpochMilli(System.currentTimeMillis() + 100L));
-		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID, "TEST42", Instant.ofEpochMilli(System.currentTimeMillis() + 200L));
+		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID.toString(), "TEST", Instant.now());
+		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID.toString(), "TEST", Instant.ofEpochMilli(System.currentTimeMillis() + 100L));
+		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID.toString(), "TEST42", Instant.ofEpochMilli(System.currentTimeMillis() + 200L));
 
 		incomingMovementBean.processMovement(move1);
 		incomingMovementBean.processMovement(move2);
 		incomingMovementBean.processMovement(move3);
 		
-		System.out.println(connectID);
 		List<Movement> output = movementDao.getLatestMovementsByConnectId(connectID, 1);
 		assertEquals(1, output.size());
 		assertEquals(move3.getGuid(), output.get(0).getGuid());
@@ -149,7 +148,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	@Test
 	public void testIsDateAlreadyInserted() {
 		//only testing the no result part since the rest of teh function is tested elsewhere
-		List<Movement> output = movementDao.isDateAlreadyInserted("ShouldNotExist", Instant.now());
+		List<Movement> output = movementDao.isDateAlreadyInserted(UUID.randomUUID(), Instant.now());
 		assertTrue(output.isEmpty());
 	}
 }

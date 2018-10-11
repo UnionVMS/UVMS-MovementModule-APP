@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
+import java.util.UUID;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -32,7 +33,7 @@ public class MovementBatchModelBean {
     private MovementDao movementDao;
 
     public Movement createMovement(Movement movement) {
-        String connectId = movement.getMovementConnect().getValue();
+        UUID connectId = movement.getMovementConnect().getValue();
         try {
             MovementConnect moveConnect = getMovementConnectByConnectId(connectId);
             if(moveConnect == null) {
@@ -45,7 +46,7 @@ public class MovementBatchModelBean {
         }
     }
     
-    public MovementConnect getMovementConnectByConnectId(String connectId) {
+    public MovementConnect getMovementConnectByConnectId(UUID connectId) {
         MovementConnect movementConnect;
         
         if (connectId == null) {

@@ -144,9 +144,8 @@ public class Movement implements Serializable, Comparable<Movement> {
     private Integer altitude;
 
     @NotNull
-    @Size(max = 36)
     @Column(name = "move_guid", nullable = false)
-    private String guid;
+    private UUID guid;
 
     @Size(max = 60)
     @Column(name = "move_status")
@@ -219,11 +218,11 @@ public class Movement implements Serializable, Comparable<Movement> {
     private Boolean duplicate;
 
     @Column(name = "move_duplicate_id")
-    private String duplicateId;
+    private UUID duplicateId;
 
     @PrePersist
     public void setGuid() {
-        this.guid = UUID.randomUUID().toString();
+        this.guid = UUID.randomUUID();
     }
 
     public Long getId() {
@@ -298,11 +297,11 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.heading = heading;
     }
 
-    public String getGuid() {
+    public UUID getGuid() {
         return guid;
     }
 
-    public void setGuid(String guid) {
+    public void setGuid(UUID guid) {
         this.guid = guid;
     }
 
@@ -406,7 +405,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         return duplicate;
     }
 
-    public String getDuplicateId() {
+    public UUID getDuplicateId() {
         return duplicateId;
     }
 
@@ -414,7 +413,7 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.duplicate = duplicate;
     }
 
-    public void setDuplicateId(String duplicateId) {
+    public void setDuplicateId(UUID duplicateId) {
         this.duplicateId = duplicateId;
     }
 
