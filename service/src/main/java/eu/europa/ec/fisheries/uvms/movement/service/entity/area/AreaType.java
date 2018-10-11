@@ -21,26 +21,15 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- **/
 @Entity
-@Table(name = "areatype")
+@Table(name = "areatype", uniqueConstraints = {
+        @UniqueConstraint(name = "areatype_areatype_name_key", columnNames = "areatype_name")
+})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = AreaType.FIND_BY_CODE, query = "SELECT a FROM AreaType a where a.name =:code ")

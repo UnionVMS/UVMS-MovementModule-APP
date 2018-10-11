@@ -23,6 +23,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,10 +35,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 
-/**
- **/
 @Entity
-@Table(name = "movementconnect")
+@Table(name = "movementconnect", uniqueConstraints = {
+        @UniqueConstraint(name = "moveconn_value_unique", columnNames = "moveconn_value")
+})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_BY_CONNECT_ID, query = "SELECT m FROM MovementConnect m WHERE m.value = :value"),
