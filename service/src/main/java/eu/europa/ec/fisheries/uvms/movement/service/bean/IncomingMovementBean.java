@@ -4,16 +4,16 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -35,7 +35,7 @@ public class IncomingMovementBean {
         if (currentMovement.isProcessed()) {
             return;
         }
-        String connectId = currentMovement.getMovementConnect().getValue();
+        UUID connectId = currentMovement.getMovementConnect().getValue();
         Instant timeStamp = currentMovement.getTimestamp();
 
         List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);

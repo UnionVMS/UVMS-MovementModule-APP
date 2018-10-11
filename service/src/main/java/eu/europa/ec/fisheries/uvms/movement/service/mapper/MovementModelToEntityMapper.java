@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -158,7 +159,7 @@ public class MovementModelToEntityMapper {
 
             // TODO find a better solution to transfer connectid
             MovementConnect movementConnect = new MovementConnect();
-            movementConnect.setValue(movement.getConnectId());
+            movementConnect.setValue(UUID.fromString(movement.getConnectId()));
             entity.setMovementConnect(movementConnect);
             
             entity.setProcessed(false);

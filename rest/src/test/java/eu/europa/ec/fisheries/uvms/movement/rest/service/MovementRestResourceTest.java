@@ -40,7 +40,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         MovementQuery query = MovementTestHelper.createMovementQuery();
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(createdMovement.getMovementConnect().getValue());
+        criteria.setValue(createdMovement.getMovementConnect().getValue().toString());
         query.getMovementSearchCriteria().add(criteria);
         
         GetMovementListByQueryResponse queryResponse = getListByQuery(query);
@@ -49,7 +49,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         List<MovementType> movements = queryResponse.getMovement();
         assertThat(movements.size(), is(1));
         
-        assertThat(movements.get(0).getGuid(), is(createdMovement.getGuid()));
+        assertThat(movements.get(0).getGuid(), is(createdMovement.getGuid().toString()));
     }
     
     @Test
@@ -61,7 +61,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         MovementQuery query = MovementTestHelper.createMovementQuery();
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(createdMovement.getMovementConnect().getValue());
+        criteria.setValue(createdMovement.getMovementConnect().getValue().toString());
         query.getMovementSearchCriteria().add(criteria);
         
         GetMovementListByQueryResponse queryResponse = getMinimalListByQuery(query);
@@ -70,7 +70,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         List<MovementType> movements = queryResponse.getMovement();
         assertThat(movements.size(), is(1));
         
-        assertThat(movements.get(0).getGuid(), is(createdMovement.getGuid()));
+        assertThat(movements.get(0).getGuid(), is(createdMovement.getGuid().toString()));
     }
     
     @Test
@@ -79,15 +79,15 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createMovement(movementBaseType);
         
-        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement.getMovementConnect().getValue()));
+        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement.getMovementConnect().getValue().toString()));
         assertThat(latestMovements.size(), is(1));
-        assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement.getGuid()));
+        assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement.getGuid().toString()));
     }
     
     @Test
     @OperateOnDeployment("movement")
     public void getLatestMovementsByConnectIdsTwoPositions() throws Exception {
-        String connectId = UUID.randomUUID().toString();
+        UUID connectId = UUID.randomUUID();
         
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         movementBaseType1.getMovementConnect().setValue(connectId);
@@ -98,15 +98,15 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         movementBaseType1.getMovementConnect().setValue(connectId);
         Movement createdMovement2 = movementService.createMovement(movementBaseType2);
         
-        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement2.getMovementConnect().getValue()));
+        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement2.getMovementConnect().getValue().toString()));
         assertThat(latestMovements.size(), is(1));
-        assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement2.getGuid()));
+        assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement2.getGuid().toString()));
     }
     
     @Test
     @OperateOnDeployment("movement")
     public void getLatestMovementsByConnectIdsTwoPositionsUnordered() throws Exception {
-        String connectId = UUID.randomUUID().toString();
+        UUID connectId = UUID.randomUUID();
         
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         movementBaseType1.getMovementConnect().setValue(connectId);
@@ -117,9 +117,9 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         movementBaseType2.setTimestamp(Instant.now().minusSeconds(60));
         movementService.createMovement(movementBaseType2);
         
-        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement1.getMovementConnect().getValue()));
+        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement1.getMovementConnect().getValue().toString()));
         assertThat(latestMovements.size(), is(1));
-        assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement1.getGuid()));
+        assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement1.getGuid().toString()));
     }
     
     @Test
@@ -141,9 +141,9 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createMovement(movementBaseType);
 
-        MovementType fetchedMovement = getMovementById(createdMovement.getGuid());
+        MovementType fetchedMovement = getMovementById(createdMovement.getGuid().toString());
         assertThat(fetchedMovement, is(notNullValue()));
-        assertThat(fetchedMovement.getGuid(), is(createdMovement.getGuid()));
+        assertThat(fetchedMovement.getGuid(), is(createdMovement.getGuid().toString()));
     }
     
     /*
