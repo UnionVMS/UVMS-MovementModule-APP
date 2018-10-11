@@ -35,26 +35,26 @@ public class JMSHelper {
 
     public PingResponse pingMovement() throws Exception {
         String pingRequest = MovementModuleRequestMapper.mapToPingRequest(null);
-        String correlationId = sendMovementMessage(pingRequest);
+        String correlationId = sendMovementMessage(pingRequest, null);
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, PingResponse.class);
     }
 
     public CreateMovementResponse createMovement(MovementBaseType movementBaseType, String username) throws Exception {
         String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, username);
-        String correlationId = sendMovementMessage(request);
+        String correlationId = sendMovementMessage(request, movementBaseType.getConnectId());
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementResponse.class);
     }
     
-    public GetMovementListByQueryResponse getMovementListByQuery(MovementQuery movementQuery) throws Exception {
+    public GetMovementListByQueryResponse getMovementListByQuery(MovementQuery movementQuery, String groupId) throws Exception {
         String request = MovementModuleRequestMapper.mapToGetMovementListByQueryRequest(movementQuery);
-        String correlationId = sendMovementMessage(request);
+        String correlationId = sendMovementMessage(request, groupId);
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, GetMovementListByQueryResponse.class);
     }
     
-    public String sendMovementMessage(String text) throws Exception {
+    public String sendMovementMessage(String text, String groupId) throws Exception {
         Connection connection = connectionFactory.createConnection();
         try {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -62,6 +62,7 @@ public class JMSHelper {
             Queue movementQueue = session.createQueue(MOVEMENT_QUEUE);
 
             TextMessage message = session.createTextMessage();
+            message.setStringProperty("JMSXGroupID", groupId);
             message.setJMSReplyTo(responseQueue);
             message.setText(text);
 
