@@ -5,23 +5,19 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
+import java.math.BigInteger;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
-
-import java.math.BigInteger;
 
 @RunWith(Arquillian.class)
 public class TempMovementResourceTest extends BuildMovementRestDeployment {
@@ -46,10 +42,22 @@ public class TempMovementResourceTest extends BuildMovementRestDeployment {
         TempMovementType fetchedTempMovement = getTempMovement(createdTempMovement.getGuid());
         assertThat(fetchedTempMovement.getGuid(), is(createdTempMovement.getGuid()));
     }
-
-    // TODO: Peter should look into this.
+    
     @Test
-    @Ignore
+    @OperateOnDeployment("movement")
+    public void updateTempMovement() throws Exception {
+        TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
+        TempMovementType createdTempMovement = createTempMovement(tempMovement);
+        
+        double newCourse = 42d;
+        createdTempMovement.setCourse(newCourse);
+        
+        TempMovementType updatedTempMovement = updateTempMovement(createdTempMovement);
+        assertThat(updatedTempMovement.getGuid(), is(createdTempMovement.getGuid()));
+        assertThat(updatedTempMovement.getCourse(), is(newCourse));
+    }
+   
+    @Test
     @OperateOnDeployment("movement")
     public void getTempMovements() throws Exception {
 
@@ -79,6 +87,15 @@ public class TempMovementResourceTest extends BuildMovementRestDeployment {
                 .path("tempmovement")
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(tempMovement), String.class);
+        
+        return RestHelper.readResponseDto(response, TempMovementType.class);
+    }
+    
+    private TempMovementType updateTempMovement(TempMovementType tempMovement) throws Exception {
+        String response = getWebTarget()
+                .path("tempmovement")
+                .request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(tempMovement), String.class);
         
         return RestHelper.readResponseDto(response, TempMovementType.class);
     }

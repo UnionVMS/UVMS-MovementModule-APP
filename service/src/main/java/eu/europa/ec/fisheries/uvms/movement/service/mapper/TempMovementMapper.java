@@ -24,7 +24,9 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRun
 
 public class TempMovementMapper {
 
-    private final static Logger LOG = LoggerFactory.getLogger(TempMovementMapper.class);
+    private TempMovementMapper() {}
+    
+    private static final Logger LOG = LoggerFactory.getLogger(TempMovementMapper.class);
 
     public static TempMovement toTempMovementEntity(TempMovementType tempMovementType, String username) {
         if (tempMovementType == null || tempMovementType.getPosition() == null) {
@@ -33,6 +35,11 @@ public class TempMovementMapper {
         }
 
         TempMovement tempMovement = new TempMovement();
+        
+        if (tempMovementType.getGuid() != null) {
+            tempMovement.setGuid(tempMovementType.getGuid());
+        }
+        
         // Carrier values
         if (tempMovementType.getAsset() != null) {
 
