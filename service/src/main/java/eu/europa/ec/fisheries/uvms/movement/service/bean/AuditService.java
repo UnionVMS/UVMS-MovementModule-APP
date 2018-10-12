@@ -58,11 +58,11 @@ public class AuditService {
 
     public void sendTempMovementCreatedAudit(TempMovement tempMovement, String username) {
         try {
-            String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(tempMovement.getGuid(),
+            String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(tempMovement.getId().toString(),
                     username);
             producer.sendModuleMessage(auditRequest, ModuleQueue.AUDIT);
         } catch (MovementMessageException | AuditModelMarshallException e) {
-            LOG.error("Failed to send audit log message! TempMovement with guid {} was created ", tempMovement.getGuid(), e);
+            LOG.error("Failed to send audit log message! TempMovement with guid {} was created ", tempMovement.getId().toString(), e);
         }
     }
 }

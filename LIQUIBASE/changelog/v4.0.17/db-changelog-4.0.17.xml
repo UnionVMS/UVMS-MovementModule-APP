@@ -73,6 +73,11 @@
     <changeSet id="change_move_duplicate_id_to_uuid" author="peerik">
     	<modifyDataType tableName="movement" columnName="move_duplicate_id" newDataType="UUID"/>
     </changeSet>
+    <changeSet id="change_tmpmove_guid_to_uuid_use_as_pk" author="peerik">
+    	<modifyDataType tableName="tempmovement" columnName="tmpmove_guid" newDataType="UUID"/>
+    	<dropColumn tableName="tempmovement" columnName="tmpmove_id"/>
+    	<renameColumn tableName="tempmovement" oldColumnName="tmpmove_guid" newColumnName="tmpmove_id"/>
+    </changeSet>
     
     <include file="db-changelog-create-seqs.xml" relativeToChangelogFile="true"/>
     

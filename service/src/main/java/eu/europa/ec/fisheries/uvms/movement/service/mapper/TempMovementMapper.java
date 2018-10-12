@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
@@ -37,7 +38,7 @@ public class TempMovementMapper {
         TempMovement tempMovement = new TempMovement();
         
         if (tempMovementType.getGuid() != null) {
-            tempMovement.setGuid(tempMovementType.getGuid());
+            tempMovement.setId(UUID.fromString(tempMovementType.getGuid()));
         }
         
         // Carrier values
@@ -151,7 +152,7 @@ public class TempMovementMapper {
         if (tempMovement.getCourse() != null) {
             tempMovementType.setCourse(tempMovement.getCourse());
         }
-        tempMovementType.setGuid(tempMovement.getGuid());
+        tempMovementType.setGuid(tempMovement.getId().toString());
 
         MovementPoint tempMovementPoint = new MovementPoint();
         tempMovementPoint.setLatitude(tempMovement.getLatitude());

@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = TempMovement.FIND_ALL, query = "SELECT t FROM TempMovement t"),
     @NamedQuery(name = TempMovement.FIND_ALL_ORDERED, query = "SELECT t FROM TempMovement t where t.state != 'DELETED' order by timestamp desc"),
     @NamedQuery(name = TempMovement.FIND_BY_ID, query = "SELECT t FROM TempMovement t WHERE t.id = :id"),
-    @NamedQuery(name = TempMovement.FIND_BY_GUID, query = "SELECT t FROM TempMovement t WHERE t.guid = :guid"),
     @NamedQuery(name = TempMovement.FIND_BY_FLAG, query = "SELECT t FROM TempMovement t WHERE t.flag = :flag"),
     @NamedQuery(name = TempMovement.FIND_BY_IRCS, query = "SELECT t FROM TempMovement t WHERE t.ircs = :ircs"),
     @NamedQuery(name = TempMovement.FIND_BY_CFR, query = "SELECT t FROM TempMovement t WHERE t.cfr = :cfr"),
@@ -61,7 +60,6 @@ public class TempMovement implements Serializable {
     public static final String FIND_ALL = "TempMovement.findAll";
     public static final String FIND_ALL_ORDERED = "TempMovement.findAllOrdered";
     public static final String FIND_BY_ID = "TempMovement.findById";
-    public static final String FIND_BY_GUID = "TempMovement.findByGuid";
     public static final String FIND_BY_FLAG = "TempMovement.findByFlag";
     public static final String FIND_BY_IRCS = "TempMovement.findByIrcs";
     public static final String FIND_BY_CFR = "TempMovement.findByCfr";
@@ -83,11 +81,7 @@ public class TempMovement implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)
     @Column(name = "tmpmove_id")
-    private Long id;
-
-    @Size(max = 36)
-    @Column(name = "tmpmove_guid")
-    private String guid;
+    private UUID id;
 
     @Size(max = 3)
     @Column(name = "tmpmove_flag")
@@ -150,34 +144,12 @@ public class TempMovement implements Serializable {
     @Column(name = "tmpmove_upuser")
     private String updatedBy;
 
-    public TempMovement() {
-        this.guid = UUID.randomUUID().toString();
-    }
-
-    public TempMovement(Long id) {
-        this.id = id;
-    }
-
-    public TempMovement(Long id, Instant updated, String updatedBy) {
-        this.id = id;
-        this.updated = updated;
-        this.updatedBy = updatedBy;
-    }
-
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
     }
 
     public String getFlag() {
@@ -315,6 +287,6 @@ public class TempMovement implements Serializable {
 
     @Override
     public String toString() {
-        return "TempMovement [id=" + id + ", guid=" + guid + ", flag=" + flag + ", ircs=" + ircs + ", cfr=" + cfr + ", externalMarkings=" + externalMarkings + ", name=" + name + ", status=" + status + ", timestamp=" + timestamp + ", state=" + state + ", latitude=" + latitude + ", longitude=" + longitude + ", speed=" + speed + ", course=" + course + ", updated=" + updated + ", updatedBy=" + updatedBy + "]";
+        return "TempMovement [id=" + id + ", flag=" + flag + ", ircs=" + ircs + ", cfr=" + cfr + ", externalMarkings=" + externalMarkings + ", name=" + name + ", status=" + status + ", timestamp=" + timestamp + ", state=" + state + ", latitude=" + latitude + ", longitude=" + longitude + ", speed=" + speed + ", course=" + course + ", updated=" + updated + ", updatedBy=" + updatedBy + "]";
     }
 }

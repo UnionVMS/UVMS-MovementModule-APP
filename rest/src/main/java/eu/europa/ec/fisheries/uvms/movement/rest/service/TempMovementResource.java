@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
@@ -84,7 +85,7 @@ public class TempMovementResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto get(@PathParam("guid") String guid) {
         try {
-            TempMovement tempMovement = service.getTempMovement(guid);
+            TempMovement tempMovement = service.getTempMovement(UUID.fromString(guid));
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException e) {
@@ -112,7 +113,7 @@ public class TempMovementResource {
     public ResponseDto remove(@PathParam("guid") String guid) {
         LOG.debug("Archive(remove) temp movement invoked in rest layer");
         try {
-            TempMovement tempMovement = service.archiveTempMovement(guid, request.getRemoteUser());
+            TempMovement tempMovement = service.archiveTempMovement(UUID.fromString(guid), request.getRemoteUser());
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
@@ -194,7 +195,7 @@ public class TempMovementResource {
     public ResponseDto send(@PathParam("guid") String guid) {
         LOG.debug("Send temp movement invoked in rest layer");
         try {
-            TempMovement tempMovement = service.sendTempMovement(guid, request.getRemoteUser());
+            TempMovement tempMovement = service.sendTempMovement(UUID.fromString(guid), request.getRemoteUser());
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
@@ -214,7 +215,7 @@ public class TempMovementResource {
     public ResponseDto archiveTempMovement(@PathParam("guid") String guid) {
         LOG.debug("Archive movement");
         try {
-            TempMovement tempMovement = service.archiveTempMovement(guid, request.getRemoteUser());
+            TempMovement tempMovement = service.archiveTempMovement(UUID.fromString(guid), request.getRemoteUser());
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | MovementServiceRuntimeException ex) {
