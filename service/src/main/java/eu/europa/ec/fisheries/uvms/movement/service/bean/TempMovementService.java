@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
@@ -84,7 +85,7 @@ public class TempMovementService {
         }
     }
 
-    public TempMovement archiveTempMovement(String guid, String username) throws MovementServiceException {
+    public TempMovement archiveTempMovement(UUID guid, String username) throws MovementServiceException {
         checkUsernameProvided(username);
         return setTempMovementState(guid, TempMovementStateEnum.DELETED, username);
     }
@@ -95,11 +96,11 @@ public class TempMovementService {
             if (newTempMovement == null) {
                 throw new MovementServiceRuntimeException("No temp movement to update", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
-            if (newTempMovement.getGuid() == null) {
+            if (newTempMovement.getId() == null) {
                 throw new MovementServiceRuntimeException("Non valid id of temp movement to update", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
 
-            TempMovement tempMovement = dao.getTempMovementByGuid(newTempMovement.getGuid());
+            TempMovement tempMovement = dao.getTempMovementById(newTempMovement.getId());
             tempMovement = TempMovementMapper.toExistingTempMovementEntity(tempMovement, newTempMovement, username);
 //            return TempMovementMapper.toTempMovement(tempMovement);
             return tempMovement;
@@ -143,7 +144,7 @@ public class TempMovementService {
     }
 
     
-    public TempMovement sendTempMovement(String guid, String username) throws MovementServiceException {
+    public TempMovement sendTempMovement(UUID guid, String username) throws MovementServiceException {
         checkUsernameProvided(username);
         try {
             TempMovement movement = setTempMovementState(guid, TempMovementStateEnum.SENT, username);
@@ -159,23 +160,23 @@ public class TempMovementService {
         }
     }
     
-    public TempMovement getTempMovement(String guid) throws MovementServiceException {
+    public TempMovement getTempMovement(UUID guid) throws MovementServiceException {
         try {
             if (guid == null) {
                 throw new MovementServiceRuntimeException("TempMovement GUID cannot be null.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
             }
-            return dao.getTempMovementByGuid(guid);
+            return dao.getTempMovementById(guid);
         } catch (MovementServiceException e) {
             throw new MovementServiceException("Error when getting temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
     }
     
-    private TempMovement setTempMovementState(String guid, TempMovementStateEnum state, String username) throws MovementServiceException {
+    private TempMovement setTempMovementState(UUID guid, TempMovementStateEnum state, String username) throws MovementServiceException {
         try {
             if (guid == null) {
                 throw new IllegalArgumentException("Non valid id of temp movement to update");
             }
-            TempMovement tempMovement = dao.getTempMovementByGuid(guid);
+            TempMovement tempMovement = dao.getTempMovementById(guid);
             tempMovement.setState(state);
             tempMovement.setUpdated(Instant.now());
             tempMovement.setUpdatedBy(username);
@@ -187,7 +188,7 @@ public class TempMovementService {
 
     private void fireMovementEvent(TempMovement createdMovement) {
         try {
-            createdManualMovement.fire(new NotificationMessage("movementGuid", createdMovement.getGuid()));
+            createdManualMovement.fire(new NotificationMessage("movementGuid", createdMovement.getId()));
         } catch (Exception e) {
             LOG.error("Error when firing notification of created temp movement. {}", e.getMessage());
         }

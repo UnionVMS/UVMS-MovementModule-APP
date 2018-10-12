@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
 import java.util.List;
+import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -33,14 +34,12 @@ public class TempMovementDao {
         return tempMovement;
     }
 
-    public TempMovement getTempMovementByGuid(String guid) throws MovementServiceException {
-        try {
-            TypedQuery<TempMovement> query = em.createNamedQuery(TempMovement.FIND_BY_GUID, TempMovement.class);
-            query.setParameter("guid", guid);
-            return query.getSingleResult();
-        } catch (NoResultException | NonUniqueResultException e) {
-            throw new MovementServiceException("Error when fetching temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+    public TempMovement getTempMovementById(UUID id) throws MovementServiceException {
+        TempMovement tempMovement = em.find(TempMovement.class, id);
+        if (tempMovement == null) {
+            throw new MovementServiceException("Error when fetching temp movement", ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
+        return tempMovement;
     }
 
     public List<TempMovement> getTempMovementListPaginated(Integer page, Integer listSize) {

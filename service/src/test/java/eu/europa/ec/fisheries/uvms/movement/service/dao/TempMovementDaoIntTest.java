@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import javax.ejb.EJB;
 
 import org.hamcrest.core.StringContains;
@@ -53,7 +54,6 @@ public class TempMovementDaoIntTest extends TransactionalTests {
         em.flush();
 
         assertNotNull(createdTempMovement.getId());
-        assertNotNull(createdTempMovement.getGuid());
     }
 
     @Test
@@ -75,15 +75,15 @@ public class TempMovementDaoIntTest extends TransactionalTests {
         TempMovement tempMovement = createTempMovementEntityHelper(LONGITUDE, LATITUDE);
         TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
         em.flush();
-        Long createdTempMovementId = createdTempMovement.getId();
+        UUID createdTempMovementId = createdTempMovement.getId();
 
-        String createdTempMovementGUID = createdTempMovement.getGuid();
+        UUID createdTempMovementGUID = createdTempMovement.getId();
         assertNotNull(createdTempMovementGUID);
 
         // then fetch it
-        TempMovement fetchedTempMovement =  tempMovementDao.getTempMovementByGuid(createdTempMovementGUID);
+        TempMovement fetchedTempMovement =  tempMovementDao.getTempMovementById(createdTempMovementGUID);
         assertNotNull(fetchedTempMovement);
-        Long fetchedTempMovementId = fetchedTempMovement.getId();
+        UUID fetchedTempMovementId = fetchedTempMovement.getId();
         assertEquals(createdTempMovementId, fetchedTempMovementId);
     }
 
@@ -94,7 +94,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
         expectedMessage("Error when fetching temp movement");
 
         // we assume that the probability for zero guid exists in db is so low so we consider this safe
-        tempMovementDao.getTempMovementByGuid("00000000-0000-0000-0000-000000000000");
+        tempMovementDao.getTempMovementById(UUID.fromString("00000000-0000-0000-0000-000000000000"));
     }
 
     @Test

@@ -51,7 +51,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement tempMovement = createTempMovement();
         TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
-        Assert.assertNotNull(result.getGuid());
+        Assert.assertNotNull(result.getId());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void createWithGivenId() {
-        String id = UUID.randomUUID().toString();
+        UUID id = UUID.randomUUID();
         TempMovement tempMovement = createTempMovement();
         try {
             tempMovementService.createTempMovement(tempMovement, "TEST");
@@ -102,7 +102,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
         assertNotNull(createTempMovement);
         assertNotNull(createTempMovement.getUpdated());
-        assertNotNull(createTempMovement.getGuid());
+        assertNotNull(createTempMovement.getId());
 
         assertEquals(tempMovement.getSpeed(), createTempMovement.getSpeed());
         assertEquals(TempMovementStateEnum.DRAFT, createTempMovement.getState());
@@ -124,11 +124,11 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement tempMovement = createTempMovement();
         TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
-        Assert.assertNotNull(result.getGuid());
+        Assert.assertNotNull(result.getId());
 
-        TempMovement fetched = tempMovementService.getTempMovement(result.getGuid());
+        TempMovement fetched = tempMovementService.getTempMovement(result.getId());
         Assert.assertNotNull(fetched);
-        Assert.assertEquals(fetched.getGuid(), result.getGuid());
+        Assert.assertEquals(fetched.getId(), result.getId());
     }
 
     @Test
@@ -136,7 +136,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     public void getTempMovementWithBogusId() {
         TempMovement tt = null;
         try {
-            tt = tempMovementService.getTempMovement("TEST");
+            tt = tempMovementService.getTempMovement(UUID.randomUUID());
         } catch (MovementServiceException e) {
             Assert.assertTrue(e.getMessage().contains("Error when getting temp movement"));
         } catch (Exception e) {
@@ -153,7 +153,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement createTempMovement = tempMovementService.createTempMovement(tempMovement, username);
         em.flush();
 
-        TempMovement getTempMovement = tempMovementService.getTempMovement(createTempMovement.getGuid());
+        TempMovement getTempMovement = tempMovementService.getTempMovement(createTempMovement.getId());
         assertEquals(createTempMovement, getTempMovement);
     }
 
@@ -164,7 +164,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test(expected = MovementServiceException.class)
     public void getTempMovementGuidDoNotExistCheckFailureTest() throws MovementServiceException {
-        tempMovementService.getTempMovement(UUID.randomUUID().toString());
+        tempMovementService.getTempMovement(UUID.randomUUID());
     }
 
     @Test(expected = MovementServiceException.class)
@@ -198,12 +198,12 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement tempMovement = createTempMovement();
         TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
-        String id = result.getGuid();
+        UUID id = result.getId();
         Assert.assertNotNull(id);
 
         TempMovement fetched = tempMovementService.getTempMovement(id);
         Assert.assertNotNull(fetched);
-        Assert.assertEquals(id, fetched.getGuid());
+        Assert.assertEquals(id, fetched.getId());
         Assert.assertEquals(TempMovementStateEnum.SENT, fetched.getState());
 
         fetched.setState(TempMovementStateEnum.DELETED);
@@ -212,7 +212,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
         TempMovement fetchedAgain = tempMovementService.getTempMovement(id);
         Assert.assertNotNull(fetched);
-        Assert.assertEquals(id, fetchedAgain.getGuid());
+        Assert.assertEquals(id, fetchedAgain.getId());
         Assert.assertEquals(TempMovementStateEnum.DELETED, fetchedAgain.getState());
     }
     
@@ -233,7 +233,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement tempMovement = createTempMovement();
         em.flush();
 
-        tempMovement.setGuid(UUID.randomUUID().toString());
+        tempMovement.setId(UUID.randomUUID());
         tempMovementService.updateTempMovement(tempMovement, username);
     }
 
@@ -251,7 +251,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
         assertNotNull(updateTempMovement);
         assertNotNull(updateTempMovement.getUpdated());
-        assertNotNull(updateTempMovement.getGuid());
+        assertNotNull(updateTempMovement.getId());
 
         assertEquals(createTempMovement.getSpeed(), updateTempMovement.getSpeed());
         assertEquals(createTempMovement.getState(), updateTempMovement.getState());
@@ -273,21 +273,21 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement tempMovement = createTempMovement();
         TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
-        String id = result.getGuid();
+        UUID id = result.getId();
         Assert.assertNotNull(id);
 
         tempMovementService.archiveTempMovement(id, "TEST");
 
         TempMovement fetched = tempMovementService.getTempMovement(id);
         Assert.assertNotNull(fetched);
-        Assert.assertEquals(id, fetched.getGuid());
+        Assert.assertEquals(id, fetched.getId());
         Assert.assertEquals(TempMovementStateEnum.DELETED, fetched.getState());
     }
 
     @Test(expected = MovementServiceException.class)
     @OperateOnDeployment("movementservice")
     public void archiveTempMovementWithBogusId() throws MovementServiceException {
-        String id = "BOGUS";
+        UUID id = UUID.randomUUID();
         tempMovementService.archiveTempMovement(id, "TEST");
     }
     
@@ -299,7 +299,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test(expected = EJBTransactionRolledbackException.class)
     public void archiveTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
-        tempMovementService.archiveTempMovement("guid", null);
+        tempMovementService.archiveTempMovement(UUID.randomUUID(), null);
     }
 
     @Test
@@ -310,12 +310,12 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement createTempMovement = tempMovementService.createTempMovement(tempMovementType, username);
         em.flush();
 
-        TempMovement archiveTempMovement = tempMovementService.archiveTempMovement(createTempMovement.getGuid(), username);
+        TempMovement archiveTempMovement = tempMovementService.archiveTempMovement(createTempMovement.getId(), username);
         em.flush();
 
         assertNotNull(archiveTempMovement);
         assertNotNull(archiveTempMovement.getUpdated());
-        assertNotNull(archiveTempMovement.getGuid());
+        assertNotNull(archiveTempMovement.getId());
         assertEquals(TempMovementStateEnum.DELETED, archiveTempMovement.getState());
     }
     
@@ -327,7 +327,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test(expected = EJBTransactionRolledbackException.class)
     public void sendTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
-        tempMovementService.sendTempMovement("guid", null);
+        tempMovementService.sendTempMovement(UUID.randomUUID(), null);
     }
 
     @Test
@@ -338,12 +338,12 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement createTempMovement = tempMovementService.createTempMovement(tempMovement, username);
         em.flush();
 
-        TempMovement sendTempMovement = tempMovementService.sendTempMovement(createTempMovement.getGuid(), username);
+        TempMovement sendTempMovement = tempMovementService.sendTempMovement(createTempMovement.getId(), username);
         em.flush();
 
         assertNotNull(sendTempMovement);
         assertNotNull(sendTempMovement.getUpdated());
-        assertNotNull(sendTempMovement.getGuid());
+        assertNotNull(sendTempMovement.getId());
         assertEquals(TempMovementStateEnum.SENT, sendTempMovement.getState());
     }
 
