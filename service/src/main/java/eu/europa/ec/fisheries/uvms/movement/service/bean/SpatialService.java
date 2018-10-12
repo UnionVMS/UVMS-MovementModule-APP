@@ -31,6 +31,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreasByLocationType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
 
@@ -48,9 +49,9 @@ public class SpatialService {
     public Movement enrichMovementWithSpatialData(Movement movement) throws MovementServiceException {
         try {
             SpatialEnrichmentRS enrichment = spatialClient.getEnrichment(movement.getLocation());
-            Movement enrichedMovement = MovementMapper.enrichMovement(movement, enrichment);
-            mapAreas(enrichedMovement, enrichment);
-            return enrichedMovement;
+            MovementMapper.enrichMovement(movement, enrichment);
+            mapAreas(movement, enrichment.getAreasByLocation());
+            return movement;
         } catch (Exception ex) {
             throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex, ErrorCode.DATA_RETRIEVING_ERROR);
         }
@@ -60,18 +61,23 @@ public class SpatialService {
         List<Point> locations = movements.stream().map(Movement::getLocation).collect(Collectors.toList());
         try {
             BatchSpatialEnrichmentRS enrichment = spatialClient.getBatchEnrichment(locations);
-            List<Movement> enrichedMovements = MovementMapper.enrichAndMapToMovementTypes(movements, enrichment);
-            // TODO mapAreas
-            return enrichedMovements;
+            MovementMapper.enrichAndMapToMovementTypes(movements, enrichment);
+            // Assume movements and enrichments are ordered?
+            for (int i = 0; i < movements.size(); i++) {
+                mapAreas(movements.get(i), enrichment.getEnrichmentRespLists().get(i).getAreasByLocation());
+            }
+            return movements;
         } catch (Exception ex) {
             throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
     
-    // TODO check this
-    private void mapAreas(Movement movement, SpatialEnrichmentRS spatialData) {
-        if (spatialData.getAreasByLocation() != null) {
-            for (AreaExtendedIdentifierType area : spatialData.getAreasByLocation().getAreas()) {
+    private void mapAreas(Movement movement, AreasByLocationType spatialAreas) {
+        if (movement.getMovementareaList() == null) {
+            movement.setMovementareaList(new ArrayList<>());
+        }
+        if (spatialAreas != null) {
+            for (AreaExtendedIdentifierType area : spatialAreas.getAreas()) {
                 Movementarea movementArea = new Movementarea();
                 Area areaEntity = areaDao.getAreaByCode(area.getCode());
 
@@ -84,27 +90,12 @@ public class SpatialService {
                 } else {
                     AreaType areaType = getAreaType(area.getAreaType().value());
                     Area newArea = mapToArea(area, areaType);
-                    try {
-                        areaDao.createMovementArea(newArea);
-                        movementArea.setMovareaAreaId(newArea);
-                    } catch (ConstraintViolationException e) {
-                        // Area was created while we tried to create it.
-                        LOG.info("Area \"{}\"was created while we tried to create it. Trying to fetch it.", area.getCode());
-                        areaEntity = areaDao.getAreaByCode(area.getCode());
-                        if (areaEntity != null) {
-                            if (!areaEntity.getRemoteId().equals(area.getId())) {
-                                areaEntity.setRemoteId(area.getId());
-                            }
-                            movementArea.setMovareaAreaId(areaEntity);
-                        }
-                    }
+                    areaDao.createMovementArea(newArea);
+                    movementArea.setMovareaAreaId(newArea);
                 }
                 movementArea.setMovareaMoveId(movement);
                 movementArea.setMovareaUpdattim(DateUtil.nowUTC());
                 movementArea.setMovareaUpuser("UVMS");
-                if (movement.getMovementareaList() == null) {
-                    movement.setMovementareaList(new ArrayList<>());
-                }
                 movement.getMovementareaList().add(movementArea);
             }
         } else {

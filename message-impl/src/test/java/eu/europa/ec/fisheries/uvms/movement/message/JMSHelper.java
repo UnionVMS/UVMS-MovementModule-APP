@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.message;
 
 import java.util.Enumeration;
+import java.util.List;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
@@ -19,6 +20,7 @@ import javax.jms.QueueBrowser;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
@@ -47,6 +49,13 @@ public class JMSHelper {
         String correlationId = sendMovementMessage(request, movementBaseType.getConnectId());
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementResponse.class);
+    }
+    
+    public CreateMovementBatchResponse createMovementBatch(List<MovementBaseType> movementBaseType, String username) throws Exception {
+        String request = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementBaseType, username);
+        String correlationId = sendMovementMessage(request, movementBaseType.get(0).getConnectId());
+        Message response = listenForResponse(correlationId);
+        return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementBatchResponse.class);
     }
     
     public GetMovementListByQueryResponse getMovementListByQuery(MovementQuery movementQuery, String groupId) throws Exception {

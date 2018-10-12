@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
+import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
@@ -197,6 +199,20 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(createdMovement2.getMetaData(), is(notNullValue()));
         MovementMetaData metaData2 = createdMovement2.getMetaData();
         assertThat(metaData2.getAreas().get(0).getTransitionType(), is(MovementTypeType.POS));
+    }
+    
+    @Test
+    @RunAsClient
+    public void createMovementBatchTest() throws Exception {
+        MovementBaseType m1 = MovementTestHelper.createMovementBaseType(0d, 0d);
+        MovementBaseType m2 = MovementTestHelper.createMovementBaseType(0d, 1d);
+        MovementBaseType m3 = MovementTestHelper.createMovementBaseType(0d, 2d);
+        CreateMovementBatchResponse response = jmsHelper.createMovementBatch(Arrays.asList(m1, m2, m3), "test user");
+        List<MovementType> createdMovement = response.getMovements();
+        assertThat(createdMovement.size(), is(3));
+        assertThat(createdMovement.get(0).getMetaData().getAreas().get(0).getCode(), is("AREA0"));
+        assertThat(createdMovement.get(1).getMetaData().getAreas().get(0).getCode(), is("AREA1"));
+        assertThat(createdMovement.get(2).getMetaData().getAreas().get(0).getCode(), is("AREA2"));
     }
 
     @Test

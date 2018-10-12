@@ -24,12 +24,15 @@ import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreasByLocationType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRQ;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.ClosestAreasType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.ClosestLocationsType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRQ;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRSListElement;
 
 @Path("spatial/spatialnonsecure/json")
 @Stateless
@@ -47,6 +50,29 @@ public class SpatialModuleMock {
         populateAreas(spatialEnrichmentRS);
 
         return Response.ok(spatialEnrichmentRS).build();
+    }
+    
+    @POST
+    @Path("getEnrichmentBatch")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getEnrichmentBatch(BatchSpatialEnrichmentRQ batchSpatialEnrichmentRQ) {
+        BatchSpatialEnrichmentRS batchSpatialEnrichmentRS = new BatchSpatialEnrichmentRS();
+        for (int i = 0; i < batchSpatialEnrichmentRQ.getEnrichmentLists().size(); i++) {
+            SpatialEnrichmentRSListElement responseElement = new SpatialEnrichmentRSListElement();
+            List<AreaExtendedIdentifierType> areas = new ArrayList<>();
+            AreaExtendedIdentifierType area = new AreaExtendedIdentifierType();
+            area.setAreaType(AreaType.COUNTRY);
+            area.setId("AREA" + i);
+            area.setCode("AREA" + i);
+            area.setName("AREA" + i);
+            areas.add(area);
+            AreasByLocationType areasByLocation = new AreasByLocationType();
+            areasByLocation.setAreas(areas);
+            responseElement.setAreasByLocation(areasByLocation);
+            batchSpatialEnrichmentRS.getEnrichmentRespLists().add(responseElement);
+        }
+        return Response.ok(batchSpatialEnrichmentRS).build();
     }
     
     private void populateClosestAreas(SpatialEnrichmentRS spatialEnrichmentRS) {

@@ -92,7 +92,6 @@ public class MovementService {
      */
     public Movement createMovement(Movement movement) {
         try {
-            //enrich with closest port, closest country and areas
             spatial.enrichMovementWithSpatialData(movement);
             movementBatch.createMovement(movement);
             incomingMovementBean.processMovement(movement);
@@ -107,15 +106,14 @@ public class MovementService {
     }
 
     public List<Movement> createMovementBatch(List<Movement> movements) throws MovementServiceException {
-        LOG.debug("Create invoked in service layer");
         try {
-            LOG.debug("ENRICHING MOVEMENTS BATCH WITH SPATIAL DATA");
-            List<Movement> enrichedMovements = spatial.enrichMovementBatchWithSpatialData(movements);
-            List<Movement> savedBatchMovements = new ArrayList<>();
-            enrichedMovements.forEach(movement -> savedBatchMovements.add(movementBatch.createMovement(movement)));
-            return savedBatchMovements;
+            spatial.enrichMovementBatchWithSpatialData(movements);
+            for (Movement movement : movements) {
+                movementBatch.createMovement(movement);
+                incomingMovementBean.processMovement(movement);
+            }
+            return movements;
         } catch (MovementServiceRuntimeException mdre) {
-            LOG.warn("Didn't find movement connect for the just received movement so NOT going to save anything!");
             throw new MovementServiceException("Didn't find movement connect for the just received movement so NOT going to save anything!", mdre, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
         } catch (MovementServiceException ex) {
             throw new EJBException("createMovementBatch failed", ex);
