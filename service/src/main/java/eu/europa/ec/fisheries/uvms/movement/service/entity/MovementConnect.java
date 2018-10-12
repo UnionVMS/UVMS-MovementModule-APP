@@ -54,7 +54,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "movement_connect_seq")
     @Basic(optional = false)
     @Column(name = "moveconn_id")
     private Long id;

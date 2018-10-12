@@ -37,7 +37,7 @@ public class MovementFilter implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "movement_filter_seq")
     @Column(name = "movefilt_id")
     private Long id;
 

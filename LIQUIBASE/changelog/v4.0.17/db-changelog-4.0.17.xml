@@ -74,4 +74,6 @@
     	<modifyDataType tableName="movement" columnName="move_duplicate_id" newDataType="UUID"/>
     </changeSet>
     
+    <include file="db-changelog-create-seqs.xml" relativeToChangelogFile="true"/>
+    
 </databaseChangeLog>

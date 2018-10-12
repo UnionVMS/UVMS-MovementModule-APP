@@ -51,7 +51,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Movementmetadata implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "movement_meta_seq")
     @Basic(optional = false)
     @Column(name = "movemet_id")
     private Long movemetId;

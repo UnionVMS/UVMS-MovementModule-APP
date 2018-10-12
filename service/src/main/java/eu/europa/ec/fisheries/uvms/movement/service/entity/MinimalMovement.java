@@ -72,7 +72,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "minimal_mov_seq")
     @Basic(optional = false)
     @Column(name = "move_id")
     private Long id;
