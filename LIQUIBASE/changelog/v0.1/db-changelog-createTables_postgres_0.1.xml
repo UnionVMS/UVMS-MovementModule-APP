@@ -5,25 +5,25 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <include file="\schema\tables\movementsource.xml"/>
-    <include file="\schema\tables\movementtype.xml"/>
-    <include file="\schema\tables\activitytype.xml"/>
-    <include file="\schema\tables\activity.xml"/>
-    <include file="\schema\tables\segmentcategory.xml"/>
-    <include file="\schema\tables\postgres\track_postgres.xml"/>
-    <include file="\schema\tables\movementmetadata.xml"/>
-    <include file="\schema\tables\movementconnect.xml"/>
-    <include file="\schema\tables\postgres\movement_postgres.xml"/>
-    <include file="\schema\tables\postgres\latest_movement_postgres.xml"/>
-    <include file="\schema\tables\postgres\segment_postgres.xml"/>
-    <include file="\schema\tables\movementfiltertype.xml"/>
-    <include file="\schema\tables\movementfiltergroup.xml"/>
-    <include file="\schema\tables\movementfilter.xml"/>                
-    <include file="\schema\tables\temp_movement.xml"/>
-    <include file="\schema\tables\areatype.xml"/>
-    <include file="\schema\tables\area.xml"/>
-    <include file="\schema\tables\movementarea.xml"/>
-    <include file="\schema\tables\areatransition.xml"/>
-    <include file="\schema\tables\parameter.xml"/>
+    <include file="..\..\schema\tables\movementsource.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\movementtype.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\activitytype.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\activity.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\segmentcategory.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\postgres\track_postgres.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\movementmetadata.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\movementconnect.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\postgres\movement_postgres.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\postgres\latest_movement_postgres.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\postgres\segment_postgres.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\movementfiltertype.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\movementfiltergroup.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\movementfilter.xml" relativeToChangelogFile="true"/>                
+    <include file="..\..\schema\tables\temp_movement.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\areatype.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\area.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\movementarea.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\areatransition.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\tables\parameter.xml" relativeToChangelogFile="true"/>
 	
 </databaseChangeLog>

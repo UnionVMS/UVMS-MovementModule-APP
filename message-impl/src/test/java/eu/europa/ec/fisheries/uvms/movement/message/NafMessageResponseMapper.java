@@ -15,11 +15,10 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLDecoder;
-import java.util.Date;
+import java.time.Instant;
+import java.util.Date; //leave be for now
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,8 +199,8 @@ public class NafMessageResponseMapper {
         while (timeString.length() < 4) {
             timeString = "0" + timeString;
         }
-        Date date = parseToUTCDateTime(dateString + " " + timeString + " UTC");
-        movement.setPositionTime(date);
+        Instant date = DateUtil.convertDateTimeInUTC(dateString + " " + timeString + " UTC", DATE_TIME_FORMAT);
+        movement.setPositionTime(Date.from(date));
     }
 
     static void mapIRCS(String value, MovementBaseType movement) {
@@ -273,7 +272,7 @@ public class NafMessageResponseMapper {
 
 
     private final static String DATE_TIME_FORMAT = "yyyyMMdd HHmm z";
-    private static Date parseToUTC(String format, String dateString) {
+    /*private static Date parseToUTC(String format, String dateString) {
         DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
         DateTime dateTime = formatter.withZoneUTC().parseDateTime(dateString);
         return dateTime.toLocalDateTime().toDate();
@@ -282,7 +281,7 @@ public class NafMessageResponseMapper {
 
     public static Date parseToUTCDateTime(String dateString) {
         return parseToUTC(DATE_TIME_FORMAT, dateString);
-    }
+    }*/
 
 
 }

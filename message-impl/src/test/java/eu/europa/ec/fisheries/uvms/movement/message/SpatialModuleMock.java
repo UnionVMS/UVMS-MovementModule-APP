@@ -13,63 +13,66 @@ package eu.europa.ec.fisheries.uvms.movement.message;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.inject.Inject;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleResponseMapper;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreasByLocationType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRQ;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.ClosestAreasType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.ClosestLocationsType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRQ;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialModuleMethod;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialModuleRequest;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRSListElement;
 
-@MessageDriven(mappedName = "jms/queue/UVMSSpatialEvent", activationConfig = {
-        @ActivationConfigProperty(propertyName = "messagingType", propertyValue = "javax.jms.MessageListener"), 
-        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"), 
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = "UVMSSpatialEvent")})
-public class SpatialModuleMock implements MessageListener {
+@Path("spatial/spatialnonsecure/json")
+@Stateless
+public class SpatialModuleMock {
+
+    @POST
+    @Path("getEnrichment")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getEnrichment(SpatialEnrichmentRQ spatialEnrichmentRQ) {
+        SpatialEnrichmentRS spatialEnrichmentRS = new SpatialEnrichmentRS();
+
+        populateClosestAreas(spatialEnrichmentRS);
+        populateClosestLocations(spatialEnrichmentRS);
+        populateAreas(spatialEnrichmentRS);
+
+        return Response.ok(spatialEnrichmentRS).build();
+    }
     
-    @Inject
-    MessageProducer messageProducer;
-
-    @Override
-    public void onMessage(Message message) {
-        TextMessage textMessage = (TextMessage) message;
-        try {
-            SpatialModuleRequest request = JAXBUtils.unMarshallMessage(textMessage.getText(), SpatialModuleRequest.class);
-            SpatialModuleMethod method = request.getMethod();
-            
-            switch (method) {
-                case GET_ENRICHMENT:
-//                    SpatialEnrichmentRQ spatialEnrichmentRQ = JAXBUtils.unMarshallMessage(textMessage.getText(), SpatialEnrichmentRQ.class);
-                    SpatialEnrichmentRS spatialEnrichmentRS = new SpatialEnrichmentRS();
-                    
-                    populateClosestAreas(spatialEnrichmentRS);
-                    
-                    populateClosestLocations(spatialEnrichmentRS);
-                    
-                    populateAreas(spatialEnrichmentRS);
-                    
-                    String mapEnrichmentResponse = SpatialModuleResponseMapper.mapEnrichmentResponse(spatialEnrichmentRS);
-                    messageProducer.sendMessageBackToRecipient((TextMessage) message, mapEnrichmentResponse);
-                    break;
-                default:
-                    break;
-            }
-        } catch (Exception e) {
+    @POST
+    @Path("getEnrichmentBatch")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getEnrichmentBatch(BatchSpatialEnrichmentRQ batchSpatialEnrichmentRQ) {
+        BatchSpatialEnrichmentRS batchSpatialEnrichmentRS = new BatchSpatialEnrichmentRS();
+        for (int i = 0; i < batchSpatialEnrichmentRQ.getEnrichmentLists().size(); i++) {
+            SpatialEnrichmentRSListElement responseElement = new SpatialEnrichmentRSListElement();
+            List<AreaExtendedIdentifierType> areas = new ArrayList<>();
+            AreaExtendedIdentifierType area = new AreaExtendedIdentifierType();
+            area.setAreaType(AreaType.COUNTRY);
+            area.setId("AREA" + i);
+            area.setCode("AREA" + i);
+            area.setName("AREA" + i);
+            areas.add(area);
+            AreasByLocationType areasByLocation = new AreasByLocationType();
+            areasByLocation.setAreas(areas);
+            responseElement.setAreasByLocation(areasByLocation);
+            batchSpatialEnrichmentRS.getEnrichmentRespLists().add(responseElement);
         }
+        return Response.ok(batchSpatialEnrichmentRS).build();
     }
     
     private void populateClosestAreas(SpatialEnrichmentRS spatialEnrichmentRS) {
@@ -116,4 +119,5 @@ public class SpatialModuleMock implements MessageListener {
         areasByLocationType.setAreas(areas);
         spatialEnrichmentRS.setAreasByLocation(areasByLocationType);
     }
+    
 }

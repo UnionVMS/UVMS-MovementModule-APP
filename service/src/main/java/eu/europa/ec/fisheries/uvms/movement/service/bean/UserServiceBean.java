@@ -17,6 +17,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jms.TextMessage;
 
+import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class UserServiceBean {
             return getOrganizationNation(organizationName);
         } catch (ModelMarshallException | MovementMessageException | MessageException e) {
             LOG.error("[ Error when getting user nationality. ] {}", e);
-            throw new MovementServiceException("[ Error when getting user nationality. ]", e);
+            throw new MovementServiceException("Error when getting user nationality.", e, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
 
@@ -69,5 +70,4 @@ public class UserServiceBean {
         GetOrganisationResponse organization = JAXBMarshaller.unmarshallTextMessage(response, GetOrganisationResponse.class);
         return organization.getOrganisation().getNation();
     }
-
 }

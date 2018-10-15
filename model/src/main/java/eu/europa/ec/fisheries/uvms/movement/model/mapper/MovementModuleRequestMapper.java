@@ -19,14 +19,13 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingRequest;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+
 import java.util.List;
 
-/**
- **/
 public class MovementModuleRequestMapper {
 
-    public static String mapToCreateMovementRequest(MovementBaseType baseType, String username) throws ModelMarshallException {
+    public static String mapToCreateMovementRequest(MovementBaseType baseType, String username) throws MovementModelException {
         CreateMovementRequest request = new CreateMovementRequest();
         request.setMethod(MovementModuleMethod.CREATE);
         request.setUsername(username);
@@ -34,7 +33,8 @@ public class MovementModuleRequestMapper {
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
 
-    public static String mapToCreateMovementBatchRequest(List<MovementBaseType> baseTypeList, String username) throws ModelMarshallException {
+
+    public static String mapToCreateMovementBatchRequest(List<MovementBaseType> baseTypeList, String username) throws MovementModelException {
         CreateMovementBatchRequest request = new CreateMovementBatchRequest();
         request.setMethod(MovementModuleMethod.CREATE_BATCH);
         request.setUsername(username);
@@ -44,24 +44,23 @@ public class MovementModuleRequestMapper {
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
 
-    public static String mapToGetMovementMapByQueryRequest(MovementQuery query) throws ModelMarshallException {
+    public static String mapToGetMovementMapByQueryRequest(MovementQuery query) throws MovementModelException {
         GetMovementMapByQueryRequest request = new GetMovementMapByQueryRequest();
         request.setMethod(MovementModuleMethod.MOVEMENT_MAP);
         request.setQuery(query);
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
 
-    public static String mapToGetMovementListByQueryRequest(MovementQuery query) throws ModelMarshallException {
+    public static String mapToGetMovementListByQueryRequest(MovementQuery query) throws MovementModelException {
         GetMovementListByQueryRequest request = new GetMovementListByQueryRequest();
         request.setMethod(MovementModuleMethod.MOVEMENT_LIST);
         request.setQuery(query);
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
 
-    public static String mapToPingRequest(MovementQuery query) throws ModelMarshallException {
+    public static String mapToPingRequest(MovementQuery query) throws MovementModelException {
         PingRequest request = new PingRequest();
         request.setMethod(MovementModuleMethod.PING);
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
-
 }

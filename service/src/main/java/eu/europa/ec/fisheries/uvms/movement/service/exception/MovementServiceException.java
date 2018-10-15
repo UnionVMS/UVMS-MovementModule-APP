@@ -11,18 +11,52 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.exception;
 
+import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
+
 /**
- **/
+ * The MovementServiceException wraps all checked standard Java exception and enriches them with a custom error code.
+ * You can use this code to retrieve localized error messages from online documentation. (If implemented)
+ *
+ * @author Kasim Gul
+ */
 public class MovementServiceException extends Exception {
 
-    public MovementServiceException() {}
+        private static final long serialVersionUID = 6413438667115349522L;
 
-    public MovementServiceException(String message) {
-        super(message);
+        private final ErrorCode code;
+        private ExceptionType fault;
+
+        public MovementServiceException(ErrorCode code) {
+            super();
+            this.code = code;
+        }
+
+        public MovementServiceException(String message, Throwable cause, ErrorCode code) {
+            super(message, cause);
+            this.code = code;
+        }
+
+        public MovementServiceException(String message, ErrorCode code) {
+            super(message);
+            this.code = code;
+        }
+
+        public MovementServiceException(Throwable cause, ErrorCode code) {
+            super(cause);
+            this.code = code;
+        }
+
+        public MovementServiceException(String message, Throwable cause, ErrorCode code, ExceptionType fault) {
+            super(message, cause);
+            this.code = code;
+            this.fault = fault;
+        }
+
+        public ErrorCode getCode() {
+            return this.code;
+        }
+
+        public ExceptionType getFault() {
+            return fault;
+        }
     }
-
-    public MovementServiceException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-}

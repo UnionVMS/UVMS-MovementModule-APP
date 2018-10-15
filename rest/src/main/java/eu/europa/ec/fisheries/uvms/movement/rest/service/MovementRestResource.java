@@ -12,9 +12,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import java.util.List;
-
+import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -25,16 +27,23 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementDuplicateException;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.UserServiceBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
@@ -42,13 +51,11 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
-/**
- **/
 @Path("/movement")
 @Stateless
 public class MovementRestResource {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementRestResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementRestResource.class);
 
     @EJB
     private MovementService serviceLayer;
@@ -75,13 +82,12 @@ public class MovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<MovementListResponseDto> getListByQuery(MovementQuery query) {
         try {
-            ResponseDto response = new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
-            return response;
+            return new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. {}] {}",query, ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
-            LOG.error("[ Error when getting list. {}] {}",query, ex);
+        } catch (Exception ex) {
+            LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -111,7 +117,7 @@ public class MovementRestResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -137,11 +143,15 @@ public class MovementRestResource {
             return new ResponseDto("ConnectIds cannot be empty" , ResponseCode.ERROR);
         }
         try {
-            return new ResponseDto(serviceLayer.getLatestMovementsByConnectIds(connectIds), ResponseCode.OK);
-        } catch (MovementServiceException | NullPointerException ex) {
+            List<UUID> uuids = connectIds.stream().map(UUID::fromString).collect(Collectors.toList());
+            List<Movement> latestMovements = serviceLayer.getLatestMovementsByConnectIds(uuids);
+            List<MovementType> movementTypeList = MovementEntityToModelMapper.mapToMovementType(latestMovements);
+            List<MovementDto> movementDtoList = MovementMapper.mapToMovementDtoList(movementTypeList);
+            return new ResponseDto<>(movementDtoList, ResponseCode.OK);
+        } catch (NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -169,13 +179,15 @@ public class MovementRestResource {
             return new ResponseDto("numberOfMovements cannot be null and must be greater than 0" , ResponseCode.ERROR);
         }
         try {
-            List<MovementDto> response = serviceLayer.getLatestMovements(numberOfMovements);
+            List<LatestMovement> movements = serviceLayer.getLatestMovements(numberOfMovements);
+            List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
+            List<MovementDto> response = MovementMapper.mapToMovementDtoList(latestMovements);
             LOG.debug("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
-            return new ResponseDto(response, ResponseCode.OK);
-        } catch (MovementServiceException | NullPointerException ex) {
+            return new ResponseDto<>(response, ResponseCode.OK);
+        } catch (NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -189,11 +201,16 @@ public class MovementRestResource {
     public ResponseDto getById(@PathParam(value = "id") final String id) {
         LOG.debug("Get by id invoked in rest layer");
         try {
-            return new ResponseDto(serviceLayer.getById(id), ResponseCode.OK);
-        } catch (MovementServiceException | NullPointerException ex) {
+            Movement movement = serviceLayer.getById(UUID.fromString(id));
+            MovementType response = MovementEntityToModelMapper.mapToMovementType(movement);
+            if (response == null) {
+                throw new MovementServiceRuntimeException("Error when getting movement by id: " + id, ErrorCode.NO_RESULT_ERROR);
+            }
+            return new ResponseDto<>(response, ResponseCode.OK);
+        } catch (MovementServiceRuntimeException ex) {
             LOG.error("[ Error when getting by id. ] ", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (NonUniqueResultException ex) {
             LOG.error("[ Error when getting by id. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
@@ -218,10 +235,26 @@ public class MovementRestResource {
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (MovementDuplicateException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
 
+    @POST
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path("/movementMap")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public ResponseDto<GetMovementMapByQueryResponse> getMapByQuery(MovementQuery query) {
+        try {
+            return new ResponseDto(serviceLayer.getMapByQuery(query), ResponseCode.OK);
+        } catch (MovementServiceException | MovementServiceRuntimeException ex) {
+            LOG.error("[ Error when getting movement map. {}] {}",query, ex);
+            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+        } catch (Exception ex) {
+            LOG.error("[ Error when getting movement map. ]", ex);
+            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+        }
+    }
 }

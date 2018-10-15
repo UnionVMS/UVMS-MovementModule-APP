@@ -11,16 +11,6 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
-import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMapperException;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.EJB;
-import javax.ejb.MessageDriven;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.Message;
@@ -28,36 +18,19 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
+import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
+import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 
-@MessageDriven(mappedName = MessageConstants.QUEUE_MODULE_MOVEMENT, activationConfig = {
-        @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR, propertyValue = MessageConstants.CONNECTION_TYPE),
-        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR, propertyValue = MessageConstants.DESTINATION_TYPE_QUEUE),
-        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR, propertyValue = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE_NAME),
-        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_JNDI_NAME, propertyValue = MessageConstants.QUEUE_MODULE_MOVEMENT),
-        @ActivationConfigProperty(propertyName = MessageConstants.CONNECTION_FACTORY_JNDI_NAME, propertyValue = MessageConstants.CONNECTION_FACTORY)
-
-})
 public class MovementMessageConsumerBean implements MessageListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger(MovementMessageConsumerBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementMessageConsumerBean.class);
 
-    @EJB
-    private CreateMovementBean createMovementBean;
-
-    @EJB
-    private GetMovementListByQueryBean getMovementListByQueryBean;
-
-    @EJB
-    private CreateMovementBatchBean createMovementBatchBean;
-
-    @EJB
-    private GetMovementMapByQueryBean getMovementMapByQueryBean;
-
-    @EJB
-    private GetMovementListByAreaAndTimeIntervalBean getMovementListByAreaAndTimeIntervalBean;
-
-    @EJB
-    private PingBean pingBean;
+    @Inject
+    private MovementEventBean movementEventBean;
 
     @Inject
     @ErrorEvent
@@ -78,22 +51,22 @@ public class MovementMessageConsumerBean implements MessageListener {
             }
             switch (movementMethod) {
                 case MOVEMENT_LIST:
-                    getMovementListByQueryBean.getMovementListByQuery(textMessage);
+                    movementEventBean.getMovementListByQuery(textMessage);
                     break;
                 case CREATE:
-                    createMovementBean.createMovement(textMessage);
+                    movementEventBean.createMovement(textMessage);
                     break;
                 case CREATE_BATCH:
-                    createMovementBatchBean.createMovementBatch(textMessage);
+                    movementEventBean.createMovementBatch(textMessage);
                     break;
                 case MOVEMENT_MAP:
-                    getMovementMapByQueryBean.getMovementMapByQuery(textMessage);
+                    movementEventBean.getMovementMapByQuery(textMessage);
                     break;
                 case PING:
-                    pingBean.ping(textMessage);
+                    movementEventBean.ping(textMessage);
                     break;
                 case MOVEMENT_LIST_BY_AREA_TIME_INTERVAL:
-                    getMovementListByAreaAndTimeIntervalBean.getMovementListByAreaAndTimeInterval(textMessage);
+                    movementEventBean.getMovementListByAreaAndTimeInterval(textMessage);
                     break;
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:
@@ -101,10 +74,9 @@ public class MovementMessageConsumerBean implements MessageListener {
                     LOG.error("[ Request method {} is not implemented ]", movementMethod.name());
                     errorEvent.fire(new EventMessage(textMessage, "[ Request method " + movementMethod.name() + "  is not implemented ]"));
             }
-        } catch (ModelMapperException | NullPointerException | ClassCastException e) {
+        } catch (NullPointerException | ClassCastException | MovementModelException e) {
             LOG.error("[ Error when receiving message in movement: ] {}", e);
             errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: " + e.getMessage()));
         }
     }
-
 }

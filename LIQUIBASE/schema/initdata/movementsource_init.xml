@@ -55,6 +55,12 @@
             <column name="movesour_updattim" valueDate="CURRENT_TIMESTAMP"/>
             <column name="movesour_upuser" value="UVMS"/>
         </insert>
-        <rollback changeSetId="movesour-init01" changeSetAuthor="davijo"/>
+        <rollback>
+            <delete tableName="movementsource">
+                <where>
+                    movesour_name = 'NAF'
+                </where>
+            </delete>
+        </rollback>
     </changeSet>
 </databaseChangeLog>

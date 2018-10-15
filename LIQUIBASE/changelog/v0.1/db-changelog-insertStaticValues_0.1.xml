@@ -5,10 +5,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <include file="schema\initdata\movementsource_init.xml"/>
-    <include file="schema\initdata\movementtype_init.xml"/>
-    <include file="schema\initdata\segmentcategory_init.xml"/>
-    <include file="schema\initdata\activitymessagetype_init.xml"/>
-    <include file="schema\initdata\movementfiltertype_init.xml"/>
+    <include file="..\..\schema\initdata\movementsource_init.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\initdata\movementtype_init.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\initdata\segmentcategory_init.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\initdata\activitymessagetype_init.xml" relativeToChangelogFile="true"/>
+    <include file="..\..\schema\initdata\movementfiltertype_init.xml" relativeToChangelogFile="true"/>
      	
 </databaseChangeLog>

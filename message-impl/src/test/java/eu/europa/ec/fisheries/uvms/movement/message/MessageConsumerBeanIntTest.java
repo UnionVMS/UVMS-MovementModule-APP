@@ -15,7 +15,7 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JMSUtils;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.CreateMovementBean;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementEventBean;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 
@@ -36,7 +36,7 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
 
 
     @EJB
-    CreateMovementBean createMovementBean;
+    MovementEventBean createMovementBean;
 
 
     String movements[] = {

@@ -11,8 +11,9 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -31,11 +32,9 @@ public class MovementConfigHelper implements ConfigHelper {
 
     @Override
     public List<String> getAllParameterKeys() {
-        List<String> keys = new ArrayList<String>();
-        for (ParameterKey parameterKey : ParameterKey.values()) {
-            keys.add(parameterKey.getKey());
-        }
-        return keys;
+        return Arrays.stream(ParameterKey.values())
+                .map(ParameterKey::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -47,5 +46,4 @@ public class MovementConfigHelper implements ConfigHelper {
 	public EntityManager getEntityManager() {
 		return em;
 	}
-
 }

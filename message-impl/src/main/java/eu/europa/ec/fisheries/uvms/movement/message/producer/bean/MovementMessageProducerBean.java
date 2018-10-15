@@ -23,7 +23,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ModelMarshallException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @Stateless
 public class MovementMessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementMessageProducerBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementMessageProducerBean.class);
 
     private Queue auditQueue;
     private Queue spatialQueue;
@@ -102,7 +102,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
             exception.setFault(message.getErrorMessage());
             String text = JAXBMarshaller.marshallJaxBObjectToString(exception);
             sendResponseMessageToSender(message.getJmsMessage(), text);
-        } catch (ModelMarshallException | MessageException e) {
+        } catch (MessageException | MovementModelException e) {
             LOG.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MovementMessageException("[ Error when sending message. ]", e);
         }

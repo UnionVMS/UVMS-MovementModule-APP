@@ -2,17 +2,19 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import java.io.StringReader;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
+import static org.junit.Assert.assertTrue;
+import java.math.BigInteger;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
@@ -20,9 +22,8 @@ import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 @RunWith(Arquillian.class)
 public class TempMovementResourceTest extends BuildMovementRestDeployment {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     @Test
+    @OperateOnDeployment("movement")
     public void createTempMovement() throws Exception {
         TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
         TempMovementType createdTempMovement = createTempMovement(tempMovement);
@@ -33,6 +34,7 @@ public class TempMovementResourceTest extends BuildMovementRestDeployment {
     }
     
     @Test
+    @OperateOnDeployment("movement")
     public void getTempMovementById() throws Exception {
         TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
         TempMovementType createdTempMovement = createTempMovement(tempMovement);
@@ -41,7 +43,42 @@ public class TempMovementResourceTest extends BuildMovementRestDeployment {
         assertThat(fetchedTempMovement.getGuid(), is(createdTempMovement.getGuid()));
     }
     
-    
+    @Test
+    @OperateOnDeployment("movement")
+    public void updateTempMovement() throws Exception {
+        TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
+        TempMovementType createdTempMovement = createTempMovement(tempMovement);
+        
+        double newCourse = 42d;
+        createdTempMovement.setCourse(newCourse);
+        
+        TempMovementType updatedTempMovement = updateTempMovement(createdTempMovement);
+        assertThat(updatedTempMovement.getGuid(), is(createdTempMovement.getGuid()));
+        assertThat(updatedTempMovement.getCourse(), is(newCourse));
+    }
+   
+    @Test
+    @OperateOnDeployment("movement")
+    public void getTempMovements() throws Exception {
+
+        TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
+        TempMovementType createdTempMovement = createTempMovement(tempMovement);
+
+        assertThat(createdTempMovement.getGuid(), is(notNullValue()));
+        assertThat(createdTempMovement.getAsset(), is(tempMovement.getAsset()));
+        assertThat(createdTempMovement.getPosition(), is(tempMovement.getPosition()));
+
+        MovementQuery query = new MovementQuery();
+        ListPagination listPagination = new ListPagination();
+        listPagination.setPage(BigInteger.valueOf(1));
+        listPagination.setListSize(BigInteger.valueOf(1));
+        query.setPagination(listPagination);
+
+        GetTempMovementListResponse tempMovements = getTempMovements(query);
+        assertNotNull(tempMovements);
+        assertTrue(tempMovements.getMovement().size() > 0);
+    }
+
     /*
      * Helper functions for REST calls
      */
@@ -51,7 +88,16 @@ public class TempMovementResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(tempMovement), String.class);
         
-        return readResponseDto(response, TempMovementType.class);
+        return RestHelper.readResponseDto(response, TempMovementType.class);
+    }
+    
+    private TempMovementType updateTempMovement(TempMovementType tempMovement) throws Exception {
+        String response = getWebTarget()
+                .path("tempmovement")
+                .request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(tempMovement), String.class);
+        
+        return RestHelper.readResponseDto(response, TempMovementType.class);
     }
     
     private TempMovementType getTempMovement(String guid) throws Exception {
@@ -61,13 +107,16 @@ public class TempMovementResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
         
-        return readResponseDto(response, TempMovementType.class);
+        return RestHelper.readResponseDto(response, TempMovementType.class);
     }
-    
-    private <T> T readResponseDto(String response, Class<T> clazz) throws Exception {
-        JsonReader jsonReader = Json.createReader(new StringReader(response));
-        JsonObject responseDto = jsonReader.readObject();
-        JsonObject data = responseDto.getJsonObject("data");
-        return objectMapper.readValue(data.toString(), clazz);
+
+    private GetTempMovementListResponse getTempMovements(MovementQuery query) throws Exception {
+        String response = getWebTarget()
+                .path("tempmovement")
+                .path("list")
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(query), String.class);
+
+        return RestHelper.readResponseDto(response, GetTempMovementListResponse.class);
     }
 }

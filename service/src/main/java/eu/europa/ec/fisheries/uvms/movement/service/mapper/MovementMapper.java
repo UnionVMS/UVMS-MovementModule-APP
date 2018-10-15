@@ -11,6 +11,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
+import java.util.ArrayList;
+import java.util.Date;  //leave be for now
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetType;
@@ -26,23 +31,49 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.*;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRSListElement;
 
 
 public class MovementMapper {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementMapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MovementMapper.class);
 
+    private MovementMapper() {}
+    
+    public static MovementType mapMovementBaseTypeToMovementType(MovementBaseType movementBaseType) {
+        MovementType movementType = new MovementType();
+        movementType.setGuid(movementBaseType.getGuid());
+        movementType.setConnectId(movementBaseType.getConnectId());
+        movementType.setAssetId(movementBaseType.getAssetId());
+        movementType.setPosition(movementBaseType.getPosition());
+        movementType.setPositionTime(movementBaseType.getPositionTime());
+        movementType.setStatus(movementBaseType.getStatus());
+        movementType.setReportedSpeed(movementBaseType.getReportedSpeed());
+        movementType.setReportedCourse(movementBaseType.getReportedCourse());
+        movementType.setMovementType(movementBaseType.getMovementType());
+        movementType.setSource(movementBaseType.getSource());
+        movementType.setActivity(movementBaseType.getActivity());
+        movementType.setTripNumber(movementBaseType.getTripNumber());
+        movementType.setInternalReferenceNumber(movementBaseType.getInternalReferenceNumber());
+        movementType.setProcessed(movementBaseType.isProcessed());
+        movementType.setDuplicate(movementBaseType.isDuplicate());
+        movementType.setDuplicates(movementBaseType.getDuplicates());
+        return movementType;
+    }
+    
     public static List<MovementDto> mapToMovementDtoList(List<MovementType> movmements) {
         List<MovementDto> mappedMovements = new ArrayList<>();
         for (MovementType mappedMovement : movmements) {
@@ -85,58 +116,51 @@ public class MovementMapper {
         return dto;
     }
 
-    public static MovementType enrichAndMapToMovementType(MovementBaseType movement, SpatialEnrichmentRS enrichment) {
+    public static Movement enrichMovement(Movement movement, SpatialEnrichmentRS enrichment) {
 
-        MovementType movementType = Mapper.getInstance().getMapper().map(movement, MovementType.class);
-        MovementMetaData movementMeta = new MovementMetaData();
+        Movementmetadata metadata = new Movementmetadata();
 
         if (enrichment.getClosestLocations() != null) {
-            enrichWithPortData(enrichment.getClosestLocations().getClosestLocations(), LocationType.PORT, movementMeta);
+            enrichWithPortData(enrichment.getClosestLocations().getClosestLocations(), LocationType.PORT, metadata);
         } else {
             LOG.error("NO CLOSEST LOCATIONS FOUND IN RESPONSE FROM SPATIAL ");
         }
 
         if (enrichment.getClosestAreas() != null) {
-            enrichWithCountryData(enrichment.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, movementMeta);
+            enrichWithCountryData(enrichment.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, metadata);
         } else {
             LOG.error("NO CLOSEST AREAS FOUND IN RESPONSE FROM SPATIAL ");
         }
 
-        if (enrichment.getAreasByLocation() != null) {
-            movementMeta.getAreas().addAll(mapToAreas(enrichment.getAreasByLocation().getAreas()));
-        } else {
-            LOG.error("NO AREAS FOUND IN RESPONSE FROM SPATIAL ");
-        }
-
-        movementType.setMetaData(movementMeta);
-        return movementType;
+        metadata.setMovemetUpdattim(DateUtil.nowUTC());
+        metadata.setMovemetUpuser("UVMS");
+        movement.setMetadata(metadata);
+        return movement;
     }
 
-    public static List<MovementType> enrichAndMapToMovementTypes(List<MovementBaseType> movements, BatchSpatialEnrichmentRS enrichment) {
+    public static List<Movement> enrichAndMapToMovementTypes(List<Movement> movements, BatchSpatialEnrichmentRS enrichment) {
         int index = 0;
         List<SpatialEnrichmentRSListElement> enrichmentRespLists = enrichment.getEnrichmentRespLists();
-        List<MovementType> enrichedList = new ArrayList<>();
-        for (MovementBaseType movement : movements) {
+        List<Movement> enrichedList = new ArrayList<>();
+        for (Movement movement : movements) {
             SpatialEnrichmentRSListElement enrichmentRSListElement = enrichmentRespLists.get(index);
-            MovementType movementType = Mapper.getInstance().getMapper().map(movement, MovementType.class);
-            MovementMetaData movementMeta = new MovementMetaData();
+            Movementmetadata metadata = new Movementmetadata();
             if (enrichmentRSListElement.getClosestLocations() != null) {
-                enrichWithPortData(enrichmentRSListElement.getClosestLocations().getClosestLocations(), LocationType.PORT, movementMeta);
+                enrichWithPortData(enrichmentRSListElement.getClosestLocations().getClosestLocations(), LocationType.PORT, metadata);
             } else {
                 LOG.error("NO CLOSEST LOCATIONS FOUND IN RESPONSE FROM SPATIAL ");
             }
             if (enrichmentRSListElement.getClosestAreas() != null) {
-                enrichWithCountryData(enrichmentRSListElement.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, movementMeta);
+                enrichWithCountryData(enrichmentRSListElement.getClosestAreas().getClosestAreas(), AreaType.COUNTRY, metadata);
             } else {
                 LOG.error("NO CLOSEST AREAS FOUND IN RESPONSE FROM SPATIAL ");
             }
-            if (enrichmentRSListElement.getAreasByLocation() != null) {
-                movementMeta.getAreas().addAll(mapToAreas(enrichmentRSListElement.getAreasByLocation().getAreas()));
-            } else {
-                LOG.error("NO AREAS FOUND IN RESPONSE FROM SPATIAL ");
-            }
-            movementType.setMetaData(movementMeta);
-            enrichedList.add(movementType);
+            index++;
+            
+            metadata.setMovemetUpdattim(DateUtil.nowUTC());
+            metadata.setMovemetUpuser("UVMS");
+            movement.setMetadata(metadata);
+            enrichedList.add(movement);
         }
         return enrichedList;
     }
@@ -156,52 +180,50 @@ public class MovementMapper {
         return mappedAreas;
     }
 
-    private static void enrichWithPortData(List<Location> locations, LocationType type, MovementMetaData meta) {
+    private static void enrichWithPortData(List<Location> locations, LocationType type, Movementmetadata meta) {
         for (Location location : locations) {
             if (location.getLocationType().equals(type)) {
-                ClosestLocationType locationType = new ClosestLocationType();
-                locationType.setRemoteId(location.getId());
-                locationType.setDistance(location.getDistance());
-                locationType.setCode(location.getCode());
-                locationType.setName(location.getName());
-                meta.setClosestPort(locationType);
+                meta.setClosestPortRemoteId(location.getId());
+                meta.setClosestPortDistance(location.getDistance());
+                meta.setClosestPortCode(location.getCode());
+                meta.setClosestPortName(location.getName());
             }
         }
     }
 
-    private static void enrichWithCountryData(List<Area> locations, AreaType areaType, MovementMetaData meta) {
+    private static void enrichWithCountryData(List<Area> locations, AreaType areaType, Movementmetadata meta) {
         for (Area location : locations) {
             if (location.getAreaType() != null &&
                     location.getAreaType().equals(areaType)) {
-                ClosestLocationType locationType = new ClosestLocationType();
-                locationType.setRemoteId(location.getId());
-                locationType.setDistance(location.getDistance());
-                locationType.setCode(location.getCode());
-                locationType.setName(location.getName());
-                meta.setClosestCountry(locationType);
+                meta.setClosestCountryRemoteId(location.getId());
+                meta.setClosestCountryDistance(location.getDistance());
+                meta.setClosestCountryCode(location.getCode());
+                meta.setClosestCountryName(location.getName());
             }
         }
     }
 
-    public static SetReportMovementType mapToSetReportMovementType(TempMovementType movement) {
+    public static SetReportMovementType mapToSetReportMovementType(TempMovement movement) {
 
         SetReportMovementType report = new SetReportMovementType();
         report.setPluginName("ManualMovement");
         report.setPluginType(PluginType.MANUAL);
-        report.setTimestamp(DateUtil.nowUTC());
+        report.setTimestamp(Date.from(DateUtil.nowUTC()));
 
-        eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType exchangeMovementBaseType = new eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType();
-        eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId exchangeAssetId = new eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId();
+        eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType exchangeMovementBaseType =
+                new eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType();
+        eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId exchangeAssetId =
+                new eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId();
 
         exchangeAssetId.setAssetType(AssetType.VESSEL);
 
         AssetIdList cfr = new AssetIdList();
         cfr.setIdType(AssetIdType.CFR);
-        cfr.setValue(movement.getAsset().getCfr());
+        cfr.setValue(movement.getCfr());
 
         AssetIdList ircs = new AssetIdList();
         ircs.setIdType(AssetIdType.IRCS);
-        ircs.setValue(movement.getAsset().getIrcs());
+        ircs.setValue(movement.getIrcs());
 
         exchangeAssetId.getAssetIdList().add(cfr);
         exchangeAssetId.getAssetIdList().add(ircs);
@@ -209,35 +231,30 @@ public class MovementMapper {
         exchangeMovementBaseType.setAssetId(exchangeAssetId);
 
         eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint exchangeMovementPoint = new MovementPoint();
-        if (movement.getPosition() != null) {
-            exchangeMovementPoint.setLatitude(movement.getPosition().getLatitude());
-            exchangeMovementPoint.setLongitude(movement.getPosition().getLongitude());
-        }
+        if (movement.getLatitude() != null)
+            exchangeMovementPoint.setLatitude(movement.getLatitude());
+        if (movement.getLongitude() != null)
+            exchangeMovementPoint.setLongitude(movement.getLongitude());
         exchangeMovementBaseType.setPosition(exchangeMovementPoint);
 
         exchangeMovementBaseType.setReportedCourse(movement.getCourse());
         exchangeMovementBaseType.setReportedSpeed(movement.getSpeed());
         exchangeMovementBaseType.setStatus(movement.getStatus());
 
-        exchangeMovementBaseType.setAssetName(movement.getAsset().getName());
-        exchangeMovementBaseType.setFlagState(movement.getAsset().getFlagState());
-        exchangeMovementBaseType.setExternalMarking(movement.getAsset().getExtMarking());
+        exchangeMovementBaseType.setAssetName(movement.getName());
+        exchangeMovementBaseType.setFlagState(movement.getFlag());
+        exchangeMovementBaseType.setExternalMarking(movement.getExternalMarkings());
         exchangeMovementBaseType.setMovementType(MovementTypeType.MAN);
         exchangeMovementBaseType.setSource(MovementSourceType.MANUAL);
 
         try {
-            Date date = DateUtil.parseToUTCDate(movement.getTime());
+            Date date = Date.from(movement.getTimestamp());
             exchangeMovementBaseType.setPositionTime(date);
         } catch (Exception e) {
             LOG.error("Error when parsing position date for temp movement continuing ");
         }
-
         exchangeMovementBaseType.setComChannelType(MovementComChannelType.MANUAL);
-
         report.setMovement(exchangeMovementBaseType);
-
         return report;
-
     }
-
 }

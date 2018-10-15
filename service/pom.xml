@@ -16,18 +16,27 @@
     <properties>
         <application.name>${project.parent.artifactId}</application.name>
         <application.version>${project.parent.version}</application.version>
-        <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log
-        </application.logfile>
-        <application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log
-        </application.error.logfile>
         <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
+        <application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log</application.error.logfile>
+        <application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
+
+        <docker.dev.start.phase>test-compile</docker.dev.start.phase>
+        <docker.liquibase.phase>test-compile</docker.liquibase.phase>
+		<docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-            <artifactId>${project.parent.artifactId}-model</artifactId>
-        </dependency>
+    	<dependency>
+			<groupId>fish.focus.uvms.maven</groupId>
+			<artifactId>uvms-pom-gis-deps</artifactId>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>movement-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.spatial</groupId>
             <artifactId>spatial-model</artifactId>
@@ -47,11 +56,6 @@
             <groupId>eu.europa.ec.fisheries.uvms.user</groupId>
             <artifactId>user-model</artifactId>
             <version>${user.model.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-            <artifactId>movement-dbaccess-domain</artifactId>
-            <version>4.0.17-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -76,9 +80,16 @@
 			<type>pom</type>
 		</dependency>
 		<dependency>
-		    <groupId>net.sf.dozer</groupId>
-            <artifactId>dozer</artifactId>
-			<version>5.5.1</version>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.9.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jaxb-annotations</artifactId>
+			<version>2.9.5</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>fish.focus.uvms.maven</groupId>
@@ -86,7 +97,12 @@
 			<type>pom</type>
 			<scope>test</scope>
 		</dependency>				
-        
+        <dependency>
+			<groupId>com.peertopark.java</groupId>
+			<artifactId>geocalc</artifactId>
+			<version>1.1.0</version>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 
     <build>

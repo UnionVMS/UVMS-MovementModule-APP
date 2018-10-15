@@ -11,19 +11,52 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.model.exception;
 
+import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
+
 /**
- **/
+ * The MovementModelException wraps all checked standard Java exception and enriches them with a custom error code.
+ * You can use this code to retrieve localized error messages from online documentation. (If implemented)
+ *
+ * @author Kasim Gul
+ */
 public class MovementModelException extends Exception {
 
-    public MovementModelException() {
+    private static final long serialVersionUID = 6413438667115349522L;
+
+    private final ErrorCode code;
+    private ExceptionType fault;
+
+    public MovementModelException(ErrorCode code) {
+        super();
+        this.code = code;
     }
 
-    public MovementModelException(String message) {
-        super(message);
-    }
-
-    public MovementModelException(String message, Throwable cause) {
+    public MovementModelException(String message, Throwable cause, ErrorCode code) {
         super(message, cause);
+        this.code = code;
     }
 
+    public MovementModelException(String message, ErrorCode code) {
+        super(message);
+        this.code = code;
+    }
+
+    public MovementModelException(Throwable cause, ErrorCode code) {
+        super(cause);
+        this.code = code;
+    }
+
+    public MovementModelException(String message, ExceptionType fault, ErrorCode code) {
+        super(message);
+        this.code = code;
+        this.fault = fault;
+    }
+
+    public ErrorCode getCode() {
+        return this.code;
+    }
+
+    public ExceptionType getFault() {
+        return fault;
+    }
 }
