@@ -543,6 +543,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         Message response = jmsHelper.listenForResponse(correlationId);
         JAXBMarshaller.unmarshallTextMessage((TextMessage) response, ExceptionType.class);
         
+        // Wait until message have been moved to DQL
+        Thread.sleep(2500);
+        
         int dlqAfter = jmsHelper.checkQueueSize("ActiveMQ.DLQ");
         int responseQueueAfter = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
         
