@@ -16,6 +16,7 @@ import eu.europa.ec.fisheries.uvms.movement.longpolling.constants.LongPollingCon
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import java.io.IOException;
+import java.util.UUID;
 import javax.ejb.EJB;
 import javax.enterprise.event.Observes;
 import javax.json.Json;
@@ -55,13 +56,13 @@ public class LongPollingHttpServlet extends HttpServlet {
     }
 
     public void createdMovement(@Observes @CreatedMovement NotificationMessage message) throws IOException {
-        String guid = (String) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
-        completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(guid));
+        UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
+        completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(guid.toString()));
     }
 
     public void createdManualMovement(@Observes @CreatedManualMovement NotificationMessage message) throws IOException {
-        String guid = (String) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
-        completePoll(LongPollingConstants.MANUAL_MOVEMENT_PATH, createJsonMessage(guid));
+        UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
+        completePoll(LongPollingConstants.MANUAL_MOVEMENT_PATH, createJsonMessage(guid.toString()));
     }
 
     private String createJsonMessage(String guid) {
