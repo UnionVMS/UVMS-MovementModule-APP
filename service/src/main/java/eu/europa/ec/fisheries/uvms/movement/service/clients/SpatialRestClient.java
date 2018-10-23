@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -45,10 +46,12 @@ public class SpatialRestClient implements SpatialClient {
 
     private WebTarget webTarget;
 
+    @Resource(name = "java:global/spatial_endpoint")
+    private String spatialEndpoint;
+    
     @PostConstruct
     public void initClient() {
-        // TODO config/constant?
-        String url = "http://localhost:8080/unionvms/spatial/spatialnonsecure/json/";
+        String url = spatialEndpoint + "/spatialnonsecure/json/";
 
         Client client = ClientBuilder.newClient();
         client.register(new ContextResolver<ObjectMapper>() {
