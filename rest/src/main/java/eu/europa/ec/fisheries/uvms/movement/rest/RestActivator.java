@@ -17,6 +17,7 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import eu.europa.ec.fisheries.uvms.movement.rest.filter.MovementRestExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public class RestActivator extends Application {
         set.add(ConfigResource.class);
         set.add(UnionVMSFeatureFilter.class);
         set.add(AreaRestResource.class);
+        set.add(MovementRestExceptionMapper.class);
         LOG.info(RestConstants.MODULE_NAME + " module starting up");
     }
 

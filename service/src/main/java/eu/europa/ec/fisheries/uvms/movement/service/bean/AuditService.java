@@ -12,7 +12,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.schema.audit.source.v1.AuditDataSourceMethod;
+import eu.europa.ec.fisheries.uvms.audit.model.mapper.AuditLogMapper;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
@@ -32,6 +40,7 @@ public class AuditService {
     @Inject
     private MessageProducer producer;
 
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void sendMovementCreatedAudit(Movement movement, String username) {
         try {
             String auditData;
@@ -47,6 +56,7 @@ public class AuditService {
     }
     
     // TODO what should be audited during batch?
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void sendMovementBatchCreatedAudit(String guid, String username) {
         try {
             String auditData = AuditModuleRequestMapper.mapAuditLogMovementBatchCreated(guid, username);
@@ -56,6 +66,7 @@ public class AuditService {
         }
     }
 
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void sendTempMovementCreatedAudit(TempMovement tempMovement, String username) {
         try {
             String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(tempMovement.getId().toString(),
@@ -65,4 +76,15 @@ public class AuditService {
             LOG.error("Failed to send audit log message! TempMovement with guid {} was created ", tempMovement.getId().toString(), e);
         }
     }
+
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
+    public void sendAuditMessage(AuditObjectTypeEnum type, AuditOperationEnum operation, String affectedObject, String comment, String username) {
+        try {
+            String message = AuditLogMapper.mapToAuditLog(type.getValue(), operation.getValue(), affectedObject, comment, username);
+            producer.sendModuleMessage(message, ModuleQueue.AUDIT);
+        } catch (MovementMessageException | AuditModelMarshallException e) {
+            LOG.error("[ERROR] Error when sending message to Audit. ] {}", e.getMessage());
+        }
+    }
+
 }

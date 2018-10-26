@@ -9,20 +9,27 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.movement.model.constants;
+package eu.europa.ec.fisheries.uvms.movement.service.mapper.search;
 
-public enum AuditOperationEnum {
-    CREATE("Create"),
-    UPDATE("Update");
+public enum AlarmSearchTables {
 
-    private String value;
+    ALARM_REPORT("ar", "AlarmReport"),
+    ALARM_ITEM("ai", "AlarmItem");
 
-    private AuditOperationEnum(String value) {
-        this.value = value;
+    private final String tableNameAlias;
+    private final String tableName;
+
+    AlarmSearchTables(String tableNameAlias, String tableName) {
+        this.tableNameAlias = tableNameAlias;
+        this.tableName = tableName;
     }
 
-    public String getValue() {
-        return value;
+    public String getTableName() {
+        return tableName;
+    }
+
+    public String getTableAlias() {
+        return tableNameAlias;
     }
 
 }

@@ -16,7 +16,9 @@ public enum AuditObjectTypeEnum {
     AUTOMATIC_POSITION_REPORT("Automatic position report"),
     MANUAL_POSITION_REPORT("Manual position report"),
     TEMP_POSITION_REPORT("Temporary position report"),
-    POSITION_REPORT_BATCH("Position report batch insert");
+    POSITION_REPORT_BATCH("Position report batch insert"),
+    ALARM("Alarm");
+
     private String value;
 
     private AuditObjectTypeEnum(String value) {
