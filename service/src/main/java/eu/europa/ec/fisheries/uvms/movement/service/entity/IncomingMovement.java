@@ -66,6 +66,7 @@ public class IncomingMovement {
     private String mobileTerminalMemberNumber;
 
     private String pluginType;
+    private boolean active;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
@@ -394,5 +395,13 @@ public class IncomingMovement {
 
     public void setAlarmReport(AlarmReport alarmReport) {
         this.alarmReport = alarmReport;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

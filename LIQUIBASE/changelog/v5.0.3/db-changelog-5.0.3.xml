@@ -127,6 +127,7 @@
             <column name="alarmreport_id" type="BIGINT" />
 
             <column name="status" type="VARCHAR(100)" remarks="???."/>
+            <column name="active" type="boolean" remarks="???."/>
 
         </createTable>
 

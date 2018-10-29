@@ -68,4 +68,9 @@ public class AlarmDAO {
         query.setMaxResults(listSize);
         return query.getResultList();
     }
+
+    public void removeAlarmReportAfterTests(AlarmReport alarmReport) {
+        em.remove(em.contains(alarmReport) ? alarmReport : em.merge(alarmReport));
+    }
+
 }
