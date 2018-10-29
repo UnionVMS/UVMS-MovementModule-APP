@@ -17,28 +17,17 @@ public class AlarmItem implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "alarmitem_id")
     private Long id;                //internal DB ID
-
-    @Column(name = "alarmitem_guid")
     private String guid;            //Globally unique ID, exists in Type, same name
-
-    @Column(name = "alarmitem_rulename")
     private String ruleName;        //exists in Type, same name
-
-    @Column(name = "alarmitem_ruleguid")
     private String ruleGuid;        //exists in Type, same name
-
-    @Column(name = "alarmitem_updattim")
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date updated;
-
-    @Column(name = "alarmitem_upuser")
     @NotNull
     private String updatedBy;
 
-    @JoinColumn(name = "alarmitem_alarmrep_id", referencedColumnName = "alarmrep_id")
+    /*@JoinColumn(name = "alarmitem_alarmrep_id", referencedColumnName = "alarmrep_id")*/
     @ManyToOne(fetch = FetchType.LAZY)
     private AlarmReport alarmReport;
 

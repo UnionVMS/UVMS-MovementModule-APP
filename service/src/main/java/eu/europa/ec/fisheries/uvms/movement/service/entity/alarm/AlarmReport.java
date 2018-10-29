@@ -34,34 +34,17 @@ public class AlarmReport implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "alarmrep_id")
     private Long id;        //internal DB id
-
-    @Column(name = "alarmrep_plugintype")
     private String pluginType;  //Expects values from the class PluginType, exists in Type, same name  TODO: make the *Type class use an enum instead of a string
-
-    @Column(name = "alarmrep_guid")
     private String guid;    //exists in Type, same name
-
-    @Column(name = "alarmrep_assetguid")
     private String assetGuid;   //exists in Type, same name
-
-    @Column(name = "alarmrep_status")
     private String status;  //Expects values from teh class AlarmsStatusType, exists in Type, same name
-
-    @Column(name = "alarmrep_recipient")
     private String recipient;   //exists in Type, same name
-
-    @Column(name = "alarmrep_createddate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;   //exists in Type as openDate
-
-    @Column(name = "alarmrep_updattim")
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date updated;       //exists in Type, same name
-
-    @Column(name = "alarmrep_upuser")
     @NotNull
     private String updatedBy;   //exists in Type, same name
 

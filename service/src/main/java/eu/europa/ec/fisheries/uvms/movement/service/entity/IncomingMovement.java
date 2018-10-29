@@ -1,15 +1,30 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+@Entity
+@Table(name = "incomingmovement")
+@XmlRootElement
+@DynamicUpdate
+@DynamicInsert
 public class IncomingMovement {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     private String guid;
     private String connectId;
     private String ackResponseMessageID;
-    private Date dateRecieved;
-    private String pluginType;
-    private String pluginName;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateReceived;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date positionTime;
     private String status;
     private Double reportedSpeed;
@@ -22,7 +37,7 @@ public class IncomingMovement {
 
     private String movementType;
     private String movementSourceType;
-    
+
     private String assetType;
     private String assetID;
     private String assetCFR;
@@ -49,6 +64,20 @@ public class IncomingMovement {
     private String mobileTerminalDNID;
     private String mobileTerminalMemberNumber;
 
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updated;
+    @NotNull
+    private String updatedBy;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getGuid() {
         return guid;
@@ -74,28 +103,12 @@ public class IncomingMovement {
         this.ackResponseMessageID = ackResponseMessageID;
     }
 
-    public Date getDateRecieved() {
-        return dateRecieved;
+    public Date getDateReceived() {
+        return dateReceived;
     }
 
-    public void setDateRecieved(Date dateRecieved) {
-        this.dateRecieved = dateRecieved;
-    }
-
-    public String getPluginType() {
-        return pluginType;
-    }
-
-    public void setPluginType(String pluginType) {
-        this.pluginType = pluginType;
-    }
-
-    public String getPluginName() {
-        return pluginName;
-    }
-
-    public void setPluginName(String pluginName) {
-        this.pluginName = pluginName;
+    public void setDateReceived(Date dateReceived) {
+        this.dateReceived = dateReceived;
     }
 
     public Date getPositionTime() {
@@ -344,5 +357,21 @@ public class IncomingMovement {
 
     public void setMobileTerminalMemberNumber(String mobileTerminalMemberNumber) {
         this.mobileTerminalMemberNumber = mobileTerminalMemberNumber;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }
