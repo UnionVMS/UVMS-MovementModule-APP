@@ -12,8 +12,8 @@ import java.util.Date;
 @Entity
 @Table(name = "incomingmovement")
 @XmlRootElement
-@DynamicUpdate
-@DynamicInsert
+//@DynamicUpdate
+//@DynamicInsert
 public class IncomingMovement {
 
     @Id
@@ -22,7 +22,7 @@ public class IncomingMovement {
 
     private String guid;
     private String connectId;
-    private String ackResponseMessageID;
+    private String ackResponseMessageId;
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateReceived;
     @Temporal(TemporalType.TIMESTAMP)
@@ -100,12 +100,12 @@ public class IncomingMovement {
         this.connectId = connectId;
     }
 
-    public String getAckResponseMessageID() {
-        return ackResponseMessageID;
+    public String getAckResponseMessageId() {
+        return ackResponseMessageId;
     }
 
-    public void setAckResponseMessageID(String ackResponseMessageID) {
-        this.ackResponseMessageID = ackResponseMessageID;
+    public void setAckResponseMessageId(String ackResponseMessageId) {
+        this.ackResponseMessageId = ackResponseMessageId;
     }
 
     public Date getDateReceived() {

@@ -8,18 +8,20 @@
             <column name="id" type="bigint" remarks="The synthetic key.">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="alarmreport_pk"/>
             </column>
-            <column name="plugin_type" type="varchar(100)" remarks="Type of the plugin the report came from."/>
+            <column name="plugintype" type="varchar(100)" remarks="Type of the plugin the report came from."/>
             <column name="guid" type="varchar(36)" remarks="Guid of alarm."/>
-            <column name="asset_guid" type="varchar(36)" remarks="Guid of asset."/>
+            <column name="assetguid" type="varchar(36)" remarks="Guid of asset."/>
             <column name="status" type="varchar(20)" remarks="OPEN or CLOSED."/>
             <column name="createddate" type="TIMESTAMP WITH TIME ZONE" remarks="When the report is created."/>
             <column name="recipient" type="varchar(20)" remarks="Recipient country code."/>
             <column name="updated" type="TIMESTAMP WITH TIME ZONE" remarks="Last updated date time.">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated_by" type="varchar(60)" remarks="Last update userid.">
+            <column name="updatedby" type="varchar(60)" remarks="Last update userid.">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="incomingmovement_id" type="bigint" remarks="FK to incomingmovement Report."/>
 
         </createTable>
 
@@ -36,13 +38,13 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="alarmitem_pk"/>
             </column>
             <column name="guid" type="varchar(36)" remarks="Guid of the alarm item."/>
-            <column name="rule_guid" type="varchar(100)" remarks="Guid of rule."/>
-            <column name="rule_name" type="varchar(100)" remarks="Name of rule."/>
+            <column name="ruleguid" type="varchar(100)" remarks="Guid of rule."/>
+            <column name="rulename" type="varchar(100)" remarks="Name of rule."/>
 
             <column name="updated" type="TIMESTAMP WITH TIME ZONE" remarks="Last updated date time.">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated_by" type="varchar(60)" remarks="Last update userid.">
+            <column name="updatedby" type="varchar(60)" remarks="Last update userid.">
                 <constraints nullable="false"/>
             </column>
 
@@ -69,55 +71,57 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk"/>
             </column>
             <column name="guid" type="VARCHAR(40)" remarks="Guid of movement."/>
-            <column name="connect_id" type="VARCHAR(100)" remarks="???."/>
+            <column name="connectid" type="VARCHAR(100)" remarks="???."/>
 
 
-            <column name="position_time" type="TIMESTAMP WITH TIME ZONE" remarks="Reported time of movement."/>
-            <column name="date_received" type="TIMESTAMP WITH TIME ZONE" remarks="Received time of movement."/>
-            <column name="asset_name" type="varchar(100)" remarks="Asset name as it comes from FLUX/MAN."/>
-            <column name="flag_state" type="varchar(100)" remarks="Flagstate as it comes from FLUX/MAN."/>
-            <column name="external_marking" type="varchar(100)" remarks="External markings as it comes from FLUX/MAN."/>
-            <column name="reported_speed" type="DOUBLE" remarks="???."/>
-            <column name="reported_course" type="DOUBLE" remarks="???."/>
-            <column name="com_channel_type" type="VARCHAR(100)" remarks="???."/>
-            <column name="movement_type" type="VARCHAR(100)" remarks="???."/>
-            <column name="movement_source_type" type="VARCHAR(100)" remarks="???."/>
+            <column name="positiontime" type="TIMESTAMP WITH TIME ZONE" remarks="Reported time of movement."/>
+            <column name="datereceived" type="TIMESTAMP WITH TIME ZONE" remarks="Received time of movement."/>
+            <column name="assetname" type="varchar(100)" remarks="Asset name as it comes from FLUX/MAN."/>
+            <column name="flagstate" type="varchar(100)" remarks="Flagstate as it comes from FLUX/MAN."/>
+            <column name="externalmarking" type="varchar(100)" remarks="External markings as it comes from FLUX/MAN."/>
+            <column name="reportedspeed" type="DOUBLE" remarks="???."/>
+            <column name="reportedcourse" type="DOUBLE" remarks="???."/>
+            <column name="comchanneltype" type="VARCHAR(100)" remarks="???."/>
+            <column name="movementtype" type="VARCHAR(100)" remarks="???."/>
+            <column name="movementsourcetype" type="VARCHAR(100)" remarks="???."/>
 
             <column name="longitude" type="DOUBLE" remarks="Longitude."/>
             <column name="latitude" type="DOUBLE" remarks="Latitude."/>
             <column name="altitude" type="DOUBLE" remarks="Altitude."/>
 
-            <column name="mobile_terminal_guid" type="VARCHAR(100)" remarks="Mobile terminal guid."/>
-            <column name="mobile_terminal_connect_id" type="VARCHAR(100)" remarks="???"/>
+            <column name="mobileterminalguid" type="VARCHAR(100)" remarks="Mobile terminal guid."/>
+            <column name="mobileterminalconnectid" type="VARCHAR(100)" remarks="???"/>
 
-            <column name="mobile_terminal_serial_number" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
-            <column name="mobile_terminal_les" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
-            <column name="mobile_terminal_dnid" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
-            <column name="mobile_terminal_member_number" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
-
-
-            <column name="asset_type" type="VARCHAR(50)" remarks="Type of asset, e.g. VESSEL."/>
-            <column name="asset_id" type="VARCHAR(100)" remarks="Asset type value."/>
-            <column name="asset_cfr" type="VARCHAR(100)" remarks="Asset type value."/>
-            <column name="asset_ircs" type="VARCHAR(100)" remarks="Asset type value."/>
-            <column name="asset_imo" type="VARCHAR(100)" remarks="Asset type value."/>
-            <column name="asset_mmsi" type="VARCHAR(100)" remarks="Asset type value."/>
-            <column name="asset_guid" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="mobileterminalserialnumber" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalles" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminaldnid" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalmembernumber" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
 
 
-            <column name="activity_message_type" type="VARCHAR(100)" remarks="???."/>
-            <column name="activity_message_id" type="VARCHAR(100)" remarks="???."/>
-            <column name="activity_callback" type="VARCHAR(100)" remarks="???."/>
+            <column name="assettype" type="VARCHAR(50)" remarks="Type of asset, e.g. VESSEL."/>
+            <column name="assetid" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetcfr" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetircs" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetimo" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetmmsi" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetguid" type="VARCHAR(100)" remarks="Asset type value."/>
+
+
+            <column name="activitymessagetype" type="VARCHAR(100)" remarks="???."/>
+            <column name="activitymessageid" type="VARCHAR(100)" remarks="???."/>
+            <column name="activitycallback" type="VARCHAR(100)" remarks="???."/>
 
             <column name="updated" type="TIMESTAMP WITH TIME ZONE" remarks="Last updated date time.">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated_by" type="varchar(60)" remarks="Last update userid.">
+            <column name="updatedby" type="varchar(60)" remarks="Last update userid.">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="trip_number" type="DOUBLE" remarks="???."/>
-            <column name="internal_reference_number" type="VARCHAR(100)" remarks="???."/>
+            <column name="tripnumber" type="DOUBLE" remarks="???."/>
+            <column name="internalreferencenumber" type="VARCHAR(100)" remarks="???."/>
+            <column name="ackresponsemessageid" type="VARCHAR(100)" remarks="???."/>
+            <column name="plugintype" type="varchar(100)" remarks="Type of the plugin the report came from."/>
 
 
             <column name="alarmreport_id" type="BIGINT" />
@@ -131,6 +135,14 @@
                 baseTableName="incomingmovement"
                 baseColumnNames="alarmreport_id"
                 referencedTableName="alarmreport"
+                referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+                constraintName="alarmreport_incomingmovement_fk"
+                baseTableName="alarmreport"
+                baseColumnNames="incomingmovement_id"
+                referencedTableName="incomingmovement"
                 referencedColumnNames="id"
         />
 
