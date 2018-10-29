@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
+import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -64,12 +65,16 @@ public class IncomingMovement {
     private String mobileTerminalDNID;
     private String mobileTerminalMemberNumber;
 
+    private String pluginType;
+
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date updated;
     @NotNull
     private String updatedBy;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    private AlarmReport alarmReport;
 
     public Long getId() {
         return id;
@@ -359,6 +364,14 @@ public class IncomingMovement {
         this.mobileTerminalMemberNumber = mobileTerminalMemberNumber;
     }
 
+    public String getPluginType() {
+        return pluginType;
+    }
+
+    public void setPluginType(String pluginType) {
+        this.pluginType = pluginType;
+    }
+
     public Date getUpdated() {
         return updated;
     }
@@ -373,5 +386,13 @@ public class IncomingMovement {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public AlarmReport getAlarmReport() {
+        return alarmReport;
+    }
+
+    public void setAlarmReport(AlarmReport alarmReport) {
+        this.alarmReport = alarmReport;
     }
 }
