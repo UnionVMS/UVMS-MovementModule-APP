@@ -30,6 +30,7 @@ import java.util.List;
 
 @Path("/alarms")
 @Stateless
+@RequiresFeature(UnionVMSFeature.viewMovements)
 public class AlarmRestResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmRestResource.class);
@@ -53,7 +54,7 @@ public class AlarmRestResource {
     @Consumes(value = { MediaType.APPLICATION_JSON })
     @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/list")
-    @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
+    //@RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public AlarmListResponseDto getAlarmList(AlarmQuery query) {
         LOG.info("Get alarm list invoked in rest layer");
         return validationService.getAlarmList(query);
@@ -70,7 +71,7 @@ public class AlarmRestResource {
     @PUT
     @Consumes(value = { MediaType.APPLICATION_JSON })
     @Produces(value = { MediaType.APPLICATION_JSON })
-    @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
+    //@RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
     public AlarmReport updateAlarmStatus(final AlarmReport alarmReport) {
         LOG.info("Update alarm status invoked in rest layer");
         return validationService.updateAlarmStatus(alarmReport);
@@ -87,7 +88,7 @@ public class AlarmRestResource {
     @GET
     @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/{guid}")
-    @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
+    //@RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public AlarmReport getAlarmReportByGuid(@PathParam("guid") String guid) {
         return validationService.getAlarmReportByGuid(guid);
     }
@@ -104,7 +105,7 @@ public class AlarmRestResource {
     @Consumes(value = { MediaType.APPLICATION_JSON })
     @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/reprocess")
-    @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
+    //@RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
     public String reprocessAlarm(final List<String> alarmGuidList) {
         LOG.info("Reprocess alarm invoked in rest layer");
         return validationService.reprocessAlarm(alarmGuidList, request.getRemoteUser());
@@ -121,7 +122,7 @@ public class AlarmRestResource {
     @GET
     @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/countopen")
-    @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
+    //@RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public long getNumberOfOpenAlarmReports() {
         return validationService.getNumberOfOpenAlarmReports();
     }

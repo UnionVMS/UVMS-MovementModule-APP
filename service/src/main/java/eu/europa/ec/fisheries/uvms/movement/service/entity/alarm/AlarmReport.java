@@ -1,5 +1,8 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity.alarm;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
 import javax.persistence.*;
@@ -22,6 +25,8 @@ import java.util.UUID;
         @NamedQuery(name = AlarmReport.COUNT_OPEN_ALARMS, query = "SELECT count(ar) FROM AlarmReport ar where ar.status = 'OPEN'")
 })
 //@formatter:on
+@JsonIdentityInfo(generator= ObjectIdGenerators.UUIDGenerator.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AlarmReport implements Serializable {
 
     public static final String FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID = "AlarmReport.findByMovementGuid";
@@ -48,10 +53,10 @@ public class AlarmReport implements Serializable {
     @NotNull
     private String updatedBy;   //exists in Type, same name
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private IncomingMovement incomingMovement;    //exists in Type, same name
 
-    @OneToMany(mappedBy = "alarmReport", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "alarmReport", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<AlarmItem> alarmItemList;  //exists in Type, same name
 
     @PrePersist

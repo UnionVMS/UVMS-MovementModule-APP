@@ -1,18 +1,12 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
-import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.*;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -21,11 +15,10 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.math.BigInteger;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -75,7 +68,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(basicAlarmQuery), String.class);
 
-        AlarmListResponseDto alarmList = deserializeResponseDto(response, AlarmListResponseDto.class);
+        AlarmListResponseDto alarmList = deserialize(response, AlarmListResponseDto.class);
         assertThat(alarmList.getAlarmList().size(), is(notNullValue()));
 
         int prevNumberOfReports = alarmList.getAlarmList().size();
@@ -90,7 +83,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(basicAlarmQuery), String.class);
 
-        alarmList = deserializeResponseDto(response, AlarmListResponseDto.class);
+        alarmList = deserialize(response, AlarmListResponseDto.class);
         assertThat(alarmList.getAlarmList().size(), is(prevNumberOfReports + 1));
         assertEquals(alarmReport.getGuid(), alarmList.getAlarmList().get(0).getGuid());
         assertEquals(alarmReport.getStatus(), alarmList.getAlarmList().get(0).getStatus());
@@ -100,13 +93,13 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void negativeGetAlarmListTest() throws Exception{
-        String response = getWebTarget()
+    public void negativeGetAlarmListTest() {
+        Response response = getWebTarget()
                 .path("alarms/list")
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(new AlarmQuery()), String.class);
+                .post(Entity.json(new AlarmQuery()));
 
-        assertEquals(500, getReturnCode(response));
+        assertEquals(500, response.getStatus());
     }
 
     @Test
@@ -123,22 +116,22 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .put(Entity.json(alarmReport), String.class);
 
         assertThat(response, is(notNullValue()));
-        AlarmReport output = deserializeResponseDto(response, AlarmReport.class);
+        AlarmReport output = deserialize(response, AlarmReport.class);
         assertEquals(alarmReport.getGuid(), output.getGuid());
-        assertEquals(AlarmStatusType.REJECTED, output.getStatus());
+        assertEquals(AlarmStatusType.REJECTED.value(), output.getStatus());
 
         alarmDao.removeAlarmReportAfterTests(alarmReport);
     }
 
     @Test
     @OperateOnDeployment("movement")
-    public void negativeUpdateAlarmStatusTest() throws Exception {
-        String response = getWebTarget()
+    public void negativeUpdateAlarmStatusTest() {
+        Response response = getWebTarget()
                 .path("alarms")
                 .request(MediaType.APPLICATION_JSON)
-                .put(Entity.json(new AlarmReport()), String.class);
+                .put(Entity.json(new AlarmReport()));
 
-        assertEquals(500, getReturnCode(response));
+        assertEquals(500, response.getStatus());
     }
 
     @Test
@@ -152,7 +145,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
-        AlarmReport responseAlarmReportType = deserializeResponseDto(response, AlarmReport.class);
+        AlarmReport responseAlarmReportType = deserialize(response, AlarmReport.class);
         assertNotNull(responseAlarmReportType);
         assertEquals(alarmReport.getGuid(), responseAlarmReportType.getGuid());
 
@@ -161,13 +154,13 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void negativeGetAlarmReportByGuidTest() throws Exception{
-        String response = getWebTarget()
+    public void negativeGetAlarmReportByGuidTest() {
+        Response response = getWebTarget()
                 .path("alarms/" + "test guid")
                 .request(MediaType.APPLICATION_JSON)
-                .get(String.class);
+                .get();
 
-        assertEquals(500, getReturnCode(response));
+        assertEquals(500, response.getStatus());
     }
 
     @Test
@@ -178,8 +171,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(Collections.singletonList("NULL_GUID")), String.class);
 
-        String responseString = deserializeResponseDto(response, String.class);
-        assertThat(responseString, is("OK"));
+        assertThat(response, is("OK"));
 
         AlarmReport alarmReport = getBasicAlarmReport();
         IncomingMovement incomingMovement = new IncomingMovement();
@@ -195,17 +187,16 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(Collections.singletonList(alarmReport.getGuid())), String.class);
 
-        responseString = deserializeResponseDto(response, String.class);
-        assertThat(responseString, is("OK"));
+        assertThat(response, is("OK"));
 
         response = getWebTarget()
                 .path("alarms/" + alarmReport.getGuid())
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
-        AlarmReport responseAlarmReportType = deserializeResponseDto(response, AlarmReport.class);
+        AlarmReport responseAlarmReportType = deserialize(response, AlarmReport.class);
         assertNotNull(responseAlarmReportType);
-        assertEquals(AlarmStatusType.REPROCESSED, responseAlarmReportType.getStatus());
+        assertEquals(AlarmStatusType.REPROCESSED.value(), responseAlarmReportType.getStatus());
 
         alarmDao.removeAlarmReportAfterTests(alarmReport);
     }
@@ -218,7 +209,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
-        Integer openAlarmReports = deserializeResponseDto(response, Integer.class);
+        Integer openAlarmReports = deserialize(response, Integer.class);
         assertThat(openAlarmReports, is(notNullValue()));
 
         int prevNumberOfReports = openAlarmReports;
@@ -232,7 +223,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
-        openAlarmReports = deserializeResponseDto(response, Integer.class);
+        openAlarmReports = deserialize(response, Integer.class);
         assertThat(openAlarmReports, is(prevNumberOfReports + 1 ));
 
         AlarmReport alarmReport2 = getBasicAlarmReport();
@@ -243,23 +234,16 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
-        openAlarmReports = deserializeResponseDto(response, Integer.class);
+        openAlarmReports = deserialize(response, Integer.class);
         assertThat(openAlarmReports, is(prevNumberOfReports + 2 ));
 
         alarmDao.removeAlarmReportAfterTests(alarmReport);
         alarmDao.removeAlarmReportAfterTests(alarmReport2);
     }
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private int getReturnCode(String responsDto) throws Exception{
-        return objectMapper.readValue(responsDto, ObjectNode.class).get("code").asInt();
-    }
-
-    private static <T> T deserializeResponseDto(String responseDto, Class<T> clazz) throws Exception {
+    private static <T> T deserialize(String value, Class<T> clazz) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode node = objectMapper.readValue(responseDto, ObjectNode.class);
-        JsonNode jsonNode = node.get("data");
-        return objectMapper.readValue(objectMapper.writeValueAsString(jsonNode), clazz);
+        return objectMapper.readValue(value, clazz);
     }
 
 }
