@@ -28,17 +28,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.vividsolutions.jts.geom.Point;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRQ;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.PointType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRQ;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRQListElement;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialModuleMethod;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.UnitType;
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.*;
 
 @Stateless
 public class SpatialRestClient implements SpatialClient {
@@ -80,6 +75,27 @@ public class SpatialRestClient implements SpatialClient {
         SpatialEnrichmentRS spatialEnrichments = response.readEntity(new GenericType<SpatialEnrichmentRS>() {});
         response.close();
         return spatialEnrichments;
+    }
+
+    public SegmentCategoryType getSegmentCategoryType(Movement movement1, Movement movement2){
+
+        eu.europa.ec.fisheries.schema.movement.v1.MovementType movementType1 = MovementMapper.mapMovementToMovementTypeForSpatial(movement1);
+        MovementType movementType2 = MovementMapper.mapMovementToMovementTypeForSpatial(movement2);
+
+        List<MovementType> request = new ArrayList<>();
+        request.add(movementType1);
+        request.add(movementType2);
+
+
+        Response response =  webTarget
+                .path("getSegmentCategoryType")
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(request), Response.class);
+
+        SegmentCategoryType returnValue = response.readEntity(new GenericType<SegmentCategoryType>() {});
+        response.close();
+
+        return returnValue;
     }
     
     public BatchSpatialEnrichmentRS getBatchEnrichment(List<Point> locations) {

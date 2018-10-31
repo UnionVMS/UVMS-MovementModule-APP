@@ -73,6 +73,17 @@ public class MovementMapper {
         movementType.setDuplicates(movementBaseType.getDuplicates());
         return movementType;
     }
+
+    public static MovementType mapMovementToMovementTypeForSpatial(Movement movement){
+        MovementType movementType = new MovementType();
+        movementType.setPositionTime(Date.from(movement.getTimestamp()));
+        eu.europa.ec.fisheries.schema.movement.v1.MovementPoint movementPoint = new eu.europa.ec.fisheries.schema.movement.v1.MovementPoint();
+        movementPoint.setLatitude(movement.getLocation().getY());
+        movementPoint.setLongitude(movement.getLocation().getX());
+        movementType.setPosition(movementPoint);
+
+        return movementType;
+    }
     
     public static List<MovementDto> mapToMovementDtoList(List<MovementType> movmements) {
         List<MovementDto> mappedMovements = new ArrayList<>();
