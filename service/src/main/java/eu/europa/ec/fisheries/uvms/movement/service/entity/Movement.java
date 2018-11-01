@@ -200,7 +200,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_upuser")
     private String updatedBy;
 
-    @OneToMany(mappedBy = "movementId", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "movementId", fetch = FetchType.LAZY)
     private List<AreaTransition> areaTransitionList;
 
     @Column(name = "move_processed")
