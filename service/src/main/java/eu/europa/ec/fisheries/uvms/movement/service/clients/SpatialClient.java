@@ -13,10 +13,13 @@ package eu.europa.ec.fisheries.uvms.movement.service.clients;
 
 import java.util.List;
 import com.vividsolutions.jts.geom.Point;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
 
 public interface SpatialClient {
     SpatialEnrichmentRS getEnrichment(Point location);
     BatchSpatialEnrichmentRS getBatchEnrichment(List<Point> locations);
+    SegmentCategoryType getSegmentCategoryType(Movement movement1, Movement movement2);
 }
