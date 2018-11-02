@@ -20,15 +20,15 @@
 		<docker.liquibase.changeLogFile>LIQUIBASE/changelog/db-changelog-master-postgres.xml</docker.liquibase.changeLogFile>
         <docker.liquibase.db.user>movement</docker.liquibase.db.user>
         <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
-		<usm4uvms.version>4.0.12</usm4uvms.version>
-		<uvms.common.version>3.0.25</uvms.common.version>
-		<uvms.config.version>4.0.0</uvms.config.version>
+		<uvms.common.version>3.0.29</uvms.common.version>
+		<usm4uvms.version>4.0.13-SNAPSHOT</usm4uvms.version>
+		<uvms.config.version>4.0.2-SNAPSHOT</uvms.config.version>
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.0.8</user.model.version>
 		<spatial.model.version>1.0.12</spatial.model.version>
 		<audit.model.version>4.0.8</audit.model.version>
 		<exchange.model.version>4.0.22</exchange.model.version>
-		
+
 		<installAtEnd>false</installAtEnd>
 	</properties>
 
@@ -73,7 +73,7 @@
 				<version>1.21</version>
 				<type>pom</type>
 			</dependency>
-		</dependencies>		
+		</dependencies>
 	</dependencyManagement>
 
 	<repositories>
@@ -109,6 +109,46 @@
 		<connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-APP.git</connection>
 		<tag>HEAD</tag>
 	</scm>
+
+	<profiles>
+		<profile>
+			<id>enforce-jdk-version</id>
+			<activation>
+				<!-- To disable profile, define property -Dfocus-pom.enforce.jdk.version.disabled=true -->
+				<property>
+					<name>!focus-pom.enforce.jdk.version.disabled</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<inherited>false</inherited>
+						<executions>
+							<execution>
+								<id>enforce-jdk-version</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<enforceBytecodeVersion>
+											<maxJdkVersion>${focus-pom.java.version}</maxJdkVersion>
+											<!-- NOTE: xstream do contain support for multiple jdk:s -->
+											<excludes>
+												<exclude>com.thoughtworks.xstream:xstream</exclude>
+											</excludes>
+										</enforceBytecodeVersion>
+									</rules>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
