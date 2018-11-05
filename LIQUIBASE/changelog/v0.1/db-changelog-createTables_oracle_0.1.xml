@@ -20,10 +20,6 @@
     <include file="\schema\tables\movementfiltergroup.xml"/>
     <include file="\schema\tables\movementfilter.xml"/>                
     <include file="\schema\tables\temp_movement.xml"/>
-    <include file="\schema\tables\areatype.xml"/>
-    <include file="\schema\tables\area.xml"/>
-    <include file="\schema\tables\movementarea.xml"/>
-    <include file="\schema\tables\areatransition.xml"/>
     <include file="\schema\tables\parameter.xml"/>
 	
 </databaseChangeLog>

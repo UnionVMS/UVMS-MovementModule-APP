@@ -20,69 +20,14 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import java.sql.Date;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
 public class MockData {
-
-    public static AreaTransition getAreaTransition(Area area, MovementTypeType transitionType) {
-        AreaTransition transition = new AreaTransition();
-        transition.setAreaId(area);
-        return transition;
-    }
-
-    public static AreaType createAreaType() {
-        AreaType areaType = new AreaType();
-        String input = "TestAreaType";
-        areaType.setName(input);
-        areaType.setUpdatedTime(Instant.now());
-        areaType.setUpdatedUser("TestUser");
-        return areaType;
-    }
-
-    public static Area createArea() {
-        AreaType areaType = createAreaType();
-        return createArea(areaType);
-    }
-    
-    public static Area createArea(String code) {
-        AreaType areaType = createAreaType();
-        Area area = createArea(areaType);
-        area.setAreaCode(code);
-        return area;
-    }
-    
-    public static Area createArea(AreaType areaType) {
-        Area area = new Area();
-        area.setAreaName("TestArea");
-        area.setAreaCode("AreaCode" + MovementHelpers.getRandomIntegers(10));
-        area.setRemoteId("TestRemoteId");
-        area.setAreaUpdattim(Instant.now());
-        area.setAreaUpuser("TestUser");
-        area.setAreaType(areaType);
-        return area;
-    }
-    
-    public static Movementarea getMovementArea(Area area, Movement movement) {
-        Movementarea movementArea = new Movementarea();
-        movementArea.setMovareaAreaId(area);
-        movementArea.setMovareaMoveId(movement);
-        movementArea.setMovareaUpdattim(Instant.now());
-        movementArea.setMovareaUpuser("Test");
-        return movementArea;
-    }
-
     /**
      * Get a movement type with an added metadata and areas in the metadata
      * depending on how many areas you want ( numberOfAreas )
@@ -94,44 +39,11 @@ public class MockData {
         MovementType type = new MovementType();
         MovementMetaData metaData = new MovementMetaData();
 
-        for (int i = 0; i < numberOfAreas; i++) {
-            metaData.getAreas().add(getMovementMetadataType("AREA" + i));
-        }
 
         type.setMetaData(metaData);
         return type;
     }
 
-    private static MovementMetaDataAreaType getMovementMetadataType(String areaCode) {
-        MovementMetaDataAreaType area = new MovementMetaDataAreaType();
-        area.setCode(areaCode);
-        area.setName(areaCode);
-        area.setAreaType(areaCode);
-        return area;
-    }
-
-    public static Movement getCurrentMovement(int areaId) {
-        Movement currentMovement = new Movement();
-        Movementarea currentMoveArea = new Movementarea();
-        Area currentArea = new Area();
-        currentArea.setAreaId((long) areaId);
-        currentMoveArea.setMovareaAreaId(currentArea);
-        List<Movementarea> currentMoveAreaList = Collections.singletonList(currentMoveArea);
-        currentMovement.setMovementareaList(currentMoveAreaList);
-        return currentMovement;
-    }
-
-    public static Movement getPreviousMovement(int areaId, MovementTypeType movementType) {
-        Movement previousMovement = new Movement();
-        AreaTransition priviousTransition = new AreaTransition();
-        Area previousArea = new Area();
-        previousArea.setAreaId((long) areaId);
-        priviousTransition.setAreaId(previousArea);
-        priviousTransition.setMovementType(movementType);
-        List<AreaTransition> previousMoveAreaList = Collections.singletonList(priviousTransition);
-        previousMovement.setAreaTransitionList(previousMoveAreaList);
-        return previousMovement;
-    }
 
     public static Movement createMovement(double longitude, double latitude, UUID connectId) {
         return createMovement(longitude, latitude, connectId, 0d, "Test");
@@ -181,8 +93,6 @@ public class MockData {
 
         movement.setTimestamp(latlong.positionTime);
         movement.setTripNumber(0d);
-        
-        movement.setMovementareaList(new ArrayList<Movementarea>());
         
         movement.setDuplicate(false);
         movement.setProcessed(false);

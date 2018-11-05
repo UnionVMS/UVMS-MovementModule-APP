@@ -26,14 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
@@ -48,9 +46,6 @@ public class MovementDao {
 
     @PersistenceContext
     private EntityManager em;
-    
-    @Inject
-    private AreaDao areaDao;
 
     public List<Geometry> getPointsFromTrack(Track track) {
         TypedQuery<Geometry> query = em.createNamedQuery(Movement.FIND_ALL_LOCATIONS_BY_TRACK, Geometry.class);
@@ -282,19 +277,6 @@ public class MovementDao {
         Segment updated = em.merge(segment);
         em.flush();
         return updated;
-    }
-
-    public List<Movement> getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) {
-        List<Movement> resultList = new ArrayList<>();
-        Area areaResult = areaDao.getAreaByCode(criteria.getAreaCode());
-        if(areaResult!=null) {
-            TypedQuery<Movement> query = em.createNamedQuery(Movement.LIST_BY_AREA_TIME_INTERVAL, Movement.class);
-            query.setParameter("fromDate", DateUtil.convertDateTimeInUTC(criteria.getFromDate()));
-            query.setParameter("toDate", DateUtil.convertDateTimeInUTC(criteria.getToDate()));
-            query.setParameter("areaId", areaResult.getAreaId());
-            resultList = query.getResultList();
-        }
-        return resultList;
     }
 
     public MovementConnect createMovementConnect(MovementConnect movementConnect) {

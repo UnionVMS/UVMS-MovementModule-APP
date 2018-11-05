@@ -12,27 +12,21 @@ import javax.ejb.EJBTransactionRolledbackException;
 
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -47,53 +41,6 @@ public class MovementServiceIntTest extends TransactionalTests {
     @EJB
     MovementService movementService;
 
-    @Test(expected = EJBTransactionRolledbackException.class)
-    @OperateOnDeployment("movementservice")
-    public void getMovementListByAreaAndTimeInterval_EmptyCriteria() {
-        MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
-        movementService.getMovementListByAreaAndTimeInterval(criteria);
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getMovementListByAreaAndTimeInterval_NoResult_But_RunsTheCode() {
-        MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
-
-        Instant curDate = DateUtil.nowUTC();
-        String fmt = "yyyy-MM-dd HH:mm:ss Z";
-
-       String formattedDate = DateUtil.parseDateToString(curDate, fmt);
-
-
-        // areaCode
-        criteria.setAreaCode("AREA0");
-        // fromDate
-        criteria.setFromDate(formattedDate);
-        // toDate
-        criteria.setToDate(formattedDate);
-
-        GetMovementListByAreaAndTimeIntervalResponse list = movementService.getMovementListByAreaAndTimeInterval(criteria);
-        assertNotNull(list);
-    }
-
-    @Test(expected = EJBTransactionRolledbackException.class)
-    @OperateOnDeployment("movementservice")
-    public void getMovementListByAreaAndTimeIntervalTimeIntervalNoCode() {
-        MovementAreaAndTimeIntervalCriteria criteria = new MovementAreaAndTimeIntervalCriteria();
-
-        Instant curDate = DateUtil.nowUTC();
-        String fmt = "yyyy-MM-dd HH:mm:ss Z";
-
-        String formattedDate = DateUtil.parseDateToString(curDate, fmt);
-
-        //criteria.setAreaCode("AREA0");
-        // fromDate
-        criteria.setFromDate(formattedDate);
-        // toDate
-        criteria.setToDate(formattedDate);
-
-        movementService.getMovementListByAreaAndTimeInterval(criteria);
-    }
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -256,12 +203,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
     }
 
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getAreas() {
-        List<Area> response = movementService.getAreas();
-        assertNotNull(response);
-    }
 
     @Test
     @OperateOnDeployment("movementservice")

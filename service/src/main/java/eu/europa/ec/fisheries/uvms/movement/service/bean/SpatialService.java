@@ -11,27 +11,19 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialClient;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreasByLocationType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
 
@@ -43,14 +35,11 @@ public class SpatialService {
     @Inject
     private SpatialClient spatialClient;
 
-    @Inject
-    private AreaDao areaDao;
     
     public Movement enrichMovementWithSpatialData(Movement movement) throws MovementServiceException {
         try {
             SpatialEnrichmentRS enrichment = spatialClient.getEnrichment(movement.getLocation());
             MovementMapper.enrichMovement(movement, enrichment);
-            mapAreas(movement, enrichment.getAreasByLocation());
             return movement;
         } catch (Exception ex) {
             throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex, ErrorCode.DATA_RETRIEVING_ERROR);
@@ -62,73 +51,10 @@ public class SpatialService {
         try {
             BatchSpatialEnrichmentRS enrichment = spatialClient.getBatchEnrichment(locations);
             MovementMapper.enrichAndMapToMovementTypes(movements, enrichment);
-            // Assume movements and enrichments are ordered?
-            for (int i = 0; i < movements.size(); i++) {
-                mapAreas(movements.get(i), enrichment.getEnrichmentRespLists().get(i).getAreasByLocation());
-            }
+
             return movements;
         } catch (Exception ex) {
             throw new MovementServiceException("FAILED TO GET DATA FROM SPATIAL ", ex, ErrorCode.DATA_RETRIEVING_ERROR);
         }
-    }
-    
-    private void mapAreas(Movement movement, AreasByLocationType spatialAreas) {
-        if (movement.getMovementareaList() == null) {
-            movement.setMovementareaList(new ArrayList<>());
-        }
-        if (spatialAreas != null) {
-            for (AreaExtendedIdentifierType area : spatialAreas.getAreas()) {
-                Movementarea movementArea = new Movementarea();
-                Area areaEntity = areaDao.getAreaByCode(area.getCode());
-
-                if (areaEntity != null) {
-                    String wrkRemoteId = areaEntity.getRemoteId();
-                    if (wrkRemoteId != null && !wrkRemoteId.equals(area.getId())) {
-                        areaEntity.setRemoteId(area.getId());
-                    }
-                    movementArea.setMovareaAreaId(areaEntity);
-                } else {
-                    AreaType areaType = getAreaType(area.getAreaType().value());
-                    Area newArea = mapToArea(area, areaType);
-                    areaDao.createMovementArea(newArea);
-                    movementArea.setMovareaAreaId(newArea);
-                }
-                movementArea.setMovareaMoveId(movement);
-                movementArea.setMovareaUpdattim(DateUtil.nowUTC());
-                movementArea.setMovareaUpuser("UVMS");
-                movement.getMovementareaList().add(movementArea);
-            }
-        } else {
-            LOG.error("NO AREAS FOUND IN RESPONSE FROM SPATIAL ");
-        }
-    }
-    
-    private AreaType getAreaType(String areaTypeCode) {
-        AreaType areaType = areaDao.getAreaTypeByCode(areaTypeCode);
-        if (areaType == null) {
-            AreaType newAreaType = mapToAreaType(areaTypeCode);
-            return areaDao.createAreaType(newAreaType);
-        } else {
-            return areaType;
-        }
-    }
-    
-    private AreaType mapToAreaType(String areaTypeCode) {
-        AreaType newAreaType = new AreaType();
-        newAreaType.setName(areaTypeCode);
-        newAreaType.setUpdatedUser("UVMS");
-        newAreaType.setUpdatedTime(DateUtil.nowUTC());
-        return newAreaType;
-    }
-    
-    private Area mapToArea(AreaExtendedIdentifierType area, AreaType areaType) {
-        Area newArea = new Area();
-        newArea.setAreaCode(area.getCode());
-        newArea.setAreaName(area.getName());
-        newArea.setRemoteId(area.getId());
-        newArea.setAreaType(areaType);
-        newArea.setAreaUpuser("UVMS");
-        newArea.setAreaUpdattim(DateUtil.nowUTC());
-        return newArea;
     }
 }

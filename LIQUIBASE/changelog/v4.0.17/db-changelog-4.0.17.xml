@@ -6,18 +6,6 @@
     <changeSet author="peerik (generated)" id="1538049626880-2">
         <modifyDataType columnName="acttyp_updattim" newDataType="timestamp with time zone" tableName="activitytype"/>
     </changeSet>
-    <changeSet author="peerik (generated)" id="1538049626880-3">
-        <modifyDataType columnName="area_updattim" newDataType="timestamp with time zone" tableName="area"/>
-    </changeSet>
-    <changeSet author="peerik (generated)" id="1538049626880-4">
-        <modifyDataType columnName="areatran_updattim" newDataType="timestamp with time zone" tableName="areatransition"/>
-    </changeSet>
-    <changeSet author="peerik (generated)" id="1538049626880-5">
-        <modifyDataType columnName="areatype_updattim" newDataType="timestamp with time zone" tableName="areatype"/>
-    </changeSet>
-    <changeSet author="peerik (generated)" id="1538049626880-6">
-        <modifyDataType columnName="movarea_updattim" newDataType="timestamp with time zone" tableName="movementarea"/>
-    </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-8">
         <modifyDataType columnName="move_timestamp" newDataType="timestamp with time zone" tableName="movement"/>
     </changeSet>

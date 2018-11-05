@@ -19,7 +19,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
@@ -28,8 +27,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -207,24 +204,5 @@ public class MovementModelToEntityMapper {
             LOG.error("[ ERROR when mapping to Activity entity: < createActivity > ]");
             throw new MovementServiceException("ERROR when mapping to Activity entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
-    }
-
-    public static AreaType mapToAreaType(MovementMetaDataAreaType type) {
-        AreaType newAreaType = new AreaType();
-        newAreaType.setName(type.getAreaType());
-        newAreaType.setUpdatedUser("UVMS");
-        newAreaType.setUpdatedTime(DateUtil.nowUTC());
-        return newAreaType;
-    }
-
-    public static Area maptoArea(MovementMetaDataAreaType area, AreaType areaType) {
-        Area newArea = new Area();
-        newArea.setAreaCode(area.getCode());
-        newArea.setAreaName(area.getName());
-        newArea.setRemoteId(area.getRemoteId());
-        newArea.setAreaType(areaType);
-        newArea.setAreaUpuser("UVMS");
-        newArea.setAreaUpdattim(DateUtil.nowUTC());
-        return newArea;
     }
 }

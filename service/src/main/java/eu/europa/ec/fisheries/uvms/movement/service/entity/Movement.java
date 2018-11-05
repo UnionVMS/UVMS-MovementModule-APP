@@ -19,18 +19,14 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
@@ -69,9 +65,6 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_PREVIOUS, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select max(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.timestamp < :date and mm.processed = true) AND mc2.value = :id and m.processed = true"),
     @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.duplicate = false and mm.processed = true) AND mc2.value = :id and m.processed = true"),
-    @NamedQuery(name = Movement.LIST_BY_AREA_TIME_INTERVAL, query = "SELECT m FROM Movement m INNER JOIN m.movementareaList mal WHERE (m.timestamp BETWEEN :fromDate AND :toDate) AND m.duplicate = false AND mal.movareaMoveId.id = m.id AND mal.movareaAreaId.areaId = :areaId"),
-    																			   //SELECT mo FROM Movement mo INNER JOIN mo.movementarea ma WHERE (mo.timestamp BETWEEN :fromDate AND :toDate) AND mo.move_duplicate = false AND ma.movareaId = mo.id AND ma.movareaId = :areaId 	
-    																			   //SELECT movement FROM Movement movement INNER JOIN movement.movementareaList movementArea WHERE (movement.timestamp BETWEEN :fromDate AND :toDate) AND movement.duplicate = false AND movementArea.movareaMoveId = movement.id AND movementArea.movareaAreaId.areaId = :areaId
     @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true")
 })
 @DynamicUpdate
@@ -95,7 +88,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATEST_BY_MOVEMENT_CONNECT = "Movement.findLatestByMovementConnect";
     public static final String FIND_PREVIOUS = "Movement.findPrevious";
     public static final String FIND_FIRST = "Movement.findFirst";
-    public static final String LIST_BY_AREA_TIME_INTERVAL = "Movement.findMovementByAreaAndTimestampInterval";
     public static final String FIND_EXISTING_DATE = "Movement.findExistingDate";
     
     private static final long serialVersionUID = 1L;
@@ -143,9 +135,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_status")
     private String status;
 
-    @Fetch(FetchMode.JOIN)
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "movareaMoveId")
-    private List<Movementarea> movementareaList;
 
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "move_movemet_id", referencedColumnName = "movemet_id")
@@ -199,9 +188,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Size(min = 1, max = 60)
     @Column(name = "move_upuser")
     private String updatedBy;
-
-    @OneToMany(mappedBy = "movementId", fetch = FetchType.LAZY)
-    private List<AreaTransition> areaTransitionList;
 
     @Column(name = "move_processed")
     private Boolean processed;
@@ -305,14 +291,6 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.status = status;
     }
 
-    public List<Movementarea> getMovementareaList() {
-        return movementareaList;
-    }
-
-    public void setMovementareaList(List<Movementarea> movementareaList) {
-        this.movementareaList = movementareaList;
-    }
-
     public MovementTypeType getMovementType() {
         return movementType;
     }
@@ -407,15 +385,6 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setDuplicateId(UUID duplicateId) {
         this.duplicateId = duplicateId;
-    }
-
-    @XmlTransient
-    public List<AreaTransition> getAreaTransitionList() {
-        return areaTransitionList;
-    }
-
-    public void setAreaTransitionList(List<AreaTransition> areaTransitionList) {
-        this.areaTransitionList = areaTransitionList;
     }
 
     public Boolean isProcessed() {

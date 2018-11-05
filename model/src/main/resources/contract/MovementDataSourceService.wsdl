@@ -1,7 +1,6 @@
 <definitions name="MovementDataSource"
              targetNamespace="urn:source.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:source="urn:source.movement.schema.fisheries.ec.europa.eu:v1"
-             xmlns:area="urn:area.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:movement="urn:movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:search="urn:search.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:common="urn:common.movement.schema.fisheries.ec.europa.eu:v1"
@@ -15,7 +14,6 @@
             <xsd:import namespace="urn:common.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="MovementCommon.xsd"/>
             <xsd:import namespace="urn:search.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="MovementSearch.xsd"/>
             <xsd:import namespace="urn:movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Movement.xsd"/>
-            <xsd:import namespace="urn:area.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Area.xsd"/>
             
             <!-- Mobile Terminal Base Request -->
             <xsd:simpleType name="MovementDataSourceMethod">
@@ -40,8 +38,7 @@
                     <xsd:enumeration value="PING"/>
                     <xsd:enumeration value="TEMP_GET"/>
                     <xsd:enumeration value="LATEST_REPORT_BY_CONNECT_ID"/>
-                    <xsd:enumeration value="MOVEMENT_LIST_BY_AREA_TIME_INTERVAL"/>
-                    <xsd:enumeration value="GET_AREAS"/>
+
                 </xsd:restriction>
             </xsd:simpleType>
 
@@ -450,43 +447,6 @@
                 </xsd:complexType>
             </xsd:element>
 
-            <xsd:element name="getMovementListByAreaAndTimeIntervalRequest">
-                <xsd:complexType>
-                    <xsd:complexContent>
-                        <xsd:extension base="source:MovementBaseRequest">
-                            <xsd:sequence>
-                                <xsd:element name="movementAreaAndTimeIntervalCriteria" type="search:MovementAreaAndTimeIntervalCriteria" minOccurs="1" maxOccurs="1"/>
-
-                            </xsd:sequence>
-                        </xsd:extension>
-                    </xsd:complexContent>
-                </xsd:complexType>
-            </xsd:element>
-
-            <xsd:element name="getMovementListByAreaAndTimeIntervalResponse">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="movement" type="movement:MovementType" minOccurs="0" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-
-            <xsd:element name="getAreasRequest">
-                <xsd:complexType>
-                    <xsd:complexContent>
-                        <xsd:extension base="source:MovementBaseRequest"/>
-                    </xsd:complexContent>
-                </xsd:complexType>
-            </xsd:element>
-
-            <xsd:element name="areasResponse">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="areas" type="area:AreaType" minOccurs="0" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-
         </xsd:schema>
     </types>
     
@@ -628,21 +588,6 @@
     <message name="GetTempMovementResponse">
         <part name="body" element="source:getTempMovementResponse"/>
     </message>
-
-    <message name="GetMovementListByAreaAndTimeIntervalRequest">
-        <part name="body" element="source:getMovementListByAreaAndTimeIntervalRequest"/>
-    </message>
-    <message name="GetMovementListAreaAndTimeIntervalResponse">
-        <part name="body" element="source:getMovementListByAreaAndTimeIntervalResponse"/>
-    </message>
-
-    <message name="GetAreasRequest">
-        <part name="body" element="source:getAreasRequest"/>
-    </message>
-    <message name="GetAreasResponse">
-        <part name="body" element="source:areasResponse"/>
-    </message>
-
     <portType name="MovementDataSourcePortType">
         
         <operation name="GetMovementByGUID">
@@ -756,19 +701,6 @@
             <input message="source:GetTempMovementRequest"/>
             <output message="source:GetTempMovementResponse"/>
         </operation>
-
-        <operation name="GetMovementListByAreaAndTimeInterval">
-            <input message="source:GetMovementListByAreaAndTimeIntervalRequest"/>
-            <output message="source:GetMovementListAreaAndTimeIntervalResponse"/>
-            <fault name="MovementException" message="source:MovementException"/>
-        </operation>
-
-        <operation name="GetAreas">
-            <input message="source:GetAreasRequest"/>
-            <output message="source:GetAreasResponse"/>
-            <fault name="MovementException" message="source:MovementException"/>
-        </operation>
-
     </portType>
 
     <binding name="MovementDataSourceSoapBinding" type="source:MovementDataSourcePortType">
@@ -995,31 +927,6 @@
                 <soap:body use="literal"/>
             </output>
         </operation>
-
-        <operation name="GetMovementListByAreaAndTimeInterval">
-            <input>
-                <soap:body use="literal"/>
-            </input>
-            <output>
-                <soap:body use="literal"/>
-            </output>
-            <fault name="MovementException">
-                <soap:fault name="MovementException" use="literal"/>
-            </fault>
-        </operation>
-
-        <operation name="GetAreas">
-            <input>
-                <soap:body use="literal"/>
-            </input>
-            <output>
-                <soap:body use="literal"/>
-            </output>
-            <fault name="MovementException">
-                <soap:fault name="MovementException" use="literal"/>
-            </fault>
-        </operation>
-
     </binding>
 
     <service name="MovementDataSourceQueueService">

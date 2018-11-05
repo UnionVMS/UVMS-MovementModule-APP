@@ -29,11 +29,9 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
@@ -41,13 +39,11 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
@@ -74,9 +70,6 @@ public class MovementService {
 
     @Inject
     private MovementDao dao;
-    
-    @Inject
-    private AreaDao areaDao;
     
     @Inject
     private AuditService auditService;
@@ -328,23 +321,6 @@ public class MovementService {
 
     public List<LatestMovement> getLatestMovements(Integer numberOfMovements) {
         return dao.getLatestMovements(numberOfMovements);
-    }
-
-    public GetMovementListByAreaAndTimeIntervalResponse getMovementListByAreaAndTimeInterval(MovementAreaAndTimeIntervalCriteria criteria) {
-        List<Movement> movements = dao.getMovementListByAreaAndTimeInterval(criteria);
-        List<MovementType> movementListByAreaAndTimeInterval = movements != null ? MovementEntityToModelMapper.mapToMovementType(movements) : null;
-        if (movementListByAreaAndTimeInterval == null) {
-            throw new MovementServiceRuntimeException("Error when getting movement list by area and time interval", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-        }
-        return MovementDataSourceResponseMapper.mapMovementListAreaAndTimeIntervalResponse(movementListByAreaAndTimeInterval);
-    }
-
-	public List<Area> getAreas() {
-	    return areaDao.getAreas();
-	}
-
-    public Area getAreaByCode(String code) {
-        return areaDao.getAreaByCode(code);
     }
 	
 	private int getNumberOfPages(Long numberOfMovements, int listSize){

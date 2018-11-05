@@ -10,9 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
@@ -64,16 +62,6 @@ public class InternalResource {
         }
     }
 
-    @POST
-    @Path("/movementListByAreaAndTimeInterval")
-    public Response getMovementListByAreaAndTimeIntervalByCriteria(MovementAreaAndTimeIntervalCriteria criteria) {
-        try {
-        GetMovementListByAreaAndTimeIntervalResponse response = movementService.getMovementListByAreaAndTimeInterval(criteria);
-        return Response.ok(response).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Error when getting movement list by area and time interval").build();
-        }
-    }
 
     @POST
     @Path("/movementListByAreaAndTimeInterval")

@@ -26,10 +26,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -38,7 +35,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
@@ -71,6 +67,17 @@ public class MovementMapper {
         movementType.setProcessed(movementBaseType.isProcessed());
         movementType.setDuplicate(movementBaseType.isDuplicate());
         movementType.setDuplicates(movementBaseType.getDuplicates());
+        return movementType;
+    }
+
+    public static MovementType mapMovementToMovementTypeForSpatial(Movement movement){
+        MovementType movementType = new MovementType();
+        movementType.setPositionTime(Date.from(movement.getTimestamp()));
+        eu.europa.ec.fisheries.schema.movement.v1.MovementPoint movementPoint = new eu.europa.ec.fisheries.schema.movement.v1.MovementPoint();
+        movementPoint.setLatitude(movement.getLocation().getY());
+        movementPoint.setLongitude(movement.getLocation().getX());
+        movementType.setPosition(movementPoint);
+
         return movementType;
     }
     
@@ -163,21 +170,6 @@ public class MovementMapper {
             enrichedList.add(movement);
         }
         return enrichedList;
-    }
-
-    private static List<MovementMetaDataAreaType> mapToAreas(List<AreaExtendedIdentifierType> areas) {
-        List<MovementMetaDataAreaType> mappedAreas = new ArrayList<>();
-        for (AreaExtendedIdentifierType area : areas) {
-            MovementMetaDataAreaType areaType = new MovementMetaDataAreaType();
-            areaType.setRemoteId(area.getId());
-            if (area.getAreaType() != null) {
-                areaType.setAreaType(area.getAreaType().value());
-            }
-            areaType.setCode(area.getCode());
-            areaType.setName(area.getName());
-            mappedAreas.add(areaType);
-        }
-        return mappedAreas;
     }
 
     private static void enrichWithPortData(List<Location> locations, LocationType type, Movementmetadata meta) {

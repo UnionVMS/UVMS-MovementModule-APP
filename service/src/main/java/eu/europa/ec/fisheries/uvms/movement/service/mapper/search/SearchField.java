@@ -56,10 +56,6 @@ public enum SearchField implements SearchFieldType {
      */
     AREA("location", SearchTables.MOVEMENT, Geometry.class),
     /**
-     * The area ID. 
-     */
-    AREA_ID("movareaAreaId", SearchTables.MOVEMENT_AREA, Integer.class),
-    /**
      * The reported speed of the movement
      */
     MOVEMENT_SPEED("speed", SearchTables.MOVEMENT, Double.class),

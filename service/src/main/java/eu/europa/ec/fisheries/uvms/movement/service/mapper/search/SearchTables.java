@@ -23,9 +23,6 @@ public enum SearchTables {
     TO_SEGMENT("toSeg", "Segment"),
     TRACK("tra", "Track"),
     TEMP_TABLE("temp", "temp"),
-    MOVEMENT_AREA("marea", "Movementarea"),
-    MOVEMENT_AREA_TYPE("mareatype", "AreaType"),
-    AREA("area", "Area"),
     ACTIVITY("act", "Activity");
 
     private final String tableNameAlias;

@@ -3,8 +3,17 @@ package eu.europa.ec.fisheries.uvms.movement.service;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import com.vividsolutions.jts.geom.Point;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialClient;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
@@ -59,6 +68,12 @@ public class SpatialClientMock implements SpatialClient {
         }
         
         return batchSpatialEnrichmentRS;
+    }
+
+    public SegmentCategoryType getSegmentCategoryType(Movement movement1, Movement movement2){
+        shouldIFail();
+
+        return SegmentCategoryType.IN_PORT;
     }
 
     private void populateClosestAreas(SpatialEnrichmentRS spatialEnrichmentRS) {

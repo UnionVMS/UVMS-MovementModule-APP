@@ -1,7 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -12,7 +11,6 @@ import java.util.Map;
 import java.util.UUID;
 import javax.ejb.EJB;
 
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,14 +20,12 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
@@ -121,8 +117,6 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId.toString(), output.getConnectId());
 		assertEquals("POINT ( 11.641982 57.632304 )" , output.getWkt());
-//		assertEquals("MovementMetaData[closestPort=ClosestLocationType[distance=<null>,remoteId=<null>,code=<null>,name=<null>],closestCountry=ClosestLocationType"
-//				+ "[distance=<null>,remoteId=<null>,code=<null>,name=<null>],areas=[],previousMovementId=<null>,fromSegmentType=<null>]" , output.getMetaData().toString());
 		assertTrue(!output.isDuplicate());
 		
 		movement = null;
@@ -154,7 +148,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		MovementMetaData output = MovementEntityToModelMapper.mapToMovementMetaData(input);
 		
 		assertEquals("MovementMetaData[closestPort=ClosestLocationType[distance=1234.0,remoteId=<null>,code=AUCBR,name=<null>],"
-				+ "closestCountry=ClosestLocationType[distance=42.42,remoteId=<null>,code=DK,name=<null>],areas=<null>,"
+				+ "closestCountry=ClosestLocationType[distance=42.42,remoteId=<null>,code=DK,name=<null>],"
 				+ "previousMovementId=<null>,fromSegmentType=<null>]", output.toString());
 		
 		try {
@@ -347,64 +341,4 @@ public class MovementEntityToModelTest extends TransactionalTests {
 			assertTrue(true);
 		}
 	}
-	
-	/**
-     * Update movement metadata with added transitions that is not yet added to
-     * movement metadata When the area is same no addition should be made to
-     * the areas in metadata when areas are equal
-     */
-    @Test
-    public void testEnrichAreasSameArea() {
-        MovementType mappedMovement = MockData.getMappedMovement(2);
-        List<AreaTransition> transitions = new ArrayList<>();
-        MovementMetaDataAreaType existingArea = mappedMovement.getMetaData().getAreas().get(0);
-        transitions.add(MockData.getAreaTransition(MockData.createArea(existingArea.getCode()), MovementTypeType.ENT));
-        MovementEntityToModelMapper.enrichAreas(mappedMovement, transitions);
-        assertEquals(" AreaSize should be 2", 2, mappedMovement.getMetaData().getAreas().size());
-    }
-
-    /**
-     * Update movement metadata with added transitions that is not yet added to
-     * movement metadata When the area is not same an addition should be made
-     * to the areas in metadata when areas are not equal
-     */
-    @Test
-    public void testEnrichAreasNotSameArea() {
-        MovementType mappedMovement = MockData.getMappedMovement(2);
-        List<AreaTransition> transitions = new ArrayList<>();
-        transitions.add(MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT));
-        MovementEntityToModelMapper.enrichAreas(mappedMovement, transitions);
-        assertEquals("AreaSize should be 3", 3,mappedMovement.getMetaData().getAreas().size());
-    }
-    
-    @Test
-    public void enrichAreasSameArea() {
-        MovementType movementType = MockData.getMappedMovement(2);
-
-        List<AreaTransition> areaTransitionList = new ArrayList<>();
-        MovementMetaDataAreaType existingArea = movementType.getMetaData().getAreas().get(0);
-        areaTransitionList.add(MockData.getAreaTransition(MockData.createArea(existingArea.getCode()), MovementTypeType.ENT));
-        MovementEntityToModelMapper.enrichAreas(movementType, areaTransitionList);
-        assertEquals(" AreaSize should be 2", 2, movementType.getMetaData().getAreas().size());
-    }
-
-    @Test
-    public void enrichAreasNotSameArea() {
-        MovementType movementType = MockData.getMappedMovement(2);
-
-        List<AreaTransition> areaTransitionList = new ArrayList<>();
-        areaTransitionList.add(MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT));
-        MovementEntityToModelMapper.enrichAreas(movementType, areaTransitionList);
-        assertEquals(" AreaSize should be 3", 3, movementType.getMetaData().getAreas().size());
-    }
-
-    @Test
-    public void mapToMovementMetaDataAreaType() {
-        // TODO  maybe like this ?
-        AreaTransition areaTransition = MockData.getAreaTransition(MockData.createArea(), MovementTypeType.ENT);
-        areaTransition.setMovementType(MovementTypeType.MAN);
-        areaTransition.setAreaId(areaTransition.getAreaId());
-        MovementMetaDataAreaType movementMetaDataAreaType = MovementEntityToModelMapper.mapToMovementMetaDataAreaType(areaTransition);
-        assertNotNull(movementMetaDataAreaType);
-    }
 }

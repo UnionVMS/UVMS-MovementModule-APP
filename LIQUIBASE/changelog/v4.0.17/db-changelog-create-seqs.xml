@@ -5,10 +5,6 @@
 
 
     <changeSet author="anwall" id="Add misssing hibernate seqs">
-        <createSequence sequenceName="area_seq" startValue="1"/>
-        <createSequence sequenceName="area_trans_seq" startValue="1"/>
-        <createSequence sequenceName="areatype_seq" startValue="1"/>
-        <createSequence sequenceName="movarea_seq" startValue="1"/>
         <createSequence sequenceName="movement_filter_seq" startValue="1"/>
         <createSequence sequenceName="movement_filter_group_seq" startValue="1"/>
         <createSequence sequenceName="activity_seq" startValue="1"/>
@@ -21,10 +17,6 @@
         <createSequence sequenceName="track_seq" startValue="1"/>
 
         <rollback>
-            <dropSequence sequenceName="area_seq"/>
-            <dropSequence sequenceName="area_trans_seq"/>
-            <dropSequence sequenceName="areatype_seq"/>
-            <dropSequence sequenceName="movarea_seq"/>
             <dropSequence sequenceName="movement_filter_seq"/>
             <dropSequence sequenceName="movement_filter_group_seq"/>
             <dropSequence sequenceName="activity_seq"/>

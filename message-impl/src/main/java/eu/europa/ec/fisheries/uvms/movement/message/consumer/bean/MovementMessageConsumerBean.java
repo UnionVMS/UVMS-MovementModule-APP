@@ -65,9 +65,6 @@ public class MovementMessageConsumerBean implements MessageListener {
                 case PING:
                     movementEventBean.ping(textMessage);
                     break;
-                case MOVEMENT_LIST_BY_AREA_TIME_INTERVAL:
-                    movementEventBean.getMovementListByAreaAndTimeInterval(textMessage);
-                    break;
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:
                 default:
