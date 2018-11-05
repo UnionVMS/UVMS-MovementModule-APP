@@ -7,7 +7,10 @@
     <include file="changelog\v0.1\db-changelog-createSequence_0.1.xml" />
     <include file="changelog\v0.1\db-changelog-createTables_oracle_0.1.xml" />
     <include file="changelog\v0.1\db-changelog-insertStaticValues_0.1.xml" />
-        
+
+
+    <include file="v5.0.3\db-changelog-5.0.3.xml" relativeToChangelogFile="true"/>
+
     <!-- set DB specific properties, like sysdate vs now() 
     <include file="changelog\properties.xml"/>
     

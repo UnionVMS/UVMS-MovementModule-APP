@@ -21,7 +21,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementGroupMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidator;
+import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidatorBean;
 
 @Stateless
 public class MovementSearchGroupService {
@@ -37,12 +37,12 @@ public class MovementSearchGroupService {
             throw new MovementServiceRuntimeException("Create MovementSearchGroup must have username set, cannot be null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         try {
-            if (MovementGroupValidator.isMovementGroupOk(searchGroup)) {
+            if (MovementGroupValidatorBean.isMovementGroupOk(searchGroup)) {
                 MovementFilterGroup filterGroup = MovementGroupMapper.toGroupEntity(searchGroup, username);
                 return dao.createMovementFilterGroup(filterGroup);
             } else {
                 throw new MovementServiceException("One or several movement types are misspelled or non existent." +
-                        " Allowed values are: [ " + MovementGroupValidator.ALLOWED_FIELD_VALUES + " ]", ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+                        " Allowed values are: [ " + MovementGroupValidatorBean.ALLOWED_FIELD_VALUES + " ]", ErrorCode.UNSUCCESSFUL_DB_OPERATION);
             }
         } catch (Exception e) {
             throw new MovementServiceException("Error when creating movement search group", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);

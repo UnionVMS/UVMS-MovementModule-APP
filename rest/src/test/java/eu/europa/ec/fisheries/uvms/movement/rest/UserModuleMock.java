@@ -58,16 +58,19 @@ public class UserModuleMock implements MessageListener {
         userContext.setContextSet(new ContextSet());
         Context context = new Context();
         context.setRole(new Role());
-        Feature manageVesselsFeature = new Feature();
-        manageVesselsFeature.setName(UnionVMSFeature.manageManualMovements.name());
-        context.getRole().getFeature().add(manageVesselsFeature);
-        Feature viewVesselsFeature = new Feature();
-        viewVesselsFeature.setName(UnionVMSFeature.viewMovements.name());
-        context.getRole().getFeature().add(viewVesselsFeature);
-        Feature viewManualMovementsFeature = new Feature();
-        viewManualMovementsFeature.setName(UnionVMSFeature.viewManualMovements.name());
-        context.getRole().getFeature().add(viewManualMovementsFeature);
+        addFeature(UnionVMSFeature.manageManualMovements, userContext, context);
+        addFeature(UnionVMSFeature.viewMovements, userContext, context);
+        addFeature(UnionVMSFeature.viewManualMovements, userContext, context);
+        addFeature(UnionVMSFeature.manageAlarmsHoldingTable, userContext, context);
+        addFeature(UnionVMSFeature.viewAlarmsHoldingTable, userContext, context);
         userContext.getContextSet().getContexts().add(context);
         return userContext;
+    }
+
+    private void addFeature(UnionVMSFeature unionVMSFeature, UserContext userContext, Context context) {
+        Feature viewManualMovementsFeature = new Feature();
+        viewManualMovementsFeature.setName(unionVMSFeature.name());
+        context.getRole().getFeature().add(viewManualMovementsFeature);
+        userContext.getContextSet().getContexts().add(context);
     }
 }

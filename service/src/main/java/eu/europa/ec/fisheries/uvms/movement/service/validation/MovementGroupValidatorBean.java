@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 
-public class MovementGroupValidator {
+public class MovementGroupValidatorBean {
 
     public static final String ALLOWED_FIELD_VALUES = getAllowedValues();
 

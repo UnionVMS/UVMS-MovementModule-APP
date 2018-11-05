@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
@@ -25,12 +26,14 @@ import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
+import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
+import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
@@ -38,6 +41,7 @@ import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageExc
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.TempMovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
@@ -149,7 +153,8 @@ public class TempMovementService {
         try {
             TempMovement movement = setTempMovementState(guid, TempMovementStateEnum.SENT, username);
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
-            String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username);
+            String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
+                    Date.from(DateUtil.nowUTC()), null, PluginType.MANUAL, username, null);
             String exchangeMessageId = producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
             consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
             return movement;

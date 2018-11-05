@@ -1,0 +1,157 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="anwall" id="alarmreport-01">
+
+        <createTable tableName="alarmreport" remarks="Alarm Report table.">
+
+            <column name="id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="alarmreport_pk"/>
+            </column>
+            <column name="plugintype" type="varchar(100)" remarks="Type of the plugin the report came from."/>
+            <column name="guid" type="varchar(36)" remarks="Guid of alarm."/>
+            <column name="assetguid" type="varchar(36)" remarks="Guid of asset."/>
+            <column name="status" type="varchar(20)" remarks="OPEN or CLOSED."/>
+            <column name="createddate" type="TIMESTAMP WITH TIME ZONE" remarks="When the report is created."/>
+            <column name="recipient" type="varchar(20)" remarks="Recipient country code."/>
+            <column name="updated" type="TIMESTAMP WITH TIME ZONE" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedby" type="varchar(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="incomingmovement_id" type="bigint" remarks="FK to incomingmovement Report."/>
+
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="alarmreport" cascadeConstraints="true" />
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="anwall" id="alarmitem-01">
+
+        <createTable tableName="alarmitem" remarks="Alarm Item table.">
+            <column name="id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="alarmitem_pk"/>
+            </column>
+            <column name="guid" type="varchar(36)" remarks="Guid of the alarm item."/>
+            <column name="ruleguid" type="varchar(100)" remarks="Guid of rule."/>
+            <column name="rulename" type="varchar(100)" remarks="Name of rule."/>
+
+            <column name="updated" type="TIMESTAMP WITH TIME ZONE" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedby" type="varchar(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="alarmreport_id" type="bigint" remarks="FK to Alarm Report."/>
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="alarmitem_alarmreport_fk"
+                baseTableName="alarmitem"
+                baseColumnNames="alarmreport_id"
+                referencedTableName="alarmreport"
+                referencedColumnNames="id"
+        />
+
+        <rollback>
+            <dropTable tableName="alarmitem" cascadeConstraints="true" />
+        </rollback>
+
+    </changeSet>
+
+    <changeSet author="anwall" id="incomingmovement-01">
+        <createTable tableName="incomingmovement" remarks="The movement connected to the alarm report.">
+            <column name="id" type="bigint" remarks="The synthetic key.">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk"/>
+            </column>
+            <column name="guid" type="VARCHAR(40)" remarks="Guid of movement."/>
+            <column name="connectid" type="VARCHAR(100)" remarks="???."/>
+
+
+            <column name="positiontime" type="TIMESTAMP WITH TIME ZONE" remarks="Reported time of movement."/>
+            <column name="datereceived" type="TIMESTAMP WITH TIME ZONE" remarks="Received time of movement."/>
+            <column name="assetname" type="varchar(100)" remarks="Asset name as it comes from FLUX/MAN."/>
+            <column name="flagstate" type="varchar(100)" remarks="Flagstate as it comes from FLUX/MAN."/>
+            <column name="externalmarking" type="varchar(100)" remarks="External markings as it comes from FLUX/MAN."/>
+            <column name="reportedspeed" type="DOUBLE" remarks="???."/>
+            <column name="reportedcourse" type="DOUBLE" remarks="???."/>
+            <column name="comchanneltype" type="VARCHAR(100)" remarks="???."/>
+            <column name="movementtype" type="VARCHAR(100)" remarks="???."/>
+            <column name="movementsourcetype" type="VARCHAR(100)" remarks="???."/>
+
+            <column name="longitude" type="DOUBLE" remarks="Longitude."/>
+            <column name="latitude" type="DOUBLE" remarks="Latitude."/>
+            <column name="altitude" type="DOUBLE" remarks="Altitude."/>
+
+            <column name="mobileterminalguid" type="VARCHAR(100)" remarks="Mobile terminal guid."/>
+            <column name="mobileterminalconnectid" type="VARCHAR(100)" remarks="???"/>
+
+            <column name="mobileterminalserialnumber" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalles" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminaldnid" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalmembernumber" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+
+
+            <column name="assettype" type="VARCHAR(50)" remarks="Type of asset, e.g. VESSEL."/>
+            <column name="assetid" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetcfr" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetircs" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetimo" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetmmsi" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetguid" type="VARCHAR(100)" remarks="Asset type value."/>
+
+
+            <column name="activitymessagetype" type="VARCHAR(100)" remarks="???."/>
+            <column name="activitymessageid" type="VARCHAR(100)" remarks="???."/>
+            <column name="activitycallback" type="VARCHAR(100)" remarks="???."/>
+
+            <column name="updated" type="TIMESTAMP WITH TIME ZONE" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedby" type="varchar(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="tripnumber" type="DOUBLE" remarks="???."/>
+            <column name="internalreferencenumber" type="VARCHAR(100)" remarks="???."/>
+            <column name="ackresponsemessageid" type="VARCHAR(100)" remarks="???."/>
+            <column name="plugintype" type="varchar(100)" remarks="Type of the plugin the report came from."/>
+
+
+            <column name="alarmreport_id" type="BIGINT" />
+
+            <column name="status" type="VARCHAR(100)" remarks="???."/>
+            <column name="active" type="boolean" remarks="???."/>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="incomingmovement_alarmreport_fk"
+                baseTableName="incomingmovement"
+                baseColumnNames="alarmreport_id"
+                referencedTableName="alarmreport"
+                referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+                constraintName="alarmreport_incomingmovement_fk"
+                baseTableName="alarmreport"
+                baseColumnNames="incomingmovement_id"
+                referencedTableName="incomingmovement"
+                referencedColumnNames="id"
+        />
+
+        <rollback>
+            <dropTable tableName="rawmovement" cascadeConstraints="true" />
+        </rollback>
+    </changeSet>
+
+
+
+</databaseChangeLog>
