@@ -129,11 +129,6 @@ public class MovementModuleResponseMapper {
         return response;
     }
 
-    public static String mapTogetMovementListByAreaAndTimeIntervalResponse(List<MovementType> movementList) throws MovementModelException {
-        GetMovementListByAreaAndTimeIntervalResponse response = new GetMovementListByAreaAndTimeIntervalResponse();
-        response.getMovement().addAll(movementList);
-        return JAXBMarshaller.marshallJaxBObjectToString(response);
-    }
 
     public static ProcessedMovementAck mapProcessedMovementAck(AcknowledgeTypeType ack, String messageId, String message) {
         ProcessedMovementAck resp = new ProcessedMovementAck();

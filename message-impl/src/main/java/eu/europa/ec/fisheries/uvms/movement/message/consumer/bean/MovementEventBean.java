@@ -26,7 +26,6 @@ import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByAreaAndTimeIntervalRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
@@ -158,22 +157,7 @@ public class MovementEventBean {
             errorEvent.fire(new EventMessage(message, "Error when responding to ping CD ..SSS: " + e.getMessage()));
         }
     }
-    
-    public void getMovementListByAreaAndTimeInterval(TextMessage jmsMessage) {
-        try {
-            GetMovementListByAreaAndTimeIntervalRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementListByAreaAndTimeIntervalRequest.class);
-            eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse response = movementService.getMovementListByAreaAndTimeInterval(request.getMovementAreaAndTimeIntervalCriteria());
-            String responseString = MovementModuleResponseMapper.mapTogetMovementListByAreaAndTimeIntervalResponse(response.getMovement());
-            messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
-        } catch (MovementMessageException | MovementModelException ex) {
-            LOG.error("[ Error in GetMovementListByAreaAndTimeIntervalBean.getMovementListByAreaAndTimeInterval ] ", ex);
-            if (maxRedeliveriesReached(jmsMessage)) {
-                EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
-                errorEvent.fire(eventMessage);
-            }
-            throw new EJBException(ex);
-        }
-    }
+
     
     private boolean maxRedeliveriesReached(TextMessage message) {
         try {

@@ -25,12 +25,10 @@ import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
@@ -39,8 +37,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 
@@ -137,9 +133,6 @@ public class MovementEntityToModelMapper {
             model.setMetaData(mapToMovementMetaData(movement.getMetadata()));
         }
 
-        if (model.getMetaData() != null) {
-            model.getMetaData().getAreas().addAll(mapToMovementMetaDataAreaTypeList(movement.getMovementareaList()));
-        }
 
         model.setProcessed(movement.isProcessed());
         if (movement.getDuplicate() != null) {
@@ -154,24 +147,10 @@ public class MovementEntityToModelMapper {
         model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
         model.setTripNumber(movement.getTripNumber());
 
-        enrichAreas(model, movement.getAreaTransitionList());
         
         return model;
     }
 
-    private static List<MovementMetaDataAreaType> mapToMovementMetaDataAreaTypeList(List<Movementarea> areas) {
-        List<MovementMetaDataAreaType> areaList = new ArrayList<>();
-        for (Movementarea area : areas) {
-            MovementMetaDataAreaType type = new MovementMetaDataAreaType();
-            type.setAreaType(area.getMovareaAreaId().getAreaType().getName());
-            type.setRemoteId(area.getMovareaAreaId().getRemoteId());
-            type.setCode(area.getMovareaAreaId().getAreaCode());
-            type.setName(area.getMovareaAreaId().getAreaName());
-            type.setTransitionType(MovementTypeType.POS);
-            areaList.add(type);
-        }
-        return areaList;
-    }
 
     public static MovementActivityType mapToActivityType(Activity activity) {
         MovementActivityType actType = new MovementActivityType();
@@ -317,48 +296,5 @@ public class MovementEntityToModelMapper {
         }
         return new ArrayList<>(segments);
     }
-    
-    /**
-     * Enriches the MovementTypes Areas in the metadata object. If there are
-     * transitions present that are not already mapped in the movementType they are
-     * added to the area list in metadata.
-     *
-     * @param mappedMovement the movementType where the metadata is extracted
-     * @param areaTransitionList the list of transitions that will enrich the
-     * mapped movementType
-     */
-    protected static void enrichAreas(MovementType mappedMovement, List<AreaTransition> areaTransitionList) {
 
-        if(mappedMovement.getMetaData() == null) {
-            mappedMovement.setMetaData(new MovementMetaData());
-        }
-
-        HashMap<String, MovementMetaDataAreaType> areas = new HashMap<>();
-        for (MovementMetaDataAreaType area : mappedMovement.getMetaData().getAreas()) {
-            areas.put(area.getCode(), area);
-        }
-
-        if (areaTransitionList != null) {
-            for (AreaTransition areaTransition : areaTransitionList) {
-                if (areas.containsKey(areaTransition.getAreaId().getAreaCode())) {
-                    areas.get(areaTransition.getAreaId().getAreaCode()).setTransitionType(areaTransition.getMovementType());
-                } else {
-                    MovementMetaDataAreaType newArea = mapToMovementMetaDataAreaType(areaTransition);
-                    areas.put(newArea.getCode(), newArea);
-                }
-            }
-        }
-        mappedMovement.getMetaData().getAreas().clear();
-        mappedMovement.getMetaData().getAreas().addAll(areas.values());
-    }
-    
-    protected static MovementMetaDataAreaType mapToMovementMetaDataAreaType(AreaTransition areaTransition) {
-        MovementMetaDataAreaType newArea = new MovementMetaDataAreaType();
-        newArea.setTransitionType(areaTransition.getMovementType());
-        newArea.setCode(areaTransition.getAreaId().getAreaCode());
-        newArea.setName(areaTransition.getAreaId().getAreaName());
-        newArea.setRemoteId(areaTransition.getAreaId().getRemoteId());
-        newArea.setAreaType(areaTransition.getAreaId().getAreaType().getName());
-        return newArea;
-    }
 }

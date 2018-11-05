@@ -91,10 +91,7 @@ public class SearchMapperListTest extends TransactionalTests {
                 "LEFT JOIN FETCH m.track tra  " +
                 "LEFT JOIN FETCH m.fromSegment fromSeg  " +
                 "LEFT JOIN FETCH m.toSegment toSeg  " +
-                "LEFT JOIN FETCH m.metadata mmd  " +
-                "LEFT JOIN FETCH m.movementareaList marea  " +
-                "LEFT JOIN FETCH marea.movareaAreaId area  " +
-                "LEFT JOIN FETCH area.areaType mareatype  " +
+                "LEFT JOIN FETCH m.metadata mmd " +
                 "WHERE  ( toSeg.id = 1 OR fromSeg.id = 1 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
     }
     
@@ -118,10 +115,7 @@ public class SearchMapperListTest extends TransactionalTests {
                 "LEFT JOIN FETCH m.track tra  " +
                 "LEFT JOIN FETCH m.fromSegment fromSeg  " +
                 "LEFT JOIN FETCH m.toSegment toSeg  " +
-                "LEFT JOIN FETCH m.metadata mmd  " +
-                "LEFT JOIN FETCH m.movementareaList marea  " +
-                "LEFT JOIN FETCH marea.movareaAreaId area  " +
-                "LEFT JOIN FETCH area.areaType mareatype  " +
+                "LEFT JOIN FETCH m.metadata mmd " +
                 "WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
     }
     
@@ -163,8 +157,8 @@ public class SearchMapperListTest extends TransactionalTests {
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, false);
         System.out.println(data);
         String correctOutput = "SELECT DISTINCT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra "
-        		+ " LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg  LEFT JOIN FETCH m.metadata mmd  LEFT JOIN FETCH m.movementareaList marea "
-        		+ " LEFT JOIN FETCH marea.movareaAreaId area  LEFT JOIN FETCH area.areaType mareatype  WHERE m.movementSource = 3 OR  ( toSeg.segmentCategory = 6 OR"
+        		+ " LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg  LEFT JOIN FETCH m.metadata mmd"
+        		+ " WHERE m.movementSource = 3 OR  ( toSeg.segmentCategory = 6 OR"
         		+ " fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC "; 
         assertEquals(correctOutput, data);
     }
@@ -184,8 +178,8 @@ public class SearchMapperListTest extends TransactionalTests {
 
         String data = SearchFieldMapper.createCountSearchSql(mapSearchField, true);
         String correctOutput = "SELECT COUNT(DISTINCT m) FROM Movement m  INNER JOIN m.movementConnect mc  LEFT JOIN m.activity act  LEFT JOIN m.track tra "
-        		+ " LEFT JOIN m.fromSegment fromSeg  LEFT JOIN m.toSegment toSeg  LEFT JOIN m.metadata mmd  LEFT JOIN m.movementareaList marea "
-        		+ " LEFT JOIN marea.movareaAreaId area  LEFT JOIN area.areaType mareatype  WHERE m.movementSource = 3 AND  m.duplicate = false ";
+        		+ " LEFT JOIN m.fromSegment fromSeg  LEFT JOIN m.toSegment toSeg  LEFT JOIN m.metadata mmd"
+        		+ " WHERE m.movementSource = 3 AND  m.duplicate = false ";
         assertEquals(correctOutput, data);
     }
 

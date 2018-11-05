@@ -26,10 +26,7 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -174,21 +171,6 @@ public class MovementMapper {
             enrichedList.add(movement);
         }
         return enrichedList;
-    }
-
-    private static List<MovementMetaDataAreaType> mapToAreas(List<AreaExtendedIdentifierType> areas) {
-        List<MovementMetaDataAreaType> mappedAreas = new ArrayList<>();
-        for (AreaExtendedIdentifierType area : areas) {
-            MovementMetaDataAreaType areaType = new MovementMetaDataAreaType();
-            areaType.setRemoteId(area.getId());
-            if (area.getAreaType() != null) {
-                areaType.setAreaType(area.getAreaType().value());
-            }
-            areaType.setCode(area.getCode());
-            areaType.setName(area.getName());
-            mappedAreas.add(areaType);
-        }
-        return mappedAreas;
     }
 
     private static void enrichWithPortData(List<Location> locations, LocationType type, Movementmetadata meta) {

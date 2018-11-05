@@ -414,18 +414,6 @@ public class MovementDaoIntTest extends TransactionalTests {
         assertNotNull(movements);
     }
 
-    // The value of this test is very limited
-    @Test
-    public void getMovementListByAreaAndTimeInterval_Invalid_Null_Parameter() {
-
-        // TODO  this one cannot be instantiated using new (probably a soap thing)
-        // MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
-
-        thrown.expect(EJBTransactionRolledbackException.class);
-
-        List<Movement> movementListByAreaAndTimeInterval = movementDao.getMovementListByAreaAndTimeInterval(null);
-    }
-
     @Test
     public void getMovementListPaginated() throws MovementServiceException {
 

@@ -401,10 +401,7 @@ public class SearchFieldMapper {
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "track " + SearchTables.TRACK.getTableAlias() + " " +
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "fromSegment " + SearchTables.FROM_SEGMENT.getTableAlias() + " " +
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "toSegment " + SearchTables.TO_SEGMENT.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "metadata " + SearchTables.MOVEMENT_METADATA.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "movementareaList " + SearchTables.MOVEMENT_AREA.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT_AREA.getTableAlias() + "." + "movareaAreaId " + SearchTables.AREA.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.AREA.getTableAlias() + "." + "areaType " + SearchTables.MOVEMENT_AREA_TYPE.getTableAlias() + " ";
+                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "metadata " + SearchTables.MOVEMENT_METADATA.getTableAlias();
     }
 
     /**
@@ -744,10 +741,6 @@ public class SearchFieldMapper {
                 return SearchField.CONNECT_ID;
             case MOVEMENT_TYPE:
                 return SearchField.MOVMENT_TYPE;
-            case AREA:
-                return SearchField.AREA;
-            case AREA_ID:
-            	return SearchField.AREA_ID;
             case STATUS:
                 return SearchField.STATUS;
             case SOURCE:

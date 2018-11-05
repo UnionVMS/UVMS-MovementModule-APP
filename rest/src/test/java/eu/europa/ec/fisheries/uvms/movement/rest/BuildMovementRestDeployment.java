@@ -15,6 +15,9 @@ import java.io.File;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
@@ -59,6 +62,8 @@ public abstract class BuildMovementRestDeployment {
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
+        testWar.addClass(MovementBaseType.class);
+        testWar.addClass(MovementType.class);
         testWar.addClass(UnionVMSMock.class);
         testWar.addClass(SpatialModuleMock.class);
 

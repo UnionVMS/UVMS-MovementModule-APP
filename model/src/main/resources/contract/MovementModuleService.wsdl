@@ -25,7 +25,6 @@
                     <xsd:enumeration value="GET_TRIP_BY_ID"/>
                     <xsd:enumeration value="GET_SEGMENT_BY_ID"/>
                     <xsd:enumeration value="PING"/>
-                    <xsd:enumeration value="MOVEMENT_LIST_BY_AREA_TIME_INTERVAL"/>
                 </xsd:restriction>
             </xsd:simpleType>
             
@@ -179,27 +178,6 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-
-            <xsd:element name="getMovementListByAreaAndTimeIntervalRequest">
-                <xsd:complexType>
-                    <xsd:complexContent>
-                        <xsd:extension base="module:MovementBaseRequest">
-                            <xsd:sequence>
-                                <xsd:element name="movementAreaAndTimeIntervalCriteria" type="search:MovementAreaAndTimeIntervalCriteria" minOccurs="1" maxOccurs="1"/>
-                            </xsd:sequence>
-                        </xsd:extension>
-                    </xsd:complexContent>
-                </xsd:complexType>
-            </xsd:element>
-
-            <xsd:element name="getMovementListByAreaAndTimeIntervalResponse">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="movement" type="movement:MovementType" minOccurs="0" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-
             <!-- response asynch SetMovementReportAck -->
             <xsd:element name="ProcessedMovementAck">
                 <xsd:complexType>
@@ -265,13 +243,6 @@
         <part name="body" element="module:pingResponse"/>
     </message>
 
-    <message name="GetMovementListByAreaAndTimeIntervalRequest">
-        <part name="body" element="module:getMovementListByAreaAndTimeIntervalRequest"/>
-    </message>
-    <message name="GetMovementListByAreaAndTimeIntervalResponse">
-        <part name="body" element="module:getMovementListByAreaAndTimeIntervalResponse"/>
-    </message>
-
     <message name="ProcessedMovementAck">
         <part name="body" element="module:ProcessedMovementAck"/>
     </message>
@@ -318,13 +289,6 @@
             <input message="module:PingRequest"/>
             <output message="module:PingResponse"/>
         </operation>
-
-        <operation name="GetMovementListByAreaAndTimeInterval">
-            <input message="module:GetMovementListByAreaAndTimeIntervalRequest"/>
-            <output message="module:GetMovementListByAreaAndTimeIntervalResponse"/>
-            <fault name="MovementException" message="module:MovementException"/>
-        </operation>
-
         <!-- SetMovementReportAck -->
         <operation name="ProcessedMovement">
             <input message="module:ProcessedMovementAck"/>
@@ -417,17 +381,6 @@
             </output>
         </operation>
 
-        <operation name="GetMovementListByAreaAndTimeInterval">
-            <input>
-                <soap:body use="literal"/>
-            </input>
-            <output>
-                <soap:body use="literal"/>
-            </output>
-            <fault name="MovementException">
-                <soap:fault name="MovementException" use="literal"/>
-            </fault>
-        </operation>
 
         <operation name="ProcessedMovement">
             <input>

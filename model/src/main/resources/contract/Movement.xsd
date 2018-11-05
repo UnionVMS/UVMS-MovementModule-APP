@@ -130,7 +130,6 @@
         <xsd:sequence>
             <xsd:element name="closestPort" type="movement:ClosestLocationType"/>
             <xsd:element name="closestCountry" type="movement:ClosestLocationType"/>
-            <xsd:element name="areas" type="movement:MovementMetaDataAreaType"  minOccurs="1" maxOccurs="unbounded"/>
             <xsd:element name="previousMovementId" type="xsd:string"/>
             <xsd:element name="fromSegmentType" type="movement:SegmentCategoryType"/>
         </xsd:sequence>
@@ -153,18 +152,7 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
-    
-    <xsd:complexType name="MovementMetaDataAreaType">
-        <xsd:complexContent>
-            <xsd:extension base="movement:RemoteIdType">
-                <xsd:sequence>
-                    <xsd:element name="areaType" type="xsd:string"/>
-                    <xsd:element name="transitionType" type="movement:MovementTypeType"/>
-                </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-    
+
     <xsd:complexType name="TempMovementType">
         <xsd:sequence>
             <xsd:element name="guid" type="xsd:string"/>

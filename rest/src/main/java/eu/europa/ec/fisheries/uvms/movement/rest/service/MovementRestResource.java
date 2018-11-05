@@ -28,7 +28,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -38,9 +37,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModel
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
@@ -212,31 +209,6 @@ public class MovementRestResource {
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (NonUniqueResultException ex) {
             LOG.error("[ Error when getting by id. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
-        }
-    }
-
-    @POST
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    @Path("/listByAreaAndTimeInterval")
-    @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto<MovementListResponseDto> getListMovementByAreaAndTimeInterval (MovementAreaAndTimeIntervalCriteria criteria) {
-        LOG.debug("Get list invoked in rest layer");
-        try {
-            if (criteria.getAreaCode() == null) {
-
-                // TODO CHECK USER SERVICE
-                criteria.setAreaCode(userService.getUserNationality(request.getRemoteUser()));
-            }
-
-            GetMovementListByAreaAndTimeIntervalResponse movementListByAreaAndTimeInterval = serviceLayer.getMovementListByAreaAndTimeInterval(criteria);
-            return new ResponseDto(movementListByAreaAndTimeInterval, ResponseCode.OK);
-        } catch (MovementServiceException | NullPointerException ex) {
-            LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
-        } catch (Exception ex) {
-            LOG.error("[ Error when getting list. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }

@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
@@ -70,17 +69,4 @@ public class MovementDataSourceResponseMapper {
         return response;
     }
 
-    /**
-     * Creates and marshalls a type to a response marshalled as a XML String
-     * representation that can be sent as a message on the JSM queue with the
-     * help of JMS TextMessage
-     *
-     * @param movementList
-     * @return
-     */
-    public static GetMovementListByAreaAndTimeIntervalResponse mapMovementListAreaAndTimeIntervalResponse(List<MovementType> movementList) {
-        GetMovementListByAreaAndTimeIntervalResponse response = new GetMovementListByAreaAndTimeIntervalResponse();
-        response.getMovement().addAll(movementList);
-        return response;
-    }
 }

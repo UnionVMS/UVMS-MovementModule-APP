@@ -231,7 +231,7 @@
                     <version>2.4.1</version>
                     <configuration>
                         <descriptor>assembly.xml</descriptor>
-                        <finalName>${artifactId}</finalName>
+                        <finalName>${project.artifactId}</finalName>
                         <appendAssemblyId>false</appendAssemblyId>
                     </configuration>
                     <executions>

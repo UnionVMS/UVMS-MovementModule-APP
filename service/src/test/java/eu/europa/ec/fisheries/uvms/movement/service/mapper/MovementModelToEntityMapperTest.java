@@ -2,22 +2,17 @@ package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import static eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper.createActivity;
 import static eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper.mapNewMovementEntity;
-import static eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper.mapToAreaType;
 import static eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper.mapToMovementMetaData;
-import static eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper.maptoArea;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import java.util.UUID;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
@@ -27,8 +22,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
@@ -210,45 +203,6 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
         assertNull(mappedMovementMetaData.getClosestCountryName());
     }
 
-    @Test
-    public void testMapToAreaType() {
-
-        MovementMetaDataAreaType movementMetaDataAreaType = new MovementMetaDataAreaType();
-
-        AreaType areaType = mapToAreaType(movementMetaDataAreaType);
-
-        assertNotNull(areaType);
-        assertThat(areaType.getUpdatedUser(), is("UVMS"));
-        assertNotNull(areaType.getUpdatedTime());
-        
-        try {
-			areaType = mapToAreaType(null);
-			fail("shpould result in a nullpointer");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-    }
-
-    @Test
-    public void testMapToArea() {
-
-        MovementMetaDataAreaType movementMetaDataAreaType = new MovementMetaDataAreaType();
-        AreaType areaType = mapToAreaType(movementMetaDataAreaType);
-
-        Area area = maptoArea(movementMetaDataAreaType, areaType);
-
-        assertNotNull(area);
-        assertThat(area.getAreaUpuser(), is("UVMS"));
-        assertNotNull(area.getAreaUpdattim());
-        
-        try {
-        	area = maptoArea(null, areaType);
-        	fail("should result in a nullpointer");
-		} catch (Exception e) {
-			assertTrue(true);
-		}
-        
-    }
 
     @Test
     public void testCreateActivity_mapFromMovementBaseTypeToActivity() throws MovementServiceException {

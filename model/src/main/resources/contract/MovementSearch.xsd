@@ -17,8 +17,6 @@
             <xsd:enumeration value="MOVEMENT_TYPE"/>
             <xsd:enumeration value="ACTIVITY_TYPE"/>
             <xsd:enumeration value="DATE"/>
-            <xsd:enumeration value="AREA"/>
-            <xsd:enumeration value="AREA_ID"/>
             <xsd:enumeration value="STATUS"/>
             <xsd:enumeration value="SOURCE"/>
             <xsd:enumeration value="CATEGORY"/>
@@ -107,12 +105,5 @@
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="MovementAreaAndTimeIntervalCriteria">
-        <xsd:sequence>
-            <xsd:element name="fromDate" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="toDate" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="areaCode" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-        </xsd:sequence>
-    </xsd:complexType>
 
 </xsd:schema>

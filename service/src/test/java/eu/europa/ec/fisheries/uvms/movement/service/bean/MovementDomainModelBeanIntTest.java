@@ -23,12 +23,10 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
@@ -37,13 +35,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -65,9 +58,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
 	@EJB
 	private MovementDao movementDao;
-	
-    @EJB
-    private AreaDao areaDao;
 	
 	@EJB
     private MovementService movementService;
@@ -97,11 +87,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         assertEquals(1,segments.size());
     }
 
-    @Test
-    public void getAreas() {
-        List<Area> areas = movementService.getAreas();
-        assertNotNull(areas);
-    }
 
     @Test
     public void getLatestMovements_0() {
@@ -143,11 +128,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         movementService.getMinimalList(null);
     }
 
-    @Test
-    public void getMovementListByAreaAndTimeInterval_NULL() {
-        thrown.expect(EJBTransactionRolledbackException.class);
-        movementService.getMovementListByAreaAndTimeInterval(null);
-     }
 
     @Test
     public void getMovementListByQuery_NULL() throws MovementServiceException {
@@ -540,96 +520,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	output = movementService.getLatestMovementsByConnectIds(null);
     	assertTrue(output.isEmpty());
     }
-    
-    @Test
-    public void testGetAreas() {
-        int areasBefore = movementService.getAreas().size();
-        
-    	AreaType areaType = new AreaType();
-		String input = "TestAreaType";
-		areaType.setName(input);
-		areaType.setUpdatedTime(DateUtil.nowUTC());
-		areaType.setUpdatedUser("TestUser");
-		
-		Area area = new Area();
-		area.setAreaName("TestArea");
-		area.setAreaCode(input);
-		area.setRemoteId("TestRemoteId");
-		area.setAreaUpdattim(DateUtil.nowUTC());
-		area.setAreaUpuser("TestUser");
-		area.setAreaType(areaType);
-		
-		Area createdArea = areaDao.createMovementArea(area);
-        
-        List<Area> output = movementService.getAreas();
-        assertEquals(areasBefore + 1, output.size());
-        
-        area = new Area();
-        area.setAreaName("TestArea2");
-		area.setAreaCode(input + "2");
-		area.setRemoteId("TestRemoteId2");
-		area.setAreaUpdattim(DateUtil.nowUTC());
-		area.setAreaUpuser("TestUser2");
-		area.setAreaType(areaType);
-		
-		createdArea = areaDao.createMovementArea(area);
-        
-        output = movementService.getAreas();
-        assertEquals(areasBefore + 2, output.size());
-        
-    }
-    
-    @Test
-    public void testGetMovementListByAreaAndTimeInterval() throws MovementServiceException {
-    	UUID connectID = UUID.randomUUID();
-    	
-    	MovementAreaAndTimeIntervalCriteria movementAreaAndTimeIntervalCriteria = new MovementAreaAndTimeIntervalCriteria();
-    	movementAreaAndTimeIntervalCriteria.setFromDate(DateUtil.parseUTCDateToString(DateUtil.nowUTC()));
-    	movementAreaAndTimeIntervalCriteria.setToDate(DateUtil.parseUTCDateToString(DateUtil.nowUTC().plusSeconds(2100))); //2 100 000 is the time for 7 of the movements in the list aka 2100 seconds
-
-    	AreaType areaType = new AreaType();
-		String input = "TestAreaType";
-		areaType.setName(input);
-		areaType.setUpdatedTime(DateUtil.nowUTC());
-		areaType.setUpdatedUser("TestUser");
-		
-		Area area = new Area();
-		area.setAreaName("TestArea");
-		area.setAreaCode(input);
-		area.setRemoteId("TestRemoteId");
-		area.setAreaUpdattim(DateUtil.nowUTC());
-		area.setAreaUpuser("TestUser");
-		area.setAreaType(areaType);
-		
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-    	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
-		
-		Area createdArea = areaDao.createMovementArea(area);
-    	List<Movementarea> movementAreaList = new ArrayList<Movementarea>();
-    	Movementarea movementarea = new Movementarea();
-    	movementarea.setMovareaUpdattim(DateUtil.nowUTC());
-    	movementarea.setMovareaUpuser("TestUser");
-    	movementarea.setMovareaAreaId(area);
-    	movementarea.setMovareaMoveId(varbergGrena.get(6));
-    	movementAreaList.add(movementarea);
-    	varbergGrena.get(6).setMovementareaList(movementAreaList);
-    	varbergGrena.get(7).setMovementareaList(movementAreaList);
-    	
-    	movementAreaAndTimeIntervalCriteria.setAreaCode(input);
-
-		GetMovementListByAreaAndTimeIntervalResponse output = movementService.getMovementListByAreaAndTimeInterval(movementAreaAndTimeIntervalCriteria);
-    	
-    	assertEquals(1, output.getMovement().size());
-    	assertEquals(varbergGrena.get(6).getGuid().toString(), output.getMovement().get(0).getGuid());
-    	
-    	try {
-    		output = movementService.getMovementListByAreaAndTimeInterval(null);
-    		fail("null as input should result in an exception");
-		} catch (EJBTransactionRolledbackException e) {
-			assertTrue(true);
-		}
-    }
-    
 
     /******************************************************************************************************************
      *   HELPER FUNCTIONS

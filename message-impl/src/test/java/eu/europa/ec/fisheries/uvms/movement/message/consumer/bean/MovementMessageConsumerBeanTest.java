@@ -169,8 +169,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementMetaData metaData = createdMovement.getMetaData();
         assertThat(metaData.getClosestCountry().getCode(), is("SWE"));
         assertThat(metaData.getClosestPort().getCode(), is("GOT"));
-        assertThat(metaData.getAreas().size(), is(2));
-        assertThat(metaData.getAreas().get(0).getTransitionType(), is(MovementTypeType.ENT));
     }
 
     @Ignore // Second position in same area should have transition type POS
@@ -188,7 +186,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(createdMovement.getGuid(), is(notNullValue()));
         assertThat(createdMovement.getMetaData(), is(notNullValue()));
         MovementMetaData metaData = createdMovement.getMetaData();
-        assertThat(metaData.getAreas().get(0).getTransitionType(), is(MovementTypeType.ENT));
         
         MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType(0d, 1d);
         movementBaseType2.setConnectId(connectId);
@@ -198,7 +195,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(createdMovement2.getGuid(), is(notNullValue()));
         assertThat(createdMovement2.getMetaData(), is(notNullValue()));
         MovementMetaData metaData2 = createdMovement2.getMetaData();
-        assertThat(metaData2.getAreas().get(0).getTransitionType(), is(MovementTypeType.POS));
     }
     
     @Test
@@ -210,9 +206,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         CreateMovementBatchResponse response = jmsHelper.createMovementBatch(Arrays.asList(m1, m2, m3), "test user");
         List<MovementType> createdMovement = response.getMovements();
         assertThat(createdMovement.size(), is(3));
-        assertThat(createdMovement.get(0).getMetaData().getAreas().get(0).getCode(), is("AREA0"));
-        assertThat(createdMovement.get(1).getMetaData().getAreas().get(0).getCode(), is("AREA1"));
-        assertThat(createdMovement.get(2).getMetaData().getAreas().get(0).getCode(), is("AREA2"));
     }
 
     @Test
