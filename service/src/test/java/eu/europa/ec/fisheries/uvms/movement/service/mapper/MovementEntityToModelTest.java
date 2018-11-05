@@ -117,8 +117,6 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId.toString(), output.getConnectId());
 		assertEquals("POINT ( 11.641982 57.632304 )" , output.getWkt());
-//		assertEquals("MovementMetaData[closestPort=ClosestLocationType[distance=<null>,remoteId=<null>,code=<null>,name=<null>],closestCountry=ClosestLocationType"
-//				+ "[distance=<null>,remoteId=<null>,code=<null>,name=<null>],areas=[],previousMovementId=<null>,fromSegmentType=<null>]" , output.getMetaData().toString());
 		assertTrue(!output.isDuplicate());
 		
 		movement = null;

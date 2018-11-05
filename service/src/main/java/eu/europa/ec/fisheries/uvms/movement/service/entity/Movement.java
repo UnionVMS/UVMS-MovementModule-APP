@@ -88,7 +88,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATEST_BY_MOVEMENT_CONNECT = "Movement.findLatestByMovementConnect";
     public static final String FIND_PREVIOUS = "Movement.findPrevious";
     public static final String FIND_FIRST = "Movement.findFirst";
-    public static final String LIST_BY_AREA_TIME_INTERVAL = "Movement.findMovementByAreaAndTimestampInterval";
     public static final String FIND_EXISTING_DATE = "Movement.findExistingDate";
     
     private static final long serialVersionUID = 1L;
