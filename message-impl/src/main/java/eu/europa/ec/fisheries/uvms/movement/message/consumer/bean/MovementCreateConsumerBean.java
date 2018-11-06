@@ -90,7 +90,7 @@ public class MovementCreateConsumerBean implements MessageListener {
                             AssetMTEnrichmentRequest request = createRequest(incomingMovement, incomingMovement.getUpdatedBy());
                             AssetMTEnrichmentResponse response = assetClient.collectAssetMT(request);
 
-                            MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(createdMovement, response);
+                            MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
                             String json = mapper.writeValueAsString(movementDetails);
                             // TODO: Constant + Tracer
                             context.createProducer().send(movementRulesEventQueue, json).setProperty(MessageConstants.JMS_FUNCTION_PROPERTY, "EVALUATE_RULES");
