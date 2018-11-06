@@ -4,15 +4,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import eu.europa.ec.fisheries.schema.movementrules.asset.v1.AssetIdList;
-import eu.europa.ec.fisheries.schema.movementrules.asset.v1.AssetIdType;
-import eu.europa.ec.fisheries.schema.movementrules.mobileterminal.v1.IdList;
-import eu.europa.ec.fisheries.schema.movementrules.mobileterminal.v1.IdType;
-import eu.europa.ec.fisheries.schema.movementrules.movement.v1.RawMovementType;
+import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.IncomingMovementMapper;
@@ -31,7 +30,6 @@ import javax.ejb.EJBException;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.*;
-import java.io.IOException;
 import java.util.UUID;
 
 public class MovementCreateConsumerBean implements MessageListener {
@@ -50,6 +48,9 @@ public class MovementCreateConsumerBean implements MessageListener {
 
     @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENTRULES_EVENT)
     private Queue movementRulesEventQueue;
+
+    @Resource(mappedName = "java:/" + MessageConstants.QUEUE_EXCHANGE_EVENT)
+    private Queue exchangeEventQueue;
 
     @Inject
     @JMSConnectionFactory("java:/ConnectionFactory")
@@ -91,17 +92,27 @@ public class MovementCreateConsumerBean implements MessageListener {
                             AssetMTEnrichmentResponse response = assetClient.collectAssetMT(request);
 
                             MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
-                            String json = mapper.writeValueAsString(movementDetails);
+                            String movementDetailJson = mapper.writeValueAsString(movementDetails);
                             // TODO: Constant + Tracer
-                            context.createProducer().send(movementRulesEventQueue, json).setProperty(MessageConstants.JMS_FUNCTION_PROPERTY, "EVALUATE_RULES");
+                            context.createProducer().send(movementRulesEventQueue, movementDetailJson).setProperty(MessageConstants.JMS_FUNCTION_PROPERTY, "EVALUATE_RULES");
                             // report ok to Exchange...
-                            // Tracer Id, Movement Id and status
-
-
+                            // Tracer Id
+                            ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
+                            MovementRefType movementRefType = new MovementRefType();
+                            movementRefType.setAckResponseMessageID(incomingMovement.getAckResponseMessageId());
+                            movementRefType.setMovementRefGuid(createdMovement.getGuid().toString());
+                            movementRefType.setType(MovementRefTypeType.MOVEMENT);
+                            processedMovementResponse.setMovementRefType(movementRefType);
+                            String xml = JAXBMarshaller.marshallJaxBObjectToString(processedMovementResponse);
+                            context.createProducer().send(exchangeEventQueue, xml);
                         } else {
-                            // report fail to Exchange...
-                            // Tracer Id, Movement Id and status
-
+                            ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
+                            MovementRefType movementRefType = new MovementRefType();
+                            movementRefType.setAckResponseMessageID(incomingMovement.getAckResponseMessageId());
+                            movementRefType.setType(MovementRefTypeType.ALARM);
+                            processedMovementResponse.setMovementRefType(movementRefType);
+                            String xml = JAXBMarshaller.marshallJaxBObjectToString(processedMovementResponse);
+                            context.createProducer().send(exchangeEventQueue, xml);
                         }
                         break;
                     /*
