@@ -12,6 +12,12 @@
         <version>5.0.3-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <uvms-pom.gis.deps.jts.version>1.13</uvms-pom.gis.deps.jts.version>
+        <movement-rules.model.version>1.0.3-SNAPSHOT</movement-rules.model.version>
+        <asset.client.version>6.0.14</asset.client.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
@@ -29,6 +35,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.movement-rules</groupId>
+            <artifactId>movement-rules-model</artifactId>
+            <version>${movement-rules.model.version}</version>
+        </dependency>
+        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.audit</groupId>
             <artifactId>audit-model</artifactId>
             <version>${audit.model.version}</version>
@@ -38,6 +49,11 @@
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
             <artifactId>uvms-config</artifactId>
             <version>${uvms.config.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
+            <artifactId>asset-client</artifactId>
+            <version>${asset.client.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
@@ -94,7 +110,22 @@
             <artifactId>activemq-client</artifactId>
             <version>5.15.6</version>
             <scope>test</scope>
-        </dependency>				        
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.9.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>${uvms-pom.gis.deps.jts.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>1.13</version>
+        </dependency>
     </dependencies>
 
     <build>

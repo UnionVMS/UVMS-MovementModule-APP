@@ -1,8 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
