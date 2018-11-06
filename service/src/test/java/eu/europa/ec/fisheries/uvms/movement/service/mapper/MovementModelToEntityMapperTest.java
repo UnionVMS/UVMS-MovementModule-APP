@@ -2,7 +2,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import static eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper.createActivity;
 import static eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper.mapNewMovementEntity;
-import static eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper.mapToMovementMetaData;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -12,7 +11,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
@@ -21,7 +19,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
@@ -143,64 +140,6 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
 
         //Then
         assertNull(movement.getActivity());
-    }
-
-    @Test
-    public void testMapNewMovementEntity_metaDataIsNull() throws MovementServiceException  {
-
-        //Given
-        String uuid = UUID.randomUUID().toString();
-
-        MovementType movementType = MockData.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
-        movementType.setMetaData(null);
-
-        //When
-        Movement movement = mapNewMovementEntity(movementType, "testUser");
-
-        //Then
-        assertNull(movement.getMetadata());
-    }
-
-    @Test
-    public void testMapToMovementMetaData_ifClosestPortIsNullThenClosestPortCodeAndDistanceAndRemoteIdAndNameAreNull() {
-
-        //Given
-        String uuid = UUID.randomUUID().toString();
-
-        MovementType movementType = MockData.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
-        MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
-
-        movementMetaDataToBeMapped.setClosestPort(null);
-
-        //When
-        Movementmetadata mappedMovementMetaData = mapToMovementMetaData(movementMetaDataToBeMapped);
-
-        //Then
-        assertNull(mappedMovementMetaData.getClosestPortCode());
-        assertNull(mappedMovementMetaData.getClosestPortDistance());
-        assertNull(mappedMovementMetaData.getClosestPortRemoteId());
-        assertNull(mappedMovementMetaData.getClosestPortName());
-    }
-
-    @Test
-    public void testMapToMovementMetaData_ifClosestCountryIsNullThenClosestCountryCodeAndDistanceAndRemoteIdAndNameAreNull() {
-
-        //Given
-        String uuid = UUID.randomUUID().toString();
-
-        MovementType movementType = MockData.createMovementType(1d, 1d, 0, SegmentCategoryType.EXIT_PORT, uuid,0);
-        MovementMetaData movementMetaDataToBeMapped = movementType.getMetaData();
-
-        movementMetaDataToBeMapped.setClosestCountry(null);
-
-        //When
-        Movementmetadata mappedMovementMetaData = mapToMovementMetaData(movementMetaDataToBeMapped);
-
-        //Then
-        assertNull(mappedMovementMetaData.getClosestCountryCode());
-        assertNull(mappedMovementMetaData.getClosestCountryDistance());
-        assertNull(mappedMovementMetaData.getClosestCountryRemoteId());
-        assertNull(mappedMovementMetaData.getClosestCountryName());
     }
 
 

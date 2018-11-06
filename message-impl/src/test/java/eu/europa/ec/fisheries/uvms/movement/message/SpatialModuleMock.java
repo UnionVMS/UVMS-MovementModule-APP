@@ -20,6 +20,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
@@ -73,6 +76,17 @@ public class SpatialModuleMock {
             batchSpatialEnrichmentRS.getEnrichmentRespLists().add(responseElement);
         }
         return Response.ok(batchSpatialEnrichmentRS).build();
+    }
+
+    @POST
+    @Path("getSegmentCategoryType")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getSegmentCategoryType(List<MovementType> movements) {
+        if(movements.get(1).getPosition().getLongitude() == 10 && movements.get(1).getPosition().getLatitude() == 20){
+            return Response.ok(SegmentCategoryType.EXIT_PORT).build();
+        }
+        return Response.ok(SegmentCategoryType.IN_PORT).build();
     }
     
     private void populateClosestAreas(SpatialEnrichmentRS spatialEnrichmentRS) {

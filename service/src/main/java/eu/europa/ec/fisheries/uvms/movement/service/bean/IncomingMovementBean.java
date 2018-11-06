@@ -51,6 +51,7 @@ public class IncomingMovementBean {
 
         List<Movement> latestMovements = dao.getLatestMovementsByConnectId(connectId, 1);
         if (latestMovements.isEmpty()) { // First position
+            //left empty
         } else {
             Movement latestMovement = latestMovements.get(0);
             if (currentMovement.getTimestamp().isAfter(latestMovement.getTimestamp())) {

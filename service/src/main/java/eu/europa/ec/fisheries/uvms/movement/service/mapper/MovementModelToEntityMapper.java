@@ -18,7 +18,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
@@ -26,7 +25,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -85,10 +83,6 @@ public class MovementModelToEntityMapper {
                 entity.setActivity(activity);
             }
 
-            if (movement.getMetaData() != null) {
-                Movementmetadata metaData = mapToMovementMetaData(movement.getMetaData());
-                entity.setMetadata(metaData);
-            }
 
             entity.setProcessed(false);
 
@@ -166,29 +160,6 @@ public class MovementModelToEntityMapper {
             LOG.error("[ ERROR when mapping to Movement entity: < mapNewMovementEntity > ]");
             throw new MovementServiceException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
-    }
-
-    public static Movementmetadata mapToMovementMetaData(MovementMetaData metaData) {
-        Movementmetadata meta = new Movementmetadata();
-
-        meta.setMovemetUpdattim(DateUtil.nowUTC());
-        meta.setMovemetUpuser("UVMS");
-
-        if (metaData.getClosestPort() != null) {
-            meta.setClosestPortCode(metaData.getClosestPort().getCode());
-            meta.setClosestPortDistance(metaData.getClosestPort().getDistance());
-            meta.setClosestPortRemoteId(metaData.getClosestPort().getRemoteId());
-            meta.setClosestPortName(metaData.getClosestPort().getName());
-        }
-
-        if (metaData.getClosestCountry() != null) {
-            meta.setClosestCountryCode(metaData.getClosestCountry().getCode());
-            meta.setClosestCountryDistance(metaData.getClosestCountry().getDistance());
-            meta.setClosestCountryRemoteId(metaData.getClosestCountry().getRemoteId());
-            meta.setClosestCountryName(metaData.getClosestCountry().getName());
-        }
-
-        return meta;
     }
 
     public static Activity createActivity(MovementBaseType movement) throws MovementServiceException {

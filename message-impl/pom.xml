@@ -94,7 +94,7 @@
             <artifactId>activemq-client</artifactId>
             <version>5.15.6</version>
             <scope>test</scope>
-        </dependency>				        
+        </dependency>
     </dependencies>
 
     <build>
