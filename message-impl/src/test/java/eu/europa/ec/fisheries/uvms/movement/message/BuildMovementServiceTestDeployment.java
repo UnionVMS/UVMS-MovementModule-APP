@@ -33,6 +33,7 @@ public abstract class BuildMovementServiceTestDeployment {
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message");
         
         testWar.addAsWebInfResource("ejb-jar.xml");
+        testWar.addAsWebInfResource("beans.xml");
 
         return testWar;
     }
