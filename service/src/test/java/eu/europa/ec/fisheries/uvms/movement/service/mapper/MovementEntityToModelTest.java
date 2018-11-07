@@ -19,7 +19,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
@@ -36,7 +35,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -136,28 +134,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		output = MovementEntityToModelMapper.mapToActivityType(null); //null is basically an empty return 
 		assertEquals("MovementActivityType[messageType=<null>,messageId=<null>,callback=<null>]" ,output.toString());
 	}
-	
-	@Test
-	public void testMapToMovementMetaData() {
-		Movementmetadata input = new Movementmetadata();
-		input.setClosestCountryCode("DK");
-		input.setClosestCountryDistance(42.42D);
-		input.setClosestPortCode("AUCBR");
-		input.setClosestPortDistance(1234D);
-		
-		MovementMetaData output = MovementEntityToModelMapper.mapToMovementMetaData(input);
-		
-		assertEquals("MovementMetaData[closestPort=ClosestLocationType[distance=1234.0,remoteId=<null>,code=AUCBR,name=<null>],"
-				+ "closestCountry=ClosestLocationType[distance=42.42,remoteId=<null>,code=DK,name=<null>],"
-				+ "previousMovementId=<null>,fromSegmentType=<null>]", output.toString());
-		
-		try {
-			output = MovementEntityToModelMapper.mapToMovementMetaData(null);
-			fail("null as input");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-	}
+
 	
 	@Test
 	public void testMapToMovementTypeWithAListOfMovements() throws MovementServiceException {

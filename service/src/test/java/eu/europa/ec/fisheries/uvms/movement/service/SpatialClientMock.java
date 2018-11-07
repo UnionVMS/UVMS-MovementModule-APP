@@ -73,6 +73,9 @@ public class SpatialClientMock implements SpatialClient {
     public SegmentCategoryType getSegmentCategoryType(Movement movement1, Movement movement2){
         shouldIFail();
 
+        if(movement2.getLocation().getX() == 10 && movement2.getLocation().getY() == 20){
+            return SegmentCategoryType.EXIT_PORT;
+        }
         return SegmentCategoryType.IN_PORT;
     }
 

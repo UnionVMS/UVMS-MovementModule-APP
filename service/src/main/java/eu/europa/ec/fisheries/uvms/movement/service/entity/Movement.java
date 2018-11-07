@@ -39,7 +39,6 @@ import org.hibernate.annotations.Type;
         @Index(columnList = "move_duplicate", name = "movement_duplicate_idx", unique = false),
         @Index(columnList = "move_guid", name = "movement_guid_idx", unique = false),
         @Index(columnList = "move_moveconn_id", name = "movement_moveconn_fk_idx", unique = false),
-        @Index(columnList = "move_movemet_id", name = "movement_movemet_fk_idx", unique = false),
         @Index(columnList = "move_movesour_id", name = "movement_movesour_fk_idx", unique = false),
         @Index(columnList = "move_movetyp_id", name = "movement_movetyp_fk_idx", unique = false),
         @Index(columnList = "move_processed", name = "movement_processed_idx", unique = false),
@@ -135,12 +134,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_status")
     private String status;
 
-
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "move_movemet_id", referencedColumnName = "movemet_id")
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Movementmetadata metadata;
-
     @NotNull
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_id")
@@ -233,14 +226,6 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setInternalReferenceNumber(String internalReferenceNumber) {
         this.internalReferenceNumber = internalReferenceNumber;
-    }
-
-    public Movementmetadata getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Movementmetadata metadata) {
-        this.metadata = metadata;
     }
 
     public MovementConnect getMovementConnect() {

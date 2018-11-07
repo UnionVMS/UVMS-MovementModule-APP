@@ -1,6 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.message;
 
 import java.io.File;
+
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
@@ -44,7 +45,7 @@ public abstract class BuildMovementServiceTestDeployment {
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "unionvms.war");
 
         File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
-                .resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12")
+                .resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12", "eu.europa.ec.fisheries.uvms.movement:movement-model")
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 

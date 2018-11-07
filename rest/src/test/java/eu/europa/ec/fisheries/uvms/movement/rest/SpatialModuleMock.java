@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
@@ -58,6 +59,12 @@ public class SpatialModuleMock {
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getSegmentCategoryType(List<MovementType> movements) {
+        if(shouldIFail()){
+            return Response.status(666).build();
+        }
+        if(movements.get(1).getPosition().getLongitude() == 10 && movements.get(1).getPosition().getLatitude() == 20){
+            return Response.ok(SegmentCategoryType.EXIT_PORT).build();
+        }
         return Response.ok(SegmentCategoryType.IN_PORT).build();
     }
     
@@ -104,6 +111,14 @@ public class SpatialModuleMock {
         areas.add(area2);
         areasByLocationType.setAreas(areas);
         spatialEnrichmentRS.setAreasByLocation(areasByLocationType);
+    }
+
+    private boolean shouldIFail() {
+        String fail = System.getProperty("MESSAGE_PRODUCER_METHODS_FAIL", "false");
+        if(!"false".equals(fail.toLowerCase())) {
+            return true;
+        }
+        return false;
     }
     
 }

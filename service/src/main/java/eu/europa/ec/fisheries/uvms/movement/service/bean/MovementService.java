@@ -59,8 +59,6 @@ public class MovementService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementService.class);
 
-    @EJB
-    private SpatialService spatial;
 
     @EJB
     private MovementBatchModelBean movementBatch;
@@ -85,7 +83,6 @@ public class MovementService {
      */
     public Movement createMovement(Movement movement) {
         try {
-            spatial.enrichMovementWithSpatialData(movement);
             movementBatch.createMovement(movement);
             incomingMovementBean.processMovement(movement);
             if(movement != null){
@@ -100,7 +97,6 @@ public class MovementService {
 
     public List<Movement> createMovementBatch(List<Movement> movements) throws MovementServiceException {
         try {
-            spatial.enrichMovementBatchWithSpatialData(movements);
             for (Movement movement : movements) {
                 movementBatch.createMovement(movement);
                 incomingMovementBean.processMovement(movement);

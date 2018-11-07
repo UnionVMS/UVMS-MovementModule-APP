@@ -152,6 +152,21 @@
         </rollback>
     </changeSet>
 
+    <changeSet author="joemat" id="area_removal_01">
+        <dropTable tableName="area" cascadeConstraints="true" />
+        <dropTable tableName="areatransition" cascadeConstraints="true" />
+        <dropTable tableName="areatype" cascadeConstraints="true" />
+        <dropTable tableName="movementarea" cascadeConstraints="true" />
+        <dropTable tableName="movementtype" cascadeConstraints="true" />
+    </changeSet>
+
+
+    <changeSet author="joemat" id="Movement_Meta_data_removal_01">
+        <dropTable tableName="movementmetadata" cascadeConstraints="true" />
+
+        <dropColumn columnName="move_movemet_id" tableName="movement"/>
+    </changeSet>
+
 
 
 </databaseChangeLog>

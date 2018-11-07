@@ -190,8 +190,11 @@ public class MovementServiceIntTest extends TransactionalTests {
         double longitude = rnd.nextDouble();
         double latitude = rnd.nextDouble();
         List<Movement> movementTypeList = new ArrayList<>();
+        UUID asset =  UUID.randomUUID();
         for(int i = 0 ; i < NumberOfMovements ; i++){
-            movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID()));
+            Movement m = MockData.createMovement(longitude, latitude, asset);
+            m.setTimestamp(Instant.ofEpochMilli(System.currentTimeMillis() + i * 1000));    //to differentiate different movements from each other
+            movementTypeList.add(m);
             longitude += 0.05;
             latitude += 0.05;
         }

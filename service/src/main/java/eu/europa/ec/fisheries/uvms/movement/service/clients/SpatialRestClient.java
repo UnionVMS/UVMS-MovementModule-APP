@@ -25,6 +25,8 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
@@ -35,6 +37,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.*;
+import org.slf4j.Logger;
 
 @Stateless
 public class SpatialRestClient implements SpatialClient {
@@ -89,11 +92,19 @@ public class SpatialRestClient implements SpatialClient {
         request.add(movementType1);
         request.add(movementType2);
 
+        //this is here to make a correct json string for the rest call since I cant make Entity.json do so.......
+        ObjectMapper om = new ObjectMapper();
+        String s = "";
+        try {
+            s = om.writeValueAsString(request);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         Response response =  webTarget
                 .path("getSegmentCategoryType")
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(request), Response.class);
+                .post(Entity.json(s), Response.class);
 
         SegmentCategoryType returnValue = response.readEntity(new GenericType<SegmentCategoryType>() {});
         response.close();

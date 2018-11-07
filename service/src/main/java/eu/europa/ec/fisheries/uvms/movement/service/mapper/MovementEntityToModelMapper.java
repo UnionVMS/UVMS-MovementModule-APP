@@ -21,10 +21,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
@@ -34,7 +32,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
@@ -129,11 +126,6 @@ public class MovementEntityToModelMapper {
             model.getSegmentIds().add(movement.getToSegment().getId().toString());
         }
 
-        if (movement.getMetadata() != null) {
-            model.setMetaData(mapToMovementMetaData(movement.getMetadata()));
-        }
-
-
         model.setProcessed(movement.isProcessed());
         if (movement.getDuplicate() != null) {
             model.setDuplicate(movement.getDuplicate());
@@ -162,23 +154,6 @@ public class MovementEntityToModelMapper {
         return actType;
     }
 
-    public static MovementMetaData mapToMovementMetaData(Movementmetadata metaData) {
-        MovementMetaData meta = new MovementMetaData();
-
-        ClosestLocationType country = new ClosestLocationType();
-        country.setCode(metaData.getClosestCountryCode());
-        country.setDistance(metaData.getClosestCountryDistance());
-        country.setRemoteId(metaData.getClosestCountryRemoteId());
-        meta.setClosestCountry(country);
-
-        ClosestLocationType port = new ClosestLocationType();
-        port.setCode(metaData.getClosestPortCode());
-        port.setDistance(metaData.getClosestPortDistance());
-        port.setRemoteId(metaData.getClosestPortRemoteId());
-        meta.setClosestPort(port);
-
-        return meta;
-    }
 
     public static List<MovementType> mapToMovementType(List<Movement> movements) {
         List<MovementType> mappedMovements = new ArrayList<>();

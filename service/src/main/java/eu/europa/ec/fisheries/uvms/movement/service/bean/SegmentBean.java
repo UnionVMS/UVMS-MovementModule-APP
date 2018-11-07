@@ -17,7 +17,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.util.GeometryUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.util.SegmentCalculationUtil;
 
 @Stateless
 public class SegmentBean {
@@ -86,8 +85,8 @@ public class SegmentBean {
         //calculations for segment
         SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
 
-        //SegmentCategoryType segCat = spatialRestClient.getSegmentCategoryType(fromMovement, toMovement);
-        SegmentCategoryType segCat = SegmentCalculationUtil.getSegmentCategoryType(positionCalculations, fromMovement, toMovement);
+        SegmentCategoryType segCat = spatialClient.getSegmentCategoryType(fromMovement, toMovement);
+
         segment.setSegmentCategory(segCat);
 
         segment.setDistance(positionCalculations.getDistanceBetweenPoints());

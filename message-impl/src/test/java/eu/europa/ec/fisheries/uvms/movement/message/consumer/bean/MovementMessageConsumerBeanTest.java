@@ -30,9 +30,7 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.message.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.message.JMSHelper;
 import eu.europa.ec.fisheries.uvms.movement.message.MovementTestHelper;
@@ -102,13 +100,12 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     
     @Test
     @RunAsClient
-    public void createMovementVerifyBasicMetaData() throws Exception {
+    public void createMovementVerifyWKTData() throws Exception {
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
         assertThat(createdMovement.getGuid(), is(notNullValue()));
         assertThat(createdMovement.getWkt(), is(notNullValue()));
-        assertThat(createdMovement.getMetaData(), is(notNullValue()));
     }
     
     @Test
@@ -143,6 +140,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         
         MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType(0d, 1d);
         movementBaseType2.setConnectId(connectId);
+
+        //System.out.println("Now");
+        //Thread.sleep(1000 * 60 * 5);
         jmsHelper.createMovement(movementBaseType2, "test user");
         
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
@@ -156,46 +156,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movements.size(), is(2));
         assertThat(movements.get(0).getSegmentIds(), is(movements.get(1).getSegmentIds()));
     }
-    
-    /* Test areas are defined in SpatialModuleMock */
-    @Test
-    @RunAsClient
-    public void createMovementVerifyBasicAreaData() throws Exception {
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
-        MovementType createdMovement = response.getMovement();
-        assertThat(createdMovement.getGuid(), is(notNullValue()));
-        assertThat(createdMovement.getMetaData(), is(notNullValue()));
-        MovementMetaData metaData = createdMovement.getMetaData();
-        assertThat(metaData.getClosestCountry().getCode(), is("SWE"));
-        assertThat(metaData.getClosestPort().getCode(), is("GOT"));
-    }
 
-    @Ignore // Second position in same area should have transition type POS
-    @Test
-    @RunAsClient
-    public void createMovementVerifyAreaTransitionType() throws Exception {
-        String connectId = UUID.randomUUID().toString();
-        
-        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType(0d, 0d);
-        movementBaseType1.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
-        movementBaseType1.setConnectId(connectId);
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType1, "test user");
-        MovementType createdMovement = response.getMovement();
-        
-        assertThat(createdMovement.getGuid(), is(notNullValue()));
-        assertThat(createdMovement.getMetaData(), is(notNullValue()));
-        MovementMetaData metaData = createdMovement.getMetaData();
-        
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType(0d, 1d);
-        movementBaseType2.setConnectId(connectId);
-        CreateMovementResponse response2 = jmsHelper.createMovement(movementBaseType2, "test user");
-        MovementType createdMovement2 = response2.getMovement();
-        
-        assertThat(createdMovement2.getGuid(), is(notNullValue()));
-        assertThat(createdMovement2.getMetaData(), is(notNullValue()));
-        MovementMetaData metaData2 = createdMovement2.getMetaData();
-    }
     
     @Test
     @RunAsClient
