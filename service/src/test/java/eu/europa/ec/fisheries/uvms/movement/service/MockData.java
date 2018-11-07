@@ -19,7 +19,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
+
 import java.sql.Date;
 import java.time.Instant;
 import java.util.UUID;
@@ -28,22 +28,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
 public class MockData {
-    /**
-     * Get a movement type with an added metadata and areas in the metadata
-     * depending on how many areas you want ( numberOfAreas )
-     *
-     * @param numberOfAreas
-     * @return
-     */
-    public static MovementType getMappedMovement(int numberOfAreas) {
-        MovementType type = new MovementType();
-        MovementMetaData metaData = new MovementMetaData();
-
-
-        type.setMetaData(metaData);
-        return type;
-    }
-
 
     public static Movement createMovement(double longitude, double latitude, UUID connectId) {
         return createMovement(longitude, latitude, connectId, 0d, "Test");
@@ -85,11 +69,6 @@ public class MockData {
         movement.setStatus("TEST");
         movement.setUpdated(Instant.now());
         movement.setUpdatedBy(username);
-        
-        Movementmetadata metadata = new Movementmetadata();
-        metadata.setMovemetUpdattim(Instant.now());
-        metadata.setMovemetUpuser("Test");
-        movement.setMetadata(metadata);
 
         movement.setTimestamp(latlong.positionTime);
         movement.setTripNumber(0d);
@@ -124,8 +103,6 @@ public class MockData {
         movementPoint.setLatitude(latlong.latitude);
         movementPoint.setAltitude(altitude);
 
-        MovementMetaData movementMetaData = new MovementMetaData();
-        movementMetaData.setFromSegmentType(segmentCategoryType);
 
         MovementType movementType = new MovementType();
 
@@ -147,7 +124,6 @@ public class MockData {
         movementType.setCalculatedCourse(0d);
         movementType.setCalculatedSpeed(0d);
         movementType.setComChannelType(MovementComChannelType.NAF);
-        movementType.setMetaData(movementMetaData);
 
         return movementType;
     }

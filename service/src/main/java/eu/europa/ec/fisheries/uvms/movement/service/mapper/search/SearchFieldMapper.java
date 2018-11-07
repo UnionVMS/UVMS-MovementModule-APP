@@ -400,8 +400,7 @@ public class SearchFieldMapper {
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "activity " + SearchTables.ACTIVITY.getTableAlias() + " " +
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "track " + SearchTables.TRACK.getTableAlias() + " " +
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "fromSegment " + SearchTables.FROM_SEGMENT.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "toSegment " + SearchTables.TO_SEGMENT.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "metadata " + SearchTables.MOVEMENT_METADATA.getTableAlias();
+                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "toSegment " + SearchTables.TO_SEGMENT.getTableAlias() + " ";
     }
 
     /**

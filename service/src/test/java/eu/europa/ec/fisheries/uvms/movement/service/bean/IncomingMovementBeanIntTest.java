@@ -554,11 +554,10 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         // Second position is in port
         Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
         secondMovement.setTimestamp(timestamp.plusSeconds(10));
-        secondMovement.getMetadata().setClosestPortDistance(0d);
         secondMovement = movementBatchModelBean.createMovement(secondMovement);
         incomingMovementBean.processMovement(secondMovement);
 
-        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        Movement thirdMovement = MockData.createMovement(10d, 20d, connectId, 0, "TEST");
         thirdMovement.setTimestamp(timestamp.plusSeconds(20));
         thirdMovement = movementBatchModelBean.createMovement(thirdMovement);
         incomingMovementBean.processMovement(thirdMovement);

@@ -18,7 +18,6 @@ public enum SearchTables {
     MOVEMENT("m", "Movement"),
     MINIMAL_MOVEMENT("m", "MinimalMovement"),
     MOVEMENT_CONNECT("mc", "MovementConnect"),
-    MOVEMENT_METADATA("mmd", "Movementmetadata"),
     FROM_SEGMENT("fromSeg", "Segment"),
     TO_SEGMENT("toSeg", "Segment"),
     TRACK("tra", "Track"),
