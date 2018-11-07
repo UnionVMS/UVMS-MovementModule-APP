@@ -118,7 +118,7 @@ public class MovementModelToEntityMapper {
                 entity.setLocation(point);
                 
                 if (movement.getPosition().getAltitude() != null) {
-                    entity.setAltitude(movement.getPosition().getAltitude().intValue());
+                    entity.setAltitude(movement.getPosition().getAltitude());
                 }
             }
 

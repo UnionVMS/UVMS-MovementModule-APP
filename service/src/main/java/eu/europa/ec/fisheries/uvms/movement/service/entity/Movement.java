@@ -124,7 +124,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     private String internalReferenceNumber;
 
     @Column(name = "move_altitude")
-    private Integer altitude;
+    private Double altitude;
 
     @NotNull
     @Column(name = "move_guid", nullable = false)
@@ -210,14 +210,6 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setLocation(Point location) {
         this.location = location;
-    }
-
-    public Integer getMoveAltitude() {
-        return altitude;
-    }
-
-    public void setMoveAltitude(Integer moveAltitude) {
-        this.altitude = moveAltitude;
     }
 
     public Double getTripNumber() {
@@ -340,11 +332,11 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.updatedBy = updatedBy;
     }
 
-    public Integer getAltitude() {
+    public Double getAltitude() {
         return altitude;
     }
 
-    public void setAltitude(Integer altitude) {
+    public void setAltitude(Double altitude) {
         this.altitude = altitude;
     }
 

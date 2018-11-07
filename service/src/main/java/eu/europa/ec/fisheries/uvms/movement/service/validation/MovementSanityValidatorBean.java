@@ -9,7 +9,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.*;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.AlarmSearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.AlarmSearchValue;
 import org.slf4j.Logger;
@@ -34,119 +33,145 @@ public class MovementSanityValidatorBean {
     @Inject
     private AuditService auditService;
 
-    public void evaluateSanity(IncomingMovement movement) throws MovementServiceException {
+    public boolean evaluateSanity(IncomingMovement movement) {
+
+        boolean isOk = true;
 
         // Evaluate positional data
         if(movement.getPositionTime() == null){  //Time missing
             LOG.info("\t==> Executing RULE 'Sanity rule 1 - Time missing'");
             createAlarmReport("Time missing", movement);
+            isOk = false;
         }
 
         if(movement.getLatitude() == null){  //Lat missing
             LOG.info("\t==> Executing RULE 'Sanity rule 2 - Lat missing'");
             createAlarmReport("Lat missing", movement);
+            isOk = false;
         }
 
         if(movement.getLongitude() == null){  //Long missing
             LOG.info("\t==> Executing RULE 'Sanity rule 3 - Long missing'");
             createAlarmReport("Long missing", movement);
+            isOk = false;
         }
 
         if(movement.getAltitude() == null){  //Altitude must exist
             LOG.info("\t==> Executing RULE 'Sanity check - altitude must exist'");
             createAlarmReport("Sanity check - altitude must exist", movement);
+            isOk = false;
         }
 
         if(movement.getPositionTime() != null && movement.getPositionTime().after(new Date())){  //Time in the future
             LOG.info("\t==> Executing RULE 'Sanity rule 12 - Time in the future'" + "[" + movement.getPositionTime() + " > " + new Date() + "]");
             createAlarmReport("Time in future", movement);
+            isOk = false;
         }
 
         if(movement.getReportedSpeed() == null){  //reportedSpeed must exist
             LOG.info("\t==> Executing RULE 'Sanity check - reportedSpeed must exist'");
             createAlarmReport("Sanity check - reportedSpeed must exist", movement);
+            isOk = false;
         }
 
         if(movement.getReportedCourse() == null){  //reportedCourse must exist
             LOG.info("\t==> Executing RULE 'Sanity check - reportedCourse must exist'");
             createAlarmReport("Sanity check - reportedCourse must exist", movement);
+            isOk = false;
         }
 
         if(movement.getMovementType() == null){  //movementType must
             LOG.info("\t==> Executing RULE 'Sanity check - movementType must exist'");
             createAlarmReport("Sanity check - movementType must exist", movement);
+            isOk = false;
         }
 
         if(movement.getMovementSourceType() == null){  //source must exist
             LOG.info("\t==> Executing RULE 'Sanity check - source must exist'");
             createAlarmReport("Sanity check - source must exist", movement);
+            isOk = false;
         }
 
         if((movement.getMobileTerminalConnectId() == null || movement.getMobileTerminalConnectId().isEmpty()) && movement.getPluginType().equals("SATELLITE_RECEIVER")){  //Transponder not found
             LOG.info("\t==> Executing RULE 'Sanity rule 4 - Transponder not found'");
             createAlarmReport("Transponder not found", movement);
+            isOk = false;
         }
 
         if((movement.getMobileTerminalMemberNumber() == null || movement.getMobileTerminalMemberNumber().isEmpty()) && movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("INMARSAT_C")){  //Mem No. missing
             LOG.info("\t==> Executing RULE 'Sanity rule 6 - Mem No. missing'");
             createAlarmReport("Mem No. missing", movement);
+            isOk = false;
         }
 
         if((movement.getMobileTerminalDNID() == null || movement.getMobileTerminalDNID().isEmpty()) && movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("INMARSAT_C")){  //DNID missing
             LOG.info("\t==> Executing RULE 'Sanity rule 7 - DNID missing'");
             createAlarmReport("DNID missing", movement);
+            isOk = false;
         }
 
         if((movement.getMobileTerminalSerialNumber() == null || movement.getMobileTerminalSerialNumber().isEmpty()) && movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("IRIDIUM")){  //Serial No. missing
             LOG.info("\t==> Executing RULE 'Sanity rule 8 - Serial No. missing'");
             createAlarmReport("Serial No. missing", movement);
+            isOk = false;
         }
 
         if(movement.getComChannelType() == null || movement.getComChannelType().isEmpty()){  //ComChannel Type missing
             LOG.info("\t==> Executing RULE 'Sanity rule 9 - ComChannel Type missing'");
             createAlarmReport("ComChannel Type missing", movement);
+            isOk = false;
         }
 
         if(((movement.getAssetCFR() == null || movement.getAssetCFR().isEmpty()) && (movement.getAssetIRCS() == null || movement.getAssetIRCS().isEmpty())) && (movement.getPluginType().equals("FLUX") || movement.getComChannelType().equals("MANUAL"))){  //CFR and IRCS missing
             LOG.info("\t==> Executing RULE 'Sanity rule 10 - CFR and IRCS missing'");
             createAlarmReport("CFR and IRCS missing", movement);
+            isOk = false;
         }
 
         if(movement.getPluginType() == null || movement.getPluginType().isEmpty()){  //Plugin Type missing
             LOG.info("\t==> Executing RULE 'Sanity rule 11 - Plugin Type missing'");
             createAlarmReport("Plugin Type missing", movement);
+            isOk = false;
         }
 
         if(movement.getStatus() == null || movement.getStatus().isEmpty()){  //statusCode must exist
             LOG.info("\t==> Executing RULE 'Sanity check - statusCode must exist'");
             createAlarmReport("Sanity check - statusCode must exist", movement);
+            isOk = false;
         }
 
         if(movement.getActivityCallback() == null || movement.getActivityCallback().isEmpty()){  //activityCallback must exist
             LOG.info("\t==> Executing RULE 'Sanity check - activityCallback must exist'");
             createAlarmReport("Sanity check - activityCallback must exist", movement);
+            isOk = false;
         }
 
         if(movement.getActivityMessageId() == null || movement.getActivityMessageId().isEmpty()){  //activityMessageId must exist
             LOG.info("\t==> Executing RULE 'Sanity check - activityMessageId must exist'");
             createAlarmReport("Sanity check - activityMessageId must exist", movement);
+            isOk = false;
         }
 
         if(movement.getActivityMessageType() == null || movement.getActivityMessageType().isEmpty()){  //activityMessageType must exist
             LOG.info("\t==> Executing RULE 'Sanity check - activityMessageType must exist'");
             createAlarmReport("Sanity check - activityMessageType must exist", movement);
+            isOk = false;
         }
 
         //  movement : RawMovementFact((assetType == null) && (pluginType == "FLUX" || comChannelType == "MANUAL"))
         if(movement.getAssetType() == null && (movement.getPluginType().equals("FLUX") || movement.getComChannelType().equals("MANUAL"))){  //assetType must exist
             LOG.info("\t==> Executing RULE 'Sanity check - assetType must exist'");
             createAlarmReport("Sanity check - assetType must exist", movement);
+            isOk = false;
         }
 
         if(movement.getAssetGuid() == null || movement.getAssetGuid().isEmpty()){  //Asset not found
             LOG.info("\t==> Executing RULE 'Sanity rule 5 - Asset not found'");
             createAlarmReport("Asset not found", movement);
+            isOk = false;
         }
+
+        return isOk;
     }
 
     public void createAlarmReport(String ruleName, IncomingMovement movement) {
