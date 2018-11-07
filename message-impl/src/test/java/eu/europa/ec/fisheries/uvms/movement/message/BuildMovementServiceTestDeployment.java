@@ -48,10 +48,6 @@ public abstract class BuildMovementServiceTestDeployment {
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
-        /*testWar.addClass(MovementBaseType.class);
-        testWar.addClass(MovementComChannelType.class);
-        testWar.addClass(SegmentCategoryType.class);
-        testWar.addClass(MovementType.class);*/
         testWar.addClass(UnionVMSMock.class);
         testWar.addClass(SpatialModuleMock.class);
 
