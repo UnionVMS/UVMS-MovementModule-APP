@@ -19,6 +19,7 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaTransition;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
@@ -72,7 +73,8 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = Movement.LIST_BY_AREA_TIME_INTERVAL, query = "SELECT m FROM Movement m INNER JOIN m.movementareaList mal WHERE (m.timestamp BETWEEN :fromDate AND :toDate) AND m.duplicate = false AND mal.movareaMoveId.id = m.id AND mal.movareaAreaId.areaId = :areaId"),
     																			   //SELECT mo FROM Movement mo INNER JOIN mo.movementarea ma WHERE (mo.timestamp BETWEEN :fromDate AND :toDate) AND mo.move_duplicate = false AND ma.movareaId = mo.id AND ma.movareaId = :areaId 	
     																			   //SELECT movement FROM Movement movement INNER JOIN movement.movementareaList movementArea WHERE (movement.timestamp BETWEEN :fromDate AND :toDate) AND movement.duplicate = false AND movementArea.movareaMoveId = movement.id AND movementArea.movareaAreaId.areaId = :areaId
-    @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true")
+    @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true"),
+    @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.guid, m.movementConnect, m.timestamp) FROM Movement m WHERE m.timestamp > :date ORDER BY m.timestamp ASC"),
 })
 @DynamicUpdate
 @DynamicInsert
@@ -97,6 +99,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_FIRST = "Movement.findFirst";
     public static final String LIST_BY_AREA_TIME_INTERVAL = "Movement.findMovementByAreaAndTimestampInterval";
     public static final String FIND_EXISTING_DATE = "Movement.findExistingDate";
+
     
     private static final long serialVersionUID = 1L;
 

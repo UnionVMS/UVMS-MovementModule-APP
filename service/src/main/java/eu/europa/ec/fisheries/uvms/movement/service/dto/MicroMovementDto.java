@@ -3,11 +3,18 @@ package eu.europa.ec.fisheries.uvms.movement.service.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+
 import java.time.Instant;
+import java.util.UUID;
 
 public class MicroMovementDto {
+
+    public static final String FIND_ALL_AFTER_DATE = "MicroMovementDto.findAllAfterDate";
 
     private MovementPoint location;   //vivid solution point causes infinite json recursion ;(
 
@@ -20,6 +27,21 @@ public class MicroMovementDto {
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     private Instant timestamp;
+
+    public MicroMovementDto() {
+
+    }
+
+    public MicroMovementDto(Geometry geo, double heading, UUID guid, MovementConnect asset, Instant timestamp) {
+        Point point = (Point)geo;
+        location = new MovementPoint();
+        location.setLatitude(point.getY());
+        location.setLongitude(point.getX());
+        this.heading = heading;
+        this.guid = guid.toString();
+        this.asset = asset.getValue().toString();
+        this.timestamp = timestamp;
+    }
 
     public MovementPoint getLocation() {
         return location;

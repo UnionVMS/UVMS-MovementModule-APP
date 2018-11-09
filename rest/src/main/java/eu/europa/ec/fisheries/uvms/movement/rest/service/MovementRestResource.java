@@ -275,12 +275,8 @@ public class MovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getMicroMovementListAfter(@PathParam("timestamp") String date) {
         try {
-            List<MicroMovement> microList = movementDao.getMicroMovementsAfterDate(DateUtil.getDateFromString(date));
-            List<MicroMovementDto> returnList = new ArrayList<>();
-            for (MicroMovement mm : microList) {
-                returnList.add(MovementMapper.mapToMicroMovement(mm));
-            }
-            return Response.ok().entity(returnList).type(MediaType.APPLICATION_JSON)
+            List<MicroMovementDto> microList = movementDao.getMicroMovementsAfterDate(DateUtil.getDateFromString(date));
+            return Response.ok().entity(microList).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting Micro Movement. ]", e);

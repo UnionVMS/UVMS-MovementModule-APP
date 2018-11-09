@@ -23,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -299,9 +300,9 @@ public class MovementDao {
         return movementConnect;
     }
 
-    public List<MicroMovement> getMicroMovementsAfterDate(Instant date) {
+    public List<MicroMovementDto> getMicroMovementsAfterDate(Instant date) {
         try {
-            TypedQuery<MicroMovement> query = em.createNamedQuery(MicroMovement.FIND_ALL_AFTER_DATE, MicroMovement.class);
+            TypedQuery<MicroMovementDto> query = em.createNamedQuery(MicroMovementDto.FIND_ALL_AFTER_DATE, MicroMovementDto.class);
             query.setParameter("date", date);
             return query.getResultList();
         } catch (NoResultException e) {
@@ -312,7 +313,7 @@ public class MovementDao {
 
     public List<MicroMovement> getLastMicroMovementForAllAssets() {
         try {
-            Query query = em.createNativeQuery(MicroMovement.FIND_LAST_MOVEMENT_FOR_ALL_ASSETS_QUERY, MicroMovement.class);
+            TypedQuery<MicroMovement> query = em.createQuery("FROM MicroMovement",MicroMovement.class);
             return query.getResultList();
         } catch (NoResultException e) {
             LOG.debug("No positions found while searching for last position of all assets");
