@@ -11,11 +11,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -26,11 +29,17 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
@@ -50,6 +59,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import org.slf4j.MDC;
 
 @Path("/movement")
 @Stateless
@@ -62,6 +72,9 @@ public class MovementRestResource {
     
     @EJB
     private UserServiceBean userService;
+
+    @Inject
+    private MovementDao movementDao;
 
     @Context 
     private HttpServletRequest request;
@@ -255,6 +268,26 @@ public class MovementRestResource {
         } catch (Exception ex) {
             LOG.error("[ Error when getting movement map. ]", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+        }
+    }
+
+    @GET
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path("/microMovementList/{timestamp}")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public Response getMicroMovementList(@PathParam("timestamp") String date) {
+        try {
+            List<MicroMovement> microList = movementDao.getMicroMovementsAfterDate(DateUtil.getDateFromString(date));
+            List<MicroMovementDto> returnList = new ArrayList<>();
+            for (MicroMovement mm : microList) {
+                returnList.add(MovementMapper.mapToMicroMovement(mm));
+            }
+            return Response.ok().entity(returnList).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when getting Micro Movement. ]", e);
+            return Response.status(500).entity(e).build();
         }
     }
 }
