@@ -161,7 +161,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
 
         String response = getWebTarget()
                 .path("movement")
-                .path("microMovementList/" + DateUtil.parseUTCDateToString(time))
+                .path("microMovementListAfter/" + DateUtil.parseUTCDateToString(time))
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
@@ -179,7 +179,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
 
         List<MicroMovementDto> response = getWebTarget()
                 .path("movement")
-                .path("microMovementList/" + DateUtil.parseUTCDateToString(time))
+                .path("microMovementListAfter/" + DateUtil.parseUTCDateToString(time))
                 .request(MediaType.APPLICATION_JSON)
                 .get(new GenericType<List<MicroMovementDto>>() {});
 

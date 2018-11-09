@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,9 +30,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
@@ -274,9 +271,9 @@ public class MovementRestResource {
     @GET
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
-    @Path("/microMovementList/{timestamp}")
+    @Path("/microMovementListAfter/{timestamp}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementList(@PathParam("timestamp") String date) {
+    public Response getMicroMovementListAfter(@PathParam("timestamp") String date) {
         try {
             List<MicroMovement> microList = movementDao.getMicroMovementsAfterDate(DateUtil.getDateFromString(date));
             List<MicroMovementDto> returnList = new ArrayList<>();
