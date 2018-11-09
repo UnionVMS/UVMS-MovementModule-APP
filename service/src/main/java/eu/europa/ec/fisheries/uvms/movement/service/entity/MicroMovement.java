@@ -27,8 +27,10 @@ import java.time.Instant;
 @NamedQueries({
         @NamedQuery(name = MicroMovement.FIND_ALL, query = "SELECT m FROM MicroMovement m"),
         @NamedQuery(name = MicroMovement.FIND_BY_GUID, query = "SELECT m FROM MicroMovement m WHERE m.guid = :guid"),
-        @NamedQuery(name = MicroMovement.FIND_ALL_AFTER_DATE, query = "SELECT m FROM MicroMovement m WHERE m.timestamp > :date")
+        @NamedQuery(name = MicroMovement.FIND_ALL_AFTER_DATE, query = "SELECT m FROM MicroMovement m WHERE m.timestamp > :date ORDER BY m.timestamp ASC"),
+        //@NamedQuery(name = MicroMovement.FIND_LAST_MOVEMENT_FOR_ALL_ASSETS, query = "SELECT m FROM MicroMovement m WHERE m.id in (SELECT id FROM MicroMovement b, (SELECT movementConnect, MAX(timestamp) FROM MicroMovement GROUP BY movementConnect) a WHERE a.movementConnect = b.movementConnect AND a.timestamp = b.timestamp)")
 })
+
 @DynamicUpdate
 @DynamicInsert
 public class MicroMovement implements Serializable{
@@ -38,6 +40,15 @@ public class MicroMovement implements Serializable{
         public static final String FIND_ALL = "MicroMovement.findAll";
         public static final String FIND_BY_GUID = "MicroMovement.findByGUID";
         public static final String FIND_ALL_AFTER_DATE = "MicroMovement.findAllAfterDate";
+        public static final String FIND_LAST_MOVEMENT_FOR_ALL_ASSETS = "MicroMovement.findLastMovementForAllAssets";
+        public static final String FIND_LAST_MOVEMENT_FOR_ALL_ASSETS_QUERY = "SELECT * FROM movement.movement m\n" +    //I could not get this query to work in HQL, the result of that attempt is commented out above, so a native sql query it is
+                "        WHERE move_id IN\n" +
+                "        (SELECT move_id as id\n" +
+                "        FROM movement.movement b\n" +
+                "        INNER JOIN (SELECT move_moveconn_id, MAX(move_timestamp) as MaxValue\n" +
+                "        FROM movement.movement\n" +
+                "        GROUP BY move_moveconn_id) a ON\n" +
+                "        a.move_moveconn_id = b.move_moveconn_id AND a.MaxValue = b.move_timestamp)";
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO, generator = "minimal_mov_seq")

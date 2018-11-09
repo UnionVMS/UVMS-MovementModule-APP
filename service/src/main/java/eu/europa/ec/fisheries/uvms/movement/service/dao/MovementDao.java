@@ -309,4 +309,14 @@ public class MovementDao {
             return new ArrayList<>();
         }
     }
+
+    public List<MicroMovement> getLastMicroMovementForAllAssets() {
+        try {
+            Query query = em.createNativeQuery(MicroMovement.FIND_LAST_MOVEMENT_FOR_ALL_ASSETS_QUERY, MicroMovement.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            LOG.debug("No positions found while searching for last position of all assets");
+            return new ArrayList<>();
+        }
+    }
 }

@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -185,6 +186,23 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
 
 
         assertTrue(response.isEmpty());
+
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getLastMicroMovementForAllAssetsTest() throws Exception {
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createMovement(movementBaseType);
+
+        List<MicroMovementDto> response = getWebTarget()
+                .path("movement")
+                .path("lastMicroMovementForAllAssets")
+                .request(MediaType.APPLICATION_JSON)
+                .get(new GenericType<List<MicroMovementDto>>() {});
+
+
+        assertFalse(response.isEmpty());
 
     }
     /*
