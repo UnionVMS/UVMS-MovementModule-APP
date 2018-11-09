@@ -22,17 +22,14 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+
+import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
@@ -300,5 +297,16 @@ public class MovementDao {
     public MovementConnect createMovementConnect(MovementConnect movementConnect) {
         em.persist(movementConnect);
         return movementConnect;
+    }
+
+    public List<MicroMovement> getMicroMovementsAfterDate(Instant date) {
+        try {
+            TypedQuery<MicroMovement> query = em.createNamedQuery(MicroMovement.FIND_ALL_AFTER_DATE, MicroMovement.class);
+            query.setParameter("date", date);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            LOG.debug("No positions found after date: {}", date);
+            return new ArrayList<>();
+        }
     }
 }

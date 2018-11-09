@@ -3,13 +3,19 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -145,7 +151,42 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         assertThat(fetchedMovement, is(notNullValue()));
         assertThat(fetchedMovement.getGuid(), is(createdMovement.getGuid().toString()));
     }
-    
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMicroMovementsTest() throws Exception {
+        Instant time = Instant.now();
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createMovement(movementBaseType);
+
+        String response = getWebTarget()
+                .path("movement")
+                .path("microMovementListAfter/" + DateUtil.parseUTCDateToString(time))
+                .request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+
+        assertTrue(response.contains(createdMovement.getGuid().toString()));
+        assertTrue(response.contains(createdMovement.getMovementConnect().getValue().toString()));
+
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMicroMovementsFutureTimeTest() throws Exception {
+        Instant time = Instant.ofEpochMilli(System.currentTimeMillis() + 1000l * 60l * 60l * 24l);
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createMovement(movementBaseType);
+
+        List<MicroMovementDto> response = getWebTarget()
+                .path("movement")
+                .path("microMovementListAfter/" + DateUtil.parseUTCDateToString(time))
+                .request(MediaType.APPLICATION_JSON)
+                .get(new GenericType<List<MicroMovementDto>>() {});
+
+
+        assertTrue(response.isEmpty());
+
+    }
     /*
      * Helper functions for REST calls
      */
