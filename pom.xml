@@ -28,7 +28,7 @@
 		<spatial.model.version>1.0.12</spatial.model.version>
 		<audit.model.version>4.0.8</audit.model.version>
 		<exchange.model.version>4.0.22</exchange.model.version>
-
+		<javaee.version>8.0</javaee.version>
 		<installAtEnd>false</installAtEnd>
 	</properties>
 
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
-			<version>8.0</version>
+			<version>${javaee.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
