@@ -21,8 +21,8 @@
         <docker.liquibase.db.user>movement</docker.liquibase.db.user>
         <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
 		<uvms.common.version>3.0.29</uvms.common.version>
-		<usm4uvms.version>4.0.13</usm4uvms.version>
-		<uvms.config.version>4.0.2</uvms.config.version>
+		<usm4uvms.version>4.0.14-WILDFLY14-JEE8</usm4uvms.version>
+		<uvms.config.version>4.0.2-WILDFLY14-JEE8</uvms.config.version>
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.0.8</user.model.version>
 		<spatial.model.version>1.0.12</spatial.model.version>
