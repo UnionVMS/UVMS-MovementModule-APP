@@ -11,7 +11,8 @@ import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.movement.message.bean.ExchangeBean;
+import eu.europa.ec.fisheries.uvms.movement.message.bean.MovementRulesBean;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.IncomingMovementMapper;
@@ -24,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.enterprise.event.Event;
@@ -46,15 +46,6 @@ public class MovementCreateConsumerBean implements MessageListener {
     @Inject
     private MovementService movementService;
 
-    @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENTRULES_EVENT)
-    private Queue movementRulesEventQueue;
-
-    @Resource(mappedName = "java:/" + MessageConstants.QUEUE_EXCHANGE_EVENT)
-    private Queue exchangeEventQueue;
-
-    @Inject
-    @JMSConnectionFactory("java:/ConnectionFactory")
-    private JMSContext context;
 
     @Inject
     @ErrorEvent
@@ -63,6 +54,11 @@ public class MovementCreateConsumerBean implements MessageListener {
     @EJB
     private AssetClient assetClient;
 
+    @EJB
+    private MovementRulesBean movementRulesBean;
+
+    @EJB
+    private ExchangeBean exchangeBean;
 
     @PostConstruct
     private void init() {
@@ -92,9 +88,7 @@ public class MovementCreateConsumerBean implements MessageListener {
                             AssetMTEnrichmentResponse response = assetClient.collectAssetMT(request);
 
                             MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
-                            String movementDetailJson = mapper.writeValueAsString(movementDetails);
-                            // TODO: Constant + Tracer
-                            context.createProducer().send(movementRulesEventQueue, movementDetailJson).setProperty(MessageConstants.JMS_FUNCTION_PROPERTY, "EVALUATE_RULES");
+                            movementRulesBean.send(movementDetails);
                             // report ok to Exchange...
                             // Tracer Id
                             ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
@@ -103,16 +97,14 @@ public class MovementCreateConsumerBean implements MessageListener {
                             movementRefType.setMovementRefGuid(createdMovement.getGuid().toString());
                             movementRefType.setType(MovementRefTypeType.MOVEMENT);
                             processedMovementResponse.setMovementRefType(movementRefType);
-                            String xml = JAXBMarshaller.marshallJaxBObjectToString(processedMovementResponse);
-                            context.createProducer().send(exchangeEventQueue, xml);
+                            exchangeBean.send(processedMovementResponse);
                         } else {
                             ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
                             MovementRefType movementRefType = new MovementRefType();
                             movementRefType.setAckResponseMessageID(incomingMovement.getAckResponseMessageId());
                             movementRefType.setType(MovementRefTypeType.ALARM);
                             processedMovementResponse.setMovementRefType(movementRefType);
-                            String xml = JAXBMarshaller.marshallJaxBObjectToString(processedMovementResponse);
-                            context.createProducer().send(exchangeEventQueue, xml);
+                            exchangeBean.send(processedMovementResponse);
                         }
                         break;
                     /*
