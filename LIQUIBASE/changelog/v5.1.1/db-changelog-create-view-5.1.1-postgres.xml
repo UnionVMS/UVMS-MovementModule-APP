@@ -6,18 +6,17 @@
     <changeSet author="joemat" id="Add a view for getting the latest movements for all assets in micro format">
 
         <createView viewName="LATEST_POS_VIEW">
-            SELECT m.move_guid, m.move_heading, m.move_location, m.move_moveconn_id, m.move_timestamp FROM movement.movement m
-            WHERE move_id in
-            (SELECT
-            move_id as id
+            SELECT
+            b.move_guid, b.move_heading, b.move_location, b.move_moveconn_id, b.move_timestamp
             FROM movement.movement b
             INNER JOIN (SELECT
             move_moveconn_id,
             MAX(move_timestamp) as MaxValue
             FROM movement.movement
             WHERE movement.move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1 DAY')
-            GROUP BY move_moveconn_id) a ON
-            a.move_moveconn_id = b.move_moveconn_id AND a.MaxValue = b.move_timestamp)
+            GROUP BY move_moveconn_id) a ON a.move_moveconn_id = b.move_moveconn_id AND a.MaxValue = b.move_timestamp
+            WHERE
+            b.move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1 DAY')
         </createView>
         <rollback>
             <dropView viewName="LATEST_POS_VIEW"/>
