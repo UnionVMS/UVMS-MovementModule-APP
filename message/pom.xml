@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.1.0-SNAPSHOT</version>
+        <version>5.1.2-SNAPSHOT</version>
     </parent>
     
     <dependencies>
