@@ -11,9 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -276,7 +274,14 @@ public class MovementRestResource {
     public Response getMicroMovementListAfter(@PathParam("timestamp") String date) {
         try {
             List<MicroMovementDto> microList = movementDao.getMicroMovementsAfterDate(DateUtil.getDateFromString(date));
-            return Response.ok().entity(microList).type(MediaType.APPLICATION_JSON)
+            Map<String, List<MicroMovementDto>> returnMap = new HashMap<>();
+            for (MicroMovementDto micro: microList) {
+                if(!returnMap.containsKey(micro.getAsset())){
+                    returnMap.put(micro.getAsset(), new ArrayList<>());
+                }
+                returnMap.get(micro.getAsset()).add(micro);
+            }
+            return Response.ok().entity(returnMap).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting Micro Movement. ]", e);
