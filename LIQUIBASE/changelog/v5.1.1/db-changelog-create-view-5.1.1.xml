@@ -15,6 +15,7 @@
             move_moveconn_id,
             MAX(move_timestamp) as MaxValue
             FROM movement.movement
+            WHERE movement.move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1 DAY')
             GROUP BY move_moveconn_id) a ON
             a.move_moveconn_id = b.move_moveconn_id AND a.MaxValue = b.move_timestamp)
         </createView>
