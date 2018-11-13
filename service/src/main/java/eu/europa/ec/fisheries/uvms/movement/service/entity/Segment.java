@@ -56,7 +56,8 @@ import org.hibernate.annotations.*;
     @NamedQuery(name = Segment.FIND_BY_UPDATED_BY, query = "SELECT s FROM Segment s WHERE s.updatedBy = :updatedBy"),
     @NamedQuery(name = Segment.FIND_FIND_BY_FROM_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.fromMovement = :movement"),
     @NamedQuery(name = Segment.FIND_BY_TO_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.toMovement = :movement"),
-    @NamedQuery(name = Segment.FIND_BY_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.toMovement = :movement OR s.fromMovement = :movement"),})
+    @NamedQuery(name = Segment.FIND_BY_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.toMovement = :movement OR s.fromMovement = :movement"),
+    @NamedQuery(name = Segment.FIND_BY_MOVEMENTS, query = "SELECT s FROM Segment s WHERE s.toMovement = :destination AND s.fromMovement = :departure"),})
 @DynamicUpdate
 @DynamicInsert
 public class Segment implements Serializable {
@@ -73,6 +74,7 @@ public class Segment implements Serializable {
     public static final String FIND_FIND_BY_FROM_MOVEMENT = "Segment.findByFromMovement";
     public static final String FIND_BY_TO_MOVEMENT = "Segment.findByToMovement";
     public static final String FIND_BY_MOVEMENT = "Segment.findByMovement";
+    public static final String FIND_BY_MOVEMENTS = "Segment.findByMovements";
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "segment_seq")

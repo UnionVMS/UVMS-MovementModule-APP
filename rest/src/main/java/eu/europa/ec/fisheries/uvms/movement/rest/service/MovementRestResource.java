@@ -274,7 +274,7 @@ public class MovementRestResource {
     public Response getMicroMovementListAfter(@PathParam("timestamp") String date) {
         try {
             List<MicroMovementDto> microList = movementDao.getMicroMovementsAfterDate(DateUtil.getDateFromString(date));
-            Map<String, List<MicroMovementDto>> returnMap = new HashMap<>();
+            Map<String, List<MicroMovementDto>> returnMap = new HashMap<>(microList.size());
             for (MicroMovementDto micro: microList) {
                 if(!returnMap.containsKey(micro.getAsset())){
                     returnMap.put(micro.getAsset(), new ArrayList<>());

@@ -57,6 +57,8 @@
 		<url-pattern>/rest/movement/*</url-pattern>
 		<url-pattern>/rest/search/*</url-pattern>
 		<url-pattern>/rest/tempmovement/*</url-pattern>
+		<url-pattern>/rest/segment/*</url-pattern>
+		<url-pattern>/rest/track/*</url-pattern>
 	</filter-mapping>
 
 </web-app>

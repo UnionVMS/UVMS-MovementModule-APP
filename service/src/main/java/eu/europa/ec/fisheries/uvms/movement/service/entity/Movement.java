@@ -74,7 +74,7 @@ import org.hibernate.annotations.Type;
     																			   //SELECT mo FROM Movement mo INNER JOIN mo.movementarea ma WHERE (mo.timestamp BETWEEN :fromDate AND :toDate) AND mo.move_duplicate = false AND ma.movareaId = mo.id AND ma.movareaId = :areaId 	
     																			   //SELECT movement FROM Movement movement INNER JOIN movement.movementareaList movementArea WHERE (movement.timestamp BETWEEN :fromDate AND :toDate) AND movement.duplicate = false AND movementArea.movareaMoveId = movement.id AND movementArea.movareaAreaId.areaId = :areaId
     @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true"),
-    @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.guid, m.movementConnect, m.timestamp) FROM Movement m WHERE m.timestamp > :date ORDER BY m.movementConnect, m.timestamp ASC"),
+    @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.guid, m.movementConnect, m.timestamp) FROM Movement m WHERE m.timestamp > :date ORDER BY m.timestamp ASC"),
 })
 @DynamicUpdate
 @DynamicInsert
