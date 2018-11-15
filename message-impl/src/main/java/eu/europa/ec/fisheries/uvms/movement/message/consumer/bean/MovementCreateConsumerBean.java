@@ -7,6 +7,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
@@ -16,6 +18,8 @@ import eu.europa.ec.fisheries.uvms.movement.message.bean.MovementRulesBean;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.mapper.IncomingMovementMapper;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -30,6 +34,7 @@ import javax.ejb.EJBException;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.*;
+import java.util.Date;
 import java.util.UUID;
 
 public class MovementCreateConsumerBean implements MessageListener {
@@ -46,11 +51,6 @@ public class MovementCreateConsumerBean implements MessageListener {
     @Inject
     private MovementService movementService;
 
-
-    @Inject
-    @ErrorEvent
-    private Event<EventMessage> errorEvent;
-
     @EJB
     private AssetClient assetClient;
 
@@ -59,6 +59,13 @@ public class MovementCreateConsumerBean implements MessageListener {
 
     @EJB
     private ExchangeBean exchangeBean;
+
+    @Inject
+    private MovementEventBean movementEventBean;
+
+    @Inject
+    @ErrorEvent
+    private Event<EventMessage> errorEvent;
 
     @PostConstruct
     private void init() {
@@ -78,15 +85,21 @@ public class MovementCreateConsumerBean implements MessageListener {
                 switch (propertyMethod) {
                     case "CREATE" :
                         IncomingMovement incomingMovement = mapper.readValue(textMessage.getText(), IncomingMovement.class);
+                        if(incomingMovement.getUpdated() == null) {
+                            incomingMovement.setUpdated(new Date());
+                        }
+
+                        AssetMTEnrichmentRequest request = createRequest(incomingMovement, incomingMovement.getUpdatedBy());
+                        AssetMTEnrichmentResponse response = assetClient.collectAssetMT(request);
+                        enrichIncomingMovement(incomingMovement, response);
+
                         boolean isOk = movementSanityValidatorBean.evaluateSanity(incomingMovement);
                         if(isOk) {
                             Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
                             Movement createdMovement = movementService.createMovement(movement);
 
-                            //send to MovementRules
-                            AssetMTEnrichmentRequest request = createRequest(incomingMovement, incomingMovement.getUpdatedBy());
-                            AssetMTEnrichmentResponse response = assetClient.collectAssetMT(request);
 
+                            //send to MovementRules
                             MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
                             movementRulesBean.send(movementDetails);
                             // report ok to Exchange...
@@ -113,15 +126,63 @@ public class MovementCreateConsumerBean implements MessageListener {
                     default:
                         LOG.warn("NOOP");
                 }
+            } else {
+                onMessageLegacy(message);
             }
         } catch (Exception ex) {
-            LOG.error("Something went wrong", ex);
             if (maxRedeliveriesReached(textMessage)) {
-                EventMessage eventMessage = new EventMessage(textMessage, ex.getMessage());
-                errorEvent.fire(eventMessage);
+                LOG.error("maxRedeliveriesReached", ex);
+            } else {
+                LOG.error("Something went wrong", ex);
             }
             throw new EJBException(ex);
         }
+    }
+
+    private void onMessageLegacy(Message message) {
+        TextMessage textMessage = null;
+        try {
+            textMessage = (TextMessage) message;
+            MovementBaseRequest request = JAXBMarshaller.unmarshallTextMessage(textMessage, MovementBaseRequest.class);
+            MovementModuleMethod movementMethod = request.getMethod();
+            LOG.info("Message received in movement with method [ {} ]", movementMethod);
+            if (movementMethod == null) {
+                LOG.error("[ Request method is null ]");
+                errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: "));
+                return;
+            }
+            switch (movementMethod) {
+                case MOVEMENT_LIST:
+                    movementEventBean.getMovementListByQuery(textMessage);
+                    break;
+                case CREATE:
+                    movementEventBean.createMovement(textMessage);
+                    break;
+                case CREATE_BATCH:
+                    movementEventBean.createMovementBatch(textMessage);
+                    break;
+                case MOVEMENT_MAP:
+                    movementEventBean.getMovementMapByQuery(textMessage);
+                    break;
+                case PING:
+                    movementEventBean.ping(textMessage);
+                    break;
+                case GET_SEGMENT_BY_ID:
+                case GET_TRIP_BY_ID:
+                default:
+                    LOG.error("[ Request method {} is not implemented ]", movementMethod.name());
+                    errorEvent.fire(new EventMessage(textMessage, "[ Request method " + movementMethod.name() + "  is not implemented ]"));
+            }
+        } catch (NullPointerException | ClassCastException | MovementModelException e) {
+            LOG.error("[ Error when receiving message in movement: ] {}", e);
+            errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: " + e.getMessage()));
+        }
+    }
+
+
+    private void enrichIncomingMovement(IncomingMovement im, AssetMTEnrichmentResponse response) {
+        im.setMobileTerminalConnectId(response.getMobileTerminalConnectId());
+        im.setAssetGuid(response.getAssetUUID());
     }
 
 

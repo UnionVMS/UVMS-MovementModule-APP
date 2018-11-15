@@ -99,7 +99,7 @@
 	<enterprise-beans>
 		<message-driven>
 			<ejb-name>Worker1</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -128,7 +128,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker2</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -157,7 +157,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker3</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -186,7 +186,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker4</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -215,7 +215,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker5</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -244,7 +244,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker6</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -273,7 +273,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker7</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -302,7 +302,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker8</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -331,7 +331,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker9</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -360,7 +360,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker10</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -389,7 +389,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker11</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -418,7 +418,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker12</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -447,7 +447,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker13</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -476,7 +476,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker14</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -505,7 +505,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker15</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -534,7 +534,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker16</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -563,7 +563,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker17</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -592,7 +592,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker18</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -621,7 +621,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker19</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
@@ -650,7 +650,7 @@
 		</message-driven>
 		<message-driven>
 			<ejb-name>Worker20</ejb-name>
-			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementMessageConsumerBean</ejb-class>
+			<ejb-class>eu.europa.ec.fisheries.uvms.movement.message.consumer.bean.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>

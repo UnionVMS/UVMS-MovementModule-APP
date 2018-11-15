@@ -12,9 +12,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import javax.jms.Message;
-import javax.jms.TextMessage;
-import org.jboss.arquillian.container.test.api.RunAsClient;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.jms.*;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -41,18 +49,30 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 @RunWith(Arquillian.class)
 public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDeployment {
 
-    private JMSHelper jmsHelper = new JMSHelper();
-    
+    @Resource(mappedName = "java:/ConnectionFactory")
+    private ConnectionFactory connectionFactory;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    @PostConstruct
+    public void init() {
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    }
+
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void pingMovement() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         PingResponse pingResponse = jmsHelper.pingMovement();
         assertThat(pingResponse.getResponse(), is("pong"));
     }
- 
+
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void createMovementVerifyBasicData() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
@@ -63,9 +83,11 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(createdMovement.getPositionTime(), is(movementBaseType.getPositionTime()));
     }
     
+
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void createMovementVerifyAllBaseTypeData() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
@@ -88,8 +110,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
     
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void createMovementVerifyNullAltitudeData() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         movementBaseType.getPosition().setAltitude(null);
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
@@ -99,8 +122,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
     
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void createMovementVerifyWKTData() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
@@ -109,8 +133,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
     
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void createMovementVerifyCalculatedData() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         String connectId = UUID.randomUUID().toString();
         
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType(0d, 1d);
@@ -129,8 +154,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
     
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void createMovementVerifyBasicSegment() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         String connectId = UUID.randomUUID().toString();
         
         MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType(0d, 0d);
@@ -159,8 +185,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
     
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void createMovementBatchTest() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         MovementBaseType m1 = MovementTestHelper.createMovementBaseType(0d, 0d);
         MovementBaseType m2 = MovementTestHelper.createMovementBaseType(0d, 1d);
         MovementBaseType m3 = MovementTestHelper.createMovementBaseType(0d, 2d);
@@ -170,8 +197,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
 
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void getMovementListByConnectId() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
@@ -192,8 +220,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
     
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void getMovementListByConnectIdTwoPositions() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         String connectId = UUID.randomUUID().toString();
         Instant timestamp = Instant.now();
 
@@ -219,8 +248,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
     
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void getMovementListByConnectIdDifferentIds() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
         jmsHelper.createMovement(movementBaseType1, "test user");
         
@@ -245,8 +275,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     
     @Ignore // This should work when query searches guid instead of id
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void getMovementListByMovementId() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
         MovementType createdMovement = response.getMovement();
@@ -268,8 +299,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     
     @Ignore // This should work when query searches guid instead of id
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void getMovementListByMovementIdTwoMovements() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
         jmsHelper.createMovement(movementBaseType1, "test user");
         
@@ -292,8 +324,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
     
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void getMovementListByDateFromRange() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         Instant timestampBefore = Instant.now().minusSeconds(1);
         
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
@@ -323,8 +356,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
     
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void getMovementListByDateTwoMovements() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         Instant timestampBefore = Instant.now().minusSeconds(60);
         
         MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
@@ -354,35 +388,34 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
     }
-    
+
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void createMovementConcurrentProcessing() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         int numberOfPositions = 20;
         String connectId = UUID.randomUUID().toString();
-        
-        List<String> correlationIds = new ArrayList<>();
-        
-        Instant timestamp = Instant.now();
+
+        Instant timestamp = Instant.now().minusSeconds(3600);
         
         // Send positions to movement
         for (int i = 0; i < numberOfPositions; i++) {
-            MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-            movementBaseType.setConnectId(connectId);
-            movementBaseType.setPositionTime(Date.from(timestamp));
+            IncomingMovement im = MovementTestHelper.createIncomingMovement(0d,0d);
+            im.setConnectId(connectId);
+            im.setPositionTime(Date.from(timestamp));
             timestamp = timestamp.plusSeconds(10);
-            String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "Test");
-            String correlationId = jmsHelper.sendMovementMessage(request, connectId);
-            correlationIds.add(correlationId);
+            String json = mapper.writeValueAsString(im);
+            jmsHelper.sendMovementMessage(json, connectId, "CREATE");
         }
 
-        /*
-        // Check responses
-        for (String correlationId : correlationIds) {
-            Message response = jmsHelper.listenForResponse(correlationId);
-            JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementResponse.class);
+        Instant maxTime = Instant.now().plusSeconds(30);
+        while(jmsHelper.checkQueueSize(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME) < 20) {
+            if(Instant.now().isAfter(maxTime)) {
+                break;
+            }
+            Thread.sleep(100);
         }
-        */
+
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         query.getPagination().setListSize(BigInteger.valueOf(100l));
         ListCriteria criteria = new ListCriteria();
@@ -404,10 +437,11 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             }
         }
     }
-    
+
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void createMovementConcurrentProcessingTwoConnectIds() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         int numberOfPositions = 20;
         String connectId1 = UUID.randomUUID().toString();
         String connectId2 = UUID.randomUUID().toString();
@@ -422,14 +456,14 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             movementBaseTypeC1.setConnectId(connectId1);
             movementBaseTypeC1.setPositionTime(Date.from(timestamp));
             String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseTypeC1, "Test");
-            String correlationId = jmsHelper.sendMovementMessage(request, connectId1);
+            String correlationId = jmsHelper.sendMovementMessage(request, connectId1, null);
             correlationIds.add(correlationId);
             
             MovementBaseType movementBaseTypeC2 = MovementTestHelper.createMovementBaseType();
             movementBaseTypeC2.setConnectId(connectId2);
             movementBaseTypeC2.setPositionTime(Date.from(timestamp));
             String request2 = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseTypeC2, "Test");
-            String correlationId2 = jmsHelper.sendMovementMessage(request2, connectId2);
+            String correlationId2 = jmsHelper.sendMovementMessage(request2, connectId2, null);
             correlationIds.add(correlationId2);
 
             timestamp = timestamp.plusSeconds(10);
@@ -483,17 +517,18 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             }
         }
     }
-    
+
     @Test
-    @RunAsClient
+    @OperateOnDeployment("movement")
     public void testMaxRedeliveries() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         int dlqBefore = jmsHelper.checkQueueSize("ActiveMQ.DLQ");
         int responseQueueBefore = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
         
         MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
         movementBaseType.setPosition(null);
         String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "Test");
-        String correlationId = jmsHelper.sendMovementMessage(request, movementBaseType.getConnectId());
+        String correlationId = jmsHelper.sendMovementMessage(request, movementBaseType.getConnectId(), null);
         
         Message response = jmsHelper.listenForResponse(correlationId);
         JAXBMarshaller.unmarshallTextMessage((TextMessage) response, ExceptionType.class);

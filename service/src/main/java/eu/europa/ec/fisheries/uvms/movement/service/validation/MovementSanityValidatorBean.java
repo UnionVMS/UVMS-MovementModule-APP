@@ -91,32 +91,38 @@ public class MovementSanityValidatorBean {
             createAlarmReport("Sanity check - source must exist", movement);
             isOk = false;
         }
-
+/*
         if((movement.getMobileTerminalConnectId() == null || movement.getMobileTerminalConnectId().isEmpty()) && movement.getPluginType().equals("SATELLITE_RECEIVER")){  //Transponder not found
             LOG.info("\t==> Executing RULE 'Sanity rule 4 - Transponder not found'");
             createAlarmReport("Transponder not found", movement);
             isOk = false;
         }
+*/
+        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && (movement.getMobileTerminalConnectId() == null || movement.getMobileTerminalConnectId().isEmpty())){  //Transponder not found
+            LOG.info("\t==> Executing RULE 'Sanity rule 4 - Transponder not found'");
+            createAlarmReport("Transponder not found", movement);
+            isOk = false;
+        }
 
-        if((movement.getMobileTerminalMemberNumber() == null || movement.getMobileTerminalMemberNumber().isEmpty()) && movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("INMARSAT_C")){  //Mem No. missing
+        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("INMARSAT_C") && (movement.getMobileTerminalMemberNumber() == null || movement.getMobileTerminalMemberNumber().isEmpty())){  //Mem No. missing
             LOG.info("\t==> Executing RULE 'Sanity rule 6 - Mem No. missing'");
             createAlarmReport("Mem No. missing", movement);
             isOk = false;
         }
 
-        if((movement.getMobileTerminalDNID() == null || movement.getMobileTerminalDNID().isEmpty()) && movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("INMARSAT_C")){  //DNID missing
+        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("INMARSAT_C") && (movement.getMobileTerminalDNID() == null || movement.getMobileTerminalDNID().isEmpty())){  //DNID missing
             LOG.info("\t==> Executing RULE 'Sanity rule 7 - DNID missing'");
             createAlarmReport("DNID missing", movement);
             isOk = false;
         }
 
-        if((movement.getMobileTerminalSerialNumber() == null || movement.getMobileTerminalSerialNumber().isEmpty()) && movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("IRIDIUM")){  //Serial No. missing
+        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("IRIDIUM") && (movement.getMobileTerminalSerialNumber() == null || movement.getMobileTerminalSerialNumber().isEmpty())){  //Serial No. missing
             LOG.info("\t==> Executing RULE 'Sanity rule 8 - Serial No. missing'");
             createAlarmReport("Serial No. missing", movement);
             isOk = false;
         }
 
-        if(movement.getComChannelType() == null || movement.getComChannelType().isEmpty()){  //ComChannel Type missing
+        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && (movement.getComChannelType() == null || movement.getComChannelType().isEmpty())){  //ComChannel Type missing
             LOG.info("\t==> Executing RULE 'Sanity rule 9 - ComChannel Type missing'");
             createAlarmReport("ComChannel Type missing", movement);
             isOk = false;

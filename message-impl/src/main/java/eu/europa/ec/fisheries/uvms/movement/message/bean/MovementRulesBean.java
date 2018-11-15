@@ -6,28 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.jms.JMSConnectionFactory;
-import javax.jms.JMSContext;
-import javax.jms.Queue;
 
 @Stateless
-public class MovementRulesBean {
+public class MovementRulesBean extends AbstractProducer {
 
     private ObjectMapper mapper = new ObjectMapper();
-
-    //@Inject
-    @JMSConnectionFactory("java:/ConnectionFactory")
-    private JMSContext context;
-
-    @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENTRULES_EVENT)
-    private Queue movementRulesEventQueue;
-
 
     @PostConstruct
     private void init() {
@@ -36,12 +25,14 @@ public class MovementRulesBean {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
-    public void send(MovementDetails movementDetails) throws JsonProcessingException {
+    public void send(MovementDetails movementDetails) throws JsonProcessingException, MessageException {
         String movementDetailJson = mapper.writeValueAsString(movementDetails);
-        // TODO: Constant + Tracer
-        context.createProducer().send(movementRulesEventQueue, movementDetailJson).setProperty(MessageConstants.JMS_FUNCTION_PROPERTY, "EVALUATE_RULES");
+        sendMessageToSpecificQueueWithFunction(movementDetailJson, getDestination(), null, "EVALUATE_RULES", "");
     }
 
 
-
+    @Override
+    public String getDestinationName() {
+        return MessageConstants.QUEUE_MOVEMENTRULES_EVENT;
+    }
 }

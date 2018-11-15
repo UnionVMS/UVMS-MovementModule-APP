@@ -15,7 +15,7 @@
     <properties>
         <uvms-pom.gis.deps.jts.version>1.13</uvms-pom.gis.deps.jts.version>
         <movement-rules.model.version>1.0.3-SNAPSHOT</movement-rules.model.version>
-        <asset.client.version>6.0.14</asset.client.version>
+        <asset.client.version>6.0.18-SNAPSHOT</asset.client.version>
     </properties>
 
     <dependencies>
@@ -53,6 +53,11 @@
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
             <artifactId>asset-client</artifactId>
+            <version>${asset.client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
+            <artifactId>asset-model</artifactId>
             <version>${asset.client.version}</version>
         </dependency>
         <dependency>
@@ -105,12 +110,14 @@
 			<type>pom</type>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+
+		<!--dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client</artifactId>
             <version>5.15.6</version>
             <scope>test</scope>
-        </dependency>
+        </dependency-->
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>

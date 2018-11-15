@@ -19,7 +19,6 @@ import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
@@ -35,37 +34,41 @@ public class JMSHelper {
     private static final String MOVEMENT_QUEUE = "UVMSMovementEvent";
     public static final String RESPONSE_QUEUE = "MovementTestQueue";
 
-    private ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+    private final ConnectionFactory connectionFactory;
+
+    public JMSHelper(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
 
     public PingResponse pingMovement() throws Exception {
         String pingRequest = MovementModuleRequestMapper.mapToPingRequest(null);
-        String correlationId = sendMovementMessage(pingRequest, null);
+        String correlationId = sendMovementMessage(pingRequest, null, null);
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, PingResponse.class);
     }
 
     public CreateMovementResponse createMovement(MovementBaseType movementBaseType, String username) throws Exception {
         String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, username);
-        String correlationId = sendMovementMessage(request, movementBaseType.getConnectId());
+        String correlationId = sendMovementMessage(request, movementBaseType.getConnectId(), null);
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementResponse.class);
     }
     
     public CreateMovementBatchResponse createMovementBatch(List<MovementBaseType> movementBaseType, String username) throws Exception {
         String request = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementBaseType, username);
-        String correlationId = sendMovementMessage(request, movementBaseType.get(0).getConnectId());
+        String correlationId = sendMovementMessage(request, movementBaseType.get(0).getConnectId(), null);
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementBatchResponse.class);
     }
     
     public GetMovementListByQueryResponse getMovementListByQuery(MovementQuery movementQuery, String groupId) throws Exception {
         String request = MovementModuleRequestMapper.mapToGetMovementListByQueryRequest(movementQuery);
-        String correlationId = sendMovementMessage(request, groupId);
+        String correlationId = sendMovementMessage(request, groupId, null);
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, GetMovementListByQueryResponse.class);
     }
-    
-    public String sendMovementMessage(String text, String groupId) throws Exception {
+
+    public String sendMovementMessage(String text, String groupId, String function) throws Exception {
         Connection connection = connectionFactory.createConnection();
         try {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -74,8 +77,9 @@ public class JMSHelper {
 
             TextMessage message = session.createTextMessage();
             message.setStringProperty("JMSXGroupID", groupId);
-            message.setJMSReplyTo(responseQueue);
+            message.setStringProperty("FUNCTION", function);
             message.setText(text);
+            message.setJMSReplyTo(responseQueue);
 
             session.createProducer(movementQueue).send(message);
 

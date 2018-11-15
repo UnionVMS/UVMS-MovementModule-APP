@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.message;
 
 import java.io.File;
 
+import eu.europa.ec.fisheries.uvms.movement.message.rest.mock.AssetMTRestMock;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
@@ -20,21 +21,14 @@ public abstract class BuildMovementServiceTestDeployment {
         File[] files = Maven.resolver().loadPomFromFile("pom.xml").importRuntimeAndTestDependencies().resolve()
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
-        
-//        File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
-//                .resolve("eu.europa.ec.fisheries.uvms.movement:movement-model",
-//                         "eu.europa.ec.fisheries.uvms.movement:movement-domain",
-//                         "eu.europa.ec.fisheries.uvms.movement:movement-service",
-//                         "eu.europa.ec.fisheries.uvms:uvms-config",
-//                         "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message",
-//                         "org.apache.activemq:activemq-client")
-//                .withTransitivity().asFile();
-//        testWar.addAsLibraries(files);
-
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message");
-        
+
+        testWar.deleteClass(UnionVMSMock.class);
+        testWar.addClass(SpatialModuleMock.class);
+        testWar.deleteClass(AssetMTRestMock.class);
+
         testWar.addAsWebInfResource("ejb-jar.xml");
-        testWar.addAsWebInfResource("beans.xml");
+        testWar.addAsResource("beans.xml", "META-INF/beans.xml");
 
         return testWar;
     }
@@ -45,12 +39,16 @@ public abstract class BuildMovementServiceTestDeployment {
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "unionvms.war");
 
         File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
-                .resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12", "eu.europa.ec.fisheries.uvms.movement:movement-model")
+                .resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12",
+                        "eu.europa.ec.fisheries.uvms.movement:movement-model",
+                        "eu.europa.ec.fisheries.uvms.asset:asset-model",
+                        "eu.europa.ec.fisheries.uvms.asset:asset-client")
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
         testWar.addClass(UnionVMSMock.class);
         testWar.addClass(SpatialModuleMock.class);
+        testWar.addClass(AssetMTRestMock.class);
 
         return testWar;
     }

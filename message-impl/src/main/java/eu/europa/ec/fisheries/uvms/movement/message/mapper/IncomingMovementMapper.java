@@ -9,8 +9,9 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 public abstract class IncomingMovementMapper {
 
@@ -25,6 +26,11 @@ public abstract class IncomingMovementMapper {
         entity.setStatus(ic.getStatus());
         //entity.setAltitude(ic.getAltitude());
         //entity.setMoveAltitude(ic.getAltitude());
+        MovementConnect movementConnect = new MovementConnect();
+        movementConnect.setValue(UUID.fromString(ic.getConnectId()));
+        movementConnect.setUpdated(Instant.now());
+        movementConnect.setUpdatedBy(username);
+        entity.setMovementConnect(movementConnect);
 
         Coordinate coordinate = new Coordinate(ic.getLongitude(), ic.getLatitude());
         GeometryFactory factory = new GeometryFactory();
@@ -83,12 +89,14 @@ public abstract class IncomingMovementMapper {
         md.setLatitude(movement.getLocation().getY());
         md.setAltitude(movement.getAltitude());
         md.setMovementType(movement.getMovementType().value());
-        md.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
-        md.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
+        if(movement.getFromSegment() != null) {
+            md.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
+            md.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
+            md.setSegmentType(movement.getFromSegment().getSegmentCategory().value());
+        }
         md.setReportedCourse(movement.getHeading());
         md.setReportedSpeed(movement.getSpeed());
         md.setPositionTime(Date.from(movement.getTimestamp()));
-        md.setSegmentType(movement.getFromSegment().getSegmentCategory().value());
         md.setStatusCode(movement.getStatus());
         md.setTripNumber(movement.getTripNumber());
         md.setWkt("");

@@ -32,7 +32,8 @@ public abstract class BuildMovementServiceTestDeployment {
         testWar.addClass(SpatialClientMock.class);
         
         testWar.addAsResource("persistence-integration.xml", "META-INF/persistence.xml");
-        
+        testWar.addAsResource("beans.xml", "META-INF/beans.xml");
+
 		return testWar;
 	}
 }

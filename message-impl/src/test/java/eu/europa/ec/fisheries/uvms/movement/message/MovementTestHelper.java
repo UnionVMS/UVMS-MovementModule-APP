@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.UUID;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
@@ -18,14 +20,37 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.schema.movement.v1.*;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
 public class MovementTestHelper {
+
+    public static IncomingMovement createIncomingMovement(Double longitude, Double latitude) {
+        IncomingMovement im = new IncomingMovement();
+        im.setMovementType(MovementTypeType.POS.value());
+        im.setConnectId(UUID.randomUUID().toString());
+        im.setAssetGuid(UUID.randomUUID().toString());
+        im.setAssetType(AssetType.VESSEL.toString());
+        im.setLatitude(latitude);
+        im.setLongitude(longitude);
+        im.setAltitude(2D);
+        im.setActivityCallback("TEST");
+        im.setActivityMessageId("TEST");
+        im.setActivityMessageType(MovementActivityTypeType.AUT.value());
+        im.setInternalReferenceNumber("TEST");
+        im.setReportedCourse(0d);
+        im.setReportedSpeed(0d);
+        im.setMovementSourceType(MovementSourceType.NAF.value());
+        im.setPluginType(PluginType.NAF.value());
+        im.setStatus("TEST");
+        im.setPositionTime(Calendar.getInstance().getTime());
+        im.setTripNumber(0d);
+        im.setComChannelType(MovementComChannelType.NAF.value());
+        im.setUpdatedBy("TEST");
+
+        return im;
+    }
 
     public static MovementBaseType createMovementBaseType() {
         return MovementTestHelper.createMovementBaseType(0D,0D);
