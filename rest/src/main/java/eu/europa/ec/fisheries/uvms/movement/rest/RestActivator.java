@@ -38,6 +38,7 @@ public class RestActivator extends Application {
         set.add(ConfigResource.class);
         set.add(UnionVMSFeatureFilter.class);
         set.add(AreaRestResource.class);
+        set.add(InternalRestResource.class);
         set.add(SegmentRestResource.class);
         set.add(TrackRestResource.class);
         set.add(ObjectMapperContextResolver.class);
