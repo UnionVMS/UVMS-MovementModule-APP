@@ -181,6 +181,21 @@ public class MovementDao {
         }
     }
 
+    public long countNrOfMovementsForAssetBetween(UUID asset, Instant from, Instant to){
+        try{
+            Query query = em.createNamedQuery(Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN);
+            query.setParameter("asset", asset);
+            query.setParameter("fromDate", from);
+            query.setParameter("toDate", to);
+
+            Long count = (Long)query.getSingleResult();
+            return count;
+        }catch (NoResultException e) {
+            LOG.debug("No valid position in DB for {}, between {} and {}", asset, from, to);
+            return 0;
+        }
+    }
+
     public <T> List<T> getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues, Class<T> clazz) throws MovementServiceException {
         try {
             TypedQuery<T> query = getMovementQuery(sql, searchKeyValues, clazz);
