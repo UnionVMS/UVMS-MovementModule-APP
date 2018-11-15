@@ -28,11 +28,11 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     public void countMovementsInTheLastDayForAssetTest() throws Exception {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createMovement(movementBaseType);
-        Instant now = Instant.now();
+        Instant now = Instant.now().plusSeconds(60);
 
         long response = getWebTarget()
                 .path("internal/countMovementsInDateAndTheDayBeforeForAsset/" + createdMovement.getMovementConnect().getValue().toString())
-                .property("after", DateUtil.parseUTCDateToString(now))                      //yyyy-MM-dd HH:mm:ss Z
+                .queryParam("after", DateUtil.parseUTCDateToString(now))    //yyyy-MM-dd HH:mm:ss Z
                 .request(MediaType.APPLICATION_JSON)
                 .get(long.class);
 
