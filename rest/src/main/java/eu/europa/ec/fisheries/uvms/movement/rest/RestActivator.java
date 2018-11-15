@@ -17,14 +17,10 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import eu.europa.ec.fisheries.uvms.movement.rest.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.uvms.movement.rest.service.AreaRestResource;
-import eu.europa.ec.fisheries.uvms.movement.rest.service.ConfigResource;
-import eu.europa.ec.fisheries.uvms.movement.rest.service.MovementSearchGroupResource;
-import eu.europa.ec.fisheries.uvms.movement.rest.service.MovementRestResource;
-import eu.europa.ec.fisheries.uvms.movement.rest.service.TempMovementResource;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeatureFilter;
 
 @ApplicationPath(RestConstants.MODULE_REST)
@@ -42,6 +38,7 @@ public class RestActivator extends Application {
         set.add(ConfigResource.class);
         set.add(UnionVMSFeatureFilter.class);
         set.add(AreaRestResource.class);
+        set.add(InternalRestResource.class);
         set.add(ObjectMapperContextResolver.class);
         LOG.info(RestConstants.MODULE_NAME + " module starting up");
     }
