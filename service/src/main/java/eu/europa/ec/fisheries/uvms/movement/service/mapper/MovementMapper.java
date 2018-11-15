@@ -272,6 +272,7 @@ public class MovementMapper {
         mp.setLongitude(mm.getLocation().getX());
         dto.setLocation(mp);
         dto.setTimestamp(mm.getTimestamp());
+        dto.setSpeed(mm.getSpeed());
         return dto;
     }
 }
