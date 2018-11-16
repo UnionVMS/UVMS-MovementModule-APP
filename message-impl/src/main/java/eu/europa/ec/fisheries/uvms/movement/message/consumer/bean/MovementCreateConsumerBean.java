@@ -34,7 +34,7 @@ import javax.ejb.EJBException;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.*;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 public class MovementCreateConsumerBean implements MessageListener {
@@ -86,7 +86,7 @@ public class MovementCreateConsumerBean implements MessageListener {
                     case "CREATE" :
                         IncomingMovement incomingMovement = mapper.readValue(textMessage.getText(), IncomingMovement.class);
                         if(incomingMovement.getUpdated() == null) {
-                            incomingMovement.setUpdated(new Date());
+                            incomingMovement.setUpdated(Instant.now());
                         }
 
                         AssetMTEnrichmentRequest request = createRequest(incomingMovement, incomingMovement.getUpdatedBy());
@@ -123,6 +123,10 @@ public class MovementCreateConsumerBean implements MessageListener {
                     /*
                     case "CREATE_BATCH" : break;
                     */
+
+                    case "PING":
+                        movementEventBean.ping(textMessage);
+                        break;
                     default:
                         LOG.warn("NOOP");
                 }
@@ -183,6 +187,7 @@ public class MovementCreateConsumerBean implements MessageListener {
     private void enrichIncomingMovement(IncomingMovement im, AssetMTEnrichmentResponse response) {
         im.setMobileTerminalConnectId(response.getMobileTerminalConnectId());
         im.setAssetGuid(response.getAssetUUID());
+        im.setAssetHistoryId(response.getAssetHistoryId());
     }
 
 

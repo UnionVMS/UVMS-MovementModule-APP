@@ -2,13 +2,11 @@ package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
+
 import java.math.BigInteger;
-import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -20,31 +18,23 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.europa.ec.fisheries.schema.movement.search.v1.*;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
-import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
-import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.message.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.message.JMSHelper;
 import eu.europa.ec.fisheries.uvms.movement.message.MovementTestHelper;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 
 @RunWith(Arquillian.class)
 public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDeployment {
@@ -54,355 +44,42 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
     private ObjectMapper mapper = new ObjectMapper();
 
+    JMSHelper jmsHelper;
+
     @PostConstruct
     public void init() {
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+    }
+
+    @Before
+    public void cleanJMS() throws Exception {
+        jmsHelper = new JMSHelper(connectionFactory);
+        jmsHelper.clearQueue("UVMSMovementRulesEvent");
     }
 
     @Test
     @OperateOnDeployment("movement")
     public void pingMovement() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         PingResponse pingResponse = jmsHelper.pingMovement();
         assertThat(pingResponse.getResponse(), is("pong"));
     }
 
     @Test
     @OperateOnDeployment("movement")
-    public void createMovementVerifyBasicData() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
-        MovementType createdMovement = response.getMovement();
-        assertThat(createdMovement.getGuid(), is(notNullValue()));
-        assertThat(createdMovement.getConnectId(), is(movementBaseType.getConnectId()));
-        assertThat(createdMovement.getPosition().getLongitude(), is(movementBaseType.getPosition().getLongitude()));
-        assertThat(createdMovement.getPosition().getLatitude(), is(movementBaseType.getPosition().getLatitude()));
-        assertThat(createdMovement.getPositionTime(), is(movementBaseType.getPositionTime()));
-    }
-    
-
-    @Test
-    @OperateOnDeployment("movement")
-    public void createMovementVerifyAllBaseTypeData() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
-        MovementType createdMovement = response.getMovement();
-        assertThat(createdMovement.getGuid(), is(notNullValue()));
-        assertThat(createdMovement.getConnectId(), is(movementBaseType.getConnectId()));
-        // Not working @ version 4.0.15
-//        assertThat(createdMovement.getAssetId(), is(movementBaseType.getAssetId()));
-        assertThat(createdMovement.getPosition().getLongitude(), is(movementBaseType.getPosition().getLongitude()));
-        assertThat(createdMovement.getPosition().getLatitude(), is(movementBaseType.getPosition().getLatitude()));
-        assertThat(createdMovement.getPosition().getAltitude(), is(movementBaseType.getPosition().getAltitude()));
-        assertThat(createdMovement.getPositionTime(), is(movementBaseType.getPositionTime()));
-        assertThat(createdMovement.getStatus(), is(movementBaseType.getStatus()));
-        assertThat(createdMovement.getReportedSpeed(), is(movementBaseType.getReportedSpeed()));
-        assertThat(createdMovement.getReportedCourse(), is(movementBaseType.getReportedCourse()));
-        assertThat(createdMovement.getMovementType(), is(movementBaseType.getMovementType()));
-        assertThat(createdMovement.getSource(), is(movementBaseType.getSource()));
-        assertThat(createdMovement.getActivity(), is(movementBaseType.getActivity()));
-        assertThat(createdMovement.getTripNumber(), is(movementBaseType.getTripNumber()));
-        assertThat(createdMovement.getInternalReferenceNumber(), is(movementBaseType.getInternalReferenceNumber()));
-    }
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void createMovementVerifyNullAltitudeData() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        movementBaseType.getPosition().setAltitude(null);
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
-        MovementType createdMovement = response.getMovement();
-        assertThat(createdMovement.getGuid(), is(notNullValue()));
-        assertThat(createdMovement.getPosition().getAltitude(), is(movementBaseType.getPosition().getAltitude()));
-    }
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void createMovementVerifyWKTData() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
-        MovementType createdMovement = response.getMovement();
-        assertThat(createdMovement.getGuid(), is(notNullValue()));
-        assertThat(createdMovement.getWkt(), is(notNullValue()));
-    }
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void createMovementVerifyCalculatedData() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        String connectId = UUID.randomUUID().toString();
-        
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType(0d, 1d);
-        movementBaseType.setConnectId(connectId);
-        movementBaseType.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
-        jmsHelper.createMovement(movementBaseType, "test user");
-        
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType(0d, 2d);
-        movementBaseType2.setConnectId(connectId);
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType2, "test user");
-        MovementType createdMovement = response.getMovement();
-        
-        assertThat(createdMovement.getGuid(), is(notNullValue()));
-        assertThat(createdMovement.getCalculatedSpeed(), is(notNullValue()));
-        assertThat(createdMovement.getCalculatedCourse(), is(notNullValue()));
-    }
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void createMovementVerifyBasicSegment() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        String connectId = UUID.randomUUID().toString();
-        
-        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType(0d, 0d);
-        movementBaseType1.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
-        movementBaseType1.setConnectId(connectId);
-        jmsHelper.createMovement(movementBaseType1, "test user");
-        
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType(0d, 1d);
-        movementBaseType2.setConnectId(connectId);
-
-        //System.out.println("Now");
-        //Thread.sleep(1000 * 60 * 5);
-        jmsHelper.createMovement(movementBaseType2, "test user");
-        
-        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(connectId);
-        query.getMovementSearchCriteria().add(criteria);
-        GetMovementListByQueryResponse movementList = jmsHelper.getMovementListByQuery(query, connectId);
-        List<MovementType> movements = movementList.getMovement();
-        
-        assertThat(movements.size(), is(2));
-        assertThat(movements.get(0).getSegmentIds(), is(movements.get(1).getSegmentIds()));
-    }
-
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void createMovementBatchTest() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        MovementBaseType m1 = MovementTestHelper.createMovementBaseType(0d, 0d);
-        MovementBaseType m2 = MovementTestHelper.createMovementBaseType(0d, 1d);
-        MovementBaseType m3 = MovementTestHelper.createMovementBaseType(0d, 2d);
-        CreateMovementBatchResponse response = jmsHelper.createMovementBatch(Arrays.asList(m1, m2, m3), "test user");
-        List<MovementType> createdMovement = response.getMovements();
-        assertThat(createdMovement.size(), is(3));
-    }
-
-    @Test
-    @OperateOnDeployment("movement")
-    public void getMovementListByConnectId() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
-        MovementType createdMovement = response.getMovement();
-
-        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(movementBaseType.getConnectId());
-        query.getMovementSearchCriteria().add(criteria);
-        
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, createdMovement.getConnectId());
-        List<MovementType> movements = listByQueryResponse.getMovement();
-        assertThat(movements.size(), is(1));
-        assertThat(movements.get(0).getConnectId(), is(createdMovement.getConnectId()));
-        assertThat(movements.get(0).getPosition().getLongitude(), is(createdMovement.getPosition().getLongitude()));
-        assertThat(movements.get(0).getPosition().getLatitude(), is(createdMovement.getPosition().getLatitude()));
-        assertThat(movements.get(0).getPositionTime(), is(createdMovement.getPositionTime()));
-    }
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void getMovementListByConnectIdTwoPositions() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        String connectId = UUID.randomUUID().toString();
-        Instant timestamp = Instant.now();
-
-        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
-        movementBaseType1.setConnectId(connectId);
-        movementBaseType1.setPositionTime(Date.from(timestamp));
-        jmsHelper.createMovement(movementBaseType1, "test user");
-        
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
-        movementBaseType2.setConnectId(connectId);
-        movementBaseType1.setPositionTime(Date.from(timestamp.plusSeconds(10)));
-        jmsHelper.createMovement(movementBaseType2, "test user");
-
-        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(connectId);
-        query.getMovementSearchCriteria().add(criteria);
-
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, connectId);
-        List<MovementType> movements = listByQueryResponse.getMovement();
-        assertThat(movements.size(), is(2));
-    }
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void getMovementListByConnectIdDifferentIds() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
-        jmsHelper.createMovement(movementBaseType1, "test user");
-        
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
-        jmsHelper.createMovement(movementBaseType2, "test user");
-
-        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        ListCriteria criteria1 = new ListCriteria();
-        criteria1.setKey(SearchKey.CONNECT_ID);
-        criteria1.setValue(movementBaseType1.getConnectId());
-        query.getMovementSearchCriteria().add(criteria1);
-        ListCriteria criteria2 = new ListCriteria();
-        criteria2.setKey(SearchKey.CONNECT_ID);
-        criteria2.setValue(movementBaseType2.getConnectId());
-        query.getMovementSearchCriteria().add(criteria2);
-        
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movementBaseType2.getConnectId());
-        List<MovementType> movements = listByQueryResponse.getMovement();
-        assertThat(movements.size(), is(2));
-    }
-    
-    
-    @Ignore // This should work when query searches guid instead of id
-    @Test
-    @OperateOnDeployment("movement")
-    public void getMovementListByMovementId() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
-        MovementType createdMovement = response.getMovement();
-
-        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.MOVEMENT_ID);
-        criteria.setValue(movementBaseType.getGuid());
-        query.getMovementSearchCriteria().add(criteria);
-        
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, createdMovement.getConnectId());
-        List<MovementType> movements = listByQueryResponse.getMovement();
-        assertThat(movements.size(), is(1));
-        assertThat(movements.get(0).getConnectId(), is(createdMovement.getConnectId()));
-        assertThat(movements.get(0).getPosition().getLongitude(), is(createdMovement.getPosition().getLongitude()));
-        assertThat(movements.get(0).getPosition().getLatitude(), is(createdMovement.getPosition().getLatitude()));
-        assertThat(movements.get(0).getPositionTime(), is(createdMovement.getPositionTime()));
-    }
-    
-    @Ignore // This should work when query searches guid instead of id
-    @Test
-    @OperateOnDeployment("movement")
-    public void getMovementListByMovementIdTwoMovements() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
-        jmsHelper.createMovement(movementBaseType1, "test user");
-        
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
-        jmsHelper.createMovement(movementBaseType2, "test user");
-
-        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        ListCriteria criteria1 = new ListCriteria();
-        criteria1.setKey(SearchKey.MOVEMENT_ID);
-        criteria1.setValue(movementBaseType1.getGuid());
-        query.getMovementSearchCriteria().add(criteria1);
-        ListCriteria criteria2 = new ListCriteria();
-        criteria2.setKey(SearchKey.MOVEMENT_ID);
-        criteria2.setValue(movementBaseType2.getGuid());
-        query.getMovementSearchCriteria().add(criteria2);
-        
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movementBaseType2.getConnectId());
-        List<MovementType> movements = listByQueryResponse.getMovement();
-        assertThat(movements.size(), is(2));
-    }
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void getMovementListByDateFromRange() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        Instant timestampBefore = Instant.now().minusSeconds(1);
-        
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType, "test user");
-        MovementType createdMovement = response.getMovement();
-        
-        Instant timestampAfter = Instant.now().plusSeconds(1);
-
-        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        RangeCriteria criteria = new RangeCriteria();
-        criteria.setKey(RangeKeyType.DATE);
-        criteria.setFrom(DateUtil.parseUTCDateToString(timestampBefore));
-        criteria.setTo(DateUtil.parseUTCDateToString(timestampAfter));
-        query.getMovementRangeSearchCriteria().add(criteria);
-        ListCriteria criteria1 = new ListCriteria();
-        criteria1.setKey(SearchKey.CONNECT_ID);
-        criteria1.setValue(movementBaseType.getConnectId());
-        query.getMovementSearchCriteria().add(criteria1);
-        
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, createdMovement.getConnectId());
-        List<MovementType> movements = listByQueryResponse.getMovement();
-        assertThat(movements.size(), is(1));
-        assertThat(movements.get(0).getConnectId(), is(createdMovement.getConnectId()));
-        assertThat(movements.get(0).getPosition().getLongitude(), is(createdMovement.getPosition().getLongitude()));
-        assertThat(movements.get(0).getPosition().getLatitude(), is(createdMovement.getPosition().getLatitude()));
-        assertThat(movements.get(0).getPositionTime(), is(createdMovement.getPositionTime()));
-    }
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void getMovementListByDateTwoMovements() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        Instant timestampBefore = Instant.now().minusSeconds(60);
-        
-        MovementBaseType movementBaseType1 = MovementTestHelper.createMovementBaseType();
-        jmsHelper.createMovement(movementBaseType1, "test user");
-        
-        MovementBaseType movementBaseType2 = MovementTestHelper.createMovementBaseType();
-        jmsHelper.createMovement(movementBaseType2, "test user");
-
-        Instant timestampAfter = Instant.now().plusSeconds(60);
-        
-        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        RangeCriteria criteria = new RangeCriteria();
-        criteria.setKey(RangeKeyType.DATE);
-        criteria.setFrom(DateUtil.parseUTCDateToString(timestampBefore));
-        criteria.setTo(DateUtil.parseUTCDateToString(timestampAfter));
-        query.getMovementRangeSearchCriteria().add(criteria);
-        ListCriteria criteria1 = new ListCriteria();
-        criteria1.setKey(SearchKey.CONNECT_ID);
-        criteria1.setValue(movementBaseType1.getConnectId());
-        query.getMovementSearchCriteria().add(criteria1);
-        ListCriteria criteria2 = new ListCriteria();
-        criteria2.setKey(SearchKey.CONNECT_ID);
-        criteria2.setValue(movementBaseType2.getConnectId());
-        query.getMovementSearchCriteria().add(criteria2);
-        
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movementBaseType2.getConnectId());
-        List<MovementType> movements = listByQueryResponse.getMovement();
-        assertThat(movements.size(), is(2));
-    }
-
-    @Test
-    @OperateOnDeployment("movement")
     public void createMovementConcurrentProcessing() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         int numberOfPositions = 20;
         String connectId = UUID.randomUUID().toString();
 
         Instant timestamp = Instant.now().minusSeconds(3600);
-        
+
         // Send positions to movement
         for (int i = 0; i < numberOfPositions; i++) {
             IncomingMovement im = MovementTestHelper.createIncomingMovement(0d,0d);
-            im.setConnectId(connectId);
-            im.setPositionTime(Date.from(timestamp));
+            im.setAssetHistoryId(connectId);
+            im.setPositionTime(timestamp);
             timestamp = timestamp.plusSeconds(10);
             String json = mapper.writeValueAsString(im);
             jmsHelper.sendMovementMessage(json, connectId, "CREATE");
@@ -440,10 +117,357 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
     @Test
     @OperateOnDeployment("movement")
-    public void createMovementConcurrentProcessingTwoConnectIds() throws Exception {
+    public void createMovementVerifyBasicData() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        assertNotNull(movementDetails);
+        assertNotNull(movementDetails.getMovementGuid());
+        assertNotNull(movementDetails.getAssetGuid());
+        assertNotNull(movementDetails.getConnectId());
+
+        assertThat(movementDetails.getLongitude(), is(incomingMovement.getLongitude()));
+        assertThat(movementDetails.getLatitude(), is(incomingMovement.getLatitude()));
+        assertEquals(movementDetails.getPositionTime().getTime(), incomingMovement.getPositionTime().toEpochMilli());
+    }
+    
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void createMovementVerifyAllBaseTypeData() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        assertThat(movementDetails.getMovementGuid(), is(notNullValue()));
+        assertNotNull(movementDetails.getConnectId());
+        assertNotNull(movementDetails.getAssetGuid());
+
+        assertThat(movementDetails.getLongitude(), is(incomingMovement.getLongitude()));
+        assertThat(movementDetails.getLatitude(), is(incomingMovement.getLatitude()));
+        assertEquals(incomingMovement.getAltitude(), movementDetails.getAltitude());
+        assertEquals(movementDetails.getPositionTime().getTime(), incomingMovement.getPositionTime().toEpochMilli());
+        assertThat(movementDetails.getStatusCode(), is(incomingMovement.getStatus()));
+        assertThat(movementDetails.getReportedSpeed(), is(incomingMovement.getReportedSpeed()));
+        assertThat(movementDetails.getReportedCourse(), is(incomingMovement.getReportedCourse()));
+        assertThat(movementDetails.getMovementType(), is(incomingMovement.getMovementType()));
+        assertThat(movementDetails.getSource(), is(incomingMovement.getMovementSourceType()));
+        assertThat(movementDetails.getActivityMessageId(), is(incomingMovement.getActivityMessageId()));
+        assertThat(movementDetails.getTripNumber(), is(incomingMovement.getTripNumber()));
+        assertThat(movementDetails.getInternalReferenceNumber(), is(incomingMovement.getInternalReferenceNumber()));
+    }
+
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void createMovementVerifyNullAltitudeData() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setAltitude(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+        assertThat(movementDetails.getMovementGuid(), is(notNullValue()));
+        assertThat(movementDetails.getAltitude(), is(incomingMovement.getAltitude()));
+    }
+
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void createMovementVerifyWKTData() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+        assertThat(movementDetails.getMovementGuid(), is(notNullValue()));
+        assertThat(movementDetails.getWkt(), is(notNullValue()));
+    }
+
+
+    @Test
+    @Ignore   //TODO: we need to say to movement that these two movements are on the same ship
+    @OperateOnDeployment("movement")
+    public void createMovementVerifyCalculatedData() throws Exception {
+        /*String connectId = UUID.randomUUID().toString();
+
+        MovementBaseType movementBaseType = MovementTestHelper.createIncomingMovementType(0d, 1d);
+        movementBaseType.setAssetHistoryId(connectId);
+        movementBaseType.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
+        jmsHelper.createMovement(movementBaseType, "test user");
+        
+        MovementBaseType movementBaseType2 = MovementTestHelper.createIncomingMovementType(0d, 2d);
+        movementBaseType2.setAssetHistoryId(connectId);
+        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType2, "test user");
+        MovementType createdMovement = response.getMovement();
+        
+        assertThat(createdMovement.getGuid(), is(notNullValue()));
+        assertThat(createdMovement.getCalculatedSpeed(), is(notNullValue()));
+        assertThat(createdMovement.getCalculatedCourse(), is(notNullValue()));*/
+    }
+
+
+    @Test
+    @Ignore   //TODO: we need to say to movement that these two movements are on the same ship
+    @OperateOnDeployment("movement")
+    public void createMovementVerifyBasicSegment() throws Exception {
+        /*JMSHelper jmsHelper = new JMSHelper(connectionFactory);
+        String connectId = UUID.randomUUID().toString();
+        
+        MovementBaseType movementBaseType1 = MovementTestHelper.createIncomingMovementType(0d, 0d);
+        movementBaseType1.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
+        movementBaseType1.setAssetHistoryId(connectId);
+        jmsHelper.createMovement(movementBaseType1, "test user");
+        
+        MovementBaseType movementBaseType2 = MovementTestHelper.createIncomingMovementType(0d, 1d);
+        movementBaseType2.setAssetHistoryId(connectId);
+
+        //System.out.println("Now");
+        //Thread.sleep(1000 * 60 * 5);
+        jmsHelper.createMovement(movementBaseType2, "test user");
+        
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId);
+        query.getMovementSearchCriteria().add(criteria);
+        GetMovementListByQueryResponse movementList = jmsHelper.getMovementListByQuery(query, connectId);
+        List<MovementType> movements = movementList.getMovement();
+        
+        assertThat(movements.size(), is(2));
+        assertThat(movements.get(0).getSegmentIds(), is(movements.get(1).getSegmentIds()));
+        */
+    }
+
+    
+    @Test
+    @Ignore   //TODO: This one needs create batch functionality
+    @OperateOnDeployment("movement")
+    public void createMovementBatchTest() throws Exception {
+        /*
         JMSHelper jmsHelper = new JMSHelper(connectionFactory);
+        MovementBaseType m1 = MovementTestHelper.createIncomingMovementType(0d, 0d);
+        MovementBaseType m2 = MovementTestHelper.createIncomingMovementType(0d, 1d);
+        MovementBaseType m3 = MovementTestHelper.createIncomingMovementType(0d, 2d);
+        CreateMovementBatchResponse response = jmsHelper.createMovementBatch(Arrays.asList(m1, m2, m3), "test user");
+        List<MovementType> createdMovement = response.getMovements();
+        assertThat(createdMovement.size(), is(3));*/
+    }
+
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMovementListByConnectId() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(movementDetails.getConnectId());
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movementDetails.getConnectId());
+        List<MovementType> movements = listByQueryResponse.getMovement();
+        assertThat(movements.size(), is(1));
+        assertThat(movements.get(0).getConnectId(), is(movementDetails.getConnectId()));
+        assertThat(movements.get(0).getPosition().getLongitude(), is(incomingMovement.getLongitude()));
+        assertThat(movements.get(0).getPosition().getLatitude(), is(incomingMovement.getLatitude()));
+        assertThat(movements.get(0).getPositionTime().getTime(), is(incomingMovement.getPositionTime().toEpochMilli()));
+    }
+
+
+    @Test
+    @Ignore  //TODO: This test needs the two incoming movements to be on the same ship
+    @OperateOnDeployment("movement")
+    public void getMovementListByConnectIdTwoPositions() throws Exception {
+      /*  JMSHelper jmsHelper = new JMSHelper(connectionFactory);
+        String connectId = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
+
+        MovementBaseType movementBaseType1 = MovementTestHelper.createIncomingMovementType();
+        movementBaseType1.setAssetHistoryId(connectId);
+        movementBaseType1.setPositionTime(Date.from(timestamp));
+        jmsHelper.createMovement(movementBaseType1, "test user");
+        
+        MovementBaseType movementBaseType2 = MovementTestHelper.createIncomingMovementType();
+        movementBaseType2.setAssetHistoryId(connectId);
+        movementBaseType1.setPositionTime(Date.from(timestamp.plusSeconds(10)));
+        jmsHelper.createMovement(movementBaseType2, "test user");
+
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId);
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, connectId);
+        List<MovementType> movements = listByQueryResponse.getMovement();
+        assertThat(movements.size(), is(2));*/
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMovementListByConnectIdDifferentIds() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        ListCriteria criteria1 = new ListCriteria();
+        criteria1.setKey(SearchKey.CONNECT_ID);
+        criteria1.setValue(movementDetails.getConnectId());
+        query.getMovementSearchCriteria().add(criteria1);
+        ListCriteria criteria2 = new ListCriteria();
+        criteria2.setKey(SearchKey.CONNECT_ID);
+        criteria2.setValue(movementDetails2.getConnectId());
+        query.getMovementSearchCriteria().add(criteria2);
+
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, "Grouping");
+        List<MovementType> movements = listByQueryResponse.getMovement();
+        assertThat(movements.size(), is(2));
+    }
+    
+
+    @Ignore //TODO: This should work when query searches guid instead of id
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMovementListByMovementId() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.MOVEMENT_ID);
+        criteria.setValue(movementDetails.getMovementGuid());
+        query.getMovementSearchCriteria().add(criteria);
+        
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, "Grouping");
+        List<MovementType> movements = listByQueryResponse.getMovement();
+        assertThat(movements.size(), is(1));
+        assertThat(movements.get(0).getConnectId(), is(movementDetails.getConnectId()));
+        assertThat(movements.get(0).getPosition().getLongitude(), is(movementDetails.getLongitude()));
+        assertThat(movements.get(0).getPosition().getLatitude(), is(movementDetails.getLatitude()));
+        assertThat(movements.get(0).getPositionTime().getTime(), is(movementDetails.getPositionTime().getTime()));
+    }
+    
+    @Ignore //TODO: This should work when query searches guid instead of id
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMovementListByMovementIdTwoMovements() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovement(3d, 4d);
+        incomingMovement2.setAssetGuid(null);
+        incomingMovement2.setAssetHistoryId(null);
+        MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2);
+
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        ListCriteria criteria1 = new ListCriteria();
+        criteria1.setKey(SearchKey.MOVEMENT_ID);
+        criteria1.setValue(movementDetails.getMovementGuid());
+        query.getMovementSearchCriteria().add(criteria1);
+        ListCriteria criteria2 = new ListCriteria();
+        criteria2.setKey(SearchKey.MOVEMENT_ID);
+        criteria2.setValue(movementDetails2.getMovementGuid());
+        query.getMovementSearchCriteria().add(criteria2);
+        
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, "Grouping");
+        List<MovementType> movements = listByQueryResponse.getMovement();
+        assertThat(movements.size(), is(2));
+    }
+    
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMovementListByDateFromRange() throws Exception {
+        Instant timestampBefore = Instant.now().minusSeconds(1);
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+        
+        Instant timestampAfter = Instant.now().plusSeconds(1);
+
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        RangeCriteria criteria = new RangeCriteria();
+        criteria.setKey(RangeKeyType.DATE);
+        criteria.setFrom(DateUtil.parseUTCDateToString(timestampBefore));
+        criteria.setTo(DateUtil.parseUTCDateToString(timestampAfter));
+        query.getMovementRangeSearchCriteria().add(criteria);
+        ListCriteria criteria1 = new ListCriteria();
+        criteria1.setKey(SearchKey.CONNECT_ID);
+        criteria1.setValue(movementDetails.getConnectId());
+        query.getMovementSearchCriteria().add(criteria1);
+        
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, "Grouping");
+        List<MovementType> movements = listByQueryResponse.getMovement();
+        assertThat(movements.size(), is(1));
+        assertThat(movements.get(0).getConnectId(), is(movementDetails.getConnectId()));
+        assertThat(movements.get(0).getPosition().getLongitude(), is(movementDetails.getLongitude()));
+        assertThat(movements.get(0).getPosition().getLatitude(), is(movementDetails.getLatitude()));
+        assertThat(movements.get(0).getPositionTime(), is(movementDetails.getPositionTime()));
+    }
+
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMovementListByDateTwoMovements() throws Exception {
+        Instant timestampBefore = Instant.now().minusSeconds(60);
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
+        incomingMovement2.setAssetGuid(null);
+        incomingMovement2.setAssetHistoryId(null);
+        MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2);
+
+        Instant timestampAfter = Instant.now().plusSeconds(60);
+        
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        RangeCriteria criteria = new RangeCriteria();
+        criteria.setKey(RangeKeyType.DATE);
+        criteria.setFrom(DateUtil.parseUTCDateToString(timestampBefore));
+        criteria.setTo(DateUtil.parseUTCDateToString(timestampAfter));
+        query.getMovementRangeSearchCriteria().add(criteria);
+        ListCriteria criteria1 = new ListCriteria();
+        criteria1.setKey(SearchKey.CONNECT_ID);
+        criteria1.setValue(movementDetails.getConnectId());
+        query.getMovementSearchCriteria().add(criteria1);
+        ListCriteria criteria2 = new ListCriteria();
+        criteria2.setKey(SearchKey.CONNECT_ID);
+        criteria2.setValue(movementDetails2.getConnectId());
+        query.getMovementSearchCriteria().add(criteria2);
+        
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, "Grouping");
+        List<MovementType> movements = listByQueryResponse.getMovement();
+        assertThat(movements.size(), is(2));
+    }
+
+
+
+    @Test
+    @Ignore  //TODO: This test needs to be able to set so that two different movements have the same ship
+    @OperateOnDeployment("movement")
+    public void createMovementConcurrentProcessingTwoConnectIds() throws Exception {
         int numberOfPositions = 20;
-        String connectId1 = UUID.randomUUID().toString();
+        String connectId1 = UUID.randomUUID().toString();   //these two needs to be connected to the movemetns so that they are are treated as the same ship
         String connectId2 = UUID.randomUUID().toString();
         
         List<String> correlationIds = new ArrayList<>();
@@ -452,27 +476,34 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         
         // Send positions to movement
         for (int i = 0; i < numberOfPositions; i++) {
-            MovementBaseType movementBaseTypeC1 = MovementTestHelper.createMovementBaseType();
-            movementBaseTypeC1.setConnectId(connectId1);
-            movementBaseTypeC1.setPositionTime(Date.from(timestamp));
-            String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseTypeC1, "Test");
-            String correlationId = jmsHelper.sendMovementMessage(request, connectId1, null);
-            correlationIds.add(correlationId);
-            
-            MovementBaseType movementBaseTypeC2 = MovementTestHelper.createMovementBaseType();
-            movementBaseTypeC2.setConnectId(connectId2);
-            movementBaseTypeC2.setPositionTime(Date.from(timestamp));
-            String request2 = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseTypeC2, "Test");
-            String correlationId2 = jmsHelper.sendMovementMessage(request2, connectId2, null);
-            correlationIds.add(correlationId2);
+            IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+            incomingMovement.setAssetGuid(null);
+            incomingMovement.setAssetHistoryId(null);
+            incomingMovement.setPositionTime(timestamp);
+            String json = mapper.writeValueAsString(incomingMovement);
+            jmsHelper.sendMovementMessage(json, "Grouping:1", "CREATE");
+
+            IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
+            incomingMovement2.setAssetGuid(null);
+            incomingMovement2.setAssetHistoryId(null);
+            incomingMovement2.setPositionTime(timestamp);
+            String json2 = mapper.writeValueAsString(incomingMovement2);
+            jmsHelper.sendMovementMessage(json2, "Grouping:2", "CREATE");
+
 
             timestamp = timestamp.plusSeconds(10);
         }
-        
+
+
         // Check responses
-        for (String correlationId : correlationIds) {
-            Message response = jmsHelper.listenForResponse(correlationId);
-            JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementResponse.class);
+        for (int i = 0; i < numberOfPositions; i++) {
+            TextMessage response = (TextMessage) jmsHelper.listenOnMRQueue();
+            String jsonResponse = response.getText();
+            MovementDetails movementDetails = mapper.readValue(jsonResponse, MovementDetails.class);
+
+            response = (TextMessage) jmsHelper.listenOnMRQueue();
+            jsonResponse = response.getText();
+            movementDetails = mapper.readValue(jsonResponse, MovementDetails.class);
         }
         
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
@@ -521,18 +552,17 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Test
     @OperateOnDeployment("movement")
     public void testMaxRedeliveries() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
         int dlqBefore = jmsHelper.checkQueueSize("ActiveMQ.DLQ");
         int responseQueueBefore = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
-        
-        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
-        movementBaseType.setPosition(null);
-        String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, "Test");
-        String correlationId = jmsHelper.sendMovementMessage(request, movementBaseType.getConnectId(), null);
-        
-        Message response = jmsHelper.listenForResponse(correlationId);
-        JAXBMarshaller.unmarshallTextMessage((TextMessage) response, ExceptionType.class);
-        
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setPluginType(null);
+        String json = mapper.writeValueAsString(incomingMovement);
+        jmsHelper.sendMovementMessage(json, incomingMovement.getAssetHistoryId(), "CREATE");   //grouping on null.....
+
+
         // Wait until message have been moved to DQL
         Thread.sleep(2500);
         
@@ -541,5 +571,15 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         
         assertThat(dlqAfter, is(dlqBefore + 1));
         assertThat(responseQueueBefore, is(responseQueueAfter));
+    }
+
+    private MovementDetails sendIncomingMovementAndWaitForResponse(IncomingMovement incomingMovement) throws Exception{
+        String json = mapper.writeValueAsString(incomingMovement);
+        jmsHelper.sendMovementMessage(json, incomingMovement.getAssetHistoryId(), "CREATE");   //grouping on null.....
+
+        TextMessage response = (TextMessage) jmsHelper.listenOnMRQueue();
+        String jsonResponse = response.getText();
+        MovementDetails movementDetails = mapper.readValue(jsonResponse, MovementDetails.class);
+        return movementDetails;
     }
 }

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -56,13 +57,7 @@ public class MovementSanityValidatorBean {
             isOk = false;
         }
 
-        if(movement.getAltitude() == null){  //Altitude must exist
-            LOG.info("\t==> Executing RULE 'Sanity check - altitude must exist'");
-            createAlarmReport("Sanity check - altitude must exist", movement);
-            isOk = false;
-        }
-
-        if(movement.getPositionTime() != null && movement.getPositionTime().after(new Date())){  //Time in the future
+        if(movement.getPositionTime() != null && movement.getPositionTime().isAfter(Instant.now())){  //Time in the future
             LOG.info("\t==> Executing RULE 'Sanity rule 12 - Time in the future'" + "[" + movement.getPositionTime() + " > " + new Date() + "]");
             createAlarmReport("Time in future", movement);
             isOk = false;
@@ -188,12 +183,12 @@ public class MovementSanityValidatorBean {
         if(alarmReport == null) {
             alarmReport = new AlarmReport();
             alarmReport.setAssetGuid(movement.getAssetGuid());
-            alarmReport.setCreatedDate(new Date());
+            alarmReport.setCreatedDate(Instant.now());
             alarmReport.setGuid(UUID.randomUUID().toString());
             alarmReport.setPluginType(movement.getPluginType());
             //alarmReport.setRecipient();
             alarmReport.setStatus(AlarmStatusType.OPEN.value());
-            alarmReport.setUpdated(new Date());
+            alarmReport.setUpdated(Instant.now());
             alarmReport.setUpdatedBy("UVMS");
             alarmReport.setIncomingMovement(movement);
             alarmReport.setAlarmItemList(new ArrayList<>());
@@ -206,7 +201,7 @@ public class MovementSanityValidatorBean {
         item.setGuid(UUID.randomUUID().toString());
         item.setRuleGuid(ruleName); // WTF?
         item.setRuleName(ruleName);
-        item.setUpdated(new Date());
+        item.setUpdated(Instant.now());
         item.setUpdatedBy("UVMS");
         alarmDAO.save(item);
 
@@ -262,7 +257,7 @@ public class MovementSanityValidatorBean {
 
         entity.setStatus(alarm.getStatus());
         entity.setUpdatedBy(alarm.getUpdatedBy());
-        entity.setUpdated(new Date());
+        entity.setUpdated(Instant.now());
         /* TODO: WAT isInactivatePosition()
         if (entity.getIncomingMovement() != null) {
             entity.getIncomingMovement().setActive(!alarm.getIncomingMovement().getActive());

@@ -17,6 +17,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         AlarmReport alarmReport = new AlarmReport();
         alarmReport.setAssetGuid(UUID.randomUUID().toString());
         alarmReport.setStatus(AlarmStatusType.OPEN.value());
-        alarmReport.setUpdated(new Date());
+        alarmReport.setUpdated(Instant.now());
         alarmReport.setUpdatedBy("Test user");
         return alarmReport;
     }
@@ -175,7 +176,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
 
         AlarmReport alarmReport = getBasicAlarmReport();
         IncomingMovement incomingMovement = new IncomingMovement();
-        incomingMovement.setUpdated(new Date());
+        incomingMovement.setUpdated(Instant.now());
         incomingMovement.setUpdatedBy("Test User");
         incomingMovement.setActive(true);
         incomingMovement.setAlarmReport(alarmReport);

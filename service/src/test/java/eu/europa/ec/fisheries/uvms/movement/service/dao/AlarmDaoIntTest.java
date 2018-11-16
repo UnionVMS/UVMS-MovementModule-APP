@@ -12,6 +12,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
@@ -28,17 +29,17 @@ public class AlarmDaoIntTest extends TransactionalTests {
         IncomingMovement im = new IncomingMovement();
         im.setGuid(guid);
         im.setAssetGuid("test");
-        im.setDateReceived(new Date());
-        im.setUpdated(new Date());
+        im.setDateReceived(Instant.now());
+        im.setUpdated(Instant.now());
         im.setUpdatedBy("TEST");
         alarmDAO.save(im);
 
 
         AlarmReport alarmReport = new AlarmReport();
         alarmReport.setUpdatedBy("TEST");
-        alarmReport.setUpdated(new Date());
+        alarmReport.setUpdated(Instant.now());
         alarmReport.setStatus("OPEN");
-        alarmReport.setUpdated(new Date());
+        alarmReport.setUpdated(Instant.now());
         alarmReport.setUpdatedBy("test");
         alarmReport.setIncomingMovement(im);
         alarmReport.setRecipient("");
@@ -52,7 +53,7 @@ public class AlarmDaoIntTest extends TransactionalTests {
         alarmItem.setRuleName("TEST");
         alarmItem.setRuleGuid("TEST");
         alarmItem.setAlarmReport(alarmReport);
-        alarmItem.setUpdated(new Date());
+        alarmItem.setUpdated(Instant.now());
         alarmItem.setUpdatedBy("TEST");
         alarmDAO.save(alarmItem);
         alarmReport.getAlarmItemList().add(alarmItem);

@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 
 //@formatter:off
@@ -22,8 +23,7 @@ public class AlarmItem implements Serializable {
     private String ruleName;        //exists in Type, same name
     private String ruleGuid;        //exists in Type, same name
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
+    private Instant updated;
     @NotNull
     private String updatedBy;
 
@@ -71,11 +71,11 @@ public class AlarmItem implements Serializable {
         this.alarmReport = alarmReport;
     }
 
-    public Date getUpdated() {
+    public Instant getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(Instant updated) {
         this.updated = updated;
     }
 

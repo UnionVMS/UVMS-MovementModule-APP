@@ -27,7 +27,7 @@ public abstract class IncomingMovementMapper {
         //entity.setAltitude(ic.getAltitude());
         //entity.setMoveAltitude(ic.getAltitude());
         MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setValue(UUID.fromString(ic.getConnectId()));
+        movementConnect.setValue(UUID.fromString(ic.getAssetHistoryId()));
         movementConnect.setUpdated(Instant.now());
         movementConnect.setUpdatedBy(username);
         entity.setMovementConnect(movementConnect);
@@ -37,6 +37,7 @@ public abstract class IncomingMovementMapper {
         Point point = factory.createPoint(coordinate);
         point.setSRID(4326);
         entity.setLocation(point);
+        entity.setAltitude(ic.getAltitude());
 
         entity.setUpdated(DateUtil.nowUTC());
         entity.setUpdatedBy(username);
@@ -54,7 +55,7 @@ public abstract class IncomingMovementMapper {
         }
 
         if (ic.getPositionTime() != null) {
-            entity.setTimestamp(ic.getPositionTime().toInstant());
+            entity.setTimestamp(ic.getPositionTime());
         } else {
             entity.setTimestamp(DateUtil.nowUTC());
         }

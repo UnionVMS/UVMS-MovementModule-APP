@@ -1,11 +1,15 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Date;
+import java.time.Instant;
 
 @Entity
 @Table(name = "incomingmovement")
@@ -19,12 +23,15 @@ public class IncomingMovement {
     private Long id;
 
     private String guid;
-    private String connectId;
+    @Column(name = "connectId")
+    private String assetHistoryId;               //TODO Rename in the DB since it is asset history ID
     private String ackResponseMessageId;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateReceived;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date positionTime;
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    private Instant dateReceived;
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    private Instant positionTime;
     private String status;
     private Double reportedSpeed;
     private Double reportedCourse;
@@ -67,8 +74,9 @@ public class IncomingMovement {
     private boolean active;
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    private Instant updated;
     @NotNull
     private String updatedBy;
 
@@ -91,12 +99,12 @@ public class IncomingMovement {
         this.guid = guid;
     }
 
-    public String getConnectId() {
-        return connectId;
+    public String getAssetHistoryId() {
+        return assetHistoryId;
     }
 
-    public void setConnectId(String connectId) {
-        this.connectId = connectId;
+    public void setAssetHistoryId(String assetHistoryId) {
+        this.assetHistoryId = assetHistoryId;
     }
 
     public String getAckResponseMessageId() {
@@ -107,19 +115,19 @@ public class IncomingMovement {
         this.ackResponseMessageId = ackResponseMessageId;
     }
 
-    public Date getDateReceived() {
+    public Instant getDateReceived() {
         return dateReceived;
     }
 
-    public void setDateReceived(Date dateReceived) {
+    public void setDateReceived(Instant dateReceived) {
         this.dateReceived = dateReceived;
     }
 
-    public Date getPositionTime() {
+    public Instant getPositionTime() {
         return positionTime;
     }
 
-    public void setPositionTime(Date positionTime) {
+    public void setPositionTime(Instant positionTime) {
         this.positionTime = positionTime;
     }
 
@@ -371,11 +379,11 @@ public class IncomingMovement {
         this.pluginType = pluginType;
     }
 
-    public Date getUpdated() {
+    public Instant getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
+    public void setUpdated(Instant updated) {
         this.updated = updated;
     }
 

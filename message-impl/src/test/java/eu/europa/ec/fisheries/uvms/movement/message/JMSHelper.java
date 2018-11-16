@@ -12,19 +12,15 @@ package eu.europa.ec.fisheries.uvms.movement.message;
 
 import java.util.Enumeration;
 import java.util.List;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
+
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 
@@ -47,12 +43,12 @@ public class JMSHelper {
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, PingResponse.class);
     }
 
-    public CreateMovementResponse createMovement(MovementBaseType movementBaseType, String username) throws Exception {
+    /*public CreateMovementResponse createMovement(MovementBaseType movementBaseType, String username) throws Exception {
         String request = MovementModuleRequestMapper.mapToCreateMovementRequest(movementBaseType, username);
-        String correlationId = sendMovementMessage(request, movementBaseType.getConnectId(), null);
+        String correlationId = sendMovementMessage(request, movementBaseType.getAssetHistoryId(), null);
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementResponse.class);
-    }
+    }*/
     
     public CreateMovementBatchResponse createMovementBatch(List<MovementBaseType> movementBaseType, String username) throws Exception {
         String request = MovementModuleRequestMapper.mapToCreateMovementBatchRequest(movementBaseType, username);
@@ -102,6 +98,20 @@ public class JMSHelper {
             connection.close();
         }
     }
+
+    public Message listenOnMRQueue() throws Exception {
+        Connection connection = connectionFactory.createConnection();
+        try {
+            connection.start();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Queue responseQueue = session.createQueue("UVMSMovementRulesEvent");
+
+            return session.createConsumer(responseQueue, MessageConstants.JMS_FUNCTION_PROPERTY + "='EVALUATE_RULES'")
+                    .receive(TIMEOUT);
+        } finally {
+            connection.close();
+        }
+    }
     
     public int checkQueueSize(String queue) throws Exception {
         int messages = 0;
@@ -122,5 +132,20 @@ public class JMSHelper {
             connection.close();
         }
         return messages;
+    }
+
+    public void clearQueue(String queue) throws Exception {
+        Connection connection = connectionFactory.createConnection();
+        MessageConsumer consumer;
+        try {
+            connection.start();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Queue responseQueue = session.createQueue(queue);
+            consumer = session.createConsumer(responseQueue);
+
+            while (consumer.receive(10L) != null);
+        } finally {
+            connection.close();
+        }
     }
 }
