@@ -13,4 +13,6 @@
 
     <include file="v5.0.3\db-changelog-5.0.3.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.1.1\db-changelog-create-view-5.1.1-postgres.xml" relativeToChangelogFile="true"/>
+        
 </databaseChangeLog>

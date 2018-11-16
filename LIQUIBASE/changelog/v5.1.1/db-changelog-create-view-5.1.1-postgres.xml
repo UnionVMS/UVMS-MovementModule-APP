@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="joemat" id="Add a view for getting the latest movements for all assets in micro format">
+
+        <createView viewName="LATEST_POS_VIEW">
+            SELECT
+            b.move_guid, b.move_heading, b.move_location, b.move_moveconn_id, b.move_timestamp
+            FROM movement.movement b
+            INNER JOIN (SELECT
+            move_moveconn_id,
+            MAX(move_timestamp) as MaxValue
+            FROM movement.movement
+            WHERE movement.move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1 DAY')
+            GROUP BY move_moveconn_id) a ON a.move_moveconn_id = b.move_moveconn_id AND a.MaxValue = b.move_timestamp
+            WHERE
+            b.move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1 DAY')
+        </createView>
+        <rollback>
+            <dropView viewName="LATEST_POS_VIEW"/>
+        </rollback>
+    </changeSet>
+
+
+</databaseChangeLog>
