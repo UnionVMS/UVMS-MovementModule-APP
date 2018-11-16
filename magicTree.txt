@@ -1,0 +1,1028 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for eu.europa.ec.fisheries.uvms.movement:liquibase:jar:4.0.17-SNAPSHOT
+[WARNING] The expression ${artifactId} is deprecated. Please use ${project.artifactId} instead.
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] movement                                                           [pom]
+[INFO] movement-model                                                     [ejb]
+[INFO] liquibase                                                          [jar]
+[INFO] movement-message                                                   [ejb]
+[INFO] movement-message-mock                                              [ejb]
+[INFO] movement-service                                                   [ejb]
+[INFO] movement-message-impl                                              [ejb]
+[INFO] movement-rest                                                      [war]
+[INFO] movement-module                                                    [ear]
+[INFO] 
+[INFO] -----------< eu.europa.ec.fisheries.uvms.movement:movement >------------
+[INFO] Building movement 4.0.17-SNAPSHOT                                  [1/9]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ movement ---
+[INFO] eu.europa.ec.fisheries.uvms.movement:movement:pom:4.0.17-SNAPSHOT
+[INFO] +- javax:javaee-api:jar:8.0:provided
+[INFO] |  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+[INFO] |     \- javax.activation:activation:jar:1.1:provided
+[INFO] +- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+[INFO] |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] \- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.21:test
+[INFO]    +- junit:junit:jar:4.12:test
+[INFO]    |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO]    +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+[INFO]    |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+[INFO]    |     +- org.powermock:powermock-core:jar:1.6.6:test
+[INFO]    |     |  \- org.javassist:javassist:jar:3.21.0-GA:test
+[INFO]    |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+[INFO]    +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+[INFO]    |  +- org.mockito:mockito-core:jar:1.10.19:test
+[INFO]    |  |  \- org.objenesis:objenesis:jar:2.1:test
+[INFO]    |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+[INFO]    +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+[INFO]    |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+[INFO]    |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+[INFO]    \- org.databene:contiperf:jar:2.4.4:test
+[INFO] 
+[INFO] --------< eu.europa.ec.fisheries.uvms.movement:movement-model >---------
+[INFO] Building movement-model 4.0.17-SNAPSHOT                            [2/9]
+[INFO] --------------------------------[ ejb ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ movement-model ---
+[INFO] eu.europa.ec.fisheries.uvms.movement:movement-model:ejb:4.0.17-SNAPSHOT
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.9.5:provided
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.9.0:provided
+[INFO] |  +- com.fasterxml.jackson.core:jackson-core:jar:2.9.5:provided
+[INFO] |  \- com.fasterxml.jackson.core:jackson-databind:jar:2.9.5:provided
+[INFO] +- org.jvnet.jaxb2_commons:jaxb2-basics:jar:0.9.5:compile
+[INFO] |  +- org.jvnet.jaxb2_commons:jaxb2-basics-runtime:jar:0.9.5:compile
+[INFO] |  +- org.jvnet.jaxb2_commons:jaxb2-basics-tools:jar:0.9.5:compile
+[INFO] |  |  \- commons-beanutils:commons-beanutils:jar:1.9.2:compile
+[INFO] |  |     \- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] |  \- com.google.code.javaparser:javaparser:jar:1.0.11:compile
+[INFO] +- org.apache.commons:commons-lang3:jar:3.7:compile
+[INFO] +- javax:javaee-api:jar:8.0:provided
+[INFO] |  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+[INFO] |     \- javax.activation:activation:jar:1.1:provided
+[INFO] +- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+[INFO] |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] \- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.21:test
+[INFO]    +- junit:junit:jar:4.12:test
+[INFO]    |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO]    +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+[INFO]    |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+[INFO]    |     +- org.powermock:powermock-core:jar:1.6.6:test
+[INFO]    |     |  \- org.javassist:javassist:jar:3.21.0-GA:test
+[INFO]    |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+[INFO]    +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+[INFO]    |  +- org.mockito:mockito-core:jar:1.10.19:test
+[INFO]    |  |  \- org.objenesis:objenesis:jar:2.1:test
+[INFO]    |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+[INFO]    +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+[INFO]    |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+[INFO]    |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+[INFO]    \- org.databene:contiperf:jar:2.4.4:test
+[INFO] 
+[INFO] -----------< eu.europa.ec.fisheries.uvms.movement:liquibase >-----------
+[INFO] Building liquibase 4.0.17-SNAPSHOT                                 [3/9]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ liquibase ---
+[INFO] eu.europa.ec.fisheries.uvms.movement:liquibase:jar:4.0.17-SNAPSHOT
+[INFO] +- javax:javaee-api:jar:8.0:provided
+[INFO] |  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+[INFO] |     \- javax.activation:activation:jar:1.1:provided
+[INFO] +- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+[INFO] |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] \- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.21:test
+[INFO]    +- junit:junit:jar:4.12:test
+[INFO]    |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO]    +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+[INFO]    |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+[INFO]    |     +- org.powermock:powermock-core:jar:1.6.6:test
+[INFO]    |     |  \- org.javassist:javassist:jar:3.21.0-GA:test
+[INFO]    |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+[INFO]    +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+[INFO]    |  +- org.mockito:mockito-core:jar:1.10.19:test
+[INFO]    |  |  \- org.objenesis:objenesis:jar:2.1:test
+[INFO]    |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+[INFO]    +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+[INFO]    |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+[INFO]    |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+[INFO]    \- org.databene:contiperf:jar:2.4.4:test
+[INFO] 
+[INFO] -------< eu.europa.ec.fisheries.uvms.movement:movement-message >--------
+[INFO] Building movement-message 4.0.17-SNAPSHOT                          [4/9]
+[INFO] --------------------------------[ ejb ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ movement-message ---
+[INFO] eu.europa.ec.fisheries.uvms.movement:movement-message:ejb:4.0.17-SNAPSHOT
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-model:jar:4.0.17-SNAPSHOT:provided
+[INFO] |  +- org.jvnet.jaxb2_commons:jaxb2-basics:jar:0.9.5:compile
+[INFO] |  |  +- org.jvnet.jaxb2_commons:jaxb2-basics-runtime:jar:0.9.5:compile
+[INFO] |  |  +- org.jvnet.jaxb2_commons:jaxb2-basics-tools:jar:0.9.5:compile
+[INFO] |  |  |  \- commons-beanutils:commons-beanutils:jar:1.9.2:compile
+[INFO] |  |  \- com.google.code.javaparser:javaparser:jar:1.0.11:compile
+[INFO] |  \- org.apache.commons:commons-lang3:jar:3.7:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.audit:audit-model:jar:4.0.8:compile
+[INFO] +- eu.europa.ec.fisheries.uvms:uvms-config:jar:4.0.0:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms.config:config-model:jar:4.0.0:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.commons:uvms-commons-message:jar:3.0.25:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-impl:jar:2.3.0:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-core:jar:2.3.0:compile
+[INFO] |  \- com.google.guava:guava:jar:20.0:compile
+[INFO] +- javax:javaee-api:jar:8.0:provided
+[INFO] |  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+[INFO] |     \- javax.activation:activation:jar:1.1:provided
+[INFO] +- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+[INFO] |  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+[INFO] |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] \- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.21:test
+[INFO]    +- junit:junit:jar:4.12:test
+[INFO]    |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO]    +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+[INFO]    |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+[INFO]    |     +- org.powermock:powermock-core:jar:1.6.6:test
+[INFO]    |     |  \- org.javassist:javassist:jar:3.21.0-GA:test
+[INFO]    |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+[INFO]    +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+[INFO]    |  +- org.mockito:mockito-core:jar:1.10.19:test
+[INFO]    |  |  \- org.objenesis:objenesis:jar:2.1:test
+[INFO]    |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+[INFO]    +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+[INFO]    |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+[INFO]    |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+[INFO]    \- org.databene:contiperf:jar:2.4.4:test
+[INFO] 
+[INFO] -----< eu.europa.ec.fisheries.uvms.movement:movement-message-mock >-----
+[INFO] Building movement-message-mock 4.0.17-SNAPSHOT                     [5/9]
+[INFO] --------------------------------[ ejb ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ movement-message-mock ---
+[INFO] eu.europa.ec.fisheries.uvms.movement:movement-message-mock:ejb:4.0.17-SNAPSHOT
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-message:jar:4.0.17-SNAPSHOT:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.audit:audit-model:jar:4.0.8:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms:uvms-config:jar:4.0.0:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-model:jar:4.0.17-SNAPSHOT:provided
+[INFO] |  +- org.jvnet.jaxb2_commons:jaxb2-basics:jar:0.9.5:compile
+[INFO] |  |  +- org.jvnet.jaxb2_commons:jaxb2-basics-runtime:jar:0.9.5:compile
+[INFO] |  |  +- org.jvnet.jaxb2_commons:jaxb2-basics-tools:jar:0.9.5:compile
+[INFO] |  |  |  \- commons-beanutils:commons-beanutils:jar:1.9.2:compile
+[INFO] |  |  \- com.google.code.javaparser:javaparser:jar:1.0.11:compile
+[INFO] |  \- org.apache.commons:commons-lang3:jar:3.7:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.commons:uvms-commons-message:jar:3.0.25:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.config:config-model:jar:4.0.7:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-impl:jar:2.3.0:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-core:jar:2.3.0:compile
+[INFO] |  \- com.google.guava:guava:jar:20.0:compile
+[INFO] +- javax:javaee-api:jar:8.0:provided
+[INFO] |  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+[INFO] |     \- javax.activation:activation:jar:1.1:provided
+[INFO] +- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+[INFO] |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] \- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.21:test
+[INFO]    +- junit:junit:jar:4.12:test
+[INFO]    |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO]    +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+[INFO]    |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+[INFO]    |     +- org.powermock:powermock-core:jar:1.6.6:test
+[INFO]    |     |  \- org.javassist:javassist:jar:3.21.0-GA:test
+[INFO]    |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+[INFO]    +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+[INFO]    |  +- org.mockito:mockito-core:jar:1.10.19:test
+[INFO]    |  |  \- org.objenesis:objenesis:jar:2.1:test
+[INFO]    |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+[INFO]    +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+[INFO]    |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+[INFO]    |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+[INFO]    \- org.databene:contiperf:jar:2.4.4:test
+[INFO] 
+[INFO] -------< eu.europa.ec.fisheries.uvms.movement:movement-service >--------
+[INFO] Building movement-service 4.0.17-SNAPSHOT                          [6/9]
+[INFO] --------------------------------[ ejb ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ movement-service ---
+[INFO] eu.europa.ec.fisheries.uvms.movement:movement-service:ejb:4.0.17-SNAPSHOT
+[INFO] +- fish.focus.uvms.maven:uvms-pom-gis-deps:pom:1.21:provided
+[INFO] |  +- org.hibernate:hibernate-spatial:jar:4.3:provided
+[INFO] |  |  +- org.jboss.logging:jboss-logging-annotations:jar:1.2.0.Beta1:provided
+[INFO] |  |  +- dom4j:dom4j:jar:1.6.1:provided
+[INFO] |  |  \- org.jboss.logging:jboss-logging:jar:3.1.3.GA:provided
+[INFO] |  +- org.hibernate:hibernate-core:jar:4.3.11.Final:provided
+[INFO] |  |  +- org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:jar:1.0.0.Final:provided
+[INFO] |  |  +- org.hibernate.common:hibernate-commons-annotations:jar:4.0.5.Final:provided
+[INFO] |  |  +- org.hibernate.javax.persistence:hibernate-jpa-2.1-api:jar:1.0.0.Final:provided
+[INFO] |  |  +- antlr:antlr:jar:2.7.7:provided
+[INFO] |  |  \- org.jboss:jandex:jar:1.1.0.Final:provided
+[INFO] |  +- org.hibernate:hibernate-entitymanager:jar:4.3.11.Final:provided
+[INFO] |  +- org.hibernate:hibernate-ehcache:jar:4.3.11.Final:provided
+[INFO] |  |  \- net.sf.ehcache:ehcache-core:jar:2.4.3:provided
+[INFO] |  +- net.sf.ehcache:ehcache:jar:2.10.4:provided
+[INFO] |  +- org.postgis:postgis-jdbc:jar:1.5.3:provided
+[INFO] |  +- org.postgresql:postgresql:jar:42.1.4.jre7:provided
+[INFO] |  \- com.vividsolutions:jts:jar:1.13:provided
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-model:jar:4.0.17-SNAPSHOT:compile
+[INFO] |  +- org.jvnet.jaxb2_commons:jaxb2-basics:jar:0.9.5:compile
+[INFO] |  |  +- org.jvnet.jaxb2_commons:jaxb2-basics-tools:jar:0.9.5:compile
+[INFO] |  |  |  \- commons-beanutils:commons-beanutils:jar:1.9.2:compile
+[INFO] |  |  \- com.google.code.javaparser:javaparser:jar:1.0.11:compile
+[INFO] |  \- org.apache.commons:commons-lang3:jar:3.7:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.spatial:spatial-model:jar:1.0.12:compile
+[INFO] |  +- org.jvnet.jaxb2_commons:jaxb2-basics-runtime:jar:0.9.4:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.7.1:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  +- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms.commons:uvms-commons-message:jar:3.0.8:compile
+[INFO] |     \- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.exchange:exchange-model:jar:4.0.17:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms.commons:uvms-commons-date:jar:3.0.8:compile
+[INFO] |     \- joda-time:joda-time:jar:2.9.9:compile
+[INFO] +- eu.europa.ec.fisheries.uvms:uvms-longpolling:jar:2.0.13:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.user:user-model:jar:2.0.8:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-message:jar:4.0.17-SNAPSHOT:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.audit:audit-model:jar:4.0.8:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms:uvms-config:jar:4.0.0:compile
+[INFO] |     \- eu.europa.ec.fisheries.uvms.config:config-model:jar:4.0.0:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-message-mock:jar:4.0.17-SNAPSHOT:test
+[INFO] +- fish.focus.uvms.maven:uvms-pom-monitoring-deps:pom:1.21:compile
+[INFO] |  +- net.bull.javamelody:javamelody-core:jar:1.72.0.SE:compile
+[INFO] |  |  \- org.jrobin:jrobin:jar:1.5.9:compile
+[INFO] |  \- com.github.librepdf:openpdf:jar:1.0.5:compile
+[INFO] |     +- org.bouncycastle:bcprov-jdk15on:jar:1.58:compile
+[INFO] |     \- org.bouncycastle:bcpkix-jdk15on:jar:1.58:compile
+[INFO] +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.9.5:provided
+[INFO] |  +- com.fasterxml.jackson.core:jackson-core:jar:2.9.5:compile
+[INFO] |  \- com.fasterxml.jackson.core:jackson-databind:jar:2.9.5:compile
+[INFO] +- fish.focus.uvms.maven:uvms-pom-arquillian-deps:pom:1.21:test
+[INFO] |  +- org.jboss.arquillian:arquillian-bom:pom:1.1.13.Final:test
+[INFO] |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-bom:pom:2.2.6:test
+[INFO] |  +- org.jboss.shrinkwrap:shrinkwrap-api:jar:1.2.6:test
+[INFO] |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven:jar:2.2.6:test
+[INFO] |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api-maven:jar:2.2.6:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api:jar:2.2.6:test
+[INFO] |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi-maven:jar:2.2.6:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi:jar:2.2.6:test
+[INFO] |  |  +- org.eclipse.aether:aether-api:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-impl:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-spi:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-util:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-connector-basic:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-transport-wagon:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.apache.maven:maven-aether-provider:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-model:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-model-builder:jar:3.2.5:test
+[INFO] |  |  |  \- org.codehaus.plexus:plexus-component-annotations:jar:1.5.5:test
+[INFO] |  |  +- org.apache.maven:maven-repository-metadata:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-settings:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-settings-builder:jar:3.2.5:test
+[INFO] |  |  +- org.codehaus.plexus:plexus-interpolation:jar:1.21:test
+[INFO] |  |  +- org.codehaus.plexus:plexus-utils:jar:3.0.20:test
+[INFO] |  |  +- org.sonatype.plexus:plexus-sec-dispatcher:jar:1.3:test
+[INFO] |  |  |  \- org.sonatype.plexus:plexus-cipher:jar:1.4:test
+[INFO] |  |  +- org.apache.maven.wagon:wagon-provider-api:jar:2.6:test
+[INFO] |  |  +- org.apache.maven.wagon:wagon-file:jar:2.6:test
+[INFO] |  |  |  \- commons-lang:commons-lang:jar:2.6:test
+[INFO] |  |  \- org.apache.maven.wagon:wagon-http-lightweight:jar:2.6:test
+[INFO] |  |     \- org.apache.maven.wagon:wagon-http-shared:jar:2.6:test
+[INFO] |  |        +- org.jsoup:jsoup:jar:1.7.2:test
+[INFO] |  |        \- commons-io:commons-io:jar:2.2:test
+[INFO] |  +- org.jboss.arquillian.junit:arquillian-junit-container:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.junit:arquillian-junit-core:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.core:arquillian-core-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-spi:jar:2.0.0-alpha-10:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  \- org.jboss.shrinkwrap:shrinkwrap-impl-base:jar:1.2.6:test
+[INFO] |  |     \- org.jboss.shrinkwrap:shrinkwrap-spi:jar:1.2.6:test
+[INFO] |  +- org.jboss.arquillian.container:arquillian-container-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.core:arquillian-core-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.config:arquillian-config-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.config:arquillian-config-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  \- org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-api-base:jar:2.0.0-alpha-10:test
+[INFO] |  +- org.javassist:javassist:jar:3.22.0-GA:provided
+[INFO] |  +- org.jboss.arquillian.core:arquillian-core-api:jar:1.1.13.Final:test
+[INFO] |  +- org.wildfly:wildfly-arquillian-container-remote:jar:8.2.1.Final:test
+[INFO] |  |  +- org.wildfly:wildfly-arquillian-common:jar:8.2.1.Final:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-cdi:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-ejb:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-initialcontext:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-osgi:jar:2.1.0.CR2:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-resource:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.protocol:arquillian-protocol-servlet:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.wildfly:wildfly-arquillian-testenricher-msc:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.wildfly:wildfly-server:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-controller:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  +- org.wildfly:wildfly-core-security:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  |  \- org.wildfly:wildfly-core-security-api:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.jboss:staxmapper:jar:1.1.0.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-domain-http-interface:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-domain-management:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-deployment-repository:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-patching:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-cli:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |     \- org.jboss.aesh:aesh:jar:0.33.11:test
+[INFO] |  |  |  |  |  |        \- org.fusesource.jansi:jansi:jar:1.9:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-platform-mbean:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-process-controller:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-remoting:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-io:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-network:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-version:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.invocation:jboss-invocation:jar:1.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.logmanager:jboss-logmanager:jar:1.5.2.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.modules:jboss-modules:jar:1.3.3.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.stdio:jboss-stdio:jar:1.0.2.GA:test
+[INFO] |  |  |  |  |  +- org.jboss:jboss-vfs:jar:3.2.5.Final:test
+[INFO] |  |  |  |  |  \- io.undertow:undertow-core:jar:1.1.8.Final:test
+[INFO] |  |  |  |  \- org.jboss.msc:jboss-msc:jar:1.2.2.Final:test
+[INFO] |  |  |  +- org.wildfly:wildfly-controller-client:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.wildfly:wildfly-protocol:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.jboss:jboss-dmr:jar:1.2.0.Final:test
+[INFO] |  |  |  |  \- org.jboss.threads:jboss-threads:jar:2.1.1.Final:test
+[INFO] |  |  |  +- org.wildfly:wildfly-jmx:jar:8.2.1.Final:test
+[INFO] |  |  |  |  \- org.jboss:jboss-common-core:jar:2.2.22.GA:test
+[INFO] |  |  |  +- org.jboss.remotingjmx:remoting-jmx:jar:2.0.0.Final:test
+[INFO] |  |  |  |  +- org.jboss.remoting:jboss-remoting:jar:4.0.0.Beta3:test
+[INFO] |  |  |  |  +- org.jboss.xnio:xnio-api:jar:3.2.0.Beta4:test
+[INFO] |  |  |  |  \- org.jboss.xnio:xnio-nio:jar:3.2.0.Beta4:test
+[INFO] |  |  |  +- org.jboss.sasl:jboss-sasl:jar:1.0.4.Final:test
+[INFO] |  |  |  \- org.osgi:org.osgi.core:jar:5.0.0:test
+[INFO] |  |  +- org.wildfly:wildfly-arquillian-protocol-jmx:jar:8.2.1.Final:test
+[INFO] |  |  |  +- org.wildfly.security:wildfly-security-manager:jar:1.0.0.Final:test
+[INFO] |  |  |  +- org.jboss.arquillian.protocol:arquillian-protocol-jmx:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  \- org.jboss.osgi.metadata:jbosgi-metadata:jar:3.0.1.Final:test
+[INFO] |  |  +- org.jboss.marshalling:jboss-marshalling-river:jar:1.4.9.Final:test
+[INFO] |  |  |  \- org.jboss.marshalling:jboss-marshalling:jar:1.4.9.Final:test
+[INFO] |  |  \- org.wildfly:wildfly-build-config:jar:8.2.1.Final:test
+[INFO] |  +- org.jboss.arquillian.extension:arquillian-jacoco:jar:1.0.0.Alpha9:test
+[INFO] |  +- org.jacoco:org.jacoco.core:jar:0.7.9:test
+[INFO] |  |  \- org.ow2.asm:asm-debug-all:jar:5.2:test
+[INFO] |  +- org.eu.ingwar.tools:arquillian-suite-extension:jar:1.1.4:test
+[INFO] |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven-archive:jar:2.2.4:test
+[INFO] |  |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api-maven-archive:jar:2.2.4:test
+[INFO] |  |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi-maven-archive:jar:2.2.4:test
+[INFO] |  |  |  +- org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.3.0.M1:test
+[INFO] |  |  |  |  \- org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.3.0.M1:test
+[INFO] |  |  |  \- org.codehaus.plexus:plexus-compiler-javac:jar:2.3:test
+[INFO] |  |  |     \- org.codehaus.plexus:plexus-compiler-api:jar:2.3:test
+[INFO] |  |  \- org.reflections:reflections:jar:0.9.11:test
+[INFO] |  \- com.google.guava:guava:jar:20.0:test
+[INFO] +- com.peertopark.java:geocalc:jar:1.1.0:test
+[INFO] +- javax:javaee-api:jar:8.0:provided
+[INFO] |  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+[INFO] |     \- javax.activation:activation:jar:1.1:provided
+[INFO] +- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+[INFO] |  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] |  \- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+[INFO] \- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.21:test
+[INFO]    +- junit:junit:jar:4.12:test
+[INFO]    |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO]    +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+[INFO]    |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+[INFO]    |     +- org.powermock:powermock-core:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+[INFO]    +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+[INFO]    |  +- org.mockito:mockito-core:jar:1.10.19:test
+[INFO]    |  |  \- org.objenesis:objenesis:jar:2.1:test
+[INFO]    |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+[INFO]    +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+[INFO]    |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+[INFO]    |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+[INFO]    \- org.databene:contiperf:jar:2.4.4:test
+[INFO] 
+[INFO] -----< eu.europa.ec.fisheries.uvms.movement:movement-message-impl >-----
+[INFO] Building movement-message-impl 4.0.17-SNAPSHOT                     [7/9]
+[INFO] --------------------------------[ ejb ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ movement-message-impl ---
+[INFO] eu.europa.ec.fisheries.uvms.movement:movement-message-impl:ejb:4.0.17-SNAPSHOT
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-message:jar:4.0.17-SNAPSHOT:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-service:jar:4.0.17-SNAPSHOT:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.spatial:spatial-model:jar:1.0.12:compile
+[INFO] |  |  +- org.jvnet.jaxb2_commons:jaxb2-basics-runtime:jar:0.9.4:compile
+[INFO] |  |  \- com.fasterxml.jackson.core:jackson-annotations:jar:2.7.1:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.exchange:exchange-model:jar:4.0.17:compile
+[INFO] |  |  \- eu.europa.ec.fisheries.uvms.commons:uvms-commons-date:jar:3.0.8:compile
+[INFO] |  |     +- com.fasterxml.jackson.core:jackson-databind:jar:2.6.7.1:compile
+[INFO] |  |     |  \- com.fasterxml.jackson.core:jackson-core:jar:2.6.7:compile
+[INFO] |  |     \- joda-time:joda-time:jar:2.9.9:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms:uvms-longpolling:jar:2.0.13:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms.user:user-model:jar:2.0.8:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-model:jar:4.0.17-SNAPSHOT:compile
+[INFO] |  +- org.jvnet.jaxb2_commons:jaxb2-basics:jar:0.9.5:compile
+[INFO] |  |  +- org.jvnet.jaxb2_commons:jaxb2-basics-tools:jar:0.9.5:compile
+[INFO] |  |  |  \- commons-beanutils:commons-beanutils:jar:1.9.2:compile
+[INFO] |  |  \- com.google.code.javaparser:javaparser:jar:1.0.11:compile
+[INFO] |  \- org.apache.commons:commons-lang3:jar:3.7:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.audit:audit-model:jar:4.0.8:compile
+[INFO] +- eu.europa.ec.fisheries.uvms:uvms-config:jar:4.0.0:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms.config:config-model:jar:4.0.0:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.commons:uvms-commons-message:jar:3.0.25:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-impl:jar:2.3.0:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-core:jar:2.3.0:compile
+[INFO] |  \- com.google.guava:guava:jar:20.0:compile
+[INFO] +- fish.focus.uvms.maven:uvms-pom-monitoring-deps:pom:1.21:compile
+[INFO] |  +- net.bull.javamelody:javamelody-core:jar:1.72.0.SE:compile
+[INFO] |  |  \- org.jrobin:jrobin:jar:1.5.9:compile
+[INFO] |  \- com.github.librepdf:openpdf:jar:1.0.5:compile
+[INFO] |     +- org.bouncycastle:bcprov-jdk15on:jar:1.58:compile
+[INFO] |     \- org.bouncycastle:bcpkix-jdk15on:jar:1.58:compile
+[INFO] +- fish.focus.uvms.maven:uvms-pom-arquillian-deps:pom:1.21:test
+[INFO] |  +- org.jboss.arquillian:arquillian-bom:pom:1.1.13.Final:test
+[INFO] |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-bom:pom:2.2.6:test
+[INFO] |  +- org.jboss.shrinkwrap:shrinkwrap-api:jar:1.2.6:test
+[INFO] |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven:jar:2.2.6:test
+[INFO] |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api-maven:jar:2.2.6:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api:jar:2.2.6:test
+[INFO] |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi-maven:jar:2.2.6:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi:jar:2.2.6:test
+[INFO] |  |  +- org.eclipse.aether:aether-api:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-impl:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-spi:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-util:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-connector-basic:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-transport-wagon:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.apache.maven:maven-aether-provider:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-model:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-model-builder:jar:3.2.5:test
+[INFO] |  |  |  \- org.codehaus.plexus:plexus-component-annotations:jar:1.5.5:test
+[INFO] |  |  +- org.apache.maven:maven-repository-metadata:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-settings:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-settings-builder:jar:3.2.5:test
+[INFO] |  |  +- org.codehaus.plexus:plexus-interpolation:jar:1.21:test
+[INFO] |  |  +- org.codehaus.plexus:plexus-utils:jar:3.0.20:test
+[INFO] |  |  +- org.sonatype.plexus:plexus-sec-dispatcher:jar:1.3:test
+[INFO] |  |  |  \- org.sonatype.plexus:plexus-cipher:jar:1.4:test
+[INFO] |  |  +- org.apache.maven.wagon:wagon-provider-api:jar:2.6:test
+[INFO] |  |  +- org.apache.maven.wagon:wagon-file:jar:2.6:test
+[INFO] |  |  |  \- commons-lang:commons-lang:jar:2.6:test
+[INFO] |  |  \- org.apache.maven.wagon:wagon-http-lightweight:jar:2.6:test
+[INFO] |  |     \- org.apache.maven.wagon:wagon-http-shared:jar:2.6:test
+[INFO] |  |        +- org.jsoup:jsoup:jar:1.7.2:test
+[INFO] |  |        \- commons-io:commons-io:jar:2.2:test
+[INFO] |  +- org.jboss.arquillian.junit:arquillian-junit-container:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.junit:arquillian-junit-core:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.core:arquillian-core-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-spi:jar:2.0.0-alpha-10:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  \- org.jboss.shrinkwrap:shrinkwrap-impl-base:jar:1.2.6:test
+[INFO] |  |     \- org.jboss.shrinkwrap:shrinkwrap-spi:jar:1.2.6:test
+[INFO] |  +- org.jboss.arquillian.container:arquillian-container-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.core:arquillian-core-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.config:arquillian-config-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.config:arquillian-config-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  \- org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-api-base:jar:2.0.0-alpha-10:test
+[INFO] |  +- org.javassist:javassist:jar:3.22.0-GA:test
+[INFO] |  +- org.jboss.arquillian.core:arquillian-core-api:jar:1.1.13.Final:test
+[INFO] |  +- org.wildfly:wildfly-arquillian-container-remote:jar:8.2.1.Final:test
+[INFO] |  |  +- org.wildfly:wildfly-arquillian-common:jar:8.2.1.Final:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-cdi:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-ejb:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-initialcontext:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-osgi:jar:2.1.0.CR2:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-resource:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.protocol:arquillian-protocol-servlet:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.wildfly:wildfly-arquillian-testenricher-msc:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.wildfly:wildfly-server:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-controller:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  +- org.wildfly:wildfly-core-security:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  |  \- org.wildfly:wildfly-core-security-api:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.jboss:staxmapper:jar:1.1.0.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-domain-http-interface:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-domain-management:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-deployment-repository:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-patching:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-cli:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |     \- org.jboss.aesh:aesh:jar:0.33.11:test
+[INFO] |  |  |  |  |  |        \- org.fusesource.jansi:jansi:jar:1.9:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-platform-mbean:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-process-controller:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-remoting:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-io:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-network:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-version:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss:jandex:jar:1.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.invocation:jboss-invocation:jar:1.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.logmanager:jboss-logmanager:jar:1.5.2.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.modules:jboss-modules:jar:1.3.3.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.stdio:jboss-stdio:jar:1.0.2.GA:test
+[INFO] |  |  |  |  |  +- org.jboss:jboss-vfs:jar:3.2.5.Final:test
+[INFO] |  |  |  |  |  \- io.undertow:undertow-core:jar:1.1.8.Final:test
+[INFO] |  |  |  |  +- org.jboss.logging:jboss-logging:jar:3.1.4.GA:test
+[INFO] |  |  |  |  \- org.jboss.msc:jboss-msc:jar:1.2.2.Final:test
+[INFO] |  |  |  +- org.wildfly:wildfly-controller-client:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.wildfly:wildfly-protocol:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.jboss:jboss-dmr:jar:1.2.0.Final:test
+[INFO] |  |  |  |  \- org.jboss.threads:jboss-threads:jar:2.1.1.Final:test
+[INFO] |  |  |  +- org.wildfly:wildfly-jmx:jar:8.2.1.Final:test
+[INFO] |  |  |  |  \- org.jboss:jboss-common-core:jar:2.2.22.GA:test
+[INFO] |  |  |  +- org.jboss.remotingjmx:remoting-jmx:jar:2.0.0.Final:test
+[INFO] |  |  |  |  +- org.jboss.remoting:jboss-remoting:jar:4.0.0.Beta3:test
+[INFO] |  |  |  |  +- org.jboss.xnio:xnio-api:jar:3.2.0.Beta4:test
+[INFO] |  |  |  |  \- org.jboss.xnio:xnio-nio:jar:3.2.0.Beta4:test
+[INFO] |  |  |  +- org.jboss.sasl:jboss-sasl:jar:1.0.4.Final:test
+[INFO] |  |  |  \- org.osgi:org.osgi.core:jar:5.0.0:test
+[INFO] |  |  +- org.wildfly:wildfly-arquillian-protocol-jmx:jar:8.2.1.Final:test
+[INFO] |  |  |  +- org.wildfly.security:wildfly-security-manager:jar:1.0.0.Final:test
+[INFO] |  |  |  +- org.jboss.arquillian.protocol:arquillian-protocol-jmx:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  \- org.jboss.osgi.metadata:jbosgi-metadata:jar:3.0.1.Final:test
+[INFO] |  |  +- org.jboss.marshalling:jboss-marshalling-river:jar:1.4.9.Final:test
+[INFO] |  |  |  \- org.jboss.marshalling:jboss-marshalling:jar:1.4.9.Final:test
+[INFO] |  |  \- org.wildfly:wildfly-build-config:jar:8.2.1.Final:test
+[INFO] |  +- org.jboss.arquillian.extension:arquillian-jacoco:jar:1.0.0.Alpha9:test
+[INFO] |  +- org.jacoco:org.jacoco.core:jar:0.7.9:test
+[INFO] |  |  \- org.ow2.asm:asm-debug-all:jar:5.2:test
+[INFO] |  \- org.eu.ingwar.tools:arquillian-suite-extension:jar:1.1.4:test
+[INFO] |     +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven-archive:jar:2.2.4:test
+[INFO] |     |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api-maven-archive:jar:2.2.4:test
+[INFO] |     |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi-maven-archive:jar:2.2.4:test
+[INFO] |     |  +- org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.3.0.M1:test
+[INFO] |     |  |  \- org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.3.0.M1:test
+[INFO] |     |  \- org.codehaus.plexus:plexus-compiler-javac:jar:2.3:test
+[INFO] |     |     \- org.codehaus.plexus:plexus-compiler-api:jar:2.3:test
+[INFO] |     \- org.reflections:reflections:jar:0.9.11:test
+[INFO] +- org.apache.activemq:activemq-client:jar:5.15.5:test
+[INFO] |  +- org.apache.geronimo.specs:geronimo-jms_1.1_spec:jar:1.1.1:test
+[INFO] |  +- org.fusesource.hawtbuf:hawtbuf:jar:1.11:test
+[INFO] |  \- org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:jar:1.0.1:test
+[INFO] +- javax:javaee-api:jar:8.0:provided
+[INFO] |  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+[INFO] |     \- javax.activation:activation:jar:1.1:provided
+[INFO] +- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+[INFO] |  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+[INFO] |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] \- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.21:test
+[INFO]    +- junit:junit:jar:4.12:test
+[INFO]    |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO]    +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+[INFO]    |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+[INFO]    |     +- org.powermock:powermock-core:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+[INFO]    +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+[INFO]    |  +- org.mockito:mockito-core:jar:1.10.19:test
+[INFO]    |  |  \- org.objenesis:objenesis:jar:2.1:test
+[INFO]    |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+[INFO]    +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+[INFO]    |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+[INFO]    |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+[INFO]    \- org.databene:contiperf:jar:2.4.4:test
+[INFO] 
+[INFO] ---------< eu.europa.ec.fisheries.uvms.movement:movement-rest >---------
+[INFO] Building movement-rest 4.0.17-SNAPSHOT                             [8/9]
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ movement-rest ---
+[INFO] eu.europa.ec.fisheries.uvms.movement:movement-rest:war:4.0.17-SNAPSHOT
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-service:jar:4.0.17-SNAPSHOT:provided
+[INFO] |  +- eu.europa.ec.fisheries.uvms.movement:movement-model:jar:4.0.17-SNAPSHOT:provided
+[INFO] |  |  \- org.jvnet.jaxb2_commons:jaxb2-basics:jar:0.9.5:compile
+[INFO] |  |     +- org.jvnet.jaxb2_commons:jaxb2-basics-tools:jar:0.9.5:compile
+[INFO] |  |     |  \- commons-beanutils:commons-beanutils:jar:1.9.2:compile
+[INFO] |  |     \- com.google.code.javaparser:javaparser:jar:1.0.11:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.spatial:spatial-model:jar:1.0.12:provided
+[INFO] |  |  \- org.jvnet.jaxb2_commons:jaxb2-basics-runtime:jar:0.9.4:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.exchange:exchange-model:jar:4.0.17:provided
+[INFO] |  |  \- eu.europa.ec.fisheries.uvms.commons:uvms-commons-date:jar:3.0.8:provided
+[INFO] |  |     \- joda-time:joda-time:jar:2.9.9:provided
+[INFO] |  +- eu.europa.ec.fisheries.uvms:uvms-longpolling:jar:2.0.13:provided
+[INFO] |  +- eu.europa.ec.fisheries.uvms.user:user-model:jar:2.0.8:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms.movement:movement-message:jar:4.0.17-SNAPSHOT:provided
+[INFO] +- eu.europa.ec.fisheries.uvms:usm4uvms:jar:4.0.12:compile
+[INFO] |  +- org.apache.commons:commons-lang3:jar:3.7:compile
+[INFO] |  +- io.jsonwebtoken:jjwt:jar:0.4:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.commons:uvms-commons-service:jar:3.0.25:compile
+[INFO] |  +- eu.europa.ec.mare.usm:jwt-handler-api:jar:2.1.1:compile
+[INFO] |  \- eu.europa.ec.mare.usm:jwt-handler-impl:jar:2.1.1:compile
+[INFO] +- net.sf.ehcache.internal:ehcache-core:jar:2.10.4:compile
+[INFO] |  \- org.terracotta.internal:statistics:jar:1.0.2:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.commons:uvms-commons-message:jar:3.0.25:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.config:config-model:jar:4.0.7:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-impl:jar:2.3.0:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-core:jar:2.3.0:compile
+[INFO] |  \- com.google.guava:guava:jar:20.0:compile
+[INFO] +- commons-io:commons-io:jar:2.5:compile
+[INFO] +- fish.focus.uvms.maven:uvms-pom-monitoring-deps:pom:1.21:compile
+[INFO] |  +- net.bull.javamelody:javamelody-core:jar:1.72.0.SE:compile
+[INFO] |  |  \- org.jrobin:jrobin:jar:1.5.9:compile
+[INFO] |  \- com.github.librepdf:openpdf:jar:1.0.5:compile
+[INFO] |     +- org.bouncycastle:bcprov-jdk15on:jar:1.58:compile
+[INFO] |     \- org.bouncycastle:bcpkix-jdk15on:jar:1.58:compile
+[INFO] +- fish.focus.uvms.maven:uvms-pom-arquillian-deps:pom:1.21:test
+[INFO] |  +- org.jboss.arquillian:arquillian-bom:pom:1.1.13.Final:test
+[INFO] |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-bom:pom:2.2.6:test
+[INFO] |  +- org.jboss.shrinkwrap:shrinkwrap-api:jar:1.2.6:test
+[INFO] |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven:jar:2.2.6:test
+[INFO] |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api-maven:jar:2.2.6:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api:jar:2.2.6:test
+[INFO] |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi-maven:jar:2.2.6:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi:jar:2.2.6:test
+[INFO] |  |  +- org.eclipse.aether:aether-api:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-impl:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-spi:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-util:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-connector-basic:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-transport-wagon:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.apache.maven:maven-aether-provider:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-model:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-model-builder:jar:3.2.5:test
+[INFO] |  |  |  \- org.codehaus.plexus:plexus-component-annotations:jar:1.5.5:test
+[INFO] |  |  +- org.apache.maven:maven-repository-metadata:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-settings:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-settings-builder:jar:3.2.5:test
+[INFO] |  |  +- org.codehaus.plexus:plexus-interpolation:jar:1.21:test
+[INFO] |  |  +- org.codehaus.plexus:plexus-utils:jar:3.0.20:test
+[INFO] |  |  +- org.sonatype.plexus:plexus-sec-dispatcher:jar:1.3:test
+[INFO] |  |  |  \- org.sonatype.plexus:plexus-cipher:jar:1.4:test
+[INFO] |  |  +- org.apache.maven.wagon:wagon-provider-api:jar:2.6:test
+[INFO] |  |  +- org.apache.maven.wagon:wagon-file:jar:2.6:test
+[INFO] |  |  |  \- commons-lang:commons-lang:jar:2.6:test
+[INFO] |  |  \- org.apache.maven.wagon:wagon-http-lightweight:jar:2.6:test
+[INFO] |  |     \- org.apache.maven.wagon:wagon-http-shared:jar:2.6:test
+[INFO] |  |        \- org.jsoup:jsoup:jar:1.7.2:test
+[INFO] |  +- org.jboss.arquillian.junit:arquillian-junit-container:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.junit:arquillian-junit-core:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.core:arquillian-core-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-spi:jar:2.0.0-alpha-10:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  \- org.jboss.shrinkwrap:shrinkwrap-impl-base:jar:1.2.6:test
+[INFO] |  |     \- org.jboss.shrinkwrap:shrinkwrap-spi:jar:1.2.6:test
+[INFO] |  +- org.jboss.arquillian.container:arquillian-container-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.core:arquillian-core-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.config:arquillian-config-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.config:arquillian-config-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  \- org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-api-base:jar:2.0.0-alpha-10:test
+[INFO] |  +- org.javassist:javassist:jar:3.22.0-GA:test
+[INFO] |  +- org.jboss.arquillian.core:arquillian-core-api:jar:1.1.13.Final:test
+[INFO] |  +- org.wildfly:wildfly-arquillian-container-remote:jar:8.2.1.Final:test
+[INFO] |  |  +- org.wildfly:wildfly-arquillian-common:jar:8.2.1.Final:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-cdi:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-ejb:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-initialcontext:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-osgi:jar:2.1.0.CR2:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-resource:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.protocol:arquillian-protocol-servlet:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.wildfly:wildfly-arquillian-testenricher-msc:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.wildfly:wildfly-server:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-controller:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  +- org.wildfly:wildfly-core-security:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  |  \- org.wildfly:wildfly-core-security-api:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.jboss:staxmapper:jar:1.1.0.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-domain-http-interface:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-domain-management:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-deployment-repository:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-patching:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-cli:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |     \- org.jboss.aesh:aesh:jar:0.33.11:test
+[INFO] |  |  |  |  |  |        \- org.fusesource.jansi:jansi:jar:1.9:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-platform-mbean:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-process-controller:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-remoting:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-io:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-network:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-version:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss:jandex:jar:1.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.invocation:jboss-invocation:jar:1.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.logmanager:jboss-logmanager:jar:1.5.2.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.modules:jboss-modules:jar:1.3.3.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.stdio:jboss-stdio:jar:1.0.2.GA:test
+[INFO] |  |  |  |  |  +- org.jboss:jboss-vfs:jar:3.2.5.Final:test
+[INFO] |  |  |  |  |  \- io.undertow:undertow-core:jar:1.1.8.Final:test
+[INFO] |  |  |  |  +- org.jboss.logging:jboss-logging:jar:3.1.4.GA:test
+[INFO] |  |  |  |  \- org.jboss.msc:jboss-msc:jar:1.2.2.Final:test
+[INFO] |  |  |  +- org.wildfly:wildfly-controller-client:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.wildfly:wildfly-protocol:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.jboss:jboss-dmr:jar:1.2.0.Final:test
+[INFO] |  |  |  |  \- org.jboss.threads:jboss-threads:jar:2.1.1.Final:test
+[INFO] |  |  |  +- org.wildfly:wildfly-jmx:jar:8.2.1.Final:test
+[INFO] |  |  |  |  \- org.jboss:jboss-common-core:jar:2.2.22.GA:test
+[INFO] |  |  |  +- org.jboss.remotingjmx:remoting-jmx:jar:2.0.0.Final:test
+[INFO] |  |  |  |  +- org.jboss.remoting:jboss-remoting:jar:4.0.0.Beta3:test
+[INFO] |  |  |  |  +- org.jboss.xnio:xnio-api:jar:3.2.0.Beta4:test
+[INFO] |  |  |  |  \- org.jboss.xnio:xnio-nio:jar:3.2.0.Beta4:test
+[INFO] |  |  |  +- org.jboss.sasl:jboss-sasl:jar:1.0.4.Final:test
+[INFO] |  |  |  \- org.osgi:org.osgi.core:jar:5.0.0:test
+[INFO] |  |  +- org.wildfly:wildfly-arquillian-protocol-jmx:jar:8.2.1.Final:test
+[INFO] |  |  |  +- org.wildfly.security:wildfly-security-manager:jar:1.0.0.Final:test
+[INFO] |  |  |  +- org.jboss.arquillian.protocol:arquillian-protocol-jmx:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  \- org.jboss.osgi.metadata:jbosgi-metadata:jar:3.0.1.Final:test
+[INFO] |  |  +- org.jboss.marshalling:jboss-marshalling-river:jar:1.4.9.Final:test
+[INFO] |  |  |  \- org.jboss.marshalling:jboss-marshalling:jar:1.4.9.Final:test
+[INFO] |  |  \- org.wildfly:wildfly-build-config:jar:8.2.1.Final:test
+[INFO] |  +- org.jboss.arquillian.extension:arquillian-jacoco:jar:1.0.0.Alpha9:test
+[INFO] |  +- org.jacoco:org.jacoco.core:jar:0.7.9:test
+[INFO] |  |  \- org.ow2.asm:asm-debug-all:jar:5.2:test
+[INFO] |  \- org.eu.ingwar.tools:arquillian-suite-extension:jar:1.1.4:test
+[INFO] |     +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven-archive:jar:2.2.4:test
+[INFO] |     |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api-maven-archive:jar:2.2.4:test
+[INFO] |     |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi-maven-archive:jar:2.2.4:test
+[INFO] |     |  +- org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.3.0.M1:test
+[INFO] |     |  |  \- org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.3.0.M1:test
+[INFO] |     |  \- org.codehaus.plexus:plexus-compiler-javac:jar:2.3:test
+[INFO] |     |     \- org.codehaus.plexus:plexus-compiler-api:jar:2.3:test
+[INFO] |     \- org.reflections:reflections:jar:0.9.11:test
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-message-impl:jar:4.0.17-SNAPSHOT:test
+[INFO] |  +- eu.europa.ec.fisheries.uvms.audit:audit-model:jar:4.0.8:provided
+[INFO] |  \- eu.europa.ec.fisheries.uvms:uvms-config:jar:4.0.0:provided
+[INFO] +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:jar:2.9.5:provided
+[INFO] |  +- com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:jar:2.9.5:provided
+[INFO] |  |  +- com.fasterxml.jackson.core:jackson-core:jar:2.9.5:provided
+[INFO] |  |  \- com.fasterxml.jackson.core:jackson-databind:jar:2.9.5:provided
+[INFO] |  \- com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.9.5:provided
+[INFO] |     \- com.fasterxml.jackson.core:jackson-annotations:jar:2.9.0:provided
+[INFO] +- com.vividsolutions:jts:jar:1.13:test
+[INFO] +- javax:javaee-api:jar:8.0:provided
+[INFO] |  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+[INFO] |     \- javax.activation:activation:jar:1.1:provided
+[INFO] +- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+[INFO] |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] \- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.21:test
+[INFO]    +- junit:junit:jar:4.12:test
+[INFO]    |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO]    +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+[INFO]    |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+[INFO]    |     +- org.powermock:powermock-core:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+[INFO]    +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+[INFO]    |  +- org.mockito:mockito-core:jar:1.10.19:test
+[INFO]    |  |  \- org.objenesis:objenesis:jar:2.1:test
+[INFO]    |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+[INFO]    +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+[INFO]    |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+[INFO]    |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+[INFO]    \- org.databene:contiperf:jar:2.4.4:test
+[INFO] 
+[INFO] --------< eu.europa.ec.fisheries.uvms.movement:movement-module >--------
+[INFO] Building movement-module 4.0.17-SNAPSHOT                           [9/9]
+[INFO] --------------------------------[ ear ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ movement-module ---
+[INFO] eu.europa.ec.fisheries.uvms.movement:movement-module:ear:4.0.17-SNAPSHOT
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-message:ejb:4.0.17-SNAPSHOT:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.audit:audit-model:jar:4.0.8:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms:uvms-config:jar:4.0.0:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-message-impl:ejb:4.0.17-SNAPSHOT:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-service:ejb:4.0.17-SNAPSHOT:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.spatial:spatial-model:jar:1.0.12:compile
+[INFO] |  |  +- org.jvnet.jaxb2_commons:jaxb2-basics-runtime:jar:0.9.4:compile
+[INFO] |  |  \- com.fasterxml.jackson.core:jackson-annotations:jar:2.7.1:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.exchange:exchange-model:jar:4.0.17:compile
+[INFO] |  |  \- eu.europa.ec.fisheries.uvms.commons:uvms-commons-date:jar:3.0.8:compile
+[INFO] |  |     +- com.fasterxml.jackson.core:jackson-databind:jar:2.6.7.1:compile
+[INFO] |  |     |  \- com.fasterxml.jackson.core:jackson-core:jar:2.6.7:compile
+[INFO] |  |     \- joda-time:joda-time:jar:2.9.9:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms:uvms-longpolling:jar:2.0.13:compile
+[INFO] |  \- eu.europa.ec.fisheries.uvms.user:user-model:jar:2.0.8:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-model:jar:4.0.17-SNAPSHOT:compile
+[INFO] |  \- org.jvnet.jaxb2_commons:jaxb2-basics:jar:0.9.5:compile
+[INFO] |     +- org.jvnet.jaxb2_commons:jaxb2-basics-tools:jar:0.9.5:compile
+[INFO] |     |  \- commons-beanutils:commons-beanutils:jar:1.9.2:compile
+[INFO] |     \- com.google.code.javaparser:javaparser:jar:1.0.11:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.movement:movement-rest:war:4.0.17-SNAPSHOT:compile
+[INFO] +- eu.europa.ec.fisheries.uvms.commons:uvms-commons-message:jar:3.0.25:compile
+[INFO] |  +- eu.europa.ec.fisheries.uvms.config:config-model:jar:4.0.7:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-impl:jar:2.3.0:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-core:jar:2.3.0:compile
+[INFO] |  \- com.google.guava:guava:jar:20.0:compile
+[INFO] +- org.apache.commons:commons-lang3:jar:3.7:compile
+[INFO] +- commons-io:commons-io:jar:2.6:compile
+[INFO] +- org.codehaus.jackson:jackson-jaxrs:jar:1.9.13:compile
+[INFO] |  +- org.codehaus.jackson:jackson-core-asl:jar:1.9.13:compile
+[INFO] |  \- org.codehaus.jackson:jackson-mapper-asl:jar:1.9.13:compile
+[INFO] +- fish.focus.uvms.maven:uvms-pom-monitoring-deps:pom:1.21:compile
+[INFO] |  +- net.bull.javamelody:javamelody-core:jar:1.72.0.SE:compile
+[INFO] |  |  \- org.jrobin:jrobin:jar:1.5.9:compile
+[INFO] |  \- com.github.librepdf:openpdf:jar:1.0.5:compile
+[INFO] |     +- org.bouncycastle:bcprov-jdk15on:jar:1.58:compile
+[INFO] |     \- org.bouncycastle:bcpkix-jdk15on:jar:1.58:compile
+[INFO] +- fish.focus.uvms.maven:uvms-pom-arquillian-deps:pom:1.21:test
+[INFO] |  +- org.jboss.arquillian:arquillian-bom:pom:1.1.13.Final:test
+[INFO] |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-bom:pom:2.2.6:test
+[INFO] |  +- org.jboss.shrinkwrap:shrinkwrap-api:jar:1.2.6:test
+[INFO] |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven:jar:2.2.6:test
+[INFO] |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api-maven:jar:2.2.6:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api:jar:2.2.6:test
+[INFO] |  |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi-maven:jar:2.2.6:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi:jar:2.2.6:test
+[INFO] |  |  +- org.eclipse.aether:aether-api:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-impl:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-spi:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-util:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-connector-basic:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.eclipse.aether:aether-transport-wagon:jar:1.0.0.v20140518:test
+[INFO] |  |  +- org.apache.maven:maven-aether-provider:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-model:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-model-builder:jar:3.2.5:test
+[INFO] |  |  |  \- org.codehaus.plexus:plexus-component-annotations:jar:1.5.5:test
+[INFO] |  |  +- org.apache.maven:maven-repository-metadata:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-settings:jar:3.2.5:test
+[INFO] |  |  +- org.apache.maven:maven-settings-builder:jar:3.2.5:test
+[INFO] |  |  +- org.codehaus.plexus:plexus-interpolation:jar:1.21:test
+[INFO] |  |  +- org.codehaus.plexus:plexus-utils:jar:3.0.20:test
+[INFO] |  |  +- org.sonatype.plexus:plexus-sec-dispatcher:jar:1.3:test
+[INFO] |  |  |  \- org.sonatype.plexus:plexus-cipher:jar:1.4:test
+[INFO] |  |  +- org.apache.maven.wagon:wagon-provider-api:jar:2.6:test
+[INFO] |  |  +- org.apache.maven.wagon:wagon-file:jar:2.6:test
+[INFO] |  |  |  \- commons-lang:commons-lang:jar:2.6:test
+[INFO] |  |  \- org.apache.maven.wagon:wagon-http-lightweight:jar:2.6:test
+[INFO] |  |     \- org.apache.maven.wagon:wagon-http-shared:jar:2.6:test
+[INFO] |  |        \- org.jsoup:jsoup:jar:1.7.2:test
+[INFO] |  +- org.jboss.arquillian.junit:arquillian-junit-container:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.junit:arquillian-junit-core:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.core:arquillian-core-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.test:arquillian-test-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  |  \- org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-spi:jar:2.0.0-alpha-10:test
+[INFO] |  |  +- org.jboss.arquillian.container:arquillian-container-test-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  \- org.jboss.shrinkwrap:shrinkwrap-impl-base:jar:1.2.6:test
+[INFO] |  |     \- org.jboss.shrinkwrap:shrinkwrap-spi:jar:1.2.6:test
+[INFO] |  +- org.jboss.arquillian.container:arquillian-container-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.core:arquillian-core-spi:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.config:arquillian-config-api:jar:1.1.13.Final:test
+[INFO] |  |  +- org.jboss.arquillian.config:arquillian-config-impl-base:jar:1.1.13.Final:test
+[INFO] |  |  \- org.jboss.shrinkwrap.descriptors:shrinkwrap-descriptors-api-base:jar:2.0.0-alpha-10:test
+[INFO] |  +- org.javassist:javassist:jar:3.22.0-GA:test
+[INFO] |  +- org.jboss.arquillian.core:arquillian-core-api:jar:1.1.13.Final:test
+[INFO] |  +- org.wildfly:wildfly-arquillian-container-remote:jar:8.2.1.Final:test
+[INFO] |  |  +- org.wildfly:wildfly-arquillian-common:jar:8.2.1.Final:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-cdi:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-ejb:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-initialcontext:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-osgi:jar:2.1.0.CR2:test
+[INFO] |  |  |  +- org.jboss.arquillian.testenricher:arquillian-testenricher-resource:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.jboss.arquillian.protocol:arquillian-protocol-servlet:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  +- org.wildfly:wildfly-arquillian-testenricher-msc:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.wildfly:wildfly-server:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-controller:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  +- org.wildfly:wildfly-core-security:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  |  \- org.wildfly:wildfly-core-security-api:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.jboss:staxmapper:jar:1.1.0.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-domain-http-interface:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-domain-management:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-deployment-repository:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-patching:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-cli:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |     \- org.jboss.aesh:aesh:jar:0.33.11:test
+[INFO] |  |  |  |  |  |        \- org.fusesource.jansi:jansi:jar:1.9:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-platform-mbean:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-process-controller:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-remoting:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  |  \- org.wildfly:wildfly-io:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-network:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.wildfly:wildfly-version:jar:8.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss:jandex:jar:1.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.invocation:jboss-invocation:jar:1.2.1.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.logmanager:jboss-logmanager:jar:1.5.2.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.modules:jboss-modules:jar:1.3.3.Final:test
+[INFO] |  |  |  |  |  +- org.jboss.stdio:jboss-stdio:jar:1.0.2.GA:test
+[INFO] |  |  |  |  |  +- org.jboss:jboss-vfs:jar:3.2.5.Final:test
+[INFO] |  |  |  |  |  \- io.undertow:undertow-core:jar:1.1.8.Final:test
+[INFO] |  |  |  |  +- org.jboss.logging:jboss-logging:jar:3.1.4.GA:test
+[INFO] |  |  |  |  \- org.jboss.msc:jboss-msc:jar:1.2.2.Final:test
+[INFO] |  |  |  +- org.wildfly:wildfly-controller-client:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.wildfly:wildfly-protocol:jar:8.2.1.Final:test
+[INFO] |  |  |  |  +- org.jboss:jboss-dmr:jar:1.2.0.Final:test
+[INFO] |  |  |  |  \- org.jboss.threads:jboss-threads:jar:2.1.1.Final:test
+[INFO] |  |  |  +- org.wildfly:wildfly-jmx:jar:8.2.1.Final:test
+[INFO] |  |  |  |  \- org.jboss:jboss-common-core:jar:2.2.22.GA:test
+[INFO] |  |  |  +- org.jboss.remotingjmx:remoting-jmx:jar:2.0.0.Final:test
+[INFO] |  |  |  |  +- org.jboss.remoting:jboss-remoting:jar:4.0.0.Beta3:test
+[INFO] |  |  |  |  +- org.jboss.xnio:xnio-api:jar:3.2.0.Beta4:test
+[INFO] |  |  |  |  \- org.jboss.xnio:xnio-nio:jar:3.2.0.Beta4:test
+[INFO] |  |  |  +- org.jboss.sasl:jboss-sasl:jar:1.0.4.Final:test
+[INFO] |  |  |  \- org.osgi:org.osgi.core:jar:5.0.0:test
+[INFO] |  |  +- org.wildfly:wildfly-arquillian-protocol-jmx:jar:8.2.1.Final:test
+[INFO] |  |  |  +- org.wildfly.security:wildfly-security-manager:jar:1.0.0.Final:test
+[INFO] |  |  |  +- org.jboss.arquillian.protocol:arquillian-protocol-jmx:jar:1.1.2.Final-wildfly-1:test
+[INFO] |  |  |  \- org.jboss.osgi.metadata:jbosgi-metadata:jar:3.0.1.Final:test
+[INFO] |  |  +- org.jboss.marshalling:jboss-marshalling-river:jar:1.4.9.Final:test
+[INFO] |  |  |  \- org.jboss.marshalling:jboss-marshalling:jar:1.4.9.Final:test
+[INFO] |  |  \- org.wildfly:wildfly-build-config:jar:8.2.1.Final:test
+[INFO] |  +- org.jboss.arquillian.extension:arquillian-jacoco:jar:1.0.0.Alpha9:test
+[INFO] |  +- org.jacoco:org.jacoco.core:jar:0.7.9:test
+[INFO] |  |  \- org.ow2.asm:asm-debug-all:jar:5.2:test
+[INFO] |  \- org.eu.ingwar.tools:arquillian-suite-extension:jar:1.1.4:test
+[INFO] |     +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven-archive:jar:2.2.4:test
+[INFO] |     |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-api-maven-archive:jar:2.2.4:test
+[INFO] |     |  +- org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-spi-maven-archive:jar:2.2.4:test
+[INFO] |     |  +- org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.3.0.M1:test
+[INFO] |     |  |  \- org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.3.0.M1:test
+[INFO] |     |  \- org.codehaus.plexus:plexus-compiler-javac:jar:2.3:test
+[INFO] |     |     \- org.codehaus.plexus:plexus-compiler-api:jar:2.3:test
+[INFO] |     \- org.reflections:reflections:jar:0.9.11:test
+[INFO] +- javax:javaee-api:jar:8.0:provided
+[INFO] |  \- com.sun.mail:javax.mail:jar:1.6.0:provided
+[INFO] |     \- javax.activation:activation:jar:1.1:provided
+[INFO] +- fish.focus.uvms.maven:uvms-pom-logging-deps:pom:1.21:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jul-to-slf4j:jar:1.7.25:compile
+[INFO] |  +- org.slf4j:jcl-over-slf4j:jar:1.7.25:compile
+[INFO] |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] \- fish.focus.uvms.maven:uvms-pom-test-deps:pom:1.21:test
+[INFO]    +- junit:junit:jar:4.12:test
+[INFO]    |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO]    +- org.powermock:powermock-module-junit4:jar:1.6.6:test
+[INFO]    |  \- org.powermock:powermock-module-junit4-common:jar:1.6.6:test
+[INFO]    |     +- org.powermock:powermock-core:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-reflect:jar:1.6.6:test
+[INFO]    +- org.powermock:powermock-api-mockito:jar:1.6.6:test
+[INFO]    |  +- org.mockito:mockito-core:jar:1.10.19:test
+[INFO]    |  |  \- org.objenesis:objenesis:jar:2.1:test
+[INFO]    |  \- org.powermock:powermock-api-mockito-common:jar:1.6.6:test
+[INFO]    |     \- org.powermock:powermock-api-support:jar:1.6.6:test
+[INFO]    +- com.tocea.easycoverage:easyCoverage4J-junit:jar:2.3.1:test
+[INFO]    |  \- com.tocea.easycoverage:easyCoverage4J-framework:jar:2.3.1:test
+[INFO]    |     \- com.tocea.easycoverage:easyCoverage4J-annotations:jar:2.3.1:test
+[INFO]    \- org.databene:contiperf:jar:2.4.4:test
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] movement 4.0.17-SNAPSHOT ........................... SUCCESS [  1.319 s]
+[INFO] movement-model ..................................... SUCCESS [  0.132 s]
+[INFO] liquibase .......................................... SUCCESS [  0.043 s]
+[INFO] movement-message ................................... SUCCESS [  0.130 s]
+[INFO] movement-message-mock .............................. SUCCESS [  0.052 s]
+[INFO] movement-service ................................... SUCCESS [  1.331 s]
+[INFO] movement-message-impl .............................. SUCCESS [  0.219 s]
+[INFO] movement-rest ...................................... SUCCESS [  0.358 s]
+[INFO] movement-module 4.0.17-SNAPSHOT .................... SUCCESS [  0.229 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 4.459 s
+[INFO] Finished at: 2018-09-25T09:58:20+02:00
+[INFO] ------------------------------------------------------------------------
