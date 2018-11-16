@@ -20,9 +20,6 @@
 		<docker.liquibase.changeLogFile>LIQUIBASE/changelog/db-changelog-master-postgres.xml</docker.liquibase.changeLogFile>
         <docker.liquibase.db.user>movement</docker.liquibase.db.user>
         <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
-		<uvms.common.version>3.0.29</uvms.common.version>
-		<usm4uvms.version>4.0.14-W14-J8</usm4uvms.version>
-		<uvms.config.version>4.0.2-W14-J8</uvms.config.version>
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.0.8</user.model.version>
 		<spatial.model.version>1.0.12</spatial.model.version>
@@ -30,6 +27,11 @@
 		<exchange.model.version>4.0.22</exchange.model.version>
 		<javaee.version>8.0</javaee.version>
 		<installAtEnd>false</installAtEnd>
+
+		<!-- UVMS Libraries -->
+		<uvms.common.version>3.0.29</uvms.common.version>
+		<usm4uvms.version>4.0.14-W14-J8</usm4uvms.version>
+		<uvms.config.version>4.0.2-W14-J8</uvms.config.version>
 	</properties>
 
 	<dependencies>
