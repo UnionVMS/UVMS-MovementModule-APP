@@ -70,6 +70,9 @@ public abstract class IncomingMovementMapper {
 
 
     private static Activity createActivity(IncomingMovement ic) {
+        if (ic.getActivityMessageType() == null) {
+            return null;
+        }
         Activity activity = new Activity();
         activity.setActivityType(MovementActivityTypeType.fromValue(ic.getActivityMessageType()));
         activity.setCallback(ic.getActivityCallback());
@@ -82,9 +85,11 @@ public abstract class IncomingMovementMapper {
 
     public static MovementDetails mapMovementDetails(IncomingMovement im, Movement movement, AssetMTEnrichmentResponse response) {
         MovementDetails md = new MovementDetails();
-        md.setActivityCallback(movement.getActivity().getCallback());
-        md.setActivityMessageId(movement.getActivity().getMessageId());
-        md.setActivityMessageType(movement.getActivity().getActivityType().value());
+        if (movement.getActivity() != null) {
+            md.setActivityCallback(movement.getActivity().getCallback());
+            md.setActivityMessageId(movement.getActivity().getMessageId());
+            md.setActivityMessageType(movement.getActivity().getActivityType().value());
+        }
         md.setMovementGuid(movement.getGuid().toString());
         md.setLongitude(movement.getLocation().getX());
         md.setLatitude(movement.getLocation().getY());

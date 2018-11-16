@@ -63,36 +63,6 @@ public class MovementSanityValidatorBean {
             isOk = false;
         }
 
-        if(movement.getReportedSpeed() == null){  //reportedSpeed must exist
-            LOG.info("\t==> Executing RULE 'Sanity check - reportedSpeed must exist'");
-            createAlarmReport("Sanity check - reportedSpeed must exist", movement);
-            isOk = false;
-        }
-
-        if(movement.getReportedCourse() == null){  //reportedCourse must exist
-            LOG.info("\t==> Executing RULE 'Sanity check - reportedCourse must exist'");
-            createAlarmReport("Sanity check - reportedCourse must exist", movement);
-            isOk = false;
-        }
-
-        if(movement.getMovementType() == null){  //movementType must
-            LOG.info("\t==> Executing RULE 'Sanity check - movementType must exist'");
-            createAlarmReport("Sanity check - movementType must exist", movement);
-            isOk = false;
-        }
-
-        if(movement.getMovementSourceType() == null){  //source must exist
-            LOG.info("\t==> Executing RULE 'Sanity check - source must exist'");
-            createAlarmReport("Sanity check - source must exist", movement);
-            isOk = false;
-        }
-/*
-        if((movement.getMobileTerminalConnectId() == null || movement.getMobileTerminalConnectId().isEmpty()) && movement.getPluginType().equals("SATELLITE_RECEIVER")){  //Transponder not found
-            LOG.info("\t==> Executing RULE 'Sanity rule 4 - Transponder not found'");
-            createAlarmReport("Transponder not found", movement);
-            isOk = false;
-        }
-*/
         if(movement.getPluginType().equals("SATELLITE_RECEIVER") && (movement.getMobileTerminalConnectId() == null || movement.getMobileTerminalConnectId().isEmpty())){  //Transponder not found
             LOG.info("\t==> Executing RULE 'Sanity rule 4 - Transponder not found'");
             createAlarmReport("Transponder not found", movement);
@@ -132,37 +102,6 @@ public class MovementSanityValidatorBean {
         if(movement.getPluginType() == null || movement.getPluginType().isEmpty()){  //Plugin Type missing
             LOG.info("\t==> Executing RULE 'Sanity rule 11 - Plugin Type missing'");
             createAlarmReport("Plugin Type missing", movement);
-            isOk = false;
-        }
-
-        if(movement.getStatus() == null || movement.getStatus().isEmpty()){  //statusCode must exist
-            LOG.info("\t==> Executing RULE 'Sanity check - statusCode must exist'");
-            createAlarmReport("Sanity check - statusCode must exist", movement);
-            isOk = false;
-        }
-
-        if(movement.getActivityCallback() == null || movement.getActivityCallback().isEmpty()){  //activityCallback must exist
-            LOG.info("\t==> Executing RULE 'Sanity check - activityCallback must exist'");
-            createAlarmReport("Sanity check - activityCallback must exist", movement);
-            isOk = false;
-        }
-
-        if(movement.getActivityMessageId() == null || movement.getActivityMessageId().isEmpty()){  //activityMessageId must exist
-            LOG.info("\t==> Executing RULE 'Sanity check - activityMessageId must exist'");
-            createAlarmReport("Sanity check - activityMessageId must exist", movement);
-            isOk = false;
-        }
-
-        if(movement.getActivityMessageType() == null || movement.getActivityMessageType().isEmpty()){  //activityMessageType must exist
-            LOG.info("\t==> Executing RULE 'Sanity check - activityMessageType must exist'");
-            createAlarmReport("Sanity check - activityMessageType must exist", movement);
-            isOk = false;
-        }
-
-        //  movement : RawMovementFact((assetType == null) && (pluginType == "FLUX" || comChannelType == "MANUAL"))
-        if(movement.getAssetType() == null && (movement.getPluginType().equals("FLUX") || movement.getComChannelType().equals("MANUAL"))){  //assetType must exist
-            LOG.info("\t==> Executing RULE 'Sanity check - assetType must exist'");
-            createAlarmReport("Sanity check - assetType must exist", movement);
             isOk = false;
         }
 
