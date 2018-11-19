@@ -49,6 +49,10 @@ public class AssetMTRestMock {
             response = enrichementHelper(request, response, MT);
 
 
+            if(request.getIrcsValue() != null && request.getIrcsValue().startsWith("TestIrcs:")){
+                response.setAssetUUID(request.getIrcsValue().split(":")[1]);
+                response.setAssetHistoryId(request.getIrcsValue().split(":")[1]);
+            }
             Response r = Response.ok(response).build();
             return r;
         }catch (Exception e){

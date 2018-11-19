@@ -187,57 +187,61 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
 
     @Test
-    @Ignore   //TODO: we need to say to movement that these two movements are on the same ship
     @OperateOnDeployment("movement")
     public void createMovementVerifyCalculatedData() throws Exception {
-        /*String connectId = UUID.randomUUID().toString();
 
-        MovementBaseType movementBaseType = MovementTestHelper.createIncomingMovementType(0d, 1d);
-        movementBaseType.setAssetHistoryId(connectId);
-        movementBaseType.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
-        jmsHelper.createMovement(movementBaseType, "test user");
+        String uuid = UUID.randomUUID().toString();
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId("TestIrcs");
+        incomingMovement.setPositionTime(Instant.now().minusSeconds(10));
+        incomingMovement.setAssetIRCS("TestIrcs:" + uuid);                                                    //I set the asset mocker up so that TestIrcs returns the id behind the :
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
+        incomingMovement2.setAssetGuid(null);
+        incomingMovement2.setAssetHistoryId("TestIrcs");
+        incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);
+        MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2);
+
         
-        MovementBaseType movementBaseType2 = MovementTestHelper.createIncomingMovementType(0d, 2d);
-        movementBaseType2.setAssetHistoryId(connectId);
-        CreateMovementResponse response = jmsHelper.createMovement(movementBaseType2, "test user");
-        MovementType createdMovement = response.getMovement();
-        
-        assertThat(createdMovement.getGuid(), is(notNullValue()));
-        assertThat(createdMovement.getCalculatedSpeed(), is(notNullValue()));
-        assertThat(createdMovement.getCalculatedCourse(), is(notNullValue()));*/
+        assertThat(movementDetails2.getMovementGuid(), is(notNullValue()));
+        assertThat(movementDetails2.getCalculatedSpeed(), is(notNullValue()));
+        assertThat(movementDetails2.getCalculatedCourse(), is(notNullValue()));
     }
 
 
     @Test
-    @Ignore   //TODO: we need to say to movement that these two movements are on the same ship
     @OperateOnDeployment("movement")
     public void createMovementVerifyBasicSegment() throws Exception {
-        /*JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        String connectId = UUID.randomUUID().toString();
-        
-        MovementBaseType movementBaseType1 = MovementTestHelper.createIncomingMovementType(0d, 0d);
-        movementBaseType1.setPositionTime(Date.from(Instant.now().minusSeconds(10)));
-        movementBaseType1.setAssetHistoryId(connectId);
-        jmsHelper.createMovement(movementBaseType1, "test user");
-        
-        MovementBaseType movementBaseType2 = MovementTestHelper.createIncomingMovementType(0d, 1d);
-        movementBaseType2.setAssetHistoryId(connectId);
 
-        //System.out.println("Now");
-        //Thread.sleep(1000 * 60 * 5);
-        jmsHelper.createMovement(movementBaseType2, "test user");
+        String uuid = UUID.randomUUID().toString();
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId("TestIrcs");
+        incomingMovement.setAssetIRCS("TestIrcs:" + uuid);                                                  //I set the asset mocker up so that TestIrcs returns the id behind the :
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
+        incomingMovement2.setAssetGuid(null);
+        incomingMovement2.setAssetHistoryId("TestIrcs");
+        incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);
+        MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2);
+
         
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(connectId);
+        criteria.setValue(movementDetails2.getConnectId());
         query.getMovementSearchCriteria().add(criteria);
-        GetMovementListByQueryResponse movementList = jmsHelper.getMovementListByQuery(query, connectId);
+        GetMovementListByQueryResponse movementList = jmsHelper.getMovementListByQuery(query, movementDetails2.getConnectId());
         List<MovementType> movements = movementList.getMovement();
         
         assertThat(movements.size(), is(2));
         assertThat(movements.get(0).getSegmentIds(), is(movements.get(1).getSegmentIds()));
-        */
+
     }
 
     
@@ -282,32 +286,34 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
 
     @Test
-    @Ignore  //TODO: This test needs the two incoming movements to be on the same ship
     @OperateOnDeployment("movement")
     public void getMovementListByConnectIdTwoPositions() throws Exception {
-      /*  JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        String connectId = UUID.randomUUID().toString();
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
+        String uuid = UUID.randomUUID().toString();
         Instant timestamp = Instant.now();
 
-        MovementBaseType movementBaseType1 = MovementTestHelper.createIncomingMovementType();
-        movementBaseType1.setAssetHistoryId(connectId);
-        movementBaseType1.setPositionTime(Date.from(timestamp));
-        jmsHelper.createMovement(movementBaseType1, "test user");
-        
-        MovementBaseType movementBaseType2 = MovementTestHelper.createIncomingMovementType();
-        movementBaseType2.setAssetHistoryId(connectId);
-        movementBaseType1.setPositionTime(Date.from(timestamp.plusSeconds(10)));
-        jmsHelper.createMovement(movementBaseType2, "test user");
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId("TestIrcs");
+        incomingMovement.setAssetIRCS("TestIrcs:" + uuid);
+        incomingMovement.setPositionTime(timestamp.minusSeconds(10));
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
+        incomingMovement2.setAssetGuid(null);
+        incomingMovement2.setAssetHistoryId("TestIrcs");
+        incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);                                              //I set the asset mocker up so that TestIrcs returns the id behind the :
+        MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2);
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(connectId);
+        criteria.setValue(uuid);
         query.getMovementSearchCriteria().add(criteria);
 
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, connectId);
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, uuid);
         List<MovementType> movements = listByQueryResponse.getMovement();
-        assertThat(movements.size(), is(2));*/
+        assertThat(movements.size(), is(2));
     }
 
     @Test
@@ -463,16 +469,15 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
 
     @Test
-    @Ignore  //TODO: This test needs to be able to set so that two different movements have the same ship
     @OperateOnDeployment("movement")
     public void createMovementConcurrentProcessingTwoConnectIds() throws Exception {
         int numberOfPositions = 20;
-        String connectId1 = UUID.randomUUID().toString();   //these two needs to be connected to the movemetns so that they are are treated as the same ship
+        String connectId1 = UUID.randomUUID().toString();
         String connectId2 = UUID.randomUUID().toString();
         
         List<String> correlationIds = new ArrayList<>();
         
-        Instant timestamp = Instant.now();
+        Instant timestamp = Instant.now().minusSeconds(60 * 60);  //to avoid the sanity rule "time in future"
         
         // Send positions to movement
         for (int i = 0; i < numberOfPositions; i++) {
@@ -480,6 +485,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             incomingMovement.setAssetGuid(null);
             incomingMovement.setAssetHistoryId(null);
             incomingMovement.setPositionTime(timestamp);
+            incomingMovement.setAssetIRCS("TestIrcs:" + connectId1);                                              //I set the asset mocker up so that TestIrcs returns the id behind the :
             String json = mapper.writeValueAsString(incomingMovement);
             jmsHelper.sendMovementMessage(json, "Grouping:1", "CREATE");
 
@@ -487,6 +493,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             incomingMovement2.setAssetGuid(null);
             incomingMovement2.setAssetHistoryId(null);
             incomingMovement2.setPositionTime(timestamp);
+            incomingMovement2.setAssetIRCS("TestIrcs:" + connectId2);                                              //I set the asset mocker up so that TestIrcs returns the id behind the :
             String json2 = mapper.writeValueAsString(incomingMovement2);
             jmsHelper.sendMovementMessage(json2, "Grouping:2", "CREATE");
 
