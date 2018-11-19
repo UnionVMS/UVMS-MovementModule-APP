@@ -55,10 +55,10 @@ public class LongPollingHttpServlet extends HttpServlet {
         asyncContexts.add(ctx, req.getServletPath());
     }
 
-    /*public void createdMovement(@Observes @CreatedMovement NotificationMessage message) throws IOException {
+    public void createdMovement(@Observes @CreatedMovement NotificationMessage message) throws IOException {
         UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
         completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(guid.toString()));
-    }*/
+    }
 
     public void createdManualMovement(@Observes @CreatedManualMovement NotificationMessage message) throws IOException {
         UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);

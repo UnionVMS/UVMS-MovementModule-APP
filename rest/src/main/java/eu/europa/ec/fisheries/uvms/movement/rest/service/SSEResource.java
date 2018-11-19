@@ -58,13 +58,28 @@ public class SSEResource {
         }
     }
 
+    public void createdMovement(Movement move){
+        if (move != null) {
+            MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(), move.getGuid(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
+            OutboundSseEvent sseEvent = eventBuilder
+                    .name("Movement")
+                    .id(String.valueOf(move.getGuid()))
+                    .mediaType(MediaType.APPLICATION_JSON_TYPE)
+                    .data(MicroMovementDto.class, micro)
+                    .reconnectDelay(3000)
+                    .comment("New Movement")
+                    .build();
+            sseBroadcaster.broadcast(sseEvent);
+        }
+    }
+
     @GET
     @Path("subscribe")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     public void listen(@Context SseEventSink sseEventSink) {
-        sseEventSink.send(sse.newEvent("Welcome !"));
+        sseEventSink.send(sse.newEvent("Welcome to UVMS SSE notifications."));
         sseBroadcaster.register(sseEventSink);
-        sseEventSink.send(sse.newEvent("You are registred !"));
+        sseEventSink.send(sse.newEvent("You are now registered for receiving new movements."));
     }
 
 
