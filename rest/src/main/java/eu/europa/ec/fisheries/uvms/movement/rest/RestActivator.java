@@ -40,6 +40,8 @@ public class RestActivator extends Application {
         set.add(UnionVMSFeatureFilter.class);
         set.add(MovementRestExceptionMapper.class);
         set.add(AlarmRestResource.class);
+        set.add(InternalRestResource.class);
+        set.add(ObjectMapperContextResolver.class);
         LOG.info(RestConstants.MODULE_NAME + " module starting up");
     }
 

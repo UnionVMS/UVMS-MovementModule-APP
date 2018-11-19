@@ -11,6 +11,10 @@
 
     <include file="v5.0.3\db-changelog-5.0.3.xml" relativeToChangelogFile="true"/>
 
+
+    <include file="v4.0.17\db-changelog-4.0.17.xml" relativeToChangelogFile="true"/>
+    <include file="v5.1.1\db-changelog-create-view-5.1.1-oracle.xml" relativeToChangelogFile="true"/>
+        
     <!-- set DB specific properties, like sysdate vs now() 
     <include file="changelog\properties.xml"/>
     

@@ -22,16 +22,14 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
@@ -178,6 +176,21 @@ public class MovementDao {
         }
     }
 
+    public long countNrOfMovementsForAssetBetween(UUID asset, Instant from, Instant to){
+        try{
+            Query query = em.createNamedQuery(Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN);
+            query.setParameter("asset", asset);
+            query.setParameter("fromDate", from);
+            query.setParameter("toDate", to);
+
+            Long count = (Long)query.getSingleResult();
+            return count;
+        }catch (NoResultException e) {
+            LOG.debug("No valid position in DB for {}, between {} and {}", asset, from, to);
+            return 0;
+        }
+    }
+
     public <T> List<T> getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues, Class<T> clazz) throws MovementServiceException {
         try {
             TypedQuery<T> query = getMovementQuery(sql, searchKeyValues, clazz);
@@ -282,5 +295,26 @@ public class MovementDao {
     public MovementConnect createMovementConnect(MovementConnect movementConnect) {
         em.persist(movementConnect);
         return movementConnect;
+    }
+
+    public List<MicroMovementDto> getMicroMovementsAfterDate(Instant date) {
+        try {
+            TypedQuery<MicroMovementDto> query = em.createNamedQuery(MicroMovementDto.FIND_ALL_AFTER_DATE, MicroMovementDto.class);
+            query.setParameter("date", date);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            LOG.debug("No positions found after date: {}", date);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<MicroMovement> getLastMicroMovementForAllAssets() {
+        try {
+            TypedQuery<MicroMovement> query = em.createQuery("FROM MicroMovement",MicroMovement.class);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            LOG.debug("No positions found while searching for last position of all assets");
+            return new ArrayList<>();
+        }
     }
 }
