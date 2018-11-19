@@ -26,6 +26,8 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
