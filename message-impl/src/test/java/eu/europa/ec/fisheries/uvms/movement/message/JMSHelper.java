@@ -112,7 +112,21 @@ public class JMSHelper {
             connection.close();
         }
     }
-    
+
+    public Message listenOnQueue(String queue) throws Exception {
+        Connection connection = connectionFactory.createConnection();
+        try {
+            connection.start();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Queue responseQueue = session.createQueue(queue);
+
+            return session.createConsumer(responseQueue)
+                    .receive(TIMEOUT);
+        } finally {
+            connection.close();
+        }
+    }
+
     public int checkQueueSize(String queue) throws Exception {
         int messages = 0;
         Connection connection = connectionFactory.createConnection();
