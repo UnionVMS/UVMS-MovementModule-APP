@@ -51,27 +51,13 @@ public class SSEResource {
                     .id(String.valueOf(guid))
                     .mediaType(MediaType.APPLICATION_JSON_TYPE)
                     .data(MicroMovementDto.class, micro)
-                    .reconnectDelay(3000)
+                    //.reconnectDelay(3000) //this one is optional and governs how long the client should wait b4 attempting to reconnect to this server
                     .comment("New Movement")
                     .build();
             sseBroadcaster.broadcast(sseEvent);
         }
     }
 
-    public void createdMovement(Movement move){
-        if (move != null) {
-            MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(), move.getGuid(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
-            OutboundSseEvent sseEvent = eventBuilder
-                    .name("Movement")
-                    .id(String.valueOf(move.getGuid()))
-                    .mediaType(MediaType.APPLICATION_JSON_TYPE)
-                    .data(MicroMovementDto.class, micro)
-                    .reconnectDelay(3000)
-                    .comment("New Movement")
-                    .build();
-            sseBroadcaster.broadcast(sseEvent);
-        }
-    }
 
     @GET
     @Path("subscribe")
@@ -82,40 +68,4 @@ public class SSEResource {
         sseEventSink.send(sse.newEvent("You are now registered for receiving new movements."));
     }
 
-
-    /*@GET
-    @Path("publish")
-    public void broadcast() {
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                int lastEventId = 0;
-                boolean running = true;
-                while (running) {
-                    lastEventId++;
-                    MicroMovementDto micro = stockService.getNextTransaction(lastEventId);
-                    if (micro != null) {
-                        OutboundSseEvent sseEvent = eventBuilder
-                                .name("Movement")
-                                .id(String.valueOf(lastEventId))
-                                .mediaType(MediaType.APPLICATION_JSON_TYPE)
-                                .data(MicroMovementDto.class, micro)
-                                .reconnectDelay(3000)
-                                .comment("New Movement")
-                                .build();
-                        sseBroadcaster.broadcast(sseEvent);
-                    }
-                    try {
-                        //Wait 5 seconds
-                        Thread.currentThread().sleep(5 * 1000);
-                    } catch (InterruptedException ex) {
-                        // ...
-                    }
-                    //Simulatae a while boucle break
-                    running = lastEventId <= 2000;
-                }
-            }
-        };
-        new Thread(r).start();
-    }*/
 }
