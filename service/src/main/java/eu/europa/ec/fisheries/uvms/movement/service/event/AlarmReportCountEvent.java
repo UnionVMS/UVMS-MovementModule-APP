@@ -9,24 +9,17 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.movement.longpolling.constants;
+package eu.europa.ec.fisheries.uvms.movement.service.event;
 
-public class LongPollingConstants {
+import javax.inject.Qualifier;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    public static final String MOVEMENT_PATH = "/activity/movement";
-
-    public static final String MANUAL_MOVEMENT_PATH = "/activity/movement/manual";
-    
-    public static final String ALARM_REPORT_PATH = "/activity/alarm";
-
-    public static final String ALARM_REPORT_COUNT_PATH = "/activity/alarmcount";
-
-    public static final String MOVEMENT_GUID_KEY = "movementGuid";
-    
-    public static final String PROPERTY_GUID = "guid";
-
-    public static final String ACTION_UPDATED = "updated";
-    
-    public static final long ASYNC_TIMEOUT = 30000;
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE })
+public @interface AlarmReportCountEvent {
 
 }

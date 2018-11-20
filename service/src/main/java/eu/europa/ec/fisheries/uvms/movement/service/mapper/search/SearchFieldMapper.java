@@ -740,6 +740,8 @@ public class SearchFieldMapper {
                 return SearchField.CONNECT_ID;
             case MOVEMENT_TYPE:
                 return SearchField.MOVMENT_TYPE;
+            case AREA:
+                return SearchField.AREA;
             case STATUS:
                 return SearchField.STATUS;
             case SOURCE:

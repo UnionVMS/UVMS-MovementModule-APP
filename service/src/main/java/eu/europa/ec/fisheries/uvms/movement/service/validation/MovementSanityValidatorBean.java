@@ -1,27 +1,34 @@
 package eu.europa.ec.fisheries.uvms.movement.service.validation;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
-import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.AuditService;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.*;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.AlarmSearchFieldMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.AlarmSearchValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.AuditService;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListCriteria;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmQuery;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmSearchKey;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
+import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportCountEvent;
+import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportEvent;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.AlarmSearchFieldMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.AlarmSearchValue;
 
 @Stateless
 public class MovementSanityValidatorBean {
@@ -33,6 +40,14 @@ public class MovementSanityValidatorBean {
 
     @Inject
     private AuditService auditService;
+    
+    @Inject
+    @AlarmReportEvent
+    private Event<NotificationMessage> alarmReportEvent;
+
+    @Inject
+    @AlarmReportCountEvent
+    private Event<NotificationMessage> alarmReportCountEvent;
 
     public boolean evaluateSanity(IncomingMovement movement) {
 
@@ -146,13 +161,12 @@ public class MovementSanityValidatorBean {
 
         alarmReport.getAlarmItemList().add(item);
 
-            /*
-            // Notify long-polling clients of the new alarm report
-            alarmReportEvent.fire(new NotificationMessage("guid", createdAlarmReport.getGuid()));
+        // Notify long-polling clients of the new alarm report
+        alarmReportEvent.fire(new NotificationMessage("guid", alarmReport.getGuid()));
 
-            // Notify long-polling clients of the change (no vlaue since FE will need to fetch it)
-            alarmReportCountEvent.fire(new NotificationMessage("alarmCount", null));
-            */
+        // Notify long-polling clients of the change (no vlaue since FE will need to fetch it)
+        alarmReportCountEvent.fire(new NotificationMessage("alarmCount", null));
+            
         auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.CREATE, alarmReport.getGuid(), null, alarmReport.getUpdatedBy());
     }
 

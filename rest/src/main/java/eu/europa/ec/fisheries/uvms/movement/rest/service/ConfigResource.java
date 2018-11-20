@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
@@ -113,6 +114,24 @@ public class ConfigResource {
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
+        }
+    }
+    
+    /**
+     * @responseMessage 200 Alarm statuses fetched
+     * @responseMessage 500 No config fetched
+     * @summary Get alarm statuses
+     */
+    @GET
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path(value = "/alarmstatus")
+    public ResponseDto getAlarmStatuses() {
+        try {
+            return new ResponseDto(AlarmStatusType.values(), ResponseCode.OK);
+        } catch (Exception ex) {
+            LOG.error("[ Error when getting alarm statuses. ] {} ", ex.getMessage());
+            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         }
     }
 }
