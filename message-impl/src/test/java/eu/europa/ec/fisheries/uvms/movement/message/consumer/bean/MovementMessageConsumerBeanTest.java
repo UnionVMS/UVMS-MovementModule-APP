@@ -2,10 +2,12 @@ package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -257,6 +259,62 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         CreateMovementBatchResponse response = jmsHelper.createMovementBatch(Arrays.asList(m1, m2, m3), "test user");
         List<MovementType> createdMovement = response.getMovements();
         assertThat(createdMovement.size(), is(3));*/
+    }
+    
+    @Test
+    @OperateOnDeployment("movement")
+    public void createMovementVerifyPreviousPosition() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        Double firstLongitude = 3d;
+        Double firstLatitude = 4d;
+        IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        firstIncomingMovement.setLongitude(firstLongitude);
+        firstIncomingMovement.setLatitude(firstLatitude);
+        MovementDetails firstMovementDetails = sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
+        
+        assertThat(firstMovementDetails.getPreviousLatitude(), is(nullValue()));
+        assertThat(firstMovementDetails.getPreviousLongitude(), is(nullValue()));
+        
+        IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
+
+        assertThat(secondMovementDetails.getPreviousLatitude(), is(firstLatitude));
+        assertThat(secondMovementDetails.getPreviousLongitude(), is(firstLongitude));
+    }
+    
+    @Test
+    @OperateOnDeployment("movement")
+    public void createMovementVerifySumPositionReport() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        MovementDetails firstMovementDetails = sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
+        
+        assertThat(firstMovementDetails.getSumPositionReport(), is(1));
+        
+        IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
+
+        assertThat(secondMovementDetails.getSumPositionReport(), is(2));
+    }
+    
+    @Test
+    @OperateOnDeployment("movement")
+    public void createMovementVerifySumPositionReportTwoDayGap() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        firstIncomingMovement.setPositionTime(Instant.now().minus(2, ChronoUnit.DAYS));
+        sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
+        
+        IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
+
+        assertThat(secondMovementDetails.getSumPositionReport(), is(1));
     }
 
 

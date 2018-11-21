@@ -1,5 +1,18 @@
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
+import java.time.Instant;
+import java.util.UUID;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -25,17 +38,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.EJBException;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.jms.*;
-import java.time.Instant;
-import java.util.UUID;
 
 public class MovementCreateConsumerBean implements MessageListener {
 
@@ -101,6 +103,8 @@ public class MovementCreateConsumerBean implements MessageListener {
 
                             //send to MovementRules
                             MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
+                            int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
+                            movementDetails.setSumPositionReport(sumPositionReport);
                             movementRulesBean.send(movementDetails);
                             // report ok to Exchange...
                             // Tracer Id

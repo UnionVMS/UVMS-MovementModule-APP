@@ -135,22 +135,13 @@ public abstract class IncomingMovementMapper {
         //md.setMobileTerminalStatus();
         md.setSource(movement.getMovementSource().value());
 
+        if (movement.getFromSegment() != null && movement.getFromSegment().getFromMovement() != null) {
+            md.setPreviousLatitude(movement.getFromSegment().getFromMovement().getLocation().getY());
+            md.setPreviousLongitude(movement.getFromSegment().getFromMovement().getLocation().getX());
+        }
+        
         /*
-    private Double previousLatitude;
-    private Double previousLongitude;
     private List<String> vicinityOf;
-    private Integer sumPositionReport;
-    private Long timeDiffPositionReport;
-    private List<String> areaCodes;
-    private List<String> areaTypes;
-    private List<String> entAreaCodes;
-    private List<String> entAreaTypes;
-    private List<String> extAreaCodes;
-    private List<String> extAreaTypes;
-    private String closestCountryCode;
-    private String closestPortCode;
-    private Double closestPortDistance;
-    private Double closestCountryDistance;
          */
 
         return md;

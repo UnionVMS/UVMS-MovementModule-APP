@@ -13,6 +13,8 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.math.BigInteger;
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -424,5 +426,10 @@ public class MovementService {
             }
         }
         return true;
+    }
+	
+    public int countNrOfMovementsLastDayForAsset(String asset, Instant positionTime) {
+        return (int) dao.countNrOfMovementsForAssetBetween(UUID.fromString(asset), positionTime.minus(1,
+                ChronoUnit.DAYS), positionTime);
     }
 }
