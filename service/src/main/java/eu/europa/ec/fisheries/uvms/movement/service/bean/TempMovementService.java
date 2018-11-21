@@ -22,7 +22,6 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
@@ -30,13 +29,10 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.exchange.model.util.DateUtils;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
@@ -56,11 +52,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.TempMovementMapper;
 public class TempMovementService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TempMovementService.class);
-
-    private static final Long CREATE_TEMP_MOVEMENT_TIMEOUT = 30000L;
-
-    @EJB
-    private MessageConsumer consumer;
 
     @EJB
     private MessageProducer producer;
@@ -155,10 +146,9 @@ public class TempMovementService {
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
                     Date.from(DateUtil.nowUTC()), null, PluginType.MANUAL, username, null);
-            String exchangeMessageId = producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
-            consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
+            producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
             return movement;
-        }catch (MovementMessageException | MessageException e) {
+        }catch (MovementMessageException e) {
             throw new MovementServiceException("Error when sending temp movement status", e, ErrorCode.JMS_SENDING_ERROR);
         } catch (ExchangeModelMarshallException ex) {
             throw new MovementServiceException("Error when marshaling exchange request.", ex, ErrorCode.EXCHANGE_MARSHALLING_ERROR);
