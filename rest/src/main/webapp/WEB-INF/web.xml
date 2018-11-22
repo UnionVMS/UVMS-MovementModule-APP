@@ -49,6 +49,7 @@
 	<filter>
 		<filter-name>AuthenticationFilter</filter-name>
 		<filter-class>eu.europa.ec.fisheries.uvms.rest.security.AuthenticationFilter</filter-class>
+		<async-supported>true</async-supported>
 	</filter>
 	<filter-mapping>
 		<filter-name>AuthenticationFilter</filter-name>
@@ -59,6 +60,7 @@
 		<url-pattern>/rest/tempmovement/*</url-pattern>
 		<url-pattern>/rest/segment/*</url-pattern>
 		<url-pattern>/rest/track/*</url-pattern>
+		<url-pattern>/rest/sse/*</url-pattern>
 	</filter-mapping>
 
 </web-app>
