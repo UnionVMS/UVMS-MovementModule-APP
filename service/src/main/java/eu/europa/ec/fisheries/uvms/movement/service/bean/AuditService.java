@@ -16,11 +16,10 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
-import eu.europa.ec.fisheries.schema.audit.source.v1.AuditDataSourceMethod;
 import eu.europa.ec.fisheries.uvms.audit.model.mapper.AuditLogMapper;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
+import eu.europa.ec.fisheries.uvms.movement.service.message.producer.bean.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
@@ -30,7 +29,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.service.message.mapper.AuditModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.message.producer.MessageProducer;
 
 @Stateless
 public class AuditService {
@@ -38,7 +36,7 @@ public class AuditService {
     private static final Logger LOG = LoggerFactory.getLogger(AuditService.class);
 
     @Inject
-    private MessageProducer producer;
+    private MovementMessageProducerBean producer;
 
     @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void sendMovementCreatedAudit(Movement movement, String username) {

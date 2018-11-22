@@ -13,8 +13,20 @@ package eu.europa.ec.fisheries.uvms.movement.rest.dto;
 
 /**
  **/
-public interface RestResponseCode {
+public enum RestResponseCode {
 
-    public String getCode();
+    OK("200"),
+    ERROR("500"),
+    ERROR_DUPLICTAE("409");
+
+    private final String code;
+
+    private RestResponseCode(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
 
 }

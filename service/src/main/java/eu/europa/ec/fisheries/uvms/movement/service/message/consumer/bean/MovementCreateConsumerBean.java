@@ -101,18 +101,14 @@ public class MovementCreateConsumerBean implements MessageListener {
                 case MOVEMENT_LIST:
                     movementEventBean.getMovementListByQuery(textMessage);
                     break;
-                case CREATE:
-                    movementEventBean.createMovement(textMessage);
-                    break;
-                case CREATE_BATCH:
-                    movementEventBean.createMovementBatch(textMessage);
-                    break;
                 case MOVEMENT_MAP:
                     movementEventBean.getMovementMapByQuery(textMessage);
                     break;
                 case PING:
                     movementEventBean.ping(textMessage);
                     break;
+                case CREATE:
+                case CREATE_BATCH:
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:
                 default:

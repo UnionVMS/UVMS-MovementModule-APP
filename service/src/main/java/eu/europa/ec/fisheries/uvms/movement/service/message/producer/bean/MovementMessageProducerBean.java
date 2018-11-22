@@ -24,7 +24,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueu
 import eu.europa.ec.fisheries.uvms.movement.service.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.service.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.service.message.producer.MessageProducer;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Stateless
-public class MovementMessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
+public class MovementMessageProducerBean extends AbstractProducer implements ConfigMessageProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementMessageProducerBean.class);
 
@@ -56,7 +56,6 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
         userQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_USER_IN);
     }
 
-    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException {
         try {
@@ -108,7 +107,6 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
         }
     }
 
-    @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) throws MovementMessageException {
         try {

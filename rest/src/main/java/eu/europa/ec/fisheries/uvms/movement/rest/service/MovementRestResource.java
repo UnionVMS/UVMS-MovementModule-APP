@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
@@ -45,7 +46,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.UserServiceBean;
@@ -90,13 +90,13 @@ public class MovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<MovementListResponseDto> getListByQuery(MovementQuery query) {
         try {
-            return new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
+            return new ResponseDto(serviceLayer.getList(query), RestResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. {}] {}",query, ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR);
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
         }
     }
 
@@ -118,16 +118,16 @@ public class MovementRestResource {
         LOG.debug("Get list invoked in rest layer");
         try {
             long start = System.currentTimeMillis();
-            ResponseDto response = new ResponseDto(serviceLayer.getMinimalList(query), ResponseCode.OK);
+            ResponseDto response = new ResponseDto(serviceLayer.getMinimalList(query), RestResponseCode.OK);
             long end = System.currentTimeMillis();
             LOG.debug("GET MINIMAL MOVEMENT: {} ms", (end - start));
             return response;
         } catch (MovementServiceException | NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR);
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
         }
     }
 
@@ -148,20 +148,20 @@ public class MovementRestResource {
     public ResponseDto<List<MovementDto>> getLatestMovementsByConnectIds(List<String> connectIds) {
         LOG.debug("GetLatestMovementsByConnectIds invoked in rest layer");
         if (connectIds == null || connectIds.isEmpty()) {
-            return new ResponseDto("ConnectIds cannot be empty" , ResponseCode.ERROR);
+            return new ResponseDto("ConnectIds cannot be empty" , RestResponseCode.ERROR);
         }
         try {
             List<UUID> uuids = connectIds.stream().map(UUID::fromString).collect(Collectors.toList());
             List<Movement> latestMovements = serviceLayer.getLatestMovementsByConnectIds(uuids);
             List<MovementType> movementTypeList = MovementEntityToModelMapper.mapToMovementType(latestMovements);
             List<MovementDto> movementDtoList = MovementMapper.mapToMovementDtoList(movementTypeList);
-            return new ResponseDto<>(movementDtoList, ResponseCode.OK);
+            return new ResponseDto<>(movementDtoList, RestResponseCode.OK);
         } catch (NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR);
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
         }
     }
 
@@ -184,20 +184,20 @@ public class MovementRestResource {
         long start = System.currentTimeMillis();
         // TODO why not default to 1 ?
         if (numberOfMovements == null || numberOfMovements < 1) {
-            return new ResponseDto("numberOfMovements cannot be null and must be greater than 0" , ResponseCode.ERROR);
+            return new ResponseDto("numberOfMovements cannot be null and must be greater than 0" , RestResponseCode.ERROR);
         }
         try {
             List<LatestMovement> movements = serviceLayer.getLatestMovements(numberOfMovements);
             List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
             List<MovementDto> response = MovementMapper.mapToMovementDtoList(latestMovements);
             LOG.debug("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
-            return new ResponseDto<>(response, ResponseCode.OK);
+            return new ResponseDto<>(response, RestResponseCode.OK);
         } catch (NullPointerException ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR);
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
         }
     }
 
@@ -214,13 +214,13 @@ public class MovementRestResource {
             if (response == null) {
                 throw new MovementServiceRuntimeException("Error when getting movement by id: " + id, ErrorCode.NO_RESULT_ERROR);
             }
-            return new ResponseDto<>(response, ResponseCode.OK);
+            return new ResponseDto<>(response, RestResponseCode.OK);
         } catch (MovementServiceRuntimeException ex) {
             LOG.error("[ Error when getting by id. ] ", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR);
         } catch (NonUniqueResultException ex) {
             LOG.error("[ Error when getting by id. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
         }
     }
 
@@ -231,13 +231,13 @@ public class MovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<GetMovementMapByQueryResponse> getMapByQuery(MovementQuery query) {
         try {
-            return new ResponseDto(serviceLayer.getMapByQuery(query), ResponseCode.OK);
+            return new ResponseDto(serviceLayer.getMapByQuery(query), RestResponseCode.OK);
         } catch (MovementServiceException | MovementServiceRuntimeException ex) {
             LOG.error("[ Error when getting movement map. {}] {}",query, ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR);
         } catch (Exception ex) {
             LOG.error("[ Error when getting movement map. ]", ex);
-            return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
         }
     }
 

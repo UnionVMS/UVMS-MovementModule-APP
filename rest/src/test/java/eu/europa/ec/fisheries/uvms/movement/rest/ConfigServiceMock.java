@@ -22,7 +22,7 @@ import eu.europa.ec.fisheries.schema.config.types.v1.SettingType;
 import eu.europa.ec.fisheries.uvms.config.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.service.message.producer.MessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.service.message.producer.bean.MovementMessageProducerBean;
 
 @MessageDriven(mappedName = "jms/queue/UVMSConfigEvent", activationConfig = {
         @ActivationConfigProperty(propertyName = "messagingType", propertyValue = "javax.jms.MessageListener"), 
@@ -31,7 +31,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.message.producer.MessageProd
 public class ConfigServiceMock implements MessageListener {
     
     @Inject
-    MessageProducer messageProducer;
+    MovementMessageProducerBean messageProducer;
 
     @Override
     public void onMessage(Message message) {

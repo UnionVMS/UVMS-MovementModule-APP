@@ -22,6 +22,8 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.uvms.movement.service.message.producer.bean.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
@@ -46,7 +48,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.TempMovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.service.message.producer.MessageProducer;
 
 @Stateless
 public class TempMovementService {
@@ -54,7 +55,7 @@ public class TempMovementService {
     private static final Logger LOG = LoggerFactory.getLogger(TempMovementService.class);
 
     @EJB
-    private MessageProducer producer;
+    private MovementMessageProducerBean producer;
     
     @Inject
     private TempMovementDao dao;

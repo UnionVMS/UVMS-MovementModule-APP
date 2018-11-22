@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 @Stateless
 @LocalBean
-public class MovementConsumerBean extends AbstractConsumer implements MessageConsumer, ConfigMessageConsumer {
+public class MovementConsumerBean extends AbstractConsumer implements ConfigMessageConsumer {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementConsumerBean.class);
 
