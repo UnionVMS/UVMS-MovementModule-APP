@@ -39,19 +39,6 @@ import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
 @Stateless
 public class SpatialModuleMock {
 
-    @POST
-    @Path("getEnrichment")
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    public Response getEnrichment(SpatialEnrichmentRQ spatialEnrichmentRQ) {
-        SpatialEnrichmentRS spatialEnrichmentRS = new SpatialEnrichmentRS();
-
-        populateClosestAreas(spatialEnrichmentRS);
-        populateClosestLocations(spatialEnrichmentRS);
-        populateAreas(spatialEnrichmentRS);
-
-        return Response.ok(spatialEnrichmentRS).build();
-    }
 
 
     @POST
@@ -60,58 +47,14 @@ public class SpatialModuleMock {
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getSegmentCategoryType(List<MovementType> movements) {
         if(shouldIFail()){
-            return Response.status(666).build();
+            return Response.status(668).build();
         }
         if(movements.get(1).getPosition().getLongitude() == 10 && movements.get(1).getPosition().getLatitude() == 20){
             return Response.ok(SegmentCategoryType.EXIT_PORT).build();
         }
         return Response.ok(SegmentCategoryType.IN_PORT).build();
     }
-    
-    private void populateClosestAreas(SpatialEnrichmentRS spatialEnrichmentRS) {
-        List<Area> closestAreas = new ArrayList<>();
-        Area area = new Area();
-        area.setAreaType(AreaType.COUNTRY);
-        area.setCode("SWE");
-        area.setId("SWE");
-        area.setName("Sweden");
-        area.setDistance(0d);
-        closestAreas.add(area);
-        spatialEnrichmentRS.setClosestAreas(new ClosestAreasType(closestAreas));
-    }
-    
-    private void populateClosestLocations(SpatialEnrichmentRS spatialEnrichmentRS) {
-        ClosestLocationsType closestLocationsType = new ClosestLocationsType();
-        ArrayList<Location> closestLocations = new ArrayList<>();
-        Location location = new Location();
-        location.setLocationType(LocationType.PORT);
-        location.setCode("GOT");
-        location.setName("Gothenburg");
-        location.setId("PortId");
-        location.setDistance(0d);
-        closestLocations.add(location);
-        closestLocationsType.setClosestLocations(closestLocations);
-        spatialEnrichmentRS.setClosestLocations(closestLocationsType);
-    }
-    
-    private void populateAreas(SpatialEnrichmentRS spatialEnrichmentRS) {
-        AreasByLocationType areasByLocationType = new AreasByLocationType();
-        List<AreaExtendedIdentifierType> areas = new ArrayList<>();
-        AreaExtendedIdentifierType area1 = new AreaExtendedIdentifierType();
-        area1.setId("SWE");
-        area1.setAreaType(AreaType.COUNTRY);
-        area1.setCode("SWE");
-        area1.setName("Sweden");
-        areas.add(area1);
-        AreaExtendedIdentifierType area2 = new AreaExtendedIdentifierType();
-        area2.setId("EU");
-        area2.setAreaType(AreaType.EEZ);
-        area2.setCode("EU");
-        area2.setName("Europe");
-        areas.add(area2);
-        areasByLocationType.setAreas(areas);
-        spatialEnrichmentRS.setAreasByLocation(areasByLocationType);
-    }
+
 
     private boolean shouldIFail() {
         String fail = System.getProperty("MESSAGE_PRODUCER_METHODS_FAIL", "false");

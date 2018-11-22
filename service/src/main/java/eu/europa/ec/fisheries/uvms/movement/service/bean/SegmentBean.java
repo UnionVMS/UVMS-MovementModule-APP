@@ -7,7 +7,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialClient;
+import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialRestClient;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -25,7 +25,7 @@ public class SegmentBean {
     private MovementDao dao;
 
     @Inject
-    SpatialClient spatialClient;
+    SpatialRestClient spatialClient;
 
     public void newSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
         Segment segment = createSegment(previousMovement, currentMovement);
