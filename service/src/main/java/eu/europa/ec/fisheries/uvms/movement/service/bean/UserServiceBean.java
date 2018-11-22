@@ -18,13 +18,12 @@ import javax.ejb.Stateless;
 import javax.jms.TextMessage;
 
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean.MovementConsumerBean;
-import eu.europa.ec.fisheries.uvms.movement.service.message.producer.bean.MovementMessageProducerBean;
+import eu.europa.ec.fisheries.uvms.movement.service.message.MovementConsumerBean;
+import eu.europa.ec.fisheries.uvms.movement.service.message.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.service.message.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.user.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.user.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.user.model.mapper.UserModuleRequestMapper;
@@ -48,13 +47,13 @@ public class UserServiceBean {
         try {
             String organizationName = getUserOrganizationName(username);
             return getOrganizationNation(organizationName);
-        } catch (ModelMarshallException | MovementMessageException | MessageException e) {
+        } catch (ModelMarshallException | MessageException e) {
             LOG.error("[ Error when getting user nationality. ] {}", e);
             throw new MovementServiceException("Error when getting user nationality.", e, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }
 
-    private String getUserOrganizationName(String username) throws ModelMarshallException, MovementMessageException, MessageException {
+    private String getUserOrganizationName(String username) throws ModelMarshallException, MessageException {
         String request = UserModuleRequestMapper.mapToGetContactDetailsRequest(username);
         String messageId = producer.sendModuleMessage(request, ModuleQueue.USER);
         TextMessage response = consumer.getMessage(messageId, TextMessage.class, JMS_TIMEOUT);
@@ -62,7 +61,7 @@ public class UserServiceBean {
         return contactDetails.getContactDetails().getOrganisationName();
     }
 
-    private String getOrganizationNation(String organizationName) throws eu.europa.ec.fisheries.uvms.user.model.exception.ModelMarshallException, MovementMessageException, MessageException {
+    private String getOrganizationNation(String organizationName) throws eu.europa.ec.fisheries.uvms.user.model.exception.ModelMarshallException, MessageException {
         String request = UserModuleRequestMapper.mapToGetOrganisationRequest(organizationName);
         String messageId = producer.sendModuleMessage(request, ModuleQueue.USER);
         TextMessage response = consumer.getMessage(messageId, TextMessage.class, JMS_TIMEOUT);

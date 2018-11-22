@@ -9,7 +9,7 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.movement.service.message.event.carrier;
+package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import javax.jms.TextMessage;
 import org.apache.commons.lang3.builder.EqualsBuilder;

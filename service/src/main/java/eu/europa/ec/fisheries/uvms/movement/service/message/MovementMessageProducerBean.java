@@ -9,7 +9,7 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.movement.service.message.producer.bean;
+package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
@@ -20,10 +20,6 @@ import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
 import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.service.message.event.ErrorEvent;
-import eu.europa.ec.fisheries.uvms.movement.service.message.event.carrier.EventMessage;
-import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
@@ -57,7 +53,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessage(String text, ModuleQueue queue) throws MovementMessageException {
+    public String sendModuleMessage(String text, ModuleQueue queue) {
         try {
             String corrId;
             final Destination movementQueue = getDestination();
@@ -78,17 +74,17 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
                     corrId = sendMessageToSpecificQueue(text, userQueue, movementQueue);
                     break;
                 default:
-                    throw new MovementMessageException("Queue not defined or implemented");
+                    throw new IllegalArgumentException("Queue not defined or implemented");
             }
             return corrId;
         } catch (MessageException e) {
             LOG.error("[ Error when sending data source message. ] {}", e.getMessage());
-            throw new MovementMessageException(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message) throws MovementMessageException {
+    public void sendErrorMessageBackToRecipient(@Observes @ErrorEvent EventMessage message){
         try {
             ExceptionType exception = new ExceptionType();
             int errorCode = 0;
@@ -103,17 +99,17 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
             sendResponseMessageToSender(message.getJmsMessage(), text);
         } catch (MessageException | MovementModelException e) {
             LOG.error("[ Error when sending message. ] {}", e.getMessage());
-            throw new MovementMessageException("[ Error when sending message. ]", e);
+            throw new RuntimeException("[ Error when sending message. ]", e);
         }
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) throws MovementMessageException {
+    public void sendMessageBackToRecipient(TextMessage requestMessage, String returnMessage) {
         try {
             sendResponseMessageToSender(requestMessage, returnMessage);
         } catch (Exception e) {
             LOG.error("[ Error when sending message. ] {}", e.getMessage());
-            throw new MovementMessageException("[ Error when sending message. ]", e);
+            throw new RuntimeException("[ Error when sending message. ]", e);
         }
     }
 
@@ -122,7 +118,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
     public String sendConfigMessage(String text) throws ConfigMessageException {
         try {
             return sendModuleMessage(text, ModuleQueue.CONFIG);
-        } catch (MovementMessageException e) {
+        } catch (RuntimeException e) {
             LOG.error("[ Error when sending config message. ] {}", e.getMessage());
             throw new ConfigMessageException("[ Error when sending config message. ]");
         }

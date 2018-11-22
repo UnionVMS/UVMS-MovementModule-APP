@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.movement.service.message.bean;
+package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import javax.ejb.Stateless;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;

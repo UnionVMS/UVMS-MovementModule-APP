@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean;
+package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
@@ -8,7 +8,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import javax.ws.rs.core.GenericType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +22,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelExcepti
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementCreateBean;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.message.event.ErrorEvent;
-import eu.europa.ec.fisheries.uvms.movement.service.message.event.carrier.EventMessage;
 
 import java.util.List;
 

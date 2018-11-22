@@ -23,7 +23,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import eu.europa.ec.fisheries.uvms.movement.service.message.producer.bean.MovementMessageProducerBean;
+import eu.europa.ec.fisheries.uvms.movement.service.message.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
@@ -46,8 +46,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRun
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.TempMovementMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.service.message.ModuleQueue;
 
 @Stateless
 public class TempMovementService {
@@ -149,8 +148,6 @@ public class TempMovementService {
                     Date.from(DateUtil.nowUTC()), null, PluginType.MANUAL, username, null);
             producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
             return movement;
-        }catch (MovementMessageException e) {
-            throw new MovementServiceException("Error when sending temp movement status", e, ErrorCode.JMS_SENDING_ERROR);
         } catch (ExchangeModelMarshallException ex) {
             throw new MovementServiceException("Error when marshaling exchange request.", ex, ErrorCode.EXCHANGE_MARSHALLING_ERROR);
         }

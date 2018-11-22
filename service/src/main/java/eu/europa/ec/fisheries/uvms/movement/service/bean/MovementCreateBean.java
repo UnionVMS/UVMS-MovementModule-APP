@@ -23,9 +23,9 @@ import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.message.bean.ExchangeBean;
-import eu.europa.ec.fisheries.uvms.movement.service.message.bean.MovementRulesBean;
-import eu.europa.ec.fisheries.uvms.movement.service.message.mapper.IncomingMovementMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.message.ExchangeBean;
+import eu.europa.ec.fisheries.uvms.movement.service.message.MovementRulesBean;
+import eu.europa.ec.fisheries.uvms.movement.service.message.IncomingMovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 

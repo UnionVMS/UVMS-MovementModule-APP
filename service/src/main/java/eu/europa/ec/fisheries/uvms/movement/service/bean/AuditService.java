@@ -19,16 +19,15 @@ import javax.inject.Inject;
 import eu.europa.ec.fisheries.uvms.audit.model.mapper.AuditLogMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
-import eu.europa.ec.fisheries.uvms.movement.service.message.producer.bean.MovementMessageProducerBean;
+import eu.europa.ec.fisheries.uvms.movement.service.message.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.service.message.mapper.AuditModuleRequestMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.message.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.movement.service.message.AuditModuleRequestMapper;
 
 @Stateless
 public class AuditService {
@@ -48,7 +47,7 @@ public class AuditService {
                 auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(movement.getGuid(), username);
             }
             producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
-        } catch (AuditModelMarshallException | MovementMessageException e) {
+        } catch (AuditModelMarshallException e) {
             LOG.error("Failed to send audit log message! Movement with guid {} was created ", movement.getGuid(), e);
         }
     }
@@ -59,7 +58,7 @@ public class AuditService {
         try {
             String auditData = AuditModuleRequestMapper.mapAuditLogMovementBatchCreated(guid, username);
             producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
-        } catch (AuditModelMarshallException | MovementMessageException e) {
+        } catch (AuditModelMarshallException e) {
             LOG.error("Failed to send audit log message! Movement batch with guid {} was created ", guid, e);
         }
     }
@@ -70,7 +69,7 @@ public class AuditService {
             String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(tempMovement.getId().toString(),
                     username);
             producer.sendModuleMessage(auditRequest, ModuleQueue.AUDIT);
-        } catch (MovementMessageException | AuditModelMarshallException e) {
+        } catch (AuditModelMarshallException e) {
             LOG.error("Failed to send audit log message! TempMovement with guid {} was created ", tempMovement.getId().toString(), e);
         }
     }
@@ -80,7 +79,7 @@ public class AuditService {
         try {
             String message = AuditLogMapper.mapToAuditLog(type.getValue(), operation.getValue(), affectedObject, comment, username);
             producer.sendModuleMessage(message, ModuleQueue.AUDIT);
-        } catch (MovementMessageException | AuditModelMarshallException e) {
+        } catch (AuditModelMarshallException e) {
             LOG.error("[ERROR] Error when sending message to Audit. ] {}", e.getMessage());
         }
     }

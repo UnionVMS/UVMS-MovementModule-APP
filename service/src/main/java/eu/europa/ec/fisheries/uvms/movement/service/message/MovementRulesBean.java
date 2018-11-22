@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.movement.service.message.bean;
+package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
