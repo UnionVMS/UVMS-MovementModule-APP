@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +37,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     private IncomingMovementBean incomingMovementBean;
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createThreeMovementTrackInOrder() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -73,6 +75,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createFourMovementTrackInOrder() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -115,6 +118,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createFourMovementTrackOutOfOrder() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -155,6 +159,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createVarbergGrenaNormal() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
         UUID connectId = UUID.randomUUID();
@@ -167,11 +172,13 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createVarbergGrenaBasedOnReversedOrder() throws MovementServiceException {
         testVarbergGrenaBasedOnOrdering(ORDER_REVERSED);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createVarbergGrenaBasedOnRandomOrder() throws MovementServiceException {
         testVarbergGrenaBasedOnOrdering(ORDER_RANDOM);
     }
@@ -211,6 +218,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createFishingTourVarberg() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
         UUID connectId = UUID.randomUUID();

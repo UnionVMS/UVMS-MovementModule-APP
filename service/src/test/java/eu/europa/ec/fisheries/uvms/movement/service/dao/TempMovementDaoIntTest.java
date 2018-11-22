@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 
 import org.hamcrest.core.StringContains;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,6 +47,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
      ******************************************************************************************************************/
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createTempMovementEntity() {
 
         TempMovement tempMovement = createTempMovementEntityHelper(LONGITUDE, LATITUDE);
@@ -57,6 +59,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createTempMovementEntity_NoState_Exception_Thrown() {
 
         thrown.expect(Exception.class);
@@ -69,6 +72,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getTempMovementByGuid() throws MovementServiceException {
 
         // first create one
@@ -88,6 +92,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getTempMovementByGuid_ZeroGuid_Exception_Thrown() throws MovementServiceException {
 
         thrown.expect(MovementServiceException.class);
@@ -98,6 +103,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getTempMovementListPaginated() {
 
         // first create something that can be paginated  (a bunch of tempMovements)
@@ -118,6 +124,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getTempMovementListPaginated_Page2000() {
 
         // first create something that can be paginated  (a bunch of tempMovements)
@@ -138,6 +145,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getTempMovementListCount() {
 
         // first create something that can be paginated  (a bunch of tempMovements)

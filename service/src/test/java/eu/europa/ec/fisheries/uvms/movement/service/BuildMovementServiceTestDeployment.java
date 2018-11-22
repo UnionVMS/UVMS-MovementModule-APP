@@ -9,17 +9,17 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialRestClient;
+import eu.europa.ec.fisheries.uvms.movement.service.message.SpatialModuleMock;
+import eu.europa.ec.fisheries.uvms.movement.service.message.UnionVMSMock;
+import eu.europa.ec.fisheries.uvms.movement.service.message.rest.mock.AssetMTRestMock;
 
 @ArquillianSuiteDeployment
 public abstract class BuildMovementServiceTestDeployment {
 
     final static Logger LOG = LoggerFactory.getLogger(BuildMovementServiceTestDeployment.class);
 
-    @Deployment(name = "movementservice", order = 1)
+    @Deployment(name = "movementservice", order = 2)
     public static Archive<?> createDeployment() {
-        // Embedding war package which contains the test class is needed
-        // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "movementsearch.war");
 
         File[] files = Maven.resolver().loadPomFromFile("pom.xml")
@@ -27,13 +27,35 @@ public abstract class BuildMovementServiceTestDeployment {
         testWar.addAsLibraries(files);
         
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service");
+
+        testWar.deleteClass(UnionVMSMock.class);
+        testWar.deleteClass(SpatialModuleMock.class);
+        testWar.deleteClass(AssetMTRestMock.class);
         
-        testWar.deleteClass(SpatialRestClient.class);
-        testWar.addClass(SpatialClientMock.class);
-        
+        testWar.addAsWebInfResource("ejb-jar.xml");
         testWar.addAsResource("persistence-integration.xml", "META-INF/persistence.xml");
         testWar.addAsResource("beans.xml", "META-INF/beans.xml");
 
 		return testWar;
 	}
+    
+    @Deployment(name = "uvms", order = 1)
+    public static Archive<?> createSpatialMock() {
+
+        WebArchive testWar = ShrinkWrap.create(WebArchive.class, "unionvms.war");
+
+        File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
+                .resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12",
+                        "eu.europa.ec.fisheries.uvms.movement:movement-model",
+                        "eu.europa.ec.fisheries.uvms.asset:asset-model",
+                        "eu.europa.ec.fisheries.uvms.asset:asset-client")
+                .withTransitivity().asFile();
+        testWar.addAsLibraries(files);
+
+        testWar.addClass(UnionVMSMock.class);
+        testWar.addClass(SpatialModuleMock.class);
+        testWar.addClass(AssetMTRestMock.class);
+
+        return testWar;
+    }
 }

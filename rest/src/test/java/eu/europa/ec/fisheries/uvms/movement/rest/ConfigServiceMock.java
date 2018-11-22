@@ -21,8 +21,8 @@ import eu.europa.ec.fisheries.schema.config.types.v1.PullSettingsStatus;
 import eu.europa.ec.fisheries.schema.config.types.v1.SettingType;
 import eu.europa.ec.fisheries.uvms.config.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleResponseMapper;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
+import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.service.message.producer.MessageProducer;
 
 @MessageDriven(mappedName = "jms/queue/UVMSConfigEvent", activationConfig = {
         @ActivationConfigProperty(propertyName = "messagingType", propertyValue = "javax.jms.MessageListener"), 

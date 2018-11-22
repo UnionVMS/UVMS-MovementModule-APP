@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.ejb.EJB;
-
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +51,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
     private IncomingMovementBean incomingMovementBean;
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testMovementBaseType() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -77,6 +78,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testMapToMovementTypeWithMinimalMovementInput() {
 		UUID connectId = UUID.randomUUID();
 		double lon = 11.641982;
@@ -97,7 +99,9 @@ public class MovementEntityToModelTest extends TransactionalTests {
         assertEquals(lon, movementType.getPosition().getLongitude(), 0D);
         assertEquals(connectId.toString(), movementType.getConnectId());
 	}
+	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testMapToMovementTypeWithMovementInput() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -123,6 +127,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testMapToActivityType() {
 		Activity input = new Activity();
 		
@@ -137,6 +142,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testMapToMovementTypeWithAListOfMovements() throws MovementServiceException {
 		//Most of the method is tested by testMapToMovementType
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
@@ -159,6 +165,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -187,6 +194,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testMapToMovementSegment() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -219,6 +227,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testOrderMovementsByConnectId() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		List<UUID> connectId = new ArrayList<>();
@@ -246,6 +255,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testExtractSegments() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -292,6 +302,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testExtractTracks() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();

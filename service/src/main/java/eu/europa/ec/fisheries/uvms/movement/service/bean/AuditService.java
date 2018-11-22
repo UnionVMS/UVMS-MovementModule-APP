@@ -25,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.mapper.AuditModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.service.message.mapper.AuditModuleRequestMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.message.producer.MessageProducer;
 
 @Stateless
 public class AuditService {

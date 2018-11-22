@@ -1,5 +1,11 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -7,11 +13,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
-
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -21,16 +23,15 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-
-import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class MovementServiceIntTest extends TransactionalTests {
@@ -167,7 +168,6 @@ public class MovementServiceIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void createBatch() throws MovementServiceException {
 
-        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         double longitude = rnd.nextDouble();
         double latitude = rnd.nextDouble();
         List<Movement> movementTypeList = new ArrayList<>();
@@ -181,31 +181,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         assertNotNull(movementBatch);
         assertTrue(!movementBatch.isEmpty());
     }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void triggerBatchEventWithBrokenJMS() throws MovementServiceException {
-
-        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
-        double longitude = rnd.nextDouble();
-        double latitude = rnd.nextDouble();
-        List<Movement> movementTypeList = new ArrayList<>();
-        UUID asset =  UUID.randomUUID();
-        for(int i = 0 ; i < NumberOfMovements ; i++){
-            Movement m = MockData.createMovement(longitude, latitude, asset);
-            m.setTimestamp(Instant.ofEpochMilli(System.currentTimeMillis() + i * 1000));    //to differentiate different movements from each other
-            movementTypeList.add(m);
-            longitude += 0.05;
-            latitude += 0.05;
-        }
-        try {
-            movementService.createMovementBatch(movementTypeList);
-            fail("This should produce an EJBException and trigger rollback");
-        } catch (EJBException ignore) {}
-        
-        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
-    }
-
 
     @Test
     @OperateOnDeployment("movementservice")

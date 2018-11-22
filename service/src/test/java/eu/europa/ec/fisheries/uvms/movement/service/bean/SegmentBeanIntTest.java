@@ -38,7 +38,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     private MovementDao movementDao;
 
     @Test
-    @OperateOnDeployment("normal")
+    @OperateOnDeployment("movementservice")
     public void createSegmentOnFirstMovement() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -79,7 +79,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("normal")
+    @OperateOnDeployment("movementservice")
     public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -121,7 +121,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("normal")
+    @OperateOnDeployment("movementservice")
     public void splitSegment() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -184,7 +184,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("normal")
+    @OperateOnDeployment("movementservice")
     public void createNewTrack() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -240,7 +240,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("normal")
+    @OperateOnDeployment("movementservice")
     public void createNewTrack_onSegmentMovement() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -263,7 +263,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("normal")
+    @OperateOnDeployment("movementservice")
     public void upsertTrack() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -302,7 +302,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("normal")
+    @OperateOnDeployment("movementservice")
     public void upsertTrack5() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -356,7 +356,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("normal")
+    @OperateOnDeployment("movementservice")
     public void updateTrack() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
@@ -390,7 +390,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     }
 
     @Test
-    @OperateOnDeployment("normal")
+    @OperateOnDeployment("movementservice")
     public void addMovementBeforeFirst() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 

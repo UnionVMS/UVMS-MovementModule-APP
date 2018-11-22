@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	private IncomingMovementBean incomingMovementBean;
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetLineString() {
 		Coordinate[] input = new Coordinate[5];
 		input[0] = new Coordinate(57.632304, 11.641982);
@@ -74,6 +76,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetCoordinateSequenceFromMovements() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -100,6 +103,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetLineStringFromMovments() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();

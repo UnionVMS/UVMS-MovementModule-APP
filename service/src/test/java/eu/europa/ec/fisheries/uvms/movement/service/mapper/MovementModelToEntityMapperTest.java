@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import java.util.UUID;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
 public class MovementModelToEntityMapperTest extends TransactionalTests {
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMapNewMovementEntity_reportedSpeedIsNull() throws MovementServiceException {
 
         //Given
@@ -45,6 +47,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMapNewMovementEntity_reportedCourseIsNull() throws MovementServiceException {
 
         //Given
@@ -61,6 +64,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMapNewMovementEntity_positionIsNull() throws MovementServiceException {
 
         //Given
@@ -77,6 +81,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMapNewMovementEntity_ifSourceIsNullThenMovementSourceTypeIs_INMARSATC() throws MovementServiceException {
 
         //Given
@@ -94,6 +99,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMapNewMovementEntity_ifMovementTypeIsNullThenMovementTypeTypeIs_POS() throws MovementServiceException {
 
         //Given
@@ -110,6 +116,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMapNewMovementEntity_ifPositionTimeIsNullThenTimeStampIsSet() throws MovementServiceException {
 
         //Given
@@ -127,6 +134,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMapNewMovementEntity_activityIsNull() throws MovementServiceException {
 
         //Given
@@ -144,6 +152,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testCreateActivity_mapFromMovementBaseTypeToActivity() throws MovementServiceException {
 
         //Given

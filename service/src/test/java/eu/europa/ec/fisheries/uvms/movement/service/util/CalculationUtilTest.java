@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import java.time.Instant;
 import java.util.UUID;
 import javax.ejb.EJB;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	private IncomingMovementBean incomingMovementBean;
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testCalculateDistance() {
 		double startLon = 11.695033;
 		double startLat = 57.678582;
@@ -89,6 +91,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testCalculateCourse() {
 		double startLon = 11.695033;
 		double startLat = 57.678582;
@@ -102,6 +105,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetNauticalMilesFromMeters() {
 		double startLon = 11.695033;
 		double startLat = 57.678582;
@@ -115,6 +119,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetPositionCalculations () throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -160,6 +165,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
     public void north() {
         Double expected = 0.0;
 
@@ -174,6 +180,7 @@ public class CalculationUtilTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void northEast() {
         Double expected = 44.99563645534488;
 
@@ -188,6 +195,7 @@ public class CalculationUtilTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void east() {
         Double expected = 90.0;
 
@@ -202,6 +210,7 @@ public class CalculationUtilTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void southEast() {
         Double expected = 135.00436354465512;
 
@@ -216,6 +225,7 @@ public class CalculationUtilTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void south() {
         Double expected = 180.0;
 
@@ -229,6 +239,7 @@ public class CalculationUtilTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void southWest() {
         Double expected = 224.99563645534485;
 
@@ -242,6 +253,7 @@ public class CalculationUtilTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void west() {
         Double expected = 270.0;
 
@@ -255,6 +267,7 @@ public class CalculationUtilTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void noMovement() {
         Double prevLon = 0.0;
         Double prevLat = 0.0;

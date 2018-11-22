@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
 
 import java.util.UUID;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ public class MovementConnectIntTest extends TransactionalTests {
     final static Logger LOG = LoggerFactory.getLogger(MovementConnectIntTest.class);
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createMovementConnect() {
 
         for(int i = 0 ; i < 10 ; i++) {

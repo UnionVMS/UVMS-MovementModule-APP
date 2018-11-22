@@ -10,6 +10,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +38,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	public ExpectedException thrown = ExpectedException.none();
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMovementsByGUID() throws MovementServiceException {
 		Movement output = movementDao.getMovementByGUID(UUID.randomUUID());
 		assertNull(output);
@@ -51,6 +53,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
+	@OperateOnDeployment("movementservice")
 	public void testGetLatestMovementByConnectIdList() throws MovementServiceException {
 		UUID connectID = UUID.randomUUID();
 		UUID connectID2 = UUID.randomUUID();
@@ -90,6 +93,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 	
 	@Test
+	@OperateOnDeployment("movementservice")
 	public void testGetLatestMovementsByConnectID() throws MovementServiceException {
 		UUID connectID = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
@@ -123,6 +127,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	}
 
 	@Test
+	@OperateOnDeployment("movementservice")
 	public void testGetLatestMovementsByConnectID_willFail() throws MovementServiceException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
@@ -146,6 +151,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	
 	@Test
+	@OperateOnDeployment("movementservice")
 	public void testIsDateAlreadyInserted() {
 		//only testing the no result part since the rest of teh function is tested elsewhere
 		List<Movement> output = movementDao.isDateAlreadyInserted(UUID.randomUUID(), Instant.now());

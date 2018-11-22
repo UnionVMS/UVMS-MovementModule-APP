@@ -12,6 +12,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.xml.datatype.DatatypeConfigurationException;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 public class DateUtilTest extends TransactionalTests {
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetDateFromString() throws ParseException {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss X");
 
@@ -79,6 +81,7 @@ public class DateUtilTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testParseToUTCDate() throws ParseException { //To UTC Date is somewhat missleading, the function simply parses a string into a date. 
 		//This test is basicly a carbon copy of testGetDateFromString() since the only difference between them is the output. 
 
@@ -127,6 +130,7 @@ public class DateUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testParseUTCDateToString() {
 		Instant testDate = OffsetDateTime.of(2018, 3, 9, 11, 26, 30, 0, ZoneOffset.ofHours(2)).toInstant();
 
@@ -145,6 +149,7 @@ public class DateUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testAddSecondsToDateWithXMLGregorianCalendarInput() throws DatatypeConfigurationException {
 		Instant testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 59, 0, ZoneOffset.ofHours(2)).toInstant();
 
@@ -165,6 +170,7 @@ public class DateUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testAddSecondsToDateWithDateInput() throws DatatypeConfigurationException { //Almost a carbon copy of the one above
 		Instant testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 59, 0, ZoneOffset.ofHours(2)).toInstant();
 
@@ -186,6 +192,7 @@ public class DateUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testNowUTC() {
 		Instant now = Instant.now();
 		Instant output = DateUtil.nowUTC();

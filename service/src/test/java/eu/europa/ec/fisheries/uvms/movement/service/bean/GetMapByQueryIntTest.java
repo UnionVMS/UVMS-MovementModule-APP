@@ -7,7 +7,6 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
@@ -26,7 +25,6 @@ public class GetMapByQueryIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryIsNotAllowed() throws MovementServiceException {
 
-        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         MovementQuery movementQuery = MovementTestHelper.createMovementQuery(true, false, false);
         movementServiceBean.getMapByQuery(movementQuery);
     }
@@ -35,7 +33,6 @@ public class GetMapByQueryIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryThrowsMovementServiceException() throws MovementServiceException {
 
-        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         MovementQuery movementQuery = MovementTestHelper.createMovementQuery(true, false, false);
         movementServiceBean.getMapByQuery(movementQuery);
     }
@@ -45,8 +42,6 @@ public class GetMapByQueryIntTest extends TransactionalTests {
     @Test(expected = MovementServiceException.class)
     @OperateOnDeployment("movementservice")
     public void getMovementMapByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() throws MovementServiceException {
-
-        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
 
         MovementQuery movementQuery = MovementTestHelper.createMovementQuery(false, true, false);
         movementServiceBean.getMapByQuery(movementQuery);

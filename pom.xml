@@ -28,6 +28,8 @@
 		<spatial.model.version>1.0.12</spatial.model.version>
 		<audit.model.version>4.0.8</audit.model.version>
 		<exchange.model.version>4.0.22</exchange.model.version>
+		<asset.client.version>6.0.18-SNAPSHOT</asset.client.version>
+		<movement-rules.model.version>1.0.3-SNAPSHOT</movement-rules.model.version>
 		<javaee.version>8.0</javaee.version>
 		<installAtEnd>false</installAtEnd>
 
@@ -174,9 +176,6 @@
 		<module>LIQUIBASE</module>
 		<module>rest</module>
 		<module>service</module>
-		<module>message</module>
-		<module>message-impl</module>
-		<module>message-mock</module>
 		<module>module</module>
 	</modules>
 </project>

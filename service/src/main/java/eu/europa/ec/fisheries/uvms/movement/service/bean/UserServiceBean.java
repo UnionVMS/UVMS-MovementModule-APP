@@ -20,12 +20,11 @@ import javax.jms.TextMessage;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean.MessageConsumer;
+import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.service.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.user.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.user.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.user.model.mapper.UserModuleRequestMapper;

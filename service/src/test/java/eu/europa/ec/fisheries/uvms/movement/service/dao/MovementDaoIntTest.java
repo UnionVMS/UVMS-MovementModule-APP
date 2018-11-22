@@ -18,6 +18,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 
 import org.hamcrest.core.StringContains;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,6 +73,7 @@ public class MovementDaoIntTest extends TransactionalTests {
      ******************************************************************************************************************/
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void create() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
@@ -95,6 +97,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getFirstMovement() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
@@ -184,12 +187,14 @@ public class MovementDaoIntTest extends TransactionalTests {
 //    }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getLatestMovements() {
         List<LatestMovement> all = movementDao.getLatestMovements(10);
         assertNotNull(all);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMinimalMovementListPaginated() throws MovementServiceException {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
@@ -203,6 +208,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMinimalMovementListPaginated_NegativeSpeed() throws MovementServiceException {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
@@ -216,6 +222,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementById() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
@@ -237,6 +244,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementById_NULL_AS_SearchCriteria() {
         thrown.expect(RuntimeException.class);
         expectedMessage("id to load is required for loading");
@@ -245,12 +253,14 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test(expected = NullPointerException.class)
+    @OperateOnDeployment("movementservice")
     public void getMovementById_NonExisting_AS_SearchCriteria() {
         Movement movement = movementDao.getMovementById(-42L);
         movement.setId(42L);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementConnectByConnectId() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
@@ -274,6 +284,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NonPaginated_NullCheckResultSetAtUnlogicQuery() throws MovementServiceException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
@@ -286,6 +297,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NonPaginated_NoSearchValues() throws MovementServiceException {
 
         List<SearchValue> searchValues = new ArrayList<>();
@@ -296,6 +308,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NonPaginated_WithSearchValues() throws MovementServiceException {
 
         // this is not covered in the code BUT it forces that code path to execute
@@ -308,6 +321,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NonPaginated_ShouldCrash() throws MovementServiceException {
 
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.AREA, "HEPP"));
@@ -321,6 +335,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NumberOfReports_0_NoSearchValue() throws MovementServiceException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
@@ -347,6 +362,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NumberOfReports_5_noSearchValue() throws MovementServiceException {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
@@ -359,6 +375,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NumberOfReports_0_WithSearchValue() throws MovementServiceException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
@@ -373,6 +390,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NumberOfReports_1_WithSearchValue() throws MovementServiceException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
@@ -387,6 +405,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NumberOfReports_1_withSearchValue_NoResult() throws MovementServiceException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
@@ -401,6 +420,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementList_NumberOfReports_5_withSearchValue() throws MovementServiceException {
 
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
@@ -415,6 +435,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementListPaginated() throws MovementServiceException {
 
         long currentTimeMillis = System.currentTimeMillis();
@@ -438,6 +459,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementListSearchCount() throws java.text.ParseException, ParseException, MovementServiceException {
         List<SearchValue> searchValues = new ArrayList<>();
         String sql = SearchFieldMapper.createCountSearchSql(searchValues, true);
@@ -447,6 +469,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementListSearchCount_SearchValueNull_ExceptionThrown() throws java.text.ParseException, ParseException, MovementServiceException {
 
         thrown.expect(Exception.class);
@@ -456,6 +479,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void upsertLatestMovementOnExisting() {
 
         MovementConnect movementConnect = createMovementConnectHelper();
@@ -476,6 +500,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void upsertLatestMovementOnNonExisting() {
 
         MovementConnect movementConnect = createMovementConnectHelper();

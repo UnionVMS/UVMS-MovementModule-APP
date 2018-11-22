@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ public class WKTUtilTest extends TransactionalTests {
     private IncomingMovementBean incomingMovementBean;
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetWKTLineString() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -69,6 +71,7 @@ public class WKTUtilTest extends TransactionalTests {
 	}
 	
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetWktLineStringFromMovementList() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -98,6 +101,7 @@ public class WKTUtilTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetWktLineStringFromMovementGeometryList() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -132,6 +136,7 @@ public class WKTUtilTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetGeometryFromWKTSrring() throws ParseException {
 		String input = "LINESTRING (12.241 57.107, 12.238 57.104, 12.235 57.101, 12.232 57.098, 12.229 57.095, 12.225999999999999 57.092,"
 				+ " 12.222999999999999 57.089, 12.219999999999999 57.086, 12.216999999999999 57.083, 12.213999999999999 57.08)";

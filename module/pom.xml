@@ -23,14 +23,6 @@
                     <modules>
                         <ejbModule>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>movement-message</artifactId>
-                        </ejbModule>
-                        <ejbModule>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>movement-message-impl</artifactId>
-                        </ejbModule>
-                        <ejbModule>
-                            <groupId>${project.groupId}</groupId>
                             <artifactId>movement-service</artifactId>
                         </ejbModule>
                         <jarModule>
@@ -51,18 +43,6 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>movement-message</artifactId>
-            <version>${project.parent.version}</version>
-            <type>ejb</type>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>movement-message-impl</artifactId>
-            <version>${project.parent.version}</version>
-            <type>ejb</type>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>movement-service</artifactId>

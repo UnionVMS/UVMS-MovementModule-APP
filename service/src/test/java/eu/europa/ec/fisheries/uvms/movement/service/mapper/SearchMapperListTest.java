@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,12 +43,14 @@ public class SearchMapperListTest extends TransactionalTests {
     private static final String NO_DUPLICATE = "WHERE  m.duplicate = false ";
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testCreateSearchSql() throws ParseException, MovementServiceException {
         String data = SearchFieldMapper.createSelectSearchSql(null, true);
         assertEquals(INITIAL_SELECT +NO_DUPLICATE + ORDER_BY, data);
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testGetOrdinalValueFromEnum() throws MovementServiceException {
 
         for (MovementTypeType mt : MovementTypeType.values()) {
@@ -72,6 +75,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testSearchFieldSegmentId() throws ParseException, MovementServiceException {
         List<ListCriteria> listCriterias = new ArrayList<>();
 
@@ -95,6 +99,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testSearchFieldCategory() throws ParseException, MovementServiceException {
         List<ListCriteria> listCriterias = new ArrayList<>();
 
@@ -118,6 +123,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testCreateMinimalSelectSearchSql() throws ParseException, MovementServiceException {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
@@ -135,6 +141,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMultipleSearchFieldCategorys() throws ParseException, MovementServiceException {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
@@ -162,6 +169,7 @@ public class SearchMapperListTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testCreateCountSearchSql() throws ParseException, MovementServiceException {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 

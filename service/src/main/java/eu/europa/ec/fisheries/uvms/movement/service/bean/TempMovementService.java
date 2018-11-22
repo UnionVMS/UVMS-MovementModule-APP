@@ -32,9 +32,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
@@ -47,6 +44,9 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRun
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.TempMovementMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.message.constants.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.movement.service.message.exception.MovementMessageException;
+import eu.europa.ec.fisheries.uvms.movement.service.message.producer.MessageProducer;
 
 @Stateless
 public class TempMovementService {

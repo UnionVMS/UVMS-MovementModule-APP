@@ -138,6 +138,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void createMovementSearchGroup() throws MovementServiceException {
         MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, UUID.randomUUID().toString());
         MovementFilterGroup filterGroupAfterPersist = movementSearchGroupService.createMovementFilterGroup(movementSearchGroup, TEST_USER_NAME);
@@ -146,12 +147,14 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void failCreateMovementSearchGroupNoUserName() throws MovementServiceException {
         MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, UUID.randomUUID().toString());
         movementSearchGroupService.createMovementFilterGroup(movementSearchGroup, null);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void failCreateMovementSearchGroupNoName() throws MovementServiceException {
         MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.ASSET, UUID.randomUUID().toString());
         movementSearchGroup.setName(null);
@@ -200,6 +203,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
     
     @Test(expected = MovementServiceException.class)
+    @OperateOnDeployment("movementservice")
     public void deleteMovementSearchGroup_then_getById_Exception_Thrown() throws MovementServiceException {
         MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
         MovementFilterGroup created = movementSearchGroupService.createMovementFilterGroup(movementGroup, TEST_USER_NAME);
@@ -234,6 +238,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementSearchGroupNormal() throws MovementServiceException {
         MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
         MovementFilterGroup created = movementSearchGroupService.createMovementFilterGroup(movementGroup, TEST_USER_NAME);
@@ -324,6 +329,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void updateMovementSearchGroupNormal() throws MovementServiceException {
         MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
         MovementFilterGroup created = movementSearchGroupService.createMovementFilterGroup(movementGroup, TEST_USER_NAME);
@@ -343,6 +349,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void updateMovementSearchGroupWithExtraCriteria() throws MovementServiceException {
         MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
         MovementFilterGroup created = movementSearchGroupService.createMovementFilterGroup(movementGroup, TEST_USER_NAME);
@@ -370,6 +377,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void updateMovementSearchGroupRemoveCriterias() throws MovementServiceException {
         MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
         MovementFilterGroup created = movementSearchGroupService.createMovementFilterGroup(movementGroup, TEST_USER_NAME);
@@ -388,6 +396,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void updateMovementSearchGroupRemoveCriteriasAddOne() throws MovementServiceException {
         MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
         MovementFilterGroup created = movementSearchGroupService.createMovementFilterGroup(movementGroup, TEST_USER_NAME);
@@ -427,6 +436,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementSearchGroupsByUserNormal() throws MovementServiceException {
         int searchGroupsBefore = movementSearchGroupService.getMovementFilterGroupsByUser(TEST_USER_NAME).size();
         

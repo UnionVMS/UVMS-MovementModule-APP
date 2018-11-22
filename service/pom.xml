@@ -41,11 +41,32 @@
             <groupId>eu.europa.ec.fisheries.uvms.spatial</groupId>
             <artifactId>spatial-model</artifactId>
             <version>${spatial.model.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-annotations</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
             <artifactId>exchange-model</artifactId>
             <version>${exchange.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
+            <artifactId>asset-model</artifactId>
+            <version>${asset.client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
+            <artifactId>asset-client</artifactId>
+            <version>${asset.client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.movement-rules</groupId>
+            <artifactId>movement-rules-model</artifactId>
+            <version>${movement-rules.model.version}</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
@@ -63,32 +84,59 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>movement-message-mock</artifactId>
-            <version>${project.parent.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>${project.groupId}</groupId>
-                    <artifactId>movement-message-impl</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
 			<groupId>fish.focus.uvms.maven</groupId>
 			<artifactId>uvms-pom-monitoring-deps</artifactId>
 			<type>pom</type>
 		</dependency>
 		<dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
+            <artifactId>uvms-commons-message</artifactId>
+            <version>${uvms.common.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>commons-logging</groupId>
+            		<artifactId>commons-logging</artifactId>
+            	</exclusion>
+            	<exclusion>
+            	    <groupId>javax.mail</groupId>
+    				<artifactId>mail</artifactId>
+            	</exclusion>
+            	<exclusion>
+            	   <groupId>net.jcip</groupId>
+                   <artifactId>jcip-annotations</artifactId>
+            	</exclusion>
+            	<exclusion>
+            		  <groupId>com.sun.istack</groupId>
+    				  <artifactId>istack-commons-runtime</artifactId>            		
+            	</exclusion>
+            	<exclusion>
+            		  <groupId>org.jboss.spec.javax.annotation</groupId>
+  					  <artifactId>jboss-annotations-api_1.1_spec</artifactId>            		
+            	</exclusion>
+            	<exclusion>
+            		  <groupId>org.jboss.resteasy</groupId>
+    				  <artifactId>jaxrs-api</artifactId>            		
+            	</exclusion>
+            	<exclusion>
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>            		
+            	</exclusion>
+            	<exclusion>
+            		<groupId>org.apache.commons</groupId>
+		      		<artifactId>commons-lang3</artifactId>            		
+            	</exclusion>
+            </exclusions>            
+        </dependency>
+		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>2.9.5</version>
+			<version>2.9.6</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
-			<version>2.9.5</version>
+			<version>2.9.6</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

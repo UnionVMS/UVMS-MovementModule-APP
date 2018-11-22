@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import org.hamcrest.core.StringContains;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,6 +71,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
      ******************************************************************************************************************/
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void filterSegments() {
 
         List<SearchValue> searchKeyValuesRange = new ArrayList<>();
@@ -89,24 +91,28 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getLatestMovements_0() {
         List<LatestMovement> movements = movementService.getLatestMovements(0);
         assertNotNull(movements);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getLatestMovements_5() {
         List<LatestMovement> movements = movementService.getLatestMovements(5);
         assertNotNull(movements);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getLatestMovements_5000000() {
         List<LatestMovement> movements = movementService.getLatestMovements(5000000);
         assertNotNull(movements);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getLatestMovements_NULL() {
         thrown.expect(EJBTransactionRolledbackException.class);
 
@@ -114,6 +120,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getLatestMovements_neg5() {
         thrown.expect(EJBTransactionRolledbackException.class);
 
@@ -121,6 +128,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMinimalMovementListByQuery_NULL() throws MovementServiceException {
         thrown.expect(EJBTransactionRolledbackException.class);
         expectedMessage("Movement list query is null");
@@ -130,6 +138,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementListByQuery_NULL() throws MovementServiceException {
         thrown.expect(EJBTransactionRolledbackException.class);
 		expectedMessage("Movement list query is null");
@@ -138,6 +147,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getMovementMapByQuery_NULL() throws MovementServiceException {
         thrown.expect(EJBTransactionRolledbackException.class);
         expectedMessage("Movement list query is null");
@@ -146,6 +156,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void keepSegment_NULL() {
         thrown.expect(EJBTransactionRolledbackException.class);
         expectedMessage("MovementSegment or SearchValue list is null");
@@ -154,6 +165,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void removeTrackMismatches_NULL() {
         thrown.expect(EJBTransactionRolledbackException.class);
         expectedMessage("MovementTrack list or Movement list is null");
@@ -162,6 +174,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMovementListByQuery_WillFailWithNullParameter() throws MovementServiceException {
 
     	thrown.expect(EJBTransactionRolledbackException.class);
@@ -171,6 +184,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMovementListByQuery_WillFailNoPaginationSet() throws MovementServiceException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
@@ -182,6 +196,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMovementListByQuery_WillFailNoSearchCriteria() throws MovementServiceException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
@@ -199,6 +214,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testGetMovementListByQuery() throws MovementServiceException {
 		GetMovementListByQueryResponse output;
 		MovementQuery input = new MovementQuery();
@@ -253,6 +269,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testGetMovementListByQuery_WillFailEmptyRangeSearchCriteria() throws MovementServiceException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
@@ -281,6 +298,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMinimalMovementListByQuery_WillFailWithNullAsQuery() throws MovementServiceException {
 		thrown.expect(EJBTransactionRolledbackException.class);
 		expectedMessage("Movement list query is null");
@@ -289,6 +307,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMinimalMovementListByQuery_WillFailNoPaginationSet() throws MovementServiceException {
 
     	thrown.expect(EJBTransactionRolledbackException.class);
@@ -301,6 +320,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMinimalMovementListByQuery_WillFailNoSearchCriteriaSet() throws MovementServiceException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
@@ -318,6 +338,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testGetMinimalMovementListByQuery() throws MovementServiceException {
     	GetMovementListByQueryResponse output;
     	
@@ -374,6 +395,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMovementMapByQuery_WillFailWIthNullAsQuery() throws MovementServiceException {
 
     	thrown.expect(EJBTransactionRolledbackException.class);
@@ -383,6 +405,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMovementMapByQuery_WillFailWIthPaginationNotSupported() throws MovementServiceException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
@@ -400,6 +423,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testGetMovementMapByQuery() throws MovementServiceException {
 
     	GetMovementMapByQueryResponse output;
@@ -453,6 +477,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
 
 	@Test
+    @OperateOnDeployment("movementservice")
 	public void testGetMinimalMovementMapByQuery_WillFailNoSearchCriteriaSet() throws MovementServiceException {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
@@ -470,6 +495,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 	}
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testRemoveTrackMismatches() throws MovementServiceException {
     	UUID connectID = UUID.randomUUID();
     	List<Movement> varbergGrena = createAndProcess10MovementsFromVarbergGrena(connectID);
@@ -499,6 +525,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testGetLatestMovementsByConnectID() throws MovementServiceException {
         UUID connectID = UUID.randomUUID();
         UUID connectID2 = UUID.randomUUID();

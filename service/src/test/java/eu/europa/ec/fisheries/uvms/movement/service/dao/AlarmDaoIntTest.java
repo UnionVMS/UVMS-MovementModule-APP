@@ -4,6 +4,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -24,6 +25,7 @@ public class AlarmDaoIntTest extends TransactionalTests {
     private AlarmDAO alarmDAO;
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testCreateAlarmReport() {
         String guid = UUID.randomUUID().toString();
         IncomingMovement im = new IncomingMovement();

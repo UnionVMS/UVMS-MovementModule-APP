@@ -2,32 +2,22 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
-import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
-import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.container.test.api.ShouldThrowException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-//import eu.europa.ec.fisheries.schema.movement.v1.TempMovementStateEnum;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
-import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProducerBean;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
+import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 //import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -36,11 +26,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceExc
  */
 @RunWith(Arquillian.class)
 public class TempMovementServiceBeanIntTest extends TransactionalTests {
-
-    @Before
-    public void init() {
-        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
-    }
 
     @EJB
     private TempMovementService tempMovementService;
@@ -52,17 +37,6 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
         Assert.assertNotNull(result.getId());
-    }
-
-    @Test
-    @ShouldThrowException(EJBTransactionRolledbackException.class)
-    @OperateOnDeployment("movementservice")
-    public void createWithBrokenJMS() throws MovementServiceException {
-        System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
-        TempMovement tempMovement = createTempMovement();
-        //This should still work because the only "dependency" that is broken is the AUDIT module.
-        TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
-        em.flush();
     }
 
     @Test
@@ -81,17 +55,20 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
     
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void createTempMovementNullTempMovementCheckFailureTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementService.createTempMovement(null, username);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void createTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
         tempMovementService.createTempMovement(new TempMovement(), null);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void createTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
@@ -146,6 +123,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void getTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
@@ -158,21 +136,25 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void getTempMovementNullGuidCheckFailureTest() throws MovementServiceException {
         tempMovementService.getTempMovement(null);
     }
 
     @Test(expected = MovementServiceException.class)
+    @OperateOnDeployment("movementservice")
     public void getTempMovementGuidDoNotExistCheckFailureTest() throws MovementServiceException {
         tempMovementService.getTempMovement(UUID.randomUUID());
     }
 
     @Test(expected = MovementServiceException.class)
+    @OperateOnDeployment("movementservice")
     public void getTempMovementListNullCheckFailureTest() throws MovementServiceException {
         tempMovementService.getTempMovements(null);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void getTempMovementListSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
@@ -217,17 +199,20 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
     
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void updateTempMovementNullTempMovementCheckFailureTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementService.updateTempMovement(null, username);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void updateTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
         tempMovementService.updateTempMovement(new TempMovement(), null);
     }
 
     @Test(expected = MovementServiceException.class)
+    @OperateOnDeployment("movementservice")
     public void updateTempMovementNoValidGuidForTempMovementCheckFailureTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         TempMovement tempMovement = createTempMovement();
@@ -238,6 +223,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void updateTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
@@ -292,17 +278,20 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
     
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void archiveTempMovementNullGuidCheckFailureTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementService.archiveTempMovement(null, username);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void archiveTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
         tempMovementService.archiveTempMovement(UUID.randomUUID(), null);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void archiveTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
@@ -320,17 +309,20 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     }
     
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void sendTempMovementNullGuidCheckFailureTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementService.sendTempMovement(null, username);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
+    @OperateOnDeployment("movementservice")
     public void sendTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
         tempMovementService.sendTempMovement(UUID.randomUUID(), null);
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void sendTempMovementSuccessTest() throws MovementServiceException {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 

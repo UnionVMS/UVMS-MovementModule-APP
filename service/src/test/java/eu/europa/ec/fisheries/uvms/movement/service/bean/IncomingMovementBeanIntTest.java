@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.inject.Inject;
-
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,6 +50,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     private MovementDao movementDao;
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testCreatingMovement() {
         UUID uuid = UUID.randomUUID();
 
@@ -70,6 +71,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testProcessingMovement() throws MovementServiceException {
 
         // Given: Get the id for a persisted movement entity.
@@ -94,6 +96,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     public void testProcessingMovement_NoDuplicateMovement() {
 
         // Given: Get the id for a persisted movement entity.
@@ -117,6 +120,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
 
     @Test
+    @OperateOnDeployment("movementservice")
     @Ignore   //Since we now process stuff as we create them this test falls apart TODO: fix
     public void testDuplicateMovementsInProcessingMovementMethod_sameTimeStamp_duplicationFlagSetToFalse_sameMovementType() {
 
@@ -166,6 +170,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMovementAndSegmentRelation() throws MovementServiceException {
     	UUID connectId = UUID.randomUUID();
     	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
@@ -194,6 +199,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMovementAndSegmentRelationThreeMovements() throws MovementServiceException {
     	UUID connectId = UUID.randomUUID();
     	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
@@ -238,6 +244,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testMovementAndSegmentRelationThreeMovementsNonOrdered() throws MovementServiceException {
     	int tenMinutes = 600000;
     	UUID connectId = UUID.randomUUID();
@@ -288,6 +295,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testTrackWithThreeMovements() throws MovementServiceException {
     	UUID connectId = UUID.randomUUID();
     	Instant timestamp = Instant.now();
@@ -331,6 +339,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testTrackWithThreeMovementsNonOrdered() throws MovementServiceException {
     	int tenMinutes = 600000;
     	UUID connectId = UUID.randomUUID();
@@ -373,6 +382,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testTrackWithThreeMovementsReversed() throws MovementServiceException {
         int tenMinutes = 600000;
         UUID connectId = UUID.randomUUID();
@@ -415,6 +425,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testProcessingThreeMovements() throws MovementServiceException {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
@@ -441,6 +452,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testProcessingThreeMovementsUnordered() throws MovementServiceException {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
@@ -467,6 +479,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testProcessingThreeMovementsReversed() throws MovementServiceException {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
@@ -494,6 +507,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     }
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void testProcessingMovementsAllAlgorithmCases() throws MovementServiceException {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
@@ -543,6 +557,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     
     @Test
+    @OperateOnDeployment("movementservice")
     public void newTrackShouldBeCreatedWhenLeavingPort() throws MovementServiceException {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
