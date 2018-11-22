@@ -66,12 +66,80 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
 
     @Test
     @OperateOnDeployment("movementservice")
+    public void setMovementReportNullLongitudeShouldTriggerSanityRuleTest() throws Exception {
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setLongitude(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
     public void setMovementReportFutureDateShouldTriggerSanityRuleTest() throws Exception {
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
-        incomingMovement.setLatitude(null);
         incomingMovement.setPositionTime(Instant.now().plusSeconds(60 * 60));
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportMissingPositionTimeSanityRuleTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setPositionTime(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportPluginTypeMissingSanityRuleTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setPluginType(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportCFRAndIRCSMissingWhileManualOrFluxSanityRuleTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setPluginType("FLUX");
+        incomingMovement.setAssetCFR(null);
+        incomingMovement.setAssetIRCS(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+
+        incomingMovement.setPluginType("NOT_FLUX");
+        incomingMovement.setComChannelType("MANUAL");
+        response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportComChannelTypeMissingSanityRuleTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setComChannelType(null);
+        incomingMovement.setPluginType("SATELLITE_RECEIVER");
         ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));

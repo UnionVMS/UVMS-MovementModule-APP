@@ -78,45 +78,47 @@ public class MovementSanityValidatorBean {
             isOk = false;
         }
 
-        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && (movement.getMobileTerminalConnectId() == null || movement.getMobileTerminalConnectId().isEmpty())){  //Transponder not found
+        if(movement.getPluginType() == null || movement.getPluginType().isEmpty()){  //Plugin Type missing
+            LOG.info("\t==> Executing RULE 'Sanity rule 11 - Plugin Type missing'");
+            createAlarmReport("Plugin Type missing", movement);
+            isOk = false;
+        }
+
+        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && (movement.getMobileTerminalConnectId() == null || movement.getMobileTerminalConnectId().isEmpty())){  //Transponder not found
             LOG.info("\t==> Executing RULE 'Sanity rule 4 - Transponder not found'");
             createAlarmReport("Transponder not found", movement);
             isOk = false;
         }
 
-        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("INMARSAT_C") && (movement.getMobileTerminalMemberNumber() == null || movement.getMobileTerminalMemberNumber().isEmpty())){  //Mem No. missing
+        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && movement.getMovementSourceType().equals("INMARSAT_C") && (movement.getMobileTerminalMemberNumber() == null || movement.getMobileTerminalMemberNumber().isEmpty())){  //Mem No. missing
             LOG.info("\t==> Executing RULE 'Sanity rule 6 - Mem No. missing'");
             createAlarmReport("Mem No. missing", movement);
             isOk = false;
         }
 
-        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("INMARSAT_C") && (movement.getMobileTerminalDNID() == null || movement.getMobileTerminalDNID().isEmpty())){  //DNID missing
+        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && movement.getMovementSourceType().equals("INMARSAT_C") && (movement.getMobileTerminalDNID() == null || movement.getMobileTerminalDNID().isEmpty())){  //DNID missing
             LOG.info("\t==> Executing RULE 'Sanity rule 7 - DNID missing'");
             createAlarmReport("DNID missing", movement);
             isOk = false;
         }
 
-        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && movement.getMovementSourceType().equals("IRIDIUM") && (movement.getMobileTerminalSerialNumber() == null || movement.getMobileTerminalSerialNumber().isEmpty())){  //Serial No. missing
+        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && movement.getMovementSourceType().equals("IRIDIUM") && (movement.getMobileTerminalSerialNumber() == null || movement.getMobileTerminalSerialNumber().isEmpty())){  //Serial No. missing
             LOG.info("\t==> Executing RULE 'Sanity rule 8 - Serial No. missing'");
             createAlarmReport("Serial No. missing", movement);
             isOk = false;
         }
 
-        if(movement.getPluginType().equals("SATELLITE_RECEIVER") && (movement.getComChannelType() == null || movement.getComChannelType().isEmpty())){  //ComChannel Type missing
+        //should there really be a satellite receiver here? o well
+        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && (movement.getComChannelType() == null || movement.getComChannelType().isEmpty())){  //ComChannel Type missing
             LOG.info("\t==> Executing RULE 'Sanity rule 9 - ComChannel Type missing'");
             createAlarmReport("ComChannel Type missing", movement);
             isOk = false;
         }
 
-        if(((movement.getAssetCFR() == null || movement.getAssetCFR().isEmpty()) && (movement.getAssetIRCS() == null || movement.getAssetIRCS().isEmpty())) && (movement.getPluginType().equals("FLUX") || movement.getComChannelType().equals("MANUAL"))){  //CFR and IRCS missing
+        //it is rather unclear if this should be that both missing or just one missing, using both for now. Also unclear if ircs is unique or not
+        if(((movement.getAssetCFR() == null || movement.getAssetCFR().isEmpty()) && (movement.getAssetIRCS() == null || movement.getAssetIRCS().isEmpty())) && ("FLUX".equals(movement.getPluginType()) || "MANUAL".equals(movement.getComChannelType()))){  //CFR and IRCS missing
             LOG.info("\t==> Executing RULE 'Sanity rule 10 - CFR and IRCS missing'");
             createAlarmReport("CFR and IRCS missing", movement);
-            isOk = false;
-        }
-
-        if(movement.getPluginType() == null || movement.getPluginType().isEmpty()){  //Plugin Type missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 11 - Plugin Type missing'");
-            createAlarmReport("Plugin Type missing", movement);
             isOk = false;
         }
 
