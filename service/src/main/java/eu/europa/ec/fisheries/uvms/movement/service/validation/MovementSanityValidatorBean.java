@@ -16,6 +16,7 @@ import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.AuditService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementCreateBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListCriteria;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListResponseDto;
@@ -40,6 +41,10 @@ public class MovementSanityValidatorBean {
 
     @Inject
     private AuditService auditService;
+    
+    @Inject
+    private MovementCreateBean movementCreate;
+    
     
     @Inject
     @AlarmReportEvent
@@ -251,9 +256,7 @@ public class MovementSanityValidatorBean {
             alarm = updateAlarmStatus(alarm);
             auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, alarm.getGuid(), null, username);
             IncomingMovement incomingMovement = alarm.getIncomingMovement();
-            String pluginType = alarm.getPluginType();
-            // TODO: Implement reprocess of alarms!!
-            //movementReportBean.setMovementReportReceived(incomingMovement, pluginType, username);
+            movementCreate.processIncomingMovement(incomingMovement);
         }
 
         return "OK";

@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "incomingmovement")
@@ -83,6 +84,11 @@ public class IncomingMovement {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private AlarmReport alarmReport;
 
+    @PrePersist
+    public void init() {
+        guid = UUID.randomUUID().toString();
+    }
+    
     public Long getId() {
         return id;
     }

@@ -27,9 +27,7 @@ public class AlarmDaoIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void testCreateAlarmReport() {
-        String guid = UUID.randomUUID().toString();
         IncomingMovement im = new IncomingMovement();
-        im.setGuid(guid);
         im.setAssetGuid("test");
         im.setDateReceived(Instant.now());
         im.setUpdated(Instant.now());
@@ -61,7 +59,7 @@ public class AlarmDaoIntTest extends TransactionalTests {
         alarmReport.getAlarmItemList().add(alarmItem);
 
 
-        AlarmReport theReport = alarmDAO.getOpenAlarmReportByMovementGuid(guid);
+        AlarmReport theReport = alarmDAO.getOpenAlarmReportByMovementGuid(im.getGuid());
         Assert.assertNotNull(theReport);
         Assert.assertEquals(alarmReport.getId(), theReport.getId());
     }

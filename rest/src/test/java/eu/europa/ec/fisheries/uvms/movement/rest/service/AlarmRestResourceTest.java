@@ -1,32 +1,33 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.*;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import java.math.BigInteger;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.math.BigInteger;
-import java.time.Instant;
-import java.util.Collections;
-import java.util.Date;
-import java.util.UUID;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListCriteria;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmQuery;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmSearchKey;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 
 @RunWith(Arquillian.class)
 public class AlarmRestResourceTest extends BuildMovementRestDeployment {
@@ -180,6 +181,8 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         incomingMovement.setUpdatedBy("Test User");
         incomingMovement.setActive(true);
         incomingMovement.setAlarmReport(alarmReport);
+        incomingMovement.setPluginType("NAF");
+        incomingMovement.setComChannelType("Test");
         alarmReport.setIncomingMovement(incomingMovement);
         alarmDao.save(alarmReport);
 
@@ -198,8 +201,6 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         AlarmReport responseAlarmReportType = deserialize(response, AlarmReport.class);
         assertNotNull(responseAlarmReportType);
         assertEquals(AlarmStatusType.REPROCESSED.value(), responseAlarmReportType.getStatus());
-
-        alarmDao.removeAlarmReportAfterTests(alarmReport);
     }
 
     @Test

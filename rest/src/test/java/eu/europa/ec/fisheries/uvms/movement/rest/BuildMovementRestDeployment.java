@@ -15,9 +15,6 @@ import java.io.File;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
@@ -38,17 +35,15 @@ public abstract class BuildMovementRestDeployment {
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
         
-        /*testWar.addAsLibraries(Maven.configureResolver().loadPomFromFile("pom.xml")
-                //.resolve("eu.europa.ec.fisheries.uvms.movement:movement-service")
-                .withoutTransitivity().asFile());*/
+        testWar.addAsLibraries(Maven.configureResolver().loadPomFromFile("pom.xml")
+                .resolve("eu.europa.ec.fisheries.uvms.movement:movement-service")
+                .withTransitivity().asFile());
 
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.rest");
 
         testWar.delete("/WEB-INF/web.xml");
         testWar.addAsWebInfResource("mock-web.xml", "web.xml");
         
-        testWar.addAsWebInfResource("jboss-deployment-structure.xml");
-
         return testWar;
     }
 
@@ -58,14 +53,14 @@ public abstract class BuildMovementRestDeployment {
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "unionvms.war");
 
         File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
-                .resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12")
+                .resolve("eu.europa.ec.fisheries.uvms.asset:asset-client",
+                        "eu.europa.ec.fisheries.uvms.asset:asset-model",
+                        "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message")
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
-        testWar.addClass(MovementBaseType.class);
-        testWar.addClass(MovementType.class);
         testWar.addClass(UnionVMSMock.class);
-        testWar.addClass(SpatialModuleMock.class);
+        testWar.addClass(AssetMTRestMock.class);
 
         return testWar;
     }
