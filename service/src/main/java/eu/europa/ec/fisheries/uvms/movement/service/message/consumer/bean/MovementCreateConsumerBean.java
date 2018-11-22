@@ -8,6 +8,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import javax.ws.rs.core.GenericType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -23,6 +25,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementCreateBean;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.service.message.event.carrier.EventMessage;
+
+import java.util.List;
 
 public class MovementCreateConsumerBean implements MessageListener {
 
@@ -62,10 +66,13 @@ public class MovementCreateConsumerBean implements MessageListener {
                         IncomingMovement incomingMovement = mapper.readValue(textMessage.getText(), IncomingMovement.class);
                         movementCreate.processIncomingMovement(incomingMovement);
                         break;
-                    /*
-                    case "CREATE_BATCH" : break;
-                    */
 
+                    case "CREATE_BATCH" :
+                    List<IncomingMovement> movementList = mapper.readValue(textMessage.getText(), mapper.getTypeFactory().constructCollectionType(List.class, IncomingMovement.class));
+                    for (IncomingMovement im: movementList) {
+                        movementCreate.processIncomingMovement(im);
+                    }
+                        break;
                     case "PING":
                         movementEventBean.ping(textMessage);
                         break;
