@@ -11,9 +11,7 @@ import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.net.www.http.KeepAliveStream;
 
-import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -67,7 +65,7 @@ public class SSEResource {
                 sseBroadcaster.broadcast(sseEvent);
             }
         }catch (Exception e){
-            LOG.error("Bad stuffz: ", e);
+            LOG.error("Error while broadcasting SSE: ", e);
             throw new RuntimeException(e);
         }
     }
