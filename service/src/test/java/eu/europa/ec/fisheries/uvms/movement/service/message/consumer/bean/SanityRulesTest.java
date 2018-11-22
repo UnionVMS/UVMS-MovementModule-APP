@@ -145,6 +145,48 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
     }
 
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportMemberNumberMissingSanityRuleTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setPluginType("SATELLITE_RECEIVER");
+        incomingMovement.setMovementSourceType("INMARSAT_C");
+        incomingMovement.setMobileTerminalMemberNumber(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportMemberDNIDSanityRuleTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setPluginType("SATELLITE_RECEIVER");
+        incomingMovement.setMovementSourceType("INMARSAT_C");
+        incomingMovement.setMobileTerminalDNID(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportMemberMTSerialNumberSanityRuleTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setPluginType("SATELLITE_RECEIVER");
+        incomingMovement.setMovementSourceType("IRIDIUM");
+        incomingMovement.setMobileTerminalSerialNumber(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
     private ProcessedMovementResponse sendIncomingMovementAndReturnAlarmResponse(IncomingMovement incomingMovement) throws Exception{
         String json = mapper.writeValueAsString(incomingMovement);
         jmsHelper.sendMovementMessage(json, incomingMovement.getAssetHistoryId(), "CREATE");   //grouping on null.....
