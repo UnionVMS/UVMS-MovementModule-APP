@@ -630,6 +630,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
         incomingMovement.setPluginType(null);
+        incomingMovement.setMovementSourceType(null);
         String json = mapper.writeValueAsString(incomingMovement);
         jmsHelper.sendMovementMessage(json, incomingMovement.getAssetHistoryId(), "CREATE");   //grouping on null.....
 

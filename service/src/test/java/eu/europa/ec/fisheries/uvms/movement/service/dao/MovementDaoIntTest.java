@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 
 import org.hamcrest.core.StringContains;
 import org.hibernate.HibernateException;
@@ -325,7 +326,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.AREA, "HEPP"));
         String sql = "select m from Movement m ";
 
-        thrown.expect(HibernateException.class);
+        thrown.expect(EJBTransactionRolledbackException.class);
         expectedMessage("Error when getting list");
 
         movementDao.getMovementList(sql, searchValues);

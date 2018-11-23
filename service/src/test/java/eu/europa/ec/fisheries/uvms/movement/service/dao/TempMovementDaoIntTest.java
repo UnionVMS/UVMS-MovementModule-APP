@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 
 import org.hamcrest.core.StringContains;
 import org.hibernate.HibernateException;
@@ -95,7 +96,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void getTempMovementByGuid_ZeroGuid_Exception_Thrown()  {
 
-        thrown.expect(HibernateException.class);
+        thrown.expect(EJBTransactionRolledbackException.class);
         expectedMessage("Error when fetching temp movement");
 
         // we assume that the probability for zero guid exists in db is so low so we consider this safe

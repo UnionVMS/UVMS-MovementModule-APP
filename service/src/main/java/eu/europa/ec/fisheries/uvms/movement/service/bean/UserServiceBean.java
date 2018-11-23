@@ -11,16 +11,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.jms.TextMessage;
 
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementConsumerBean;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.movement.service.message.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.user.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.user.model.mapper.JAXBMarshaller;
@@ -28,17 +27,16 @@ import eu.europa.ec.fisheries.uvms.user.model.mapper.UserModuleRequestMapper;
 import eu.europa.ec.fisheries.wsdl.user.module.GetContactDetailResponse;
 import eu.europa.ec.fisheries.wsdl.user.module.GetOrganisationResponse;
 
-@LocalBean
 @Stateless
 public class UserServiceBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserServiceBean.class);
     private static final Long JMS_TIMEOUT = 60000L;
 
-    @EJB
+    @Inject
     private MovementConsumerBean consumer;
 
-    @EJB
+    @Inject
     private MovementMessageProducerBean producer;
 
     public String getUserNationality(String username) {

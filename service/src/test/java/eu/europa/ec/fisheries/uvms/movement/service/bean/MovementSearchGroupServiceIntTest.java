@@ -71,7 +71,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
             MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, "FAIL");
             movementSearchGroupService.createMovementFilterGroup(movementSearchGroup, "TEST");
             fail();
-        } catch (IllegalArgumentException e) {
+        } catch (EJBTransactionRolledbackException e) {
             assertNotNull(e);
         }
     }
@@ -83,7 +83,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
             MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, "null");
             movementSearchGroupService.createMovementFilterGroup(movementSearchGroup, "TEST");
             fail();
-        } catch (IllegalArgumentException e) {
+        } catch (EJBTransactionRolledbackException e) {
             assertNotNull(e);
         }
     }
@@ -95,7 +95,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
             MovementSearchGroup movementSearchGroup = createMovementSearchGroupHelper("TEST", false, SearchKeyType.MOVEMENT, "FAIL");
             movementSearchGroupService.createMovementFilterGroup(movementSearchGroup, "TEST");
             fail();
-        } catch (IllegalArgumentException e) {
+        } catch (EJBTransactionRolledbackException e) {
             assertNotNull(e);
         }
     }
@@ -201,7 +201,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
         }
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
     public void deleteMovementSearchGroup_then_getById_Exception_Thrown()  {
         MovementSearchGroup movementGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());

@@ -50,7 +50,7 @@ public class TempMovementService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TempMovementService.class);
 
-    @EJB
+    @Inject
     private MovementMessageProducerBean producer;
     
     @Inject

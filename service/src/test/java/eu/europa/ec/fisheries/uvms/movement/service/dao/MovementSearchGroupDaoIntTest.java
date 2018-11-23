@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.persistence.PersistenceException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -145,7 +146,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void updateMovementFilterGroupFailedNoId()  {
-        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expect(EJBTransactionRolledbackException.class);
         MovementFilterGroup movementFilterGroup = newFilterGroup();
         dao.updateMovementFilterGroup(movementFilterGroup);
         em.flush();

@@ -21,6 +21,7 @@ import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -31,6 +32,7 @@ import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@LocalBean
 @Stateless
 public class MovementMessageProducerBean extends AbstractProducer implements ConfigMessageProducer {
 
