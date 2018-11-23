@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
@@ -178,11 +179,11 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createMovement(movementBaseType);
 
-        List<MicroMovementDto> response = getWebTarget()
+        Map<String, MicroMovementDto> response = getWebTarget()
                 .path("movement")
                 .path("microMovementListAfter/" + DateUtil.parseUTCDateToString(time))
                 .request(MediaType.APPLICATION_JSON)
-                .get(new GenericType<List<MicroMovementDto>>() {});
+                .get(new GenericType<Map<String, MicroMovementDto>>() {});
 
 
         assertTrue(response.isEmpty());

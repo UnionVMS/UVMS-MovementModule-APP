@@ -6,6 +6,7 @@
     <filter>
         <filter-name>AuthenticationFilterMock</filter-name>
         <filter-class>eu.europa.ec.fisheries.uvms.movement.rest.AuthenticationFilterMock</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>AuthenticationFilterMock</filter-name>

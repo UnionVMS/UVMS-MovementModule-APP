@@ -28,11 +28,13 @@ public class MicroMovementDto {
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     private Instant timestamp;
 
+    private Double speed;
+
     public MicroMovementDto() {
 
     }
 
-    public MicroMovementDto(Geometry geo, double heading, UUID guid, MovementConnect asset, Instant timestamp) {
+    public MicroMovementDto(Geometry geo, double heading, UUID guid, MovementConnect asset, Instant timestamp, Double speed) {
         Point point = (Point)geo;
         location = new MovementPoint();
         location.setLatitude(point.getY());
@@ -41,6 +43,7 @@ public class MicroMovementDto {
         this.guid = guid.toString();
         this.asset = asset.getValue().toString();
         this.timestamp = timestamp;
+        this.speed = speed;
     }
 
     public MovementPoint getLocation() {
@@ -81,5 +84,13 @@ public class MicroMovementDto {
 
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Double speed) {
+        this.speed = speed;
     }
 }
