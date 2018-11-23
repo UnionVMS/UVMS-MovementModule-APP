@@ -7,7 +7,7 @@
 
         <createView viewName="LATEST_POS_VIEW">
             SELECT
-            b.move_guid, b.move_heading, b.move_location, b.move_moveconn_id, b.move_timestamp
+            b.move_guid, b.move_heading, b.move_location, b.move_moveconn_id, b.move_timestamp, b.move_speed
             FROM movement.movement b
             INNER JOIN (SELECT
             move_moveconn_id,

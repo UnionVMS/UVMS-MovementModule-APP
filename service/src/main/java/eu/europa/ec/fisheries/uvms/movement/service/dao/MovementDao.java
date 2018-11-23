@@ -74,6 +74,10 @@ public class MovementDao {
         return query.getResultList();
     }
 
+    public Track getTrackById(Long id){
+        return em.find(Track.class, id);
+    }
+
     public Movement getMovementByGUID(UUID guid) {
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_BY_GUID, Movement.class);
