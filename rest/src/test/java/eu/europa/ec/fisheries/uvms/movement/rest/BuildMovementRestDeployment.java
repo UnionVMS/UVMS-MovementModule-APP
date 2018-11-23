@@ -55,11 +55,14 @@ public abstract class BuildMovementRestDeployment {
         File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
                 .resolve("eu.europa.ec.fisheries.uvms.asset:asset-client",
                         "eu.europa.ec.fisheries.uvms.asset:asset-model",
+                        "eu.europa.ec.fisheries.uvms.spatial:spatial-model",
+                        "eu.europa.ec.fisheries.uvms.movement:movement-model",
                         "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message")
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
         testWar.addClass(UnionVMSMock.class);
+        testWar.addClass(SpatialModuleMock.class);
         testWar.addClass(AssetMTRestMock.class);
 
         return testWar;

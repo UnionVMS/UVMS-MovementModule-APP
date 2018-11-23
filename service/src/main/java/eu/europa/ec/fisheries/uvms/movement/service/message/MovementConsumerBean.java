@@ -21,8 +21,8 @@ import javax.ejb.Stateless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Stateless
 @LocalBean
+@Stateless
 public class MovementConsumerBean extends AbstractConsumer implements ConfigMessageConsumer {
 
     final static Logger LOG = LoggerFactory.getLogger(MovementConsumerBean.class);
