@@ -67,7 +67,7 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.duplicate = false and mm.processed = true) AND mc2.value = :id and m.processed = true"),
     @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true"),
     @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.value = :asset AND m.duplicate = false"),
-    @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.guid, m.movementConnect, m.timestamp) FROM Movement m WHERE m.timestamp > :date ORDER BY m.timestamp ASC"),
+    @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.guid, m.movementConnect, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.duplicate = false"),
 })
 @DynamicUpdate
 @DynamicInsert

@@ -49,6 +49,9 @@ public class MicroMovement implements Serializable{
         @Column(name = "move_timestamp")
         private Instant timestamp;
 
+        @Column(name = "move_speed")
+        private Double speed;
+
 
         public Point getLocation() {
             return location;
@@ -88,5 +91,13 @@ public class MicroMovement implements Serializable{
 
         public void setTimestamp(Instant timestamp) {
             this.timestamp = timestamp;
+        }
+
+        public Double getSpeed() {
+            return speed;
+        }
+
+        public void setSpeed(Double speed) {
+            this.speed = speed;
         }
 }
