@@ -12,9 +12,6 @@ import com.peertopark.java.geocalc.EarthCalc;
 import com.peertopark.java.geocalc.Point;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 public class MovementHelpers {
 
@@ -31,28 +28,22 @@ public class MovementHelpers {
      *****************************************************************************************************************/
 
     public Movement createMovement(double longitude, double latitude, UUID connectId, String userName,
-                                   Instant positionTime) throws MovementServiceException {
+                                   Instant positionTime){
 
-        try {
             Movement movement = MockData.createMovement(longitude, latitude, connectId, 0, userName);
             movement.setTimestamp(positionTime);
             movement = movementBatchModelBean.createMovement(movement);
             return movement;
-        } catch (MovementServiceRuntimeException e) {
-            throw new MovementServiceException("Movement Connect missing", e, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
-        }
+
 
     }
 
-    private Movement createMovement(LatLong latlong,  UUID connectId, String userName, Instant positionTime) throws MovementServiceException {
+    private Movement createMovement(LatLong latlong,  UUID connectId, String userName, Instant positionTime) {
 
-        try {
             Movement movement = MockData.createMovement(latlong,  connectId, userName);
             movement.setTimestamp(positionTime);
             return movementBatchModelBean.createMovement(movement);
-        } catch (MovementServiceRuntimeException e) {
-            throw new MovementServiceException("Movement Connect missing", e, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
-        }
+
     }
 
     // create l coordinates for well known routes. Collections.shuffle(route);
@@ -66,19 +57,18 @@ public class MovementHelpers {
      * @param connectId
      * @return
      *
-     * @throws MovementServiceException
      */
-    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, UUID connectId) throws MovementServiceException {
+    public List<Movement> createVarbergGrenaMovements(int order, int numberPositions, UUID connectId) {
         List<LatLong> positions = createRuttVarbergGrena(numberPositions);
         return getMovements(order, connectId, positions);
     }
 
-    public List<Movement> createFishingTourVarberg(int order, UUID connectId) throws MovementServiceException {
+    public List<Movement> createFishingTourVarberg(int order, UUID connectId) {
         List<LatLong> positions = createRuttSmallFishingTourFromVarberg();
         return getMovements(order, connectId, positions);
     }
 
-    private List<Movement> getMovements(int order, UUID connectId, List<LatLong> positions) throws MovementServiceException {
+    private List<Movement> getMovements(int order, UUID connectId, List<LatLong> positions) {
         List<Movement> createdRoute = new ArrayList<>();
         String userName = "TEST";
 

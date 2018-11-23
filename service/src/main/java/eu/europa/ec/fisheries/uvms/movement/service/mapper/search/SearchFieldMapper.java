@@ -28,8 +28,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 public class SearchFieldMapper {
 
@@ -43,7 +41,7 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    public static String createSelectSearchSql(List<SearchValue> searchFields, boolean isDynamic) throws ParseException, MovementServiceException {
+    public static String createSelectSearchSql(List<SearchValue> searchFields, boolean isDynamic) {
         StringBuilder selectBuffer = new StringBuilder();
 
         selectBuffer.append(createInitSearchSql(SearchTables.MOVEMENT));
@@ -74,7 +72,7 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    public static String createMinimalSelectSearchSql(List<SearchValue> searchFields, boolean isDynamic) throws ParseException, MovementServiceException {
+    public static String createMinimalSelectSearchSql(List<SearchValue> searchFields, boolean isDynamic) throws ParseException {
         StringBuilder selectBuffer = new StringBuilder();
 
         selectBuffer.append(createInitSearchSql(SearchTables.MINIMAL_MOVEMENT));
@@ -130,7 +128,7 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    public static String createCountSearchSql(List<SearchValue> searchFields, boolean isDynamic) throws ParseException, MovementServiceException {
+    public static String createCountSearchSql(List<SearchValue> searchFields, boolean isDynamic) throws ParseException {
         StringBuilder countBuffer = new StringBuilder();
         countBuffer.append("SELECT COUNT(DISTINCT ").append(SearchTables.MOVEMENT.getTableAlias()).append(") FROM ")
                 .append(SearchTables.MOVEMENT.getTableName())
@@ -160,7 +158,7 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    private static String createSearchSql(List<SearchValue> criterias, boolean dynamic, boolean joinFetch) throws ParseException, MovementServiceException {
+    private static String createSearchSql(List<SearchValue> criterias, boolean dynamic, boolean joinFetch) {
 
         String OPERATOR = " OR ";
         if (dynamic) {
@@ -203,7 +201,7 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    private static String createMinimalSearchSql(List<SearchValue> criterias, boolean dynamic, boolean joinFetch) throws ParseException, MovementServiceException {
+    private static String createMinimalSearchSql(List<SearchValue> criterias, boolean dynamic, boolean joinFetch) throws ParseException {
 
         String OPERATOR = " OR ";
         if (dynamic) {
@@ -254,7 +252,7 @@ public class SearchFieldMapper {
      * @param builder
      * @throws ParseException
      */
-    private static void createCriteria(List<SearchValue> criteria, SearchFieldType field, StringBuilder builder) throws MovementServiceException {
+    private static void createCriteria(List<SearchValue> criteria, SearchFieldType field, StringBuilder builder) {
 
         if (criteria.size() == 1) {
             SearchValue searchValue = criteria.get(0);
@@ -288,7 +286,7 @@ public class SearchFieldMapper {
     /**
      * Build special occasion WHERE String
      */
-    private static String buildSpecialConditionSql(HashMap<SearchField, List<SearchValue>> orderedValues, boolean first, String operator) throws ParseException, MovementServiceException {
+    private static String buildSpecialConditionSql(HashMap<SearchField, List<SearchValue>> orderedValues, boolean first, String operator) {
 
         StringBuilder builder = new StringBuilder();
 
@@ -428,7 +426,7 @@ public class SearchFieldMapper {
      * @param entry
      * @return
      */
-    private static String setValueAsType(SearchValue entry) throws MovementServiceException {
+    private static String setValueAsType(SearchValue entry) {
         StringBuilder builder = new StringBuilder();
 
         Class clazz = entry.getField().getClazz();
@@ -443,8 +441,7 @@ public class SearchFieldMapper {
                 builder.append(buildTableAliasname(entry.getField()));
                 builder.append(" <= ").append(entry.getToValue()).append(" ) ");
             } else {
-                throw new MovementServiceException("Error when setting value as type: Only Date, Integer and Double are supported when the entry is a range query ( setValueAsType )",
-                        ErrorCode.DAO_SEARCH_MAPPER_ERROR);
+                throw new IllegalArgumentException("Error when setting value as type: Only Date, Integer and Double are supported when the entry is a range query ( setValueAsType )");
             }
         } else {
             if (clazz.isEnum()) {
@@ -474,7 +471,7 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    private static String setValueAsType(SearchValue entry, SearchFieldType type) throws MovementServiceException {
+    private static String setValueAsType(SearchValue entry, SearchFieldType type) {
         StringBuilder builder = new StringBuilder();
 
         Class clazz = entry.getField().getClazz();
@@ -490,8 +487,7 @@ public class SearchFieldMapper {
                         .append(buildTableAliasname(type))
                         .append(" <= ").append(entry.getToValue()).append(" ) ").toString();
             } else {
-                throw new MovementServiceException("Error when setting value as type: Only Date, Integer and Double are supported when the entry is a range query ( setValueAsType )",
-                        ErrorCode.DAO_SEARCH_MAPPER_ERROR);
+                throw new IllegalArgumentException("Error when setting value as type: Only Date, Integer and Double are supported when the entry is a range query ( setValueAsType )");
             }
         } else {
 
@@ -517,23 +513,18 @@ public class SearchFieldMapper {
      *
      * @param value
      * @return
-     * @throws MovementServiceException
      */
-    public static Integer getOrdinalValueFromEnum(SearchValue value) throws MovementServiceException {
-        try {
-            if (value.getField().getClazz().isAssignableFrom(MovementTypeType.class)) {
-                return MovementTypeType.fromValue(value.getValue()).ordinal();
-            } else if (value.getField().getClazz().isAssignableFrom(MovementActivityTypeType.class)) {
-                return MovementActivityTypeType.fromValue(value.getValue()).ordinal();
-            } else if (value.getField().getClazz().isAssignableFrom(MovementSourceType.class)) {
-                return MovementSourceType.fromValue(value.getValue()).ordinal();
-            } else if (value.getField().getClazz().isAssignableFrom(SegmentCategoryType.class)) {
-                return SegmentCategoryType.fromValue(value.getValue()).ordinal();
-            }
-        } catch (ClassCastException ex) {
-            throw new MovementServiceException("Could not cast to Enum type from String", ex, ErrorCode.CLASS_CAST_ERROR);
+    public static Integer getOrdinalValueFromEnum(SearchValue value){
+        if (value.getField().getClazz().isAssignableFrom(MovementTypeType.class)) {
+            return MovementTypeType.fromValue(value.getValue()).ordinal();
+        } else if (value.getField().getClazz().isAssignableFrom(MovementActivityTypeType.class)) {
+            return MovementActivityTypeType.fromValue(value.getValue()).ordinal();
+        } else if (value.getField().getClazz().isAssignableFrom(MovementSourceType.class)) {
+            return MovementSourceType.fromValue(value.getValue()).ordinal();
+        } else if (value.getField().getClazz().isAssignableFrom(SegmentCategoryType.class)) {
+            return SegmentCategoryType.fromValue(value.getValue()).ordinal();
         }
-         throw new MovementServiceException("Enum type not defined for mapping", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+         throw new IllegalArgumentException("Enum type not defined for mapping");
     }
 
     /**
@@ -559,7 +550,7 @@ public class SearchFieldMapper {
      * @param entry
      * @return
      */
-    private static String buildValueFromClassType(SearchValue entry) throws MovementServiceException {
+    private static String buildValueFromClassType(SearchValue entry) {
         StringBuilder builder = new StringBuilder();
         if (entry.getField().getClazz().isAssignableFrom(Integer.class)) {
             builder.append(entry.getValue());
@@ -584,7 +575,7 @@ public class SearchFieldMapper {
      * @param field
      * @return
      */
-    private static String buildInSqlStatement(List<SearchValue> searchValues, SearchFieldType field) throws MovementServiceException {
+    private static String buildInSqlStatement(List<SearchValue> searchValues, SearchFieldType field) {
         StringBuilder builder = new StringBuilder();
 
         builder.append(buildTableAliasname(field));
@@ -611,7 +602,7 @@ public class SearchFieldMapper {
      * @param searchValues
      * @return
      */
-    private static HashMap<SearchField, List<SearchValue>> combineSearchFields(List<SearchValue> searchValues) throws MovementServiceException {
+    private static HashMap<SearchField, List<SearchValue>> combineSearchFields(List<SearchValue> searchValues) {
         HashMap<SearchField, List<SearchValue>> values = new HashMap<>();
         for (SearchValue search : searchValues) {
             if (!checkOnceOccurringFields(values, search.getField())) {
@@ -621,7 +612,7 @@ public class SearchFieldMapper {
                     values.put(search.getField(), new ArrayList<>(Arrays.asList(search)));
                 }
             } else {
-                throw new MovementServiceException("TO_DATE and FROM_DATE can only occur once in the search list!", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+                throw new IllegalArgumentException("TO_DATE and FROM_DATE can only occur once in the search list!");
             }
         }
         return values;
@@ -647,7 +638,6 @@ public class SearchFieldMapper {
      *
      * @param listCriteria
      * @return
-     * @throws MovementServiceException
      */
     public static List<SearchValue> mapListCriteriaToSearchValue(List<ListCriteria> listCriteria) {
 
@@ -660,7 +650,7 @@ public class SearchFieldMapper {
             try {
                 SearchField field = mapCriteria(criteria.getKey());
                 searchFields.add(new SearchValue(field, criteria.getValue()));
-            } catch (MovementServiceException e) {
+            } catch (IllegalArgumentException e) {
                 LOG.debug("Error when mapping to search field.. continuing with other criterias. {}", e.getMessage());
             }
         }
@@ -726,9 +716,8 @@ public class SearchFieldMapper {
      *
      * @param key
      * @return
-     * @throws MovementServiceException
      */
-    private static SearchField mapCriteria(SearchKey key) throws MovementServiceException {
+    private static SearchField mapCriteria(SearchKey key) {
         switch (key) {
             case MOVEMENT_ID:
                 return SearchField.MOVEMENT_ID;
@@ -753,7 +742,7 @@ public class SearchFieldMapper {
             case DATE:
                 return SearchField.DATE;
             default:
-                throw new MovementServiceException("No field found: " + key.name(), ErrorCode.DAO_SEARCH_MAPPER_ERROR);
+                throw new IllegalArgumentException("No field found: " + key.name());
         }
     }
 }

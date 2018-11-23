@@ -20,7 +20,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
 public class MovementDaoBeanTest extends TransactionalTests {
@@ -39,7 +38,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testGetMovementsByGUID() throws MovementServiceException {
+	public void testGetMovementsByGUID() throws Exception {
 		Movement output = movementDao.getMovementByGUID(UUID.randomUUID());
 		assertNull(output);
 		
@@ -54,7 +53,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@Test
 	@OperateOnDeployment("movementservice")
-	public void testGetLatestMovementByConnectIdList() throws MovementServiceException {
+	public void testGetLatestMovementByConnectIdList() throws Exception {
 		UUID connectID = UUID.randomUUID();
 		UUID connectID2 = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
@@ -94,7 +93,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@Test
 	@OperateOnDeployment("movementservice")
-	public void testGetLatestMovementsByConnectID() throws MovementServiceException {
+	public void testGetLatestMovementsByConnectID() throws Exception {
 		UUID connectID = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
@@ -128,7 +127,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 
 	@Test
 	@OperateOnDeployment("movementservice")
-	public void testGetLatestMovementsByConnectID_willFail() throws MovementServiceException {
+	public void testGetLatestMovementsByConnectID_willFail() throws Exception {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
 

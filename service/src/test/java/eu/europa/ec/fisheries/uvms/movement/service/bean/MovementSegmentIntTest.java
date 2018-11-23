@@ -17,7 +17,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
 public class MovementSegmentIntTest extends TransactionalTests {
@@ -38,7 +37,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createThreeMovementTrackInOrder() throws MovementServiceException {
+    public void createThreeMovementTrackInOrder()  {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         UUID connectId = UUID.randomUUID();
@@ -76,7 +75,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createFourMovementTrackInOrder() throws MovementServiceException {
+    public void createFourMovementTrackInOrder()  {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         UUID connectId = UUID.randomUUID();
@@ -119,7 +118,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createFourMovementTrackOutOfOrder() throws MovementServiceException {
+    public void createFourMovementTrackOutOfOrder()  {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         UUID connectId = UUID.randomUUID();
@@ -160,7 +159,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createVarbergGrenaNormal() throws MovementServiceException {
+    public void createVarbergGrenaNormal()  {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
         UUID connectId = UUID.randomUUID();
 
@@ -173,17 +172,17 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createVarbergGrenaBasedOnReversedOrder() throws MovementServiceException {
+    public void createVarbergGrenaBasedOnReversedOrder()  {
         testVarbergGrenaBasedOnOrdering(ORDER_REVERSED);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createVarbergGrenaBasedOnRandomOrder() throws MovementServiceException {
+    public void createVarbergGrenaBasedOnRandomOrder()  {
         testVarbergGrenaBasedOnOrdering(ORDER_RANDOM);
     }
 
-    private void testVarbergGrenaBasedOnOrdering(int order) throws MovementServiceException {
+    private void testVarbergGrenaBasedOnOrdering(int order)  {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
         UUID connectId = UUID.randomUUID();
 
@@ -219,7 +218,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createFishingTourVarberg() throws MovementServiceException {
+    public void createFishingTourVarberg()  {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
         UUID connectId = UUID.randomUUID();
 

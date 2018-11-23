@@ -21,8 +21,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 @Stateless
 public class MovementBatchModelBean {
@@ -33,12 +31,13 @@ public class MovementBatchModelBean {
     private MovementDao movementDao;
 
     public Movement createMovement(Movement movement) {
+        if(movement.getMovementConnect().getValue() == null) {
+            throw new IllegalArgumentException("No movementConnect ID");
+        }
         UUID connectId = movement.getMovementConnect().getValue();
         try {
             MovementConnect moveConnect = getMovementConnectByConnectId(connectId);
-            if(moveConnect == null) {
-                throw new MovementServiceRuntimeException("Couldn't find movementConnect!", ErrorCode.NO_MOVEMENT_CONNECT);
-            }
+
             movement.setMovementConnect(moveConnect);
             return movementDao.createMovement(movement);
         } catch (Exception e) {

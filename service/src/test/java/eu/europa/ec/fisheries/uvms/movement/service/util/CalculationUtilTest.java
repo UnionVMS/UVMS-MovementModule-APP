@@ -20,8 +20,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
 public class CalculationUtilTest extends TransactionalTests {
@@ -120,7 +118,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testGetPositionCalculations () throws MovementServiceException {
+	public void testGetPositionCalculations () {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
@@ -151,7 +149,7 @@ public class CalculationUtilTest extends TransactionalTests {
 		try {
 			segmentCalc = CalculationUtil.getPositionCalculations(start, end);
 			fail("Should not work due tu null location");
-		} catch (MovementServiceRuntimeException e) {
+		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
 		

@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -25,14 +24,11 @@ import javax.persistence.TypedQuery;
 
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
+import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
@@ -104,7 +100,7 @@ public class MovementDao {
 
     public List<Movement> getLatestMovementsByConnectId(UUID connectId, Integer amount) {
         if(amount < 1) {
-            throw new MovementServiceRuntimeException("Amount can't have 0 or negative value.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Amount can't have 0 or negative value.");
         } else if (amount == 1) {
             LatestMovement latestMovement = getLatestMovement(connectId);
             if(latestMovement != null && latestMovement.getMovement() != null)
@@ -195,33 +191,28 @@ public class MovementDao {
         }
     }
 
-    public <T> List<T> getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues, Class<T> clazz) throws MovementServiceException {
-        try {
-            TypedQuery<T> query = getMovementQuery(sql, searchKeyValues, clazz);
-            query.setFirstResult(listSize * (page - 1));
-            query.setMaxResults(listSize);
-            return query.getResultList();
-        } catch (IllegalArgumentException e) {
-            throw new MovementServiceRuntimeException("Error when getting paginated list", e, ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-        } catch (Exception e) {
-            throw new MovementServiceException("Error when getting paginated list", e, ErrorCode.DATA_RETRIEVING_ERROR);
-        }
+    public <T> List<T> getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues, Class<T> clazz){
+        TypedQuery<T> query = getMovementQuery(sql, searchKeyValues, clazz);
+        query.setFirstResult(listSize * (page - 1));
+        query.setMaxResults(listSize);
+        return query.getResultList();
+
     }
 
-    private <T> TypedQuery<T> getMovementQuery(String sql, List<SearchValue> searchKeyValues, Class<T> clazz) throws ParseException {
+    private <T> TypedQuery<T> getMovementQuery(String sql, List<SearchValue> searchKeyValues, Class<T> clazz) {
         TypedQuery<T> query = em.createQuery(sql, clazz);
         setTypedQueryMovementParams(searchKeyValues, query);
         return query;
     }
 
-    public Long getMovementListSearchCount(String countSql, List<SearchValue> searchKeyValues) throws ParseException {
+    public Long getMovementListSearchCount(String countSql, List<SearchValue> searchKeyValues) {
         TypedQuery<Long> query = em.createQuery(countSql, Long.class);
         setTypedQueryMovementParams(searchKeyValues, query);
         return query.getSingleResult();
     }
 
 
-    private void setTypedQueryMovementParams(List<SearchValue> searchKeyValues, Query query) throws ParseException {
+    private void setTypedQueryMovementParams(List<SearchValue> searchKeyValues, Query query) {
         for (SearchValue searchValue : searchKeyValues) {
             if (searchValue.isRange()) {
                 if (searchValue.getField().equals(SearchField.DATE)) {
@@ -236,38 +227,34 @@ public class MovementDao {
         }
     }
 
-    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues) throws MovementServiceException {
+    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues){
         try {
             LOG.debug("SQL QUERY IN LIST PAGINATED: {}", sql);
             TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues, Movement.class);
             return query.getResultList();
         } catch (Exception e) {
-            throw new MovementServiceException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
+            throw new HibernateException("Error when getting list", e);
         }
     }
 
-    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues, int numberOfReports) throws MovementServiceException {
-        try {
-            List<Movement> movements = new ArrayList<>();
-            if (searchKeyValues == null || searchKeyValues.isEmpty()) {
-                LOG.debug("searchValues empty or null, getting all vessels and the latest reports for them");
-                TypedQuery<MovementConnect> connectQuery = em.createNamedQuery(MovementConnect.MOVEMENT_CONNECT_GET_ALL, MovementConnect.class);
-                List<MovementConnect> movementConnects = connectQuery.getResultList();
+    public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues, int numberOfReports) {
+        List<Movement> movements = new ArrayList<>();
+        if (searchKeyValues == null || searchKeyValues.isEmpty()) {
+            LOG.debug("searchValues empty or null, getting all vessels and the latest reports for them");
+            TypedQuery<MovementConnect> connectQuery = em.createNamedQuery(MovementConnect.MOVEMENT_CONNECT_GET_ALL, MovementConnect.class);
+            List<MovementConnect> movementConnects = connectQuery.getResultList();
 
-                for (MovementConnect movementConnect : movementConnects) {
-                    List<Movement> latestMovementsByConnectId = getLatestMovementsByConnectId(movementConnect.getValue(), numberOfReports);
-                    movements.addAll(latestMovementsByConnectId);
-                }
-            } else {
-                LOG.debug("Searchvalues is NOT empty, getting latest reports for the query ( TOP( {} ) )", numberOfReports);
-                TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues, Movement.class);
-                query.setMaxResults(numberOfReports);
-                movements = query.getResultList();
+            for (MovementConnect movementConnect : movementConnects) {
+                List<Movement> latestMovementsByConnectId = getLatestMovementsByConnectId(movementConnect.getValue(), numberOfReports);
+                movements.addAll(latestMovementsByConnectId);
             }
-            return movements;
-        } catch (ParseException e) {
-            throw new MovementServiceException("Error when getting list", e, ErrorCode.DATA_RETRIEVING_ERROR);
+        } else {
+            LOG.debug("Searchvalues is NOT empty, getting latest reports for the query ( TOP( {} ) )", numberOfReports);
+            TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues, Movement.class);
+            query.setMaxResults(numberOfReports);
+            movements = query.getResultList();
         }
+        return movements;
     }
 
     public MovementConnect getMovementConnectByConnectId(UUID id) {

@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.model.mapper;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.ErrorCode;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -24,7 +23,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +39,8 @@ public class JAXBMarshaller {
      * @param data
      * @return
      * @throws
-     * eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException
      */
-    public static <T> String marshallJaxBObjectToString(T data) throws MovementModelException {
+    public static <T> String marshallJaxBObjectToString(T data) {
         try {
             JAXBContext jaxbContext = contexts.get(data.getClass().getName());
             if (jaxbContext == null) {
@@ -63,7 +60,7 @@ public class JAXBMarshaller {
             return marshalled;
         } catch (JAXBException ex) {
             LOG.error("[ Error when marshalling object to string ] {} ", ex.getMessage());
-            throw new MovementModelException("[ Error when marshalling Object to String ]", ex, ErrorCode.MODEL_MARSHALL_ERROR);
+            throw new RuntimeException("[ Error when marshalling Object to String ]", ex);
         }
     }
 
@@ -76,9 +73,8 @@ public class JAXBMarshaller {
      * @param clazz pperException
      * @return
      * @throws
-     * eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException
      */
-    public static <R> R unmarshallTextMessage(TextMessage textMessage, Class clazz) throws MovementModelException {
+    public static <R> R unmarshallTextMessage(TextMessage textMessage, Class clazz){
         try {
             JAXBContext jc = contexts.get(clazz.getName());
             if (jc == null) {
@@ -95,9 +91,9 @@ public class JAXBMarshaller {
             R object = (R) unmarshaller.unmarshal(source);
             LOG.debug("Unmarshalling time: {}", (System.currentTimeMillis() - before));
             return object;
-        } catch (NullPointerException | JMSException | JAXBException ex) {
+        } catch (JMSException | JAXBException ex) {
             //LOG.error("[ Error when marshalling Text message to object ] {} ", ex.getMessage());
-            throw new MovementModelException("[Error when unmarshalling response in ResponseMapper ]", ex, ErrorCode.MODEL_MARSHALL_ERROR);
+            throw new RuntimeException("[Error when unmarshalling response in ResponseMapper ]", ex);
         }
     }
 }

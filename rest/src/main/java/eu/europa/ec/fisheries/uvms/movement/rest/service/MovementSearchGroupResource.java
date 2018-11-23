@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
@@ -70,12 +69,9 @@ public class MovementSearchGroupResource {
             MovementFilterGroup createdFilterGroup = service.createMovementFilterGroup(searchGroup, request.getRemoteUser());
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(createdFilterGroup);
             return new ResponseDto(movementSearchGroup, RestResponseCode.OK);
-        } catch (MovementServiceException e) {
-            LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
         } catch (Exception e) {
             LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 
@@ -95,12 +91,9 @@ public class MovementSearchGroupResource {
             MovementFilterGroup filterGroup = service.getMovementFilterGroup(id);
             MovementSearchGroup searchGroup = MovementGroupMapper.toMovementSearchGroup(filterGroup);
             return new ResponseDto(searchGroup, RestResponseCode.OK);
-        } catch (MovementServiceException e) {
-            LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage() + ": " + e.getCause().getMessage(), RestResponseCode.ERROR);
         } catch (Exception e) {
             LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 
@@ -120,12 +113,9 @@ public class MovementSearchGroupResource {
             MovementFilterGroup updatedFilterGroup = service.updateMovementFilterGroup(searchGroup, request.getRemoteUser());
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(updatedFilterGroup);
             return new ResponseDto(movementSearchGroup, RestResponseCode.OK);
-        } catch (MovementServiceException e) {
-            LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
         } catch (Exception e) {
             LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 
@@ -148,12 +138,9 @@ public class MovementSearchGroupResource {
                 searchGroups.add(MovementGroupMapper.toMovementSearchGroup(filterGroup));
             }
             return new ResponseDto(searchGroups, RestResponseCode.OK);
-        } catch (MovementServiceException e) {
-            LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
         } catch (Exception e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 
@@ -172,12 +159,9 @@ public class MovementSearchGroupResource {
             MovementFilterGroup deletedSearchGroup = service.deleteMovementFilterGroup(id);
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(deletedSearchGroup);
             return new ResponseDto(movementSearchGroup, RestResponseCode.OK);
-        } catch (MovementServiceException e) {
-            LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
         } catch (Exception e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR_DUPLICTAE);
+            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 }

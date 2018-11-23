@@ -18,7 +18,6 @@ import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JMSUtils;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
 import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 
 import javax.annotation.PostConstruct;
@@ -97,7 +96,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
             exception.setFault(message.getErrorMessage());
             String text = JAXBMarshaller.marshallJaxBObjectToString(exception);
             sendResponseMessageToSender(message.getJmsMessage(), text);
-        } catch (MessageException | MovementModelException e) {
+        } catch (MessageException e) {
             LOG.error("[ Error when sending message. ] {}", e.getMessage());
             throw new RuntimeException("[ Error when sending message. ]", e);
         }

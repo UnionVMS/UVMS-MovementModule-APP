@@ -22,7 +22,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
 @Ignore //Since we process movements as we create them, theses tests need changing to not try to create the same segments.
@@ -39,7 +38,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createSegmentOnFirstMovement() throws MovementServiceException, MovementServiceException {
+    public void createSegmentOnFirstMovement() throws Exception {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         UUID connectId = UUID.randomUUID();
@@ -80,7 +79,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementServiceException, MovementServiceException {
+    public void createSegmentOnFirstMovement_OnlyOneMovement() throws Exception {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         UUID connectId = UUID.randomUUID();
@@ -122,7 +121,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void splitSegment() throws MovementServiceException, MovementServiceException {
+    public void splitSegment() throws Exception {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         // TODO nothing indicates that this splitFunction actually works
@@ -185,7 +184,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createNewTrack() throws MovementServiceException, MovementServiceException {
+    public void createNewTrack() throws Exception {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         UUID connectId = UUID.randomUUID();
@@ -241,7 +240,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createNewTrack_onSegmentMovement() throws MovementServiceException, MovementServiceException {
+    public void createNewTrack_onSegmentMovement() throws Exception {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         UUID connectId = UUID.randomUUID();
@@ -264,7 +263,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void upsertTrack() throws MovementServiceException, MovementServiceException {
+    public void upsertTrack() throws Exception {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
@@ -303,7 +302,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void upsertTrack5() throws MovementServiceException, MovementServiceException {
+    public void upsertTrack5() throws Exception {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
@@ -357,7 +356,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void updateTrack() throws MovementServiceException, MovementServiceException {
+    public void updateTrack() throws Exception {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
@@ -391,7 +390,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void addMovementBeforeFirst() throws MovementServiceException, MovementServiceException {
+    public void addMovementBeforeFirst() throws Exception {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
         // TODO better evaluation of results

@@ -58,11 +58,15 @@ public class WKTUtil {
         return WKTWriter.toLineString(track.getLocation().getCoordinateSequence());
     }
 
-    public static Geometry getGeometryFromWKTSrring(String wkt) throws ParseException {
-        WKTReader reader = new WKTReader();
-        Geometry geom = reader.read(wkt);
-        geom.setSRID(GeometryUtil.SRID);
-        return geom;
+    public static Geometry getGeometryFromWKTSrring(String wkt) {
+        try {
+            WKTReader reader = new WKTReader();
+            Geometry geom = reader.read(wkt);
+            geom.setSRID(GeometryUtil.SRID);
+            return geom;
+        }catch (ParseException e){
+            throw new IllegalArgumentException("Inputstring " + wkt + " causes a parse exception.", e);
+        }
     }
 
     public static String getWktPointString(Geometry geometry) {

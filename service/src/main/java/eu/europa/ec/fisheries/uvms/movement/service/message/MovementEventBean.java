@@ -25,11 +25,9 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryReq
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @Stateless
 public class MovementEventBean {
@@ -56,7 +54,7 @@ public class MovementEventBean {
             String responseString = MovementModuleResponseMapper.mapTogetMovementListByQueryResponse(movementList.getMovement());
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
-        } catch (MovementModelException  | MovementServiceException | JMSException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error on getMovementListByQuery ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
                 EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
@@ -75,7 +73,7 @@ public class MovementEventBean {
 
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
-        } catch (MovementModelException  | MovementServiceException | JMSException ex) {
+        } catch (Exception ex) {
             LOG.error("[ Error when creating getMovementMapByQuery ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
                 EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
@@ -86,14 +84,9 @@ public class MovementEventBean {
     }
     
     public void ping(TextMessage message) {
-        try {
             PingResponse pingResponse = new PingResponse();
             pingResponse.setResponse("pong");
             messageProducer.sendMessageBackToRecipient(message, JAXBMarshaller.marshallJaxBObjectToString(pingResponse));
-        } catch (MovementModelException e) {
-            LOG.error("[ Error when responding to ping. ] ", e);
-            errorEvent.fire(new EventMessage(message, "Error when responding to ping CD ..SSS: " + e.getMessage()));
-        }
     }
 
     

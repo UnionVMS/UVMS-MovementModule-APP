@@ -13,8 +13,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.util.GeometryUtil;
 
@@ -27,7 +25,7 @@ public class SegmentBean {
     @Inject
     SpatialRestClient spatialClient;
 
-    public void newSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
+    public void newSegment(Movement previousMovement, Movement currentMovement) {
         Segment segment = createSegment(previousMovement, currentMovement);
         Track track = upsertTrack(previousMovement.getTrack(), segment, currentMovement);
         if (previousMovement.getTrack() == null) {
@@ -37,7 +35,7 @@ public class SegmentBean {
         dao.createSegment(segment);
     }
 
-    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) throws MovementServiceException {
+    public void addMovementBeforeFirst(Movement firstMovement, Movement currentMovement) {
         Segment segment = createSegment(currentMovement, firstMovement);
         Track track = upsertTrack(firstMovement.getTrack(), segment, currentMovement);
         if (firstMovement.getTrack() == null) {
@@ -47,7 +45,7 @@ public class SegmentBean {
         dao.createSegment(segment);
     }
 
-    public void splitSegment(Movement previousMovement, Movement currentMovement) throws MovementServiceException {
+    public void splitSegment(Movement previousMovement, Movement currentMovement) {
         if (currentMovement == null || previousMovement == null) {
             throw new IllegalArgumentException("Error when splitting segment, currentPosition and previousPosition cannot be null");
         }
@@ -55,8 +53,7 @@ public class SegmentBean {
         Segment theSegmentToBeBroken = previousMovement.getToSegment();
         
         if (theSegmentToBeBroken == null) {
-            throw new MovementServiceException("PREVIOUS MOVEMENT MUST HAVE A SEGMENT BUT IT DOESN'T, SOME LOGICAL ERROR HAS OCCURRED",
-                    ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("PREVIOUS MOVEMENT MUST HAVE A SEGMENT BUT IT DOESN'T, SOME LOGICAL ERROR HAS OCCURRED");
         }
         
         Movement oldToMovement = theSegmentToBeBroken.getToMovement();
@@ -72,16 +69,16 @@ public class SegmentBean {
         dao.createSegment(segment);
     }
     
-    protected Segment createSegment(Movement fromMovement, Movement toMovement) throws MovementServiceException {
+    protected Segment createSegment(Movement fromMovement, Movement toMovement) {
         if (toMovement == null || fromMovement == null) {
-            throw new MovementServiceException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null", ErrorCode.DAO_MAPPING_ERROR);
+            throw new IllegalArgumentException("ERROR when mapping to Segment entity: currentPosition AND previous Position cannot be null");
         }
         Segment segment = new Segment();
         populateSegment(segment, fromMovement, toMovement);
         return segment;
     }
     
-    private void populateSegment(Segment segment, Movement fromMovement, Movement toMovement) throws MovementServiceException {
+    private void populateSegment(Segment segment, Movement fromMovement, Movement toMovement) {
         //calculations for segment
         SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(fromMovement, toMovement);
 
@@ -107,7 +104,7 @@ public class SegmentBean {
         toMovement.setFromSegment(segment);
     }
 
-    protected Track upsertTrack(Track track, Segment segment, Movement newMovement) throws MovementServiceException {
+    protected Track upsertTrack(Track track, Segment segment, Movement newMovement){
         if (track == null) {        //if there is no tracks
         	return createNewTrack(segment);
         } else {
@@ -125,7 +122,7 @@ public class SegmentBean {
                     updateTrack(track, newMovement, segment);
                     break;
                 default:
-                    throw new MovementServiceException("SEGMENT CATEGORY " + segment.getSegmentCategory().name() + " IS NOT MAPPED", ErrorCode.DAO_MAPPING_ERROR);
+                    throw new IllegalArgumentException("SEGMENT CATEGORY " + segment.getSegmentCategory().name() + " IS NOT MAPPED");
             }
         }
         return track;

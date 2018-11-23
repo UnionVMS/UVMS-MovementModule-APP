@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @Stateless
 public class IncomingMovementBean {
@@ -23,7 +22,7 @@ public class IncomingMovementBean {
     @Inject
     private MovementDao dao;
 
-    public void processMovement(Movement currentMovement) throws MovementServiceException {
+    public void processMovement(Movement currentMovement) {
         if (currentMovement == null) {
             throw new IllegalArgumentException("Movement to process is null!");
         }

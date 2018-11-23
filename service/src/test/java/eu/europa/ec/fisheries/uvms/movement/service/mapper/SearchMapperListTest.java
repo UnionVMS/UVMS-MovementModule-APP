@@ -13,7 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import java.text.ParseException;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -27,7 +27,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -44,14 +43,14 @@ public class SearchMapperListTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void testCreateSearchSql() throws ParseException, MovementServiceException {
+    public void testCreateSearchSql() throws Exception {
         String data = SearchFieldMapper.createSelectSearchSql(null, true);
         assertEquals(INITIAL_SELECT +NO_DUPLICATE + ORDER_BY, data);
     }
     
     @Test
     @OperateOnDeployment("movementservice")
-    public void testGetOrdinalValueFromEnum() throws MovementServiceException {
+    public void testGetOrdinalValueFromEnum() {
 
         for (MovementTypeType mt : MovementTypeType.values()) {
             Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mt.name(), SearchField.MOVMENT_TYPE));
@@ -76,7 +75,7 @@ public class SearchMapperListTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void testSearchFieldSegmentId() throws ParseException, MovementServiceException {
+    public void testSearchFieldSegmentId() throws Exception {
         List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -100,7 +99,7 @@ public class SearchMapperListTest extends TransactionalTests {
     
     @Test
     @OperateOnDeployment("movementservice")
-    public void testSearchFieldCategory() throws ParseException, MovementServiceException {
+    public void testSearchFieldCategory() throws Exception {
         List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -124,7 +123,7 @@ public class SearchMapperListTest extends TransactionalTests {
     
     @Test
     @OperateOnDeployment("movementservice")
-    public void testCreateMinimalSelectSearchSql() throws ParseException, MovementServiceException {
+    public void testCreateMinimalSelectSearchSql() throws Exception {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -142,7 +141,7 @@ public class SearchMapperListTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void testMultipleSearchFieldCategorys() throws ParseException, MovementServiceException {
+    public void testMultipleSearchFieldCategorys() throws Exception {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -170,7 +169,7 @@ public class SearchMapperListTest extends TransactionalTests {
     
     @Test
     @OperateOnDeployment("movementservice")
-    public void testCreateCountSearchSql() throws ParseException, MovementServiceException {
+    public void testCreateCountSearchSql() throws Exception {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();

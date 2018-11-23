@@ -36,7 +36,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
 public class MovementEntityToModelTest extends TransactionalTests {
@@ -52,7 +51,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testMovementBaseType() throws MovementServiceException {
+	public void testMovementBaseType() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
@@ -102,7 +101,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testMapToMovementTypeWithMovementInput() throws MovementServiceException {
+	public void testMapToMovementTypeWithMovementInput() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
@@ -143,7 +142,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testMapToMovementTypeWithAListOfMovements() throws MovementServiceException {
+	public void testMapToMovementTypeWithAListOfMovements() {
 		//Most of the method is tested by testMapToMovementType
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
@@ -166,7 +165,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testMapToMovementTypeWithAListOfLatestMovements() throws MovementServiceException {
+	public void testMapToMovementTypeWithAListOfLatestMovements() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
@@ -195,7 +194,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testMapToMovementSegment() throws MovementServiceException {
+	public void testMapToMovementSegment() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
@@ -228,7 +227,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testOrderMovementsByConnectId() throws MovementServiceException {
+	public void testOrderMovementsByConnectId() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		List<UUID> connectId = new ArrayList<>();
 		List<Movement> input = new ArrayList<>();
@@ -256,7 +255,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testExtractSegments() throws MovementServiceException {
+	public void testExtractSegments() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
@@ -303,7 +302,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testExtractTracks() throws MovementServiceException {
+	public void testExtractTracks() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));

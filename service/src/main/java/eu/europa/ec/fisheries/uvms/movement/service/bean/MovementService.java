@@ -24,12 +24,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -49,9 +47,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
@@ -83,45 +78,35 @@ public class MovementService {
     /**
      *
      * @param movement
-     * @throws MovementServiceException
      */
     public Movement createMovement(Movement movement) {
-        try {
+        movementBatch.createMovement(movement);
+        incomingMovementBean.processMovement(movement);
+        if(movement != null){
+            fireMovementEvent(movement);
+            auditService.sendMovementCreatedAudit(movement, movement.getUpdatedBy());
+        }
+        return movement;
+    }
+
+    public List<Movement> createMovementBatch(List<Movement> movements) {
+        for (Movement movement : movements) {
             movementBatch.createMovement(movement);
             incomingMovementBean.processMovement(movement);
-            if(movement != null){
-                fireMovementEvent(movement);
-                auditService.sendMovementCreatedAudit(movement, movement.getUpdatedBy());
-            }
-            return movement;
-        } catch (MovementServiceException ex) {
-            throw new EJBException(ex);
         }
+        return movements;
+
     }
 
-    public List<Movement> createMovementBatch(List<Movement> movements) throws MovementServiceException {
-        try {
-            for (Movement movement : movements) {
-                movementBatch.createMovement(movement);
-                incomingMovementBean.processMovement(movement);
-            }
-            return movements;
-        } catch (MovementServiceRuntimeException mdre) {
-            throw new MovementServiceException("Didn't find movement connect for the just received movement so NOT going to save anything!", mdre, ErrorCode.MISSING_MOVEMENT_CONNECT_ERROR);
-        } catch (MovementServiceException ex) {
-            throw new EJBException("createMovementBatch failed", ex);
-        }
-    }
-
-    public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException {
+    public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) {
         if (query == null) {
-            throw new MovementServiceRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Movement list query is null");
         }
         if (query.getMovementSearchCriteria() == null) {
-            throw new MovementServiceRuntimeException("No search criterias in MovementList query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("No search criterias in MovementList query");
         }
         if (query.getPagination() != null) {
-            throw new MovementServiceRuntimeException("Pagination not supported in get movement map by query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Pagination not supported in get movement map by query");
         }
         boolean getLatestReports = query.getMovementSearchCriteria()
                 .stream()
@@ -138,8 +123,8 @@ public class MovementService {
             if (first.isPresent()) {
                 numberOfLatestReports = Integer.parseInt(first.get());
             } else {
-                throw new MovementServiceRuntimeException(SearchKey.NR_OF_LATEST_REPORTS.name()
-                        + " is in the query but no value could be found!, VALUE = null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+                throw new IllegalArgumentException(SearchKey.NR_OF_LATEST_REPORTS.name()
+                        + " is in the query but no value could be found!, VALUE = null");
             }
         }
         try {
@@ -194,24 +179,23 @@ public class MovementService {
             }
             return MovementDataSourceResponseMapper.createMovementMapResponse(mapResponse);
         } catch (Exception  ex) {
-            throw new MovementServiceException("Error when getting movement map by query", ex, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+            throw new RuntimeException("Error when getting movement map by query", ex);
         }
     }
     
     /**
      *
      * @return
-     * @throws MovementServiceException
      */
-    public GetMovementListByQueryResponse getList(MovementQuery query) throws MovementServiceException {
+    public GetMovementListByQueryResponse getList(MovementQuery query){
         if (query == null) {
-            throw new MovementServiceRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Movement list query is null");
         }
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
-            throw new MovementServiceRuntimeException("Pagination in movementlist query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Pagination in movementlist query is null");
         }
         if (query.getMovementSearchCriteria().isEmpty()) {
-            throw new MovementServiceRuntimeException("No search criterias in MovementList query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("No search criterias in MovementList query");
         }
         try {
             ListResponseDto response = new ListResponseDto();
@@ -242,25 +226,24 @@ public class MovementService {
             response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
 
             return MovementDataSourceResponseMapper.createMovementListResponse(response);
-        } catch (ParseException | com.vividsolutions.jts.io.ParseException e) {
-            throw new MovementServiceException("Error when getting movement list by query: ParseException", e, ErrorCode.PARSING_ERROR);
+        } catch (ParseException e) {
+            throw new RuntimeException("Error when getting movement list by query: ParseException", e);
         }
     }
 
     /**
      *
      * @return
-     * @throws MovementServiceException
      */
-    public GetMovementListByQueryResponse getMinimalList(MovementQuery query) throws MovementServiceException {
+    public GetMovementListByQueryResponse getMinimalList(MovementQuery query) {
         if (query == null) {
-            throw new MovementServiceRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Movement list query is null");
         }
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
-            throw new MovementServiceRuntimeException("Pagination in movementList query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Pagination in movementList query is null");
         }
         if (query.getMovementSearchCriteria() == null) {
-            throw new MovementServiceRuntimeException("No search criterias in MovementList query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("No search criterias in MovementList query");
         }
         try {
             ListResponseDto response = new ListResponseDto();
@@ -290,8 +273,8 @@ public class MovementService {
             response.setMovementList(movementList);
             response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
             return MovementDataSourceResponseMapper.createMovementListResponse(response);
-        } catch (ParseException | com.vividsolutions.jts.io.ParseException ex) {
-            throw new MovementServiceException("Error when getting movement list by query", ex, ErrorCode.PARSING_ERROR);
+        } catch (ParseException ex) {
+            throw new RuntimeException("Error when getting movement list by query", ex);
         }
     }
 
@@ -300,7 +283,6 @@ public class MovementService {
      *
      * @param id
      * @return
-     * @throws MovementServiceException
      */
     public Movement getById(UUID id) {
         return dao.getMovementByGUID(id);
@@ -348,7 +330,7 @@ public class MovementService {
      */
     public void removeTrackMismatches(List<MovementTrack> tracks, List<Movement> movements) {
         if(tracks == null || movements == null) {
-            throw new MovementServiceRuntimeException("MovementTrack list or Movement list is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("MovementTrack list or Movement list is null");
         }
         Set<Long> trackIds = movements.stream()
                 .filter(movement -> movement.getTrack() != null)
@@ -373,7 +355,7 @@ public class MovementService {
     }
 	
     private void getMovementsByConnectedIds(Integer numberOfLatestReports, List<SearchValue> searchKeys,
-            List<Movement> movementEntityList, List<SearchValue> connectedIdsFromSearchKeyValues) throws ParseException, MovementServiceException {
+            List<Movement> movementEntityList, List<SearchValue> connectedIdsFromSearchKeyValues) {
 
         String sql;
         List<SearchValue> searchValuesWithoutConnectedIds = removeConnectedIdsFromSearchKeyValues(searchKeys);
@@ -395,7 +377,7 @@ public class MovementService {
 	public boolean keepSegment(MovementSegment segment, List<SearchValue> searchKeyValuesRange) {
 
         if (segment == null || searchKeyValuesRange == null) {
-            throw new MovementServiceRuntimeException("MovementSegment or SearchValue list is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("MovementSegment or SearchValue list is null");
         }
 
         for (SearchValue searchValue : searchKeyValuesRange) {

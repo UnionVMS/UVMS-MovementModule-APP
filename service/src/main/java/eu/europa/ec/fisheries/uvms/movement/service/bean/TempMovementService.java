@@ -40,9 +40,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.TempMovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.TempMovementMapper;
@@ -67,7 +64,7 @@ public class TempMovementService {
     private Event<NotificationMessage> createdManualMovement;
 
     
-    public TempMovement createTempMovement(TempMovement tempMovement, String username) throws MovementServiceException {
+    public TempMovement createTempMovement(TempMovement tempMovement, String username) {
         checkUsernameProvided(username);
         validatePosition(tempMovement.getLatitude(), tempMovement.getLongitude());
         try {
@@ -80,66 +77,59 @@ public class TempMovementService {
         }
     }
 
-    public TempMovement archiveTempMovement(UUID guid, String username) throws MovementServiceException {
+    public TempMovement archiveTempMovement(UUID guid, String username) {
         checkUsernameProvided(username);
         return setTempMovementState(guid, TempMovementStateEnum.DELETED, username);
     }
     
-    public TempMovement updateTempMovement(TempMovement newTempMovement, String username) throws MovementServiceException {
+    public TempMovement updateTempMovement(TempMovement newTempMovement, String username) {
         checkUsernameProvided(username);
-        try {
-            if (newTempMovement == null) {
-                throw new MovementServiceRuntimeException("No temp movement to update", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-            }
-            if (newTempMovement.getId() == null) {
-                throw new MovementServiceRuntimeException("Non valid id of temp movement to update", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-            }
+        if (newTempMovement == null) {
+            throw new IllegalArgumentException("No temp movement to update");
+        }
+        if (newTempMovement.getId() == null) {
+            throw new IllegalArgumentException("Non valid id of temp movement to update");
+        }
 
-            TempMovement tempMovement = dao.getTempMovementById(newTempMovement.getId());
-            tempMovement = TempMovementMapper.toExistingTempMovementEntity(tempMovement, newTempMovement, username);
+        TempMovement tempMovement = dao.getTempMovementById(newTempMovement.getId());
+        tempMovement = TempMovementMapper.toExistingTempMovementEntity(tempMovement, newTempMovement, username);
 //            return TempMovementMapper.toTempMovement(tempMovement);
-            return tempMovement;
-        } catch (MovementServiceException e) {
-            throw new MovementServiceException("Error when updating temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
-        }
+        return tempMovement;
+
     }
 
     
-    public GetTempMovementListResponse getTempMovements(MovementQuery query) throws MovementServiceException {
-        try {
-            if (query == null || query.getPagination() == null || query.getPagination().getPage() == null) {
-                throw new MovementServiceRuntimeException("No valid query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-            }
-            
-            TempMovementsListResponseDto response = new TempMovementsListResponseDto();
-            List<TempMovementType> tempMovementList = new ArrayList<>();
-
-            Integer page = query.getPagination().getPage().intValue();
-            Integer listSize = query.getPagination().getListSize().intValue();
-
-            List<TempMovement> tempMovementEntityList = dao.getTempMovementListPaginated(page, listSize);
-            for (TempMovement entity : tempMovementEntityList) {
-                tempMovementList.add(TempMovementMapper.toTempMovement(entity));
-            }
-
-            Long numberMatches = dao.getTempMovementListCount();
-            int numberOfPages = (int) (numberMatches / listSize);
-            if (numberMatches % listSize != 0) {
-                numberOfPages += 1;
-            }
-
-            response.setTotalNumberOfPages(new BigInteger("" + numberOfPages));
-            response.setCurrentPage(query.getPagination().getPage());
-            response.setTempMovementList(tempMovementList);
-
-            return MovementDataSourceResponseMapper.tempMovementListResponse(response);
-        } catch (Exception e) {
-            throw new MovementServiceException("Error when updating temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+    public GetTempMovementListResponse getTempMovements(MovementQuery query) {
+        if (query == null || query.getPagination() == null || query.getPagination().getPage() == null) {
+            throw new IllegalArgumentException("No valid query");
         }
+
+        TempMovementsListResponseDto response = new TempMovementsListResponseDto();
+        List<TempMovementType> tempMovementList = new ArrayList<>();
+
+        Integer page = query.getPagination().getPage().intValue();
+        Integer listSize = query.getPagination().getListSize().intValue();
+
+        List<TempMovement> tempMovementEntityList = dao.getTempMovementListPaginated(page, listSize);
+        for (TempMovement entity : tempMovementEntityList) {
+            tempMovementList.add(TempMovementMapper.toTempMovement(entity));
+        }
+
+        Long numberMatches = dao.getTempMovementListCount();
+        int numberOfPages = (int) (numberMatches / listSize);
+        if (numberMatches % listSize != 0) {
+            numberOfPages += 1;
+        }
+
+        response.setTotalNumberOfPages(new BigInteger("" + numberOfPages));
+        response.setCurrentPage(query.getPagination().getPage());
+        response.setTempMovementList(tempMovementList);
+
+        return MovementDataSourceResponseMapper.tempMovementListResponse(response);
     }
 
     
-    public TempMovement sendTempMovement(UUID guid, String username) throws MovementServiceException {
+    public TempMovement sendTempMovement(UUID guid, String username) {
         checkUsernameProvided(username);
         try {
             TempMovement movement = setTempMovementState(guid, TempMovementStateEnum.SENT, username);
@@ -149,34 +139,27 @@ public class TempMovementService {
             producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
             return movement;
         } catch (ExchangeModelMarshallException ex) {
-            throw new MovementServiceException("Error when marshaling exchange request.", ex, ErrorCode.EXCHANGE_MARSHALLING_ERROR);
+            throw new RuntimeException("Error when marshaling exchange request.", ex);
         }
     }
     
-    public TempMovement getTempMovement(UUID guid) throws MovementServiceException {
-        try {
-            if (guid == null) {
-                throw new MovementServiceRuntimeException("TempMovement GUID cannot be null.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
-            }
-            return dao.getTempMovementById(guid);
-        } catch (MovementServiceException e) {
-            throw new MovementServiceException("Error when getting temp movement", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+    public TempMovement getTempMovement(UUID guid) {
+        if (guid == null) {
+            throw new IllegalArgumentException("TempMovement GUID cannot be null.");
         }
+        return dao.getTempMovementById(guid);
+
     }
     
-    private TempMovement setTempMovementState(UUID guid, TempMovementStateEnum state, String username) throws MovementServiceException {
-        try {
-            if (guid == null) {
-                throw new IllegalArgumentException("Non valid id of temp movement to update");
-            }
-            TempMovement tempMovement = dao.getTempMovementById(guid);
-            tempMovement.setState(state);
-            tempMovement.setUpdated(Instant.now());
-            tempMovement.setUpdatedBy(username);
-            return tempMovement;
-        } catch (MovementServiceException e) {
-            throw new MovementServiceException("Could not set temp movement state.", e, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+    private TempMovement setTempMovementState(UUID guid, TempMovementStateEnum state, String username) {
+        if (guid == null) {
+            throw new IllegalArgumentException("Non valid id of temp movement to update");
         }
+        TempMovement tempMovement = dao.getTempMovementById(guid);
+        tempMovement.setState(state);
+        tempMovement.setUpdated(Instant.now());
+        tempMovement.setUpdatedBy(username);
+        return tempMovement;
     }
 
     private void fireMovementEvent(TempMovement createdMovement) {
@@ -189,19 +172,19 @@ public class TempMovementService {
 
     private void checkUsernameProvided(String username) {
         if(username == null || username.isEmpty()){
-            throw new MovementServiceRuntimeException("Username in TempMovementRequest cannot be empty", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Username in TempMovementRequest cannot be empty");
         }
     }
 
-    private void validatePosition(Double lat, Double lon) throws MovementServiceException {
+    private void validatePosition(Double lat, Double lon){
         if (lat == null || lon == null) {
-            throw new MovementServiceRuntimeException("Longitude and/or latitude is missing.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Longitude and/or latitude is missing.");
         }
         if (Math.abs(lat) > 90) {
-            throw new MovementServiceException("Latitude is outside range.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Latitude is outside range.");
         }
         if (Math.abs(lon) > 180) {
-            throw new MovementServiceException("Longitude is outside range.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Longitude is outside range.");
         }
     }
 }

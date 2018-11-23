@@ -18,8 +18,6 @@ import com.vividsolutions.jts.geom.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 public class GeometryUtil {
     
@@ -46,10 +44,10 @@ public class GeometryUtil {
         Coordinate[] corSeq = new Coordinate[2];
 
         if (previousPosition.getLocation() == null) {
-            throw new MovementServiceRuntimeException("Previous location is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Previous location is null");
         }
         if (currentPosition.getLocation() == null) {
-            throw new MovementServiceRuntimeException("Current location is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("Current location is null");
         }
 
         corSeq[0] = previousPosition.getLocation().getCoordinate();

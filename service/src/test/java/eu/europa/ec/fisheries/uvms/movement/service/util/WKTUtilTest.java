@@ -14,14 +14,12 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
 public class WKTUtilTest extends TransactionalTests {
@@ -37,7 +35,7 @@ public class WKTUtilTest extends TransactionalTests {
 
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testGetWKTLineString() throws MovementServiceException {
+	public void testGetWKTLineString() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = Instant.now();
@@ -72,7 +70,7 @@ public class WKTUtilTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testGetWktLineStringFromMovementList() throws MovementServiceException {
+	public void testGetWktLineStringFromMovementList() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = Instant.now();
@@ -102,7 +100,7 @@ public class WKTUtilTest extends TransactionalTests {
 
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testGetWktLineStringFromMovementGeometryList() throws MovementServiceException {
+	public void testGetWktLineStringFromMovementGeometryList()  {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = Instant.now();
@@ -137,7 +135,7 @@ public class WKTUtilTest extends TransactionalTests {
 
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testGetGeometryFromWKTSrring() throws ParseException {
+	public void testGetGeometryFromWKTSrring() {
 		String input = "LINESTRING (12.241 57.107, 12.238 57.104, 12.235 57.101, 12.232 57.098, 12.229 57.095, 12.225999999999999 57.092,"
 				+ " 12.222999999999999 57.089, 12.219999999999999 57.086, 12.216999999999999 57.083, 12.213999999999999 57.08)";
 		Geometry output = WKTUtil.getGeometryFromWKTSrring(input);
@@ -167,7 +165,7 @@ public class WKTUtilTest extends TransactionalTests {
 			input = "LINESTRING (12.241)";
 			output = WKTUtil.getGeometryFromWKTSrring(input);
 			fail("Only half a point should cause an exception");
-		} catch (ParseException e) {
+		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
 		
@@ -175,7 +173,7 @@ public class WKTUtilTest extends TransactionalTests {
 			input = "LI,NESTR,ING (12.241 57.107)";
 			output = WKTUtil.getGeometryFromWKTSrring(input);
 			fail("random commas should cause an exception");
-		} catch (ParseException e) {
+		} catch (IllegalArgumentException e) {
 			assertTrue(true);
 		}
 		

@@ -25,155 +25,139 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 public class MovementModelToEntityMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementModelToEntityMapper.class);
 
-    public static Movement mapNewMovementEntity(MovementType movement, String username) throws MovementServiceException {
-        try {
-            Movement entity = new Movement();
+    public static Movement mapNewMovementEntity(MovementType movement, String username) {
+        Movement entity = new Movement();
 
-            if (movement.getReportedSpeed() != null) {
-                entity.setSpeed(movement.getReportedSpeed());
-            }
-
-            if (movement.getReportedCourse() != null) {
-                entity.setHeading(movement.getReportedCourse());
-            }
-            
-            entity.setInternalReferenceNumber(movement.getInternalReferenceNumber());
-            entity.setTripNumber(movement.getTripNumber());
-
-            entity.setStatus(movement.getStatus());
-
-            if (movement.getPosition() != null) {
-                Coordinate coordinate = new Coordinate(movement.getPosition().getLongitude(), movement.getPosition().getLatitude());
-                GeometryFactory factory = new GeometryFactory();
-                Point point = factory.createPoint(coordinate);
-                point.setSRID(4326);
-                entity.setLocation(point);
-            }
-
-            entity.setUpdated(DateUtil.nowUTC());
-            entity.setUpdatedBy(username);
-
-            if (movement.getSource() != null) {
-                entity.setMovementSource(movement.getSource());
-            } else {
-                entity.setMovementSource(MovementSourceType.INMARSAT_C);
-            }
-
-            if (movement.getMovementType() != null) {
-                entity.setMovementType(movement.getMovementType());
-            } else {
-                entity.setMovementType(MovementTypeType.POS);
-            }
-
-            if (movement.getPositionTime() != null) {
-                entity.setTimestamp(movement.getPositionTime().toInstant());
-            } else {
-                entity.setTimestamp(DateUtil.nowUTC());
-            }
-
-            if (movement.getActivity() != null) {
-                Activity activity = createActivity(movement);
-                entity.setActivity(activity);
-            }
-
-
-            entity.setProcessed(false);
-
-            return entity;
-        } catch (Exception e) {
-            LOG.error("[ ERROR when mapping to Movement entity: < mapNewMovementEntity > ]");
-            throw new MovementServiceException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
+        if (movement.getReportedSpeed() != null) {
+            entity.setSpeed(movement.getReportedSpeed());
         }
+
+        if (movement.getReportedCourse() != null) {
+            entity.setHeading(movement.getReportedCourse());
+        }
+
+        entity.setInternalReferenceNumber(movement.getInternalReferenceNumber());
+        entity.setTripNumber(movement.getTripNumber());
+
+        entity.setStatus(movement.getStatus());
+
+        if (movement.getPosition() != null) {
+            Coordinate coordinate = new Coordinate(movement.getPosition().getLongitude(), movement.getPosition().getLatitude());
+            GeometryFactory factory = new GeometryFactory();
+            Point point = factory.createPoint(coordinate);
+            point.setSRID(4326);
+            entity.setLocation(point);
+        }
+
+        entity.setUpdated(DateUtil.nowUTC());
+        entity.setUpdatedBy(username);
+
+        if (movement.getSource() != null) {
+            entity.setMovementSource(movement.getSource());
+        } else {
+            entity.setMovementSource(MovementSourceType.INMARSAT_C);
+        }
+
+        if (movement.getMovementType() != null) {
+            entity.setMovementType(movement.getMovementType());
+        } else {
+            entity.setMovementType(MovementTypeType.POS);
+        }
+
+        if (movement.getPositionTime() != null) {
+            entity.setTimestamp(movement.getPositionTime().toInstant());
+        } else {
+            entity.setTimestamp(DateUtil.nowUTC());
+        }
+
+        if (movement.getActivity() != null) {
+            Activity activity = createActivity(movement);
+            entity.setActivity(activity);
+        }
+
+
+        entity.setProcessed(false);
+
+        return entity;
+
     }
     
-    public static Movement mapNewMovementEntity(MovementBaseType movement, String username) throws MovementServiceException {
-        try {
-            Movement entity = new Movement();
+    public static Movement mapNewMovementEntity(MovementBaseType movement, String username) {
+        Movement entity = new Movement();
 
-            if (movement.getReportedSpeed() != null) {
-                entity.setSpeed(movement.getReportedSpeed());
-            }
-
-            if (movement.getReportedCourse() != null) {
-                entity.setHeading(movement.getReportedCourse());
-            }
-            
-            entity.setInternalReferenceNumber(movement.getInternalReferenceNumber());
-            entity.setTripNumber(movement.getTripNumber());
-
-            entity.setStatus(movement.getStatus());
-
-            if (movement.getPosition() != null) {
-                Coordinate coordinate = new Coordinate(movement.getPosition().getLongitude(), movement.getPosition().getLatitude());
-                GeometryFactory factory = new GeometryFactory();
-                Point point = factory.createPoint(coordinate);
-                point.setSRID(4326);
-                entity.setLocation(point);
-                
-                if (movement.getPosition().getAltitude() != null) {
-                    entity.setAltitude(movement.getPosition().getAltitude());
-                }
-            }
-
-            entity.setUpdated(DateUtil.nowUTC());
-            entity.setUpdatedBy(username);
-
-            if (movement.getSource() != null) {
-                entity.setMovementSource(movement.getSource());
-            } else {
-                entity.setMovementSource(MovementSourceType.INMARSAT_C);
-            }
-
-            if (movement.getMovementType() != null) {
-                entity.setMovementType(movement.getMovementType());
-            } else {
-                entity.setMovementType(MovementTypeType.POS);
-            }
-
-            if (movement.getPositionTime() != null) {
-                entity.setTimestamp(movement.getPositionTime().toInstant());
-            } else {
-                entity.setTimestamp(DateUtil.nowUTC());
-            }
-
-            if (movement.getActivity() != null) {
-                Activity activity = createActivity(movement);
-                entity.setActivity(activity);
-            }
-
-            // TODO find a better solution to transfer connectid
-            MovementConnect movementConnect = new MovementConnect();
-            movementConnect.setValue(UUID.fromString(movement.getConnectId()));
-            entity.setMovementConnect(movementConnect);
-            
-            entity.setProcessed(false);
-
-            return entity;
-        } catch (Exception e) {
-            LOG.error("[ ERROR when mapping to Movement entity: < mapNewMovementEntity > ]");
-            throw new MovementServiceException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
+        if (movement.getReportedSpeed() != null) {
+            entity.setSpeed(movement.getReportedSpeed());
         }
+
+        if (movement.getReportedCourse() != null) {
+            entity.setHeading(movement.getReportedCourse());
+        }
+
+        entity.setInternalReferenceNumber(movement.getInternalReferenceNumber());
+        entity.setTripNumber(movement.getTripNumber());
+
+        entity.setStatus(movement.getStatus());
+
+        if (movement.getPosition() != null) {
+            Coordinate coordinate = new Coordinate(movement.getPosition().getLongitude(), movement.getPosition().getLatitude());
+            GeometryFactory factory = new GeometryFactory();
+            Point point = factory.createPoint(coordinate);
+            point.setSRID(4326);
+            entity.setLocation(point);
+
+            if (movement.getPosition().getAltitude() != null) {
+                entity.setAltitude(movement.getPosition().getAltitude());
+            }
+        }
+
+        entity.setUpdated(DateUtil.nowUTC());
+        entity.setUpdatedBy(username);
+
+        if (movement.getSource() != null) {
+            entity.setMovementSource(movement.getSource());
+        } else {
+            entity.setMovementSource(MovementSourceType.INMARSAT_C);
+        }
+
+        if (movement.getMovementType() != null) {
+            entity.setMovementType(movement.getMovementType());
+        } else {
+            entity.setMovementType(MovementTypeType.POS);
+        }
+
+        if (movement.getPositionTime() != null) {
+            entity.setTimestamp(movement.getPositionTime().toInstant());
+        } else {
+            entity.setTimestamp(DateUtil.nowUTC());
+        }
+
+        if (movement.getActivity() != null) {
+            Activity activity = createActivity(movement);
+            entity.setActivity(activity);
+        }
+
+        // TODO find a better solution to transfer connectid
+        MovementConnect movementConnect = new MovementConnect();
+        movementConnect.setValue(UUID.fromString(movement.getConnectId()));
+        entity.setMovementConnect(movementConnect);
+
+        entity.setProcessed(false);
+
+        return entity;
     }
 
-    public static Activity createActivity(MovementBaseType movement) throws MovementServiceException {
-        try {
-            Activity activity = new Activity();
-            activity.setActivityType(movement.getActivity().getMessageType());
-            activity.setCallback(movement.getActivity().getCallback());
-            activity.setMessageId(movement.getActivity().getMessageId());
-            activity.setUpdated(DateUtil.nowUTC());
-            activity.setUpdatedBy("UVMS");
-            return activity;
-        } catch (Exception e) {
-            LOG.error("[ ERROR when mapping to Activity entity: < createActivity > ]");
-            throw new MovementServiceException("ERROR when mapping to Activity entity ", e, ErrorCode.DAO_MAPPING_ERROR);
-        }
+    public static Activity createActivity(MovementBaseType movement){
+        Activity activity = new Activity();
+        activity.setActivityType(movement.getActivity().getMessageType());
+        activity.setCallback(movement.getActivity().getCallback());
+        activity.setMessageId(movement.getActivity().getMessageId());
+        activity.setUpdated(DateUtil.nowUTC());
+        activity.setUpdatedBy("UVMS");
+        return activity;
     }
 }

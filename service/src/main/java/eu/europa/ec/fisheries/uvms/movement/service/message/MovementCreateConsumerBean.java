@@ -18,7 +18,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementCreateBean;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
@@ -119,7 +118,7 @@ public class MovementCreateConsumerBean implements MessageListener {
                     LOG.error("[ Request method {} is not implemented ]", movementMethod.name());
                     errorEvent.fire(new EventMessage(textMessage, "[ Request method " + movementMethod.name() + "  is not implemented ]"));
             }
-        } catch (NullPointerException | ClassCastException | MovementModelException e) {
+        } catch (NullPointerException | ClassCastException e) {
             LOG.error("[ Error when receiving message in movement: ] {}", e);
             errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: " + e.getMessage()));
         }

@@ -15,7 +15,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -40,7 +39,7 @@ public class InternalRestResource {
             GetMovementListByQueryResponse list = movementService.getList(query);
             return Response.ok(list).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Error when getting list.").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
 
@@ -51,7 +50,7 @@ public class InternalRestResource {
             GetMovementListByQueryResponse minimalList = movementService.getMinimalList(query);
             return Response.ok(minimalList).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Error when getting minimal list.").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
 
@@ -65,7 +64,7 @@ public class InternalRestResource {
             List<Movement> latestMovements = movementService.getLatestMovementsByConnectIds(connectIds);
             return Response.ok(latestMovements).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Error when getting latest list").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
     }
 
@@ -76,10 +75,10 @@ public class InternalRestResource {
         try {
             GetMovementListByQueryResponse response = movementService.getList(query);
             return Response.ok(response).build();
-        } catch (MovementServiceRuntimeException e) {
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity("No MovementQuery found").build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Error when getting movement list by query").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
 
@@ -89,10 +88,10 @@ public class InternalRestResource {
         try {
             GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
             return Response.ok(response).build();
-        } catch (MovementServiceRuntimeException e) {
+        } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity("No MovementQuery found").build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Error when getting movement map by query").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
 

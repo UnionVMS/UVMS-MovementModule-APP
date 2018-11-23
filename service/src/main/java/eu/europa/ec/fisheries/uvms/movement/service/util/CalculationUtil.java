@@ -14,9 +14,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.util;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 
 public class CalculationUtil {
     
@@ -43,19 +40,17 @@ public class CalculationUtil {
         return bearing(prevLat, prevLon, currentLat, currentLon);
     }
 
-    public static SegmentCalculations getPositionCalculations(Movement previousPosition, Movement currentPosition) throws MovementServiceException {
+    public static SegmentCalculations getPositionCalculations(Movement previousPosition, Movement currentPosition) {
         // TODO no null checks on incoming
 
         SegmentCalculations calculations = new SegmentCalculations();
 
         if (currentPosition.getLocation() == null) {
-            throw new MovementServiceRuntimeException("CalculationUtil.getPositionCalculations. CurrentPosition is null! ",
-                    ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("CalculationUtil.getPositionCalculations. CurrentPosition is null! ");
         }
 
         if (previousPosition.getLocation() == null) {
-            throw new MovementServiceRuntimeException("CalculationUtil.getPositionCalculations. PreviousPosition is null! ",
-                    ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+            throw new IllegalArgumentException("CalculationUtil.getPositionCalculations. PreviousPosition is null! ");
         }
 
         Point pointThisPosition = currentPosition.getLocation();

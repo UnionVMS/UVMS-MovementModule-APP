@@ -20,7 +20,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 @RunWith(Arquillian.class)
 public class GeometryUtilTest extends TransactionalTests {
@@ -77,7 +76,7 @@ public class GeometryUtilTest extends TransactionalTests {
 
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testGetCoordinateSequenceFromMovements() throws MovementServiceException {
+	public void testGetCoordinateSequenceFromMovements() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
@@ -104,7 +103,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testGetLineStringFromMovments() throws MovementServiceException {
+	public void testGetLineStringFromMovments() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		UUID connectId = UUID.randomUUID();
 		

@@ -7,6 +7,8 @@ import java.time.Instant;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+
+import org.hibernate.HibernateException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
@@ -19,7 +21,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnu
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
 //import eu.europa.ec.fisheries.uvms.movement.service.TempMovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+
 
 /**
  * Created by andreasw on 2017-03-03.
@@ -32,7 +34,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void create() throws MovementServiceException {
+    public void create() throws Exception {
         TempMovement tempMovement = createTempMovement();
         TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
@@ -49,27 +51,27 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
             em.flush();
             TempMovement fetched = tempMovementService.getTempMovement(id);
             Assert.assertFalse("Should not reach this!", true);
-        } catch (MovementServiceException e) {
+        } catch (HibernateException e) {
             Assert.assertTrue(e.getMessage().contains("Error when getting temp movement"));
         }
     }
     
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void createTempMovementNullTempMovementCheckFailureTest() throws MovementServiceException {
+    public void createTempMovementNullTempMovementCheckFailureTest() throws Exception {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementService.createTempMovement(null, username);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void createTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
+    public void createTempMovementNullUsernameCheckFailureTest() throws Exception {
         tempMovementService.createTempMovement(new TempMovement(), null);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createTempMovementSuccessTest() throws MovementServiceException {
+    public void createTempMovementSuccessTest() throws Exception {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
         TempMovement tempMovement = createTempMovement();
@@ -97,7 +99,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getTempMovement() throws MovementServiceException {
+    public void getTempMovement() throws Exception {
         TempMovement tempMovement = createTempMovement();
         TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
@@ -114,7 +116,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         TempMovement tt = null;
         try {
             tt = tempMovementService.getTempMovement(UUID.randomUUID());
-        } catch (MovementServiceException e) {
+        } catch (HibernateException e) {
             Assert.assertTrue(e.getMessage().contains("Error when getting temp movement"));
         } catch (Exception e) {
             Assert.assertTrue("This should not be happening", false);
@@ -124,7 +126,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     
     @Test
     @OperateOnDeployment("movementservice")
-    public void getTempMovementSuccessTest() throws MovementServiceException {
+    public void getTempMovementSuccessTest() throws Exception {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
         TempMovement tempMovement = createTempMovement();
@@ -137,25 +139,25 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void getTempMovementNullGuidCheckFailureTest() throws MovementServiceException {
+    public void getTempMovementNullGuidCheckFailureTest() {
         tempMovementService.getTempMovement(null);
     }
 
-    @Test(expected = MovementServiceException.class)
+    @Test(expected = HibernateException.class)
     @OperateOnDeployment("movementservice")
-    public void getTempMovementGuidDoNotExistCheckFailureTest() throws MovementServiceException {
+    public void getTempMovementGuidDoNotExistCheckFailureTest() {
         tempMovementService.getTempMovement(UUID.randomUUID());
     }
 
-    @Test(expected = MovementServiceException.class)
+    @Test(expected = IllegalArgumentException.class)
     @OperateOnDeployment("movementservice")
-    public void getTempMovementListNullCheckFailureTest() throws MovementServiceException {
+    public void getTempMovementListNullCheckFailureTest()  {
         tempMovementService.getTempMovements(null);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getTempMovementListSuccessTest() throws MovementServiceException {
+    public void getTempMovementListSuccessTest() throws Exception {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
         TempMovement tempMovement = createTempMovement();
@@ -176,7 +178,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void updateTempMovement() throws MovementServiceException {
+    public void updateTempMovement() throws Exception {
         TempMovement tempMovement = createTempMovement();
         TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
@@ -200,20 +202,20 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void updateTempMovementNullTempMovementCheckFailureTest() throws MovementServiceException {
+    public void updateTempMovementNullTempMovementCheckFailureTest()  {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementService.updateTempMovement(null, username);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void updateTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
+    public void updateTempMovementNullUsernameCheckFailureTest()  {
         tempMovementService.updateTempMovement(new TempMovement(), null);
     }
 
-    @Test(expected = MovementServiceException.class)
+    @Test(expected = IllegalArgumentException.class)
     @OperateOnDeployment("movementservice")
-    public void updateTempMovementNoValidGuidForTempMovementCheckFailureTest() throws MovementServiceException {
+    public void updateTempMovementNoValidGuidForTempMovementCheckFailureTest() {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         TempMovement tempMovement = createTempMovement();
         em.flush();
@@ -224,7 +226,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void updateTempMovementSuccessTest() throws MovementServiceException {
+    public void updateTempMovementSuccessTest() throws Exception {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
         TempMovement tempMovement = createTempMovement();
@@ -255,7 +257,7 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void archiveTempMovement() throws MovementServiceException {
+    public void archiveTempMovement() throws Exception {
         TempMovement tempMovement = createTempMovement();
         TempMovement result = tempMovementService.createTempMovement(tempMovement, "TEST");
         em.flush();
@@ -270,29 +272,29 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
         Assert.assertEquals(TempMovementStateEnum.DELETED, fetched.getState());
     }
 
-    @Test(expected = MovementServiceException.class)
+    @Test(expected = IllegalArgumentException.class)
     @OperateOnDeployment("movementservice")
-    public void archiveTempMovementWithBogusId() throws MovementServiceException {
+    public void archiveTempMovementWithBogusId() throws Exception {
         UUID id = UUID.randomUUID();
         tempMovementService.archiveTempMovement(id, "TEST");
     }
     
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void archiveTempMovementNullGuidCheckFailureTest() throws MovementServiceException {
+    public void archiveTempMovementNullGuidCheckFailureTest() throws Exception {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementService.archiveTempMovement(null, username);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void archiveTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
+    public void archiveTempMovementNullUsernameCheckFailureTest() throws Exception {
         tempMovementService.archiveTempMovement(UUID.randomUUID(), null);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void archiveTempMovementSuccessTest() throws MovementServiceException {
+    public void archiveTempMovementSuccessTest() throws Exception {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
         TempMovement tempMovementType = createTempMovement();
@@ -310,20 +312,20 @@ public class TempMovementServiceBeanIntTest extends TransactionalTests {
     
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void sendTempMovementNullGuidCheckFailureTest() throws MovementServiceException {
+    public void sendTempMovementNullGuidCheckFailureTest() throws Exception {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName() + UUID.randomUUID().toString();
         tempMovementService.sendTempMovement(null, username);
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void sendTempMovementNullUsernameCheckFailureTest() throws MovementServiceException {
+    public void sendTempMovementNullUsernameCheckFailureTest() throws Exception {
         tempMovementService.sendTempMovement(UUID.randomUUID(), null);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void sendTempMovementSuccessTest() throws MovementServiceException {
+    public void sendTempMovementSuccessTest() throws Exception {
         String username = TempMovementServiceBeanIntTest.class.getSimpleName();
 
         TempMovement tempMovement = createTempMovement();

@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by roblar on 2017-03-08.
@@ -23,7 +22,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
 
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryIsNotAllowed() throws MovementServiceException {
+    public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryIsNotAllowed() {
 
         MovementQuery movementQuery = MovementTestHelper.createMovementQuery(true, false, false);
         movementServiceBean.getMapByQuery(movementQuery);
@@ -31,7 +30,7 @@ public class GetMapByQueryIntTest extends TransactionalTests {
 
     @Test(expected = EJBTransactionRolledbackException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryThrowsMovementServiceException() throws MovementServiceException {
+    public void getMovementMapByQuery_settingPaginationOnAMovementMapQueryThrowsMovementServiceException() {
 
         MovementQuery movementQuery = MovementTestHelper.createMovementQuery(true, false, false);
         movementServiceBean.getMapByQuery(movementQuery);
@@ -39,9 +38,9 @@ public class GetMapByQueryIntTest extends TransactionalTests {
 
     //ToDo: An arbitrary string value should not be allowed to be set for the ListCriteria field called 'value' by using a setter as the value *must* match only allowed enum values for the enum SearchKey.
     //ToDo: This enum is mapped by the SearchField enum toward the MovementTypeType enum. One solution could be to remove the setValue() method in the ListCriteria class.
-    @Test(expected = MovementServiceException.class)
+    @Test(expected = IllegalArgumentException.class)
     @OperateOnDeployment("movementservice")
-    public void getMovementMapByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() throws MovementServiceException {
+    public void getMovementMapByQuery_mustUseEnumValueFromMovementTypeTypeClassWhenSettingSearchKeyTypeValueTo_MOVEMENT_TYPE() {
 
         MovementQuery movementQuery = MovementTestHelper.createMovementQuery(false, true, false);
         movementServiceBean.getMapByQuery(movementQuery);

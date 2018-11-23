@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 
 import org.hamcrest.core.StringContains;
+import org.hibernate.HibernateException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -22,7 +23,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnu
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
 /**
  * Created by thofan on 2017-02-22.
@@ -73,7 +73,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getTempMovementByGuid() throws MovementServiceException {
+    public void getTempMovementByGuid()  {
 
         // first create one
         TempMovement tempMovement = createTempMovementEntityHelper(LONGITUDE, LATITUDE);
@@ -93,9 +93,9 @@ public class TempMovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getTempMovementByGuid_ZeroGuid_Exception_Thrown() throws MovementServiceException {
+    public void getTempMovementByGuid_ZeroGuid_Exception_Thrown()  {
 
-        thrown.expect(MovementServiceException.class);
+        thrown.expect(HibernateException.class);
         expectedMessage("Error when fetching temp movement");
 
         // we assume that the probability for zero guid exists in db is so low so we consider this safe
