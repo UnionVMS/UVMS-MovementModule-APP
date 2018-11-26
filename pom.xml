@@ -35,7 +35,7 @@
 
 		<!-- UVMS Libraries -->
 		<uvms.common.version>3.0.29</uvms.common.version>
-		<usm4uvms.version>4.0.14</usm4uvms.version>
+		<usm4uvms.version>4.0.13</usm4uvms.version>
 		<uvms.config.version>4.0.2</uvms.config.version>
 	</properties>
 

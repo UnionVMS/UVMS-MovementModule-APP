@@ -69,6 +69,16 @@
             <version>${movement-rules.model.version}</version>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.audit</groupId>
+            <artifactId>audit-model</artifactId>
+            <version>${audit.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms</groupId>
+            <artifactId>uvms-config</artifactId>
+            <version>${uvms.config.version}</version>
+        </dependency>
+        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
             <artifactId>uvms-longpolling</artifactId>
             <version>${longpolling.version}</version>
@@ -77,11 +87,6 @@
             <groupId>eu.europa.ec.fisheries.uvms.user</groupId>
             <artifactId>user-model</artifactId>
             <version>${user.model.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>movement-message</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
 			<groupId>fish.focus.uvms.maven</groupId>
