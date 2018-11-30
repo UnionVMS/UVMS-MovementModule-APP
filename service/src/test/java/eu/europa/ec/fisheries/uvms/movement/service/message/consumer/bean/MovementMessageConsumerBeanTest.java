@@ -489,7 +489,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movements.get(0).getConnectId(), is(movementDetails.getConnectId()));
         assertThat(movements.get(0).getPosition().getLongitude(), is(movementDetails.getLongitude()));
         assertThat(movements.get(0).getPosition().getLatitude(), is(movementDetails.getLatitude()));
-        assertThat(movements.get(0).getPositionTime(), is(movementDetails.getPositionTime()));
+        assertThat(movements.get(0).getPositionTime().toInstant(), is(movementDetails.getPositionTime()));
     }
 
 
