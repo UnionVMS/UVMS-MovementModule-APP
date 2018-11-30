@@ -138,7 +138,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
         assertThat(movementDetails.getLongitude(), is(incomingMovement.getLongitude()));
         assertThat(movementDetails.getLatitude(), is(incomingMovement.getLatitude()));
-        assertEquals(movementDetails.getPositionTime().getTime(), incomingMovement.getPositionTime().toEpochMilli());
+        assertEquals(movementDetails.getPositionTime().toEpochMilli(), incomingMovement.getPositionTime().toEpochMilli());
     }
     
 
@@ -157,7 +157,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movementDetails.getLongitude(), is(incomingMovement.getLongitude()));
         assertThat(movementDetails.getLatitude(), is(incomingMovement.getLatitude()));
         assertEquals(incomingMovement.getAltitude(), movementDetails.getAltitude());
-        assertEquals(movementDetails.getPositionTime().getTime(), incomingMovement.getPositionTime().toEpochMilli());
+        assertEquals(movementDetails.getPositionTime().toEpochMilli(), incomingMovement.getPositionTime().toEpochMilli());
         assertThat(movementDetails.getStatusCode(), is(incomingMovement.getStatus()));
         assertThat(movementDetails.getReportedSpeed(), is(incomingMovement.getReportedSpeed()));
         assertThat(movementDetails.getReportedCourse(), is(incomingMovement.getReportedCourse()));
@@ -428,7 +428,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movements.get(0).getConnectId(), is(movementDetails.getConnectId()));
         assertThat(movements.get(0).getPosition().getLongitude(), is(movementDetails.getLongitude()));
         assertThat(movements.get(0).getPosition().getLatitude(), is(movementDetails.getLatitude()));
-        assertThat(movements.get(0).getPositionTime().getTime(), is(movementDetails.getPositionTime().getTime()));
+        assertThat(movements.get(0).getPositionTime().getTime(), is(movementDetails.getPositionTime().toEpochMilli()));
     }
     
     @Ignore //TODO: This should work when query searches guid instead of id

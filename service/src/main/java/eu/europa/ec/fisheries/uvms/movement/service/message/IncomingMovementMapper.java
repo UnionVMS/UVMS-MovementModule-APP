@@ -102,7 +102,7 @@ public abstract class IncomingMovementMapper {
         }
         md.setReportedCourse(movement.getHeading());
         md.setReportedSpeed(movement.getSpeed());
-        md.setPositionTime(Date.from(movement.getTimestamp()));
+        md.setPositionTime(movement.getTimestamp());
         md.setStatusCode(movement.getStatus());
         md.setTripNumber(movement.getTripNumber());
         md.setWkt("");
