@@ -60,7 +60,7 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
 
     @NotNull
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "movelate_moveconn_id", referencedColumnName = "moveconn_id")
+    @JoinColumn(name = "movelate_moveconn_id", referencedColumnName = "moveconn_asset_id")
     @ManyToOne(cascade = CascadeType.PERSIST)
     private MovementConnect movementConnect;
 
