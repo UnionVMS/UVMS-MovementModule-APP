@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  **/
 //@formatter:off
 @Entity
-@Table(name = "tempmovement")
+@Table(name = "draftmovement")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = DraftMovement.FIND_ALL, query = "SELECT t FROM DraftMovement t"),
@@ -79,67 +79,67 @@ public class DraftMovement implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "tmpmove_id")
+    @Column(name = "draftmove_id")
     private UUID id;
 
     @Size(max = 3)
-    @Column(name = "tmpmove_flag")
+    @Column(name = "draftmove_flag")
     private String flag;
 
     @Size(max = 70)
-    @Column(name = "tmpmove_ircs")
+    @Column(name = "draftmove_ircs")
     private String ircs;
 
     @Size(max = 12)
-    @Column(name = "tmpmove_cfr")
+    @Column(name = "draftmove_cfr")
     private String cfr;
 
     @Size(max = 14)
-    @Column(name = "tmpmove_extmark")
+    @Column(name = "draftmove_extmark")
     private String externalMarkings;
 
     @Size(max = 30)
-    @Column(name = "tmpmove_name")
+    @Column(name = "draftmove_name")
     private String name;
 
     @Size(max = 60)
-    @Column(name = "tmpmove_status")
+    @Column(name = "draftmove_status")
     private String status;
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
-    @Column(name = "tmpmove_timestamp")
+    @Column(name = "draftmove_timestamp")
     private Instant timestamp;
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    @Column(name = "tmpmove_state")
+    @Column(name = "draftmove_state")
     private TempMovementStateEnum state;
 
     // @Max(value=?) @Min(value=?)//if you know range of your decimal fields
     // consider using these annotations to enforce field validation
-    @Column(name = "tmpmove_lat")
+    @Column(name = "draftmove_lat")
     private Double latitude;
 
-    @Column(name = "tmpmove_lon")
+    @Column(name = "draftmove_lon")
     private Double longitude;
 
-    @Column(name = "tmpmove_speed")
+    @Column(name = "draftmove_speed")
     private Double speed;
 
-    @Column(name = "tmpmove_course")
+    @Column(name = "draftmove_course")
     private Double course;
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
-    @Column(name = "tmpmove_updattim")
+    @Column(name = "draftmove_updattim")
     private Instant updated;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 60)
-    @Column(name = "tmpmove_upuser")
+    @Column(name = "draftmove_upuser")
     private String updatedBy;
 
     public UUID getId() {
