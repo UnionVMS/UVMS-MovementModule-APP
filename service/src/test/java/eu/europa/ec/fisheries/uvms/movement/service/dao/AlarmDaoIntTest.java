@@ -59,7 +59,7 @@ public class AlarmDaoIntTest extends TransactionalTests {
         alarmReport.getAlarmItemList().add(alarmItem);
 
 
-        AlarmReport theReport = alarmDAO.getOpenAlarmReportByMovementGuid(im.getGuid());
+        AlarmReport theReport = alarmDAO.getOpenAlarmReportByMovementGuid(im.getId());
         Assert.assertNotNull(theReport);
         Assert.assertEquals(alarmReport.getId(), theReport.getId());
     }

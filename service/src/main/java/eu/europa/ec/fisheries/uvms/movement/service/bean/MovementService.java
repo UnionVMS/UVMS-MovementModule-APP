@@ -332,13 +332,13 @@ public class MovementService {
         if(tracks == null || movements == null) {
             throw new IllegalArgumentException("MovementTrack list or Movement list is null");
         }
-        Set<Long> trackIds = movements.stream()
+        Set<UUID> trackIds = movements.stream()
                 .filter(movement -> movement.getTrack() != null)
                 .map(movement -> movement.getTrack().getId())
                 .collect(Collectors.toSet());
 
         Set<MovementTrack> tracksToSave = tracks.stream()
-                .filter(track -> trackIds.contains(Long.valueOf(track.getId())))
+                .filter(track -> trackIds.contains(track.getId()))
                 .collect(Collectors.toSet());
 
         tracks.removeIf(track -> !tracksToSave.contains(track));

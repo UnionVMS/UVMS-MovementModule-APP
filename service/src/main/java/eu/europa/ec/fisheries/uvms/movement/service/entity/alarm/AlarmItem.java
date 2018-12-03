@@ -6,10 +6,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 //@formatter:off
 @Entity
-@Table(name = "alarmitem")
+@Table(name = "alarmitem", indexes = {
+        @Index(columnList = "alarmreport_id", name = "alarmitem_alarmreport_fk_inx", unique = false)
+})
 @XmlRootElement
 //@formatter:on
 public class AlarmItem implements Serializable {
@@ -18,7 +21,7 @@ public class AlarmItem implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;                //internal DB ID
+    private UUID id;                //internal DB ID
     private String guid;            //Globally unique ID, exists in Type, same name
     private String ruleName;        //exists in Type, same name
     private String ruleGuid;        //exists in Type, same name
@@ -31,11 +34,11 @@ public class AlarmItem implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private AlarmReport alarmReport;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

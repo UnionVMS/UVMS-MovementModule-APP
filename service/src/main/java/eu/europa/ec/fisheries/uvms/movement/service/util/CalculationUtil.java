@@ -15,6 +15,10 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.UUID;
+
 public class CalculationUtil {
     
     private CalculationUtil() {}
@@ -124,5 +128,30 @@ public class CalculationUtil {
         return Math.acos(Math.sin(lat1Rad) * Math.sin(lat2Rad) + Math.cos(lat1Rad) * Math.cos(lat2Rad)
                 * Math.cos(deltaLonRad))
                 * EARTH_RADIUS_METER;
+    }
+
+    public static BigInteger getBigIntegerFromUuid(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return new BigInteger(bb.array());
+    }
+
+    public static final BigInteger B = BigInteger.ONE.shiftLeft(64); // 2^64
+    public static final BigInteger L = BigInteger.valueOf(Long.MAX_VALUE);
+    public static UUID convertFromBigInteger(BigInteger x)
+    {
+        //UUID.nameUUIDFromBytes(x.toByteArray()); //Need to check if this actually works
+        BigInteger[] parts = x.divideAndRemainder(B);
+        BigInteger hi = parts[0];
+        BigInteger lo = parts[1];
+
+        if (L.compareTo(lo) < 0)
+            lo = lo.subtract(B);
+
+        if (L.compareTo(hi) < 0)
+            hi = hi.subtract(B);
+
+        return new UUID(hi.longValueExact(), lo.longValueExact());
     }
 }

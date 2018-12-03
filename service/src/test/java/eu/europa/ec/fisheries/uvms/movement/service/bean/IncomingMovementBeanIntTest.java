@@ -56,7 +56,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertNotNull("MovementType creation was successful.", movementType.getGuid());
         em.flush();
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getValue());
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getId());
         assertNotNull("MovementConnect creation was successful.", movementConnect);
         List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
         assertNotNull("List of Movement creation was successful.", movementList);
@@ -80,9 +80,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         incomingMovementBean.processMovement(movementType);
         em.flush();
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getValue());
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getId());
         List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
-        Long id = movementList.get(0).getId();
+        UUID id = movementList.get(0).getId();
 
         //Then: Test that the Movement is processed properly.
         Movement actualMovement = movementDao.getMovementById(id);
@@ -104,9 +104,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         movementType = movementBatchModelBean.createMovement(movementType);
         em.flush();
 
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getValue());
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getId());
         List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
-        Long id = movementList.get(0).getId();
+        UUID id = movementList.get(0).getId();
 
         //Then: Test that the Movement is processed properly.
         Movement actualMovement = movementDao.getMovementById(id);
@@ -128,12 +128,12 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         firstMovementType = movementBatchModelBean.createMovement(firstMovementType);
         em.flush();
 
-        MovementConnect firstMovementConnect = movementDao.getMovementConnectByConnectId(firstMovementType.getMovementConnect().getValue());
+        MovementConnect firstMovementConnect = movementDao.getMovementConnectByConnectId(firstMovementType.getMovementConnect().getId());
 
         List<Movement> firstMovementList = movementDao.getMovementListByMovementConnect(firstMovementConnect);
 
         Movement firstMovement = firstMovementList.get(0);
-        Long firstMovementId = firstMovementList.get(0).getId();
+        UUID firstMovementId = firstMovementList.get(0).getId();
 
 
         /* Setting same timestamp + duplicate flag set to false + same movement type. */

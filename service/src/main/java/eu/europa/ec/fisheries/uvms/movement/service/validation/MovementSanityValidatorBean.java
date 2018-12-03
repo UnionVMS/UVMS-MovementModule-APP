@@ -140,7 +140,7 @@ public class MovementSanityValidatorBean {
 
         LOG.info("Create alarm invoked in validation service, rule: {}", ruleName);
 
-        AlarmReport alarmReport = alarmDAO.getOpenAlarmReportByMovementGuid(movement.getGuid());
+        AlarmReport alarmReport = alarmDAO.getOpenAlarmReportByMovementGuid(movement.getId());
         if(alarmReport == null) {
             alarmReport = new AlarmReport();
             alarmReport.setAssetGuid(movement.getAssetGuid());

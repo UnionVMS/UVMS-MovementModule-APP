@@ -18,6 +18,7 @@ import com.vividsolutions.jts.geom.LineString;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -49,9 +50,8 @@ public class Track implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "track_seq")
-    @Basic(optional = false)
     @Column(name = "trac_id")
-    private Long id;
+    private UUID id;
 
     @Basic(optional = false)
     @NotNull
@@ -88,11 +88,11 @@ public class Track implements Serializable {
     @Column(name = "trac_geom", columnDefinition = "Geometry")
     private LineString location;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

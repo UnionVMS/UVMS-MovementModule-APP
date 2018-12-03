@@ -17,6 +17,7 @@ import java.util.List;
 
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
@@ -35,14 +36,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRSListElement;
 
 
 public class MovementMapper {
@@ -125,7 +118,7 @@ public class MovementMapper {
         return dto;
     }
 
-    public static SetReportMovementType mapToSetReportMovementType(TempMovement movement) {
+    public static SetReportMovementType mapToSetReportMovementType(DraftMovement movement) {
 
         SetReportMovementType report = new SetReportMovementType();
         report.setPluginName("ManualMovement");
@@ -183,7 +176,7 @@ public class MovementMapper {
 
     public static MicroMovementDto mapToMicroMovement(MicroMovement mm) {
         MicroMovementDto dto = new MicroMovementDto();
-        dto.setAsset(mm.getMovementConnect().getValue().toString());
+        dto.setAsset(mm.getMovementConnect().getId().toString());
         dto.setGuid(mm.getGuid());
         dto.setHeading(mm.getHeading());
         eu.europa.ec.fisheries.schema.movement.v1.MovementPoint mp = new eu.europa.ec.fisheries.schema.movement.v1.MovementPoint();

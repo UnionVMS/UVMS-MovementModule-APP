@@ -29,7 +29,7 @@ public class IncomingMovementBean {
         if (currentMovement.isProcessed()) {
             return;
         }
-        UUID connectId = currentMovement.getMovementConnect().getValue();
+        UUID connectId = currentMovement.getMovementConnect().getId();
         Instant timeStamp = currentMovement.getTimestamp();
 
         List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);

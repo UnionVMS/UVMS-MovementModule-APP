@@ -80,7 +80,7 @@ public class MovementDao {
         }
     }
 
-    public Movement getMovementById(Long id) {
+    public Movement getMovementById(UUID id) {
         return em.find(Movement.class, id);
     }
 
@@ -142,7 +142,7 @@ public class MovementDao {
     }
 
     public void upsertLatestMovement(Movement movement, MovementConnect movementConnect) {
-        LatestMovement latestMovement = getLatestMovement(movementConnect.getValue());
+        LatestMovement latestMovement = getLatestMovement(movementConnect.getId());
         if (latestMovement == null) {
             latestMovement = new LatestMovement();
             latestMovement.setMovementConnect(movementConnect);
@@ -245,7 +245,7 @@ public class MovementDao {
             List<MovementConnect> movementConnects = connectQuery.getResultList();
 
             for (MovementConnect movementConnect : movementConnects) {
-                List<Movement> latestMovementsByConnectId = getLatestMovementsByConnectId(movementConnect.getValue(), numberOfReports);
+                List<Movement> latestMovementsByConnectId = getLatestMovementsByConnectId(movementConnect.getId(), numberOfReports);
                 movements.addAll(latestMovementsByConnectId);
             }
         } else {

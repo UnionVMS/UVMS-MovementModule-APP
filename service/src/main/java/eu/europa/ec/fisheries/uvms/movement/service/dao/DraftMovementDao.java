@@ -16,37 +16,38 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
+
+import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
 import org.hibernate.HibernateException;
 
 @Stateless
-public class TempMovementDao {
+public class DraftMovementDao {
 
     @PersistenceContext
     private EntityManager em;
     
-    public TempMovement createTempMovementEntity(TempMovement tempMovement) {
-        em.persist(tempMovement);
-        return tempMovement;
+    public DraftMovement createDraftMovementEntity(DraftMovement draftMovement) {
+        em.persist(draftMovement);
+        return draftMovement;
     }
 
-    public TempMovement getTempMovementById(UUID id) {
-        TempMovement tempMovement = em.find(TempMovement.class, id);
-        if (tempMovement == null) {
+    public DraftMovement getDraftMovementById(UUID id) {
+        DraftMovement draftMovement = em.find(DraftMovement.class, id);
+        if (draftMovement == null) {
             throw new HibernateException("Error when fetching temp movement");
         }
-        return tempMovement;
+        return draftMovement;
     }
 
-    public List<TempMovement> getTempMovementListPaginated(Integer page, Integer listSize) {
-            TypedQuery<TempMovement> query = em.createNamedQuery(TempMovement.FIND_ALL_ORDERED, TempMovement.class);
+    public List<DraftMovement> getDraftMovementListPaginated(Integer page, Integer listSize) {
+            TypedQuery<DraftMovement> query = em.createNamedQuery(DraftMovement.FIND_ALL_ORDERED, DraftMovement.class);
             query.setFirstResult(listSize * (page - 1));
             query.setMaxResults(listSize);
             return query.getResultList();
     }
 
-    public Long getTempMovementListCount() {
-            TypedQuery<Long> query = em.createNamedQuery(TempMovement.COUNT, Long.class);
+    public Long getDraftMovementListCount() {
+            TypedQuery<Long> query = em.createNamedQuery(DraftMovement.COUNT, Long.class);
             return query.getSingleResult();
     }
 }

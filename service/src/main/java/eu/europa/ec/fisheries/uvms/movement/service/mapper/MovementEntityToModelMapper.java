@@ -173,7 +173,7 @@ public class MovementEntityToModelMapper {
 
     private static String mapToConnectId(MovementConnect connect) {
         if (connect != null) {
-            return connect.getValue().toString();
+            return connect.getId().toString();
         }
         return null;
     }
@@ -212,10 +212,10 @@ public class MovementEntityToModelMapper {
     public static Map<UUID, List<Movement>> orderMovementsByConnectId(List<Movement> movements) {
         Map<UUID, List<Movement>> orderedMovements = new HashMap<>();
         for (Movement movement : movements) {
-            if (orderedMovements.get(movement.getMovementConnect().getValue()) == null) {
-                orderedMovements.put(movement.getMovementConnect().getValue(), new ArrayList<>(Collections.singletonList(movement)));
+            if (orderedMovements.get(movement.getMovementConnect().getId()) == null) {
+                orderedMovements.put(movement.getMovementConnect().getId(), new ArrayList<>(Collections.singletonList(movement)));
             } else {
-                orderedMovements.get(movement.getMovementConnect().getValue()).add(movement);
+                orderedMovements.get(movement.getMovementConnect().getId()).add(movement);
             }
         }
         return orderedMovements;

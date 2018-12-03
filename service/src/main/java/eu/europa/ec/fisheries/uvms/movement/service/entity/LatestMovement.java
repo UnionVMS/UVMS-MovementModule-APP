@@ -29,6 +29,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "latestmovement", indexes = {
@@ -54,9 +55,8 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "latest_movement_seq")
-    @Basic(optional = false)
     @Column(name = "movelate_id")
-    private Long id;
+    private UUID id;
 
     @NotNull
     @Fetch(FetchMode.JOIN)
@@ -75,11 +75,11 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     @Column(name = "movelate_timestamp")
     private Instant timestamp;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

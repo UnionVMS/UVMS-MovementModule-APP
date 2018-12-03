@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.service.message.AuditModuleRequestMapper;
 
@@ -64,13 +64,13 @@ public class AuditService {
     }
 
     @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
-    public void sendTempMovementCreatedAudit(TempMovement tempMovement, String username) {
+    public void sendTempMovementCreatedAudit(DraftMovement draftMovement, String username) {
         try {
-            String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(tempMovement.getId().toString(),
+            String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(draftMovement.getId().toString(),
                     username);
             producer.sendModuleMessage(auditRequest, ModuleQueue.AUDIT);
         } catch (AuditModelMarshallException e) {
-            LOG.error("Failed to send audit log message! TempMovement with guid {} was created ", tempMovement.getId().toString(), e);
+            LOG.error("Failed to send audit log message! DraftMovement with guid {} was created ", draftMovement.getId().toString(), e);
         }
     }
 

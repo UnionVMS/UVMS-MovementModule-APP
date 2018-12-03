@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.persistence.*;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -40,9 +41,9 @@ public class MovementFilterGroup implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "movement_filter_group_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "movefiltgrp_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "movefiltgrp_active")
     private String active;
@@ -74,11 +75,11 @@ public class MovementFilterGroup implements Serializable {
     public MovementFilterGroup() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -13,6 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -86,7 +87,7 @@ public class MovementSearchGroupResource {
     @Path("/group/{id}")
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto getMovementSearchGroup(@PathParam("id") Long id) {
+    public ResponseDto getMovementSearchGroup(@PathParam("id") UUID id) {
         try {
             MovementFilterGroup filterGroup = service.getMovementFilterGroup(id);
             MovementSearchGroup searchGroup = MovementGroupMapper.toMovementSearchGroup(filterGroup);
@@ -154,7 +155,7 @@ public class MovementSearchGroupResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto deleteMovementSearchGroup(@PathParam(value = "id") Long id) {
+    public ResponseDto deleteMovementSearchGroup(@PathParam(value = "id") UUID id) {
         try {
             MovementFilterGroup deletedSearchGroup = service.deleteMovementFilterGroup(id);
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(deletedSearchGroup);

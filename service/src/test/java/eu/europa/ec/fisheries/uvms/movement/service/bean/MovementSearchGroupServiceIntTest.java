@@ -8,6 +8,7 @@ import javax.ejb.EJBTransactionRolledbackException;
 
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementGroupMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -169,7 +170,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
         MovementFilterGroup created = movementSearchGroupService.createMovementFilterGroup(movementSearchGroup, "TEST");
         assertNotNull(created);
 
-        Long createdMovementSearchGroupID = created.getId();
+        UUID createdMovementSearchGroupID = created.getId();
         assertNotNull(createdMovementSearchGroupID);
         try {
             MovementFilterGroup deletedMovementFilterGroup = movementSearchGroupService.deleteMovementFilterGroup(createdMovementSearchGroupID);
@@ -183,7 +184,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void deleteMovementSearchGroup_MIN_VALUE_AS_ID() {
         try {
-            movementSearchGroupService.deleteMovementFilterGroup(Long.MIN_VALUE);
+            movementSearchGroupService.deleteMovementFilterGroup(UUID.randomUUID());
             fail();
         } catch (RuntimeException e) {
             assertNotNull(e);
@@ -225,11 +226,11 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
             assertNotNull(created);
             assertNotNull(created.getId());
 
-            Long createdMovementSearchGroupId = created.getId();
+            UUID createdMovementSearchGroupId = created.getId();
             MovementFilterGroup fetched = movementSearchGroupService.getMovementFilterGroup(createdMovementSearchGroupId);
             assertNotNull(fetched);
             assertNotNull(fetched.getId());
-            Long fetchedMovementSearchGroupId = fetched.getId();
+            UUID fetchedMovementSearchGroupId = fetched.getId();
             assertEquals(createdMovementSearchGroupId, fetchedMovementSearchGroupId);
         } catch (Exception e) {
             fail();
@@ -266,7 +267,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void getMovementSearchGroup_MINVAL_IN_KEY() {
         try {
-            movementSearchGroupService.getMovementFilterGroup(Long.MIN_VALUE);
+            movementSearchGroupService.getMovementFilterGroup(UUID.randomUUID());
             fail();
         } catch (Exception e) {
             assertNotNull(e);
@@ -285,19 +286,19 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
             MovementFilterGroup created = movementSearchGroupService.createMovementFilterGroup(movementSearchGroup, "TEST");
             assertNotNull(created);
 
-            Long createdMovementSearchGroupID = created.getId();
+            UUID createdMovementSearchGroupID = created.getId();
             assertNotNull(createdMovementSearchGroupID);
 
             // fix a new one
             MovementSearchGroup aNewMovementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
             // put id in it from the created so it can be used as update info
-            aNewMovementSearchGroup.setId(BigInteger.valueOf(createdMovementSearchGroupID));
+            aNewMovementSearchGroup.setId(CalculationUtil.getBigIntegerFromUuid(createdMovementSearchGroupID));
             aNewMovementSearchGroup.setName("CHANGED_NAME");
 
             MovementFilterGroup updated = movementSearchGroupService.updateMovementFilterGroup(aNewMovementSearchGroup, "TEST_UPD");
             assertNotNull(updated);
             assertNotNull(updated.getId());
-            Long updatedMovementSearchGroupID = updated.getId();
+            UUID updatedMovementSearchGroupID = updated.getId();
 
             assertEquals(updatedMovementSearchGroupID, createdMovementSearchGroupID);
 

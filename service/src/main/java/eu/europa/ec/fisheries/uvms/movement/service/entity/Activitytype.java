@@ -20,6 +20,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -54,10 +55,9 @@ public class Activitytype implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "activity_type_seq")
-    @Basic(optional = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "acttyp_id")
-    private Long acttypId;
+    private UUID acttypId;
 
     @Basic(optional = false)
     @NotNull
@@ -83,13 +83,12 @@ public class Activitytype implements Serializable {
     @Column(name = "acttyp_upuser")
     private String acttypUpuser;
 
-    /*@OneToMany(cascade = CascadeType.ALL, mappedBy = "actActtypId", fetch = FetchType.LAZY)
-     private List<Activity> activityList;*/
-    public Long getActtypId() {
+
+    public UUID getActtypId() {
         return acttypId;
     }
 
-    public void setActtypId(Long acttypId) {
+    public void setActtypId(UUID acttypId) {
         this.acttypId = acttypId;
     }
 
@@ -125,14 +124,6 @@ public class Activitytype implements Serializable {
         this.acttypUpuser = acttypUpuser;
     }
 
-    /*@XmlTransient
-     public List<Activity> getActivityList() {
-     return activityList;
-     }
-
-     public void setActivityList(List<Activity> activityList) {
-     this.activityList = activityList;
-     }*/
     @Override
     public int hashCode() {
         int hash = 0;

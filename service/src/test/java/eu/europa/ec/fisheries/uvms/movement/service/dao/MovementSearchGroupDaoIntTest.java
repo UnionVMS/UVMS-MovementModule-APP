@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.persistence.PersistenceException;
@@ -73,9 +74,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
         dao.deleteMovementFilterGroup(movementFilterGroup);
         em.flush();
 
-        // TODO: Wrong id type. Will be fixed later. /ksm
-        // TODO: This change will require updates in  some DAOs and in a xsd schema(MovementSearch.xsd) as well.
-        movementFilterGroup = dao.getMovementFilterGroupById(movementFilterGroup.getId().intValue());
+        movementFilterGroup = dao.getMovementFilterGroupById(movementFilterGroup.getId());
         assertNull(movementFilterGroup);
     }
 
@@ -87,7 +86,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
         assertNotNull(movementFilterGroup.getId());
         em.flush();
 
-        MovementFilterGroup movementFilterGroup2 = dao.getMovementFilterGroupById(movementFilterGroup.getId().intValue());
+        MovementFilterGroup movementFilterGroup2 = dao.getMovementFilterGroupById(movementFilterGroup.getId());
         assertNotNull(movementFilterGroup2);
         assertEquals(movementFilterGroup.getId(), movementFilterGroup2.getId());
     }
@@ -95,7 +94,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void failGetMovementFilterGroupById()  {
-        MovementFilterGroup movementFilterGroup = dao.getMovementFilterGroupById(-1337);
+        MovementFilterGroup movementFilterGroup = dao.getMovementFilterGroupById(UUID.randomUUID());
         assertNull(movementFilterGroup);
     }
 
@@ -134,7 +133,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
         movementFilterGroup = dao.updateMovementFilterGroup(movementFilterGroup);
         em.flush();
 
-        MovementFilterGroup movementFilterGroup2 = dao.getMovementFilterGroupById(movementFilterGroup.getId().intValue());
+        MovementFilterGroup movementFilterGroup2 = dao.getMovementFilterGroupById(movementFilterGroup.getId());
         assertNotNull(movementFilterGroup2);
         assertEquals(movementFilterGroup.getId(), movementFilterGroup2.getId());
         assertEquals(movementFilterGroup.getUpdatedBy(), movementFilterGroup2.getUpdatedBy());

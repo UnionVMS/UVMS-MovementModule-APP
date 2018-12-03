@@ -96,19 +96,10 @@ public class Movement implements Serializable, Comparable<Movement> {
     
     private static final long serialVersionUID = 1L;
 
-    /*@JoinColumn(name = "move_movetyp_id", referencedColumnName = "movetyp_id")
-     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-     private MovementType moveMovetypId;
-    
-     @JoinColumn(name = "move_movesour_id", referencedColumnName = "movesour_id")
-     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-     private MovementSource moveMovesourId;*/
-    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Basic(optional = false)
     @Column(name = "move_id")
-    private Long id;
+    private UUID id;
 
     @NotNull
     @Type(type = "org.hibernate.spatial.GeometryType")
@@ -201,11 +192,11 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.guid = UUID.randomUUID();
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

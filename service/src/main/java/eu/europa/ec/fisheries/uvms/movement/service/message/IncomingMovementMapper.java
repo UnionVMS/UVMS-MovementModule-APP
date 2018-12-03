@@ -26,8 +26,12 @@ public abstract class IncomingMovementMapper {
         entity.setStatus(ic.getStatus());
         //entity.setAltitude(ic.getAltitude());
         //entity.setMoveAltitude(ic.getAltitude());
+
+        //MovementConnect (aka asset)
         MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setValue(UUID.fromString(ic.getAssetHistoryId()));
+        movementConnect.setId(UUID.fromString(ic.getAssetHistoryId()));
+        movementConnect.setFlagState(ic.getFlagState());
+        movementConnect.setName(ic.getAssetName());
         movementConnect.setUpdated(Instant.now());
         movementConnect.setUpdatedBy(username);
         entity.setMovementConnect(movementConnect);

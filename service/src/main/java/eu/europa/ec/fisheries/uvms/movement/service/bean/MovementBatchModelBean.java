@@ -31,10 +31,10 @@ public class MovementBatchModelBean {
     private MovementDao movementDao;
 
     public Movement createMovement(Movement movement) {
-        if(movement.getMovementConnect().getValue() == null) {
+        if(movement.getMovementConnect().getId() == null) {
             throw new IllegalArgumentException("No movementConnect ID");
         }
-        UUID connectId = movement.getMovementConnect().getValue();
+        UUID connectId = movement.getMovementConnect().getId();
         try {
             MovementConnect moveConnect = getMovementConnectByConnectId(connectId);
 
@@ -58,7 +58,7 @@ public class MovementBatchModelBean {
             MovementConnect connect = new MovementConnect();
             connect.setUpdated(DateUtil.nowUTC());
             connect.setUpdatedBy("UVMS");
-            connect.setValue(connectId);
+            connect.setId(connectId);
             return movementDao.createMovementConnect(connect);
         }
         return movementConnect;

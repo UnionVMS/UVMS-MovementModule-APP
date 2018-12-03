@@ -88,7 +88,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		movement.setMovementSource(MovementSourceType.IRIDIUM);
 		movement.setMovementType(MovementTypeType.POS);
 		MovementConnect movementConnect = new MovementConnect();
-		movementConnect.setValue(connectId);
+		movementConnect.setId(connectId);
         movement.setMovementConnect(movementConnect);
         movement.setTimestamp(Instant.now());
 		//movement.setStatus(status);

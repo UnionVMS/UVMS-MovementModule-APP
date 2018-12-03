@@ -21,13 +21,14 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "movementfilter", indexes = {
-        @Index(columnList = "movefilt_movefiltgrp_id", name = "movementfilter_i_1", unique = false),
-        @Index(columnList = "movefilt_movefilttyp_id", name = "movementfilter_i_2", unique = false)
+        @Index(columnList = "movefilt_movefiltgrp_id", name = "movementfilter_filtergroup_fk_inx", unique = false),
+        @Index(columnList = "movefilt_movefilttyp_id", name = "movementfilter_movefilttyp_fk_inx", unique = false)
 })
 @NamedQuery(name = "Filter.findAll", query = "SELECT f FROM MovementFilter f")
 @DynamicUpdate
@@ -37,9 +38,9 @@ public class MovementFilter implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "movement_filter_seq")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "movefilt_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "movefilt_field")
     private String field;
@@ -66,11 +67,11 @@ public class MovementFilter implements Serializable {
     public MovementFilter() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

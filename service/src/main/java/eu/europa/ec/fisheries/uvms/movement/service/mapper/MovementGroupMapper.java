@@ -21,6 +21,7 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilter;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
+import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 
 public class MovementGroupMapper {
 
@@ -59,7 +60,7 @@ public class MovementGroupMapper {
         group.setUser(filterGroup.getUser());
 
         if (filterGroup.getId() != null) {
-            group.setId(BigInteger.valueOf(filterGroup.getId().longValue()));
+            group.setId(CalculationUtil.getBigIntegerFromUuid(filterGroup.getId()));
         }
 
         for (MovementFilter filter : filterGroup.getFilters()) {

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.schema.movementrules.exchange.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
@@ -20,11 +21,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "alarmreport")
+@Table(name = "alarmreport", indexes = {
+        @Index(columnList = "incomingmovement_id", name = "alarmreport_incomingmovement_fk_inx", unique = false)
+})
 @XmlRootElement
 @NamedQueries({
         @NamedQuery(name = AlarmReport.FIND_ALARM_REPORT_BY_ID, query = "SELECT ar FROM AlarmReport ar WHERE ar.id = :id"),
-        @NamedQuery(name = AlarmReport.FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID, query = "SELECT ar FROM AlarmReport ar WHERE ar.incomingMovement.guid = :movementGuid and ar.status = 'OPEN'"),
+        @NamedQuery(name = AlarmReport.FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID, query = "SELECT ar FROM AlarmReport ar WHERE ar.incomingMovement.id = :movementGuid and ar.status = 'OPEN'"),
         @NamedQuery(name = AlarmReport.FIND_ALARM_BY_GUID, query = "SELECT ar FROM AlarmReport ar WHERE ar.guid = :guid"),
         @NamedQuery(name = AlarmReport.FIND_ALARM_REPORT_BY_ASSET_GUID_AND_RULE_GUID, query = "SELECT ar FROM AlarmReport ar left join ar.alarmItemList ai WHERE ar.assetGuid = :assetGuid and ar.status = 'OPEN' and ai.ruleGuid = :ruleGuid"),
         @NamedQuery(name = AlarmReport.COUNT_OPEN_ALARMS, query = "SELECT count(ar) FROM AlarmReport ar where ar.status = 'OPEN'")
@@ -44,7 +47,7 @@ public class AlarmReport implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;        //internal DB id
+    private UUID id;        //internal DB id
     private String pluginType;  //Expects values from the class PluginType, exists in Type, same name  TODO: make the *Type class use an enum instead of a string
     private String guid;    //exists in Type, same name
     private String assetGuid;   //exists in Type, same name
@@ -71,11 +74,11 @@ public class AlarmReport implements Serializable {
         this.guid = UUID.randomUUID().toString();
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

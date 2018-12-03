@@ -31,7 +31,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         Instant now = Instant.now().plusSeconds(60);
 
         long response = getWebTarget()
-                .path("internal/countMovementsInDateAndTheDayBeforeForAsset/" + createdMovement.getMovementConnect().getValue().toString())
+                .path("internal/countMovementsInDateAndTheDayBeforeForAsset/" + createdMovement.getMovementConnect().getId().toString())
                 .queryParam("after", DateUtil.parseUTCDateToString(now))    //yyyy-MM-dd HH:mm:ss Z
                 .request(MediaType.APPLICATION_JSON)
                 .get(long.class);

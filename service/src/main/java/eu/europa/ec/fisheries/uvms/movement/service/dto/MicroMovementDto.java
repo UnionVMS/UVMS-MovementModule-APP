@@ -41,7 +41,7 @@ public class MicroMovementDto {
         location.setLongitude(point.getX());
         this.heading = heading;
         this.guid = guid.toString();
-        this.asset = asset.getValue().toString();
+        this.asset = asset.getId().toString();
         this.timestamp = timestamp;
         this.speed = speed;
     }

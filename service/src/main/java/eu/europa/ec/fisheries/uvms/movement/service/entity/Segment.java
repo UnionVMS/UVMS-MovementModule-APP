@@ -18,6 +18,7 @@ import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 
 import javax.persistence.*;
 import javax.persistence.CascadeType;
@@ -36,7 +37,7 @@ import org.hibernate.annotations.*;
 @Entity
 @Table(name = "segment", indexes = {
         @Index(columnList = "seg_frommove_id", name = "seg_move_from_to_idx", unique = false),
-        @Index(columnList = "seg_tomove_id", name = "seg_move_from_to_idx", unique = false),
+        @Index(columnList = "seg_tomove_id", name = "seg_move_to_to_idx", unique = false),
         @Index(columnList = "seg_segcat_id", name = "seg_segcat_fk_idx", unique = false),
         @Index(columnList = "seg_trac_id", name = "seg_trac_fk_idx", unique = false)
 }, uniqueConstraints = {
@@ -75,10 +76,9 @@ public class Segment implements Serializable {
     public static final String FIND_BY_MOVEMENT = "Segment.findByMovement";
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "segment_seq")
-    @Basic(optional = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "seg_id")
-    private Long id;
+    private UUID id;
 
     @Type(type = "org.hibernate.spatial.GeometryType")
     @Column(name = "seg_geom", columnDefinition = "Geometry", nullable = true)
@@ -127,11 +127,11 @@ public class Segment implements Serializable {
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     private Movement toMovement;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

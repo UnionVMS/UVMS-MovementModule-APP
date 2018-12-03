@@ -13,7 +13,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "incomingmovement")
+@Table(name = "incomingmovement", indexes = {
+        @Index(columnList = "alarmreport_id", name = "incomingmovement_alarmreport_fk_inx", unique = false)
+})
 @XmlRootElement
 //@DynamicUpdate
 //@DynamicInsert
@@ -21,11 +23,9 @@ public class IncomingMovement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private UUID id;
 
-    private String guid;
-    @Column(name = "connectId")
-    private String assetHistoryId;               //TODO Rename in the DB since it is asset history ID
+    private String assetHistoryId;
     private String ackResponseMessageId;
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
@@ -84,25 +84,13 @@ public class IncomingMovement {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private AlarmReport alarmReport;
 
-    @PrePersist
-    public void init() {
-        guid = UUID.randomUUID().toString();
-    }
-    
-    public Long getId() {
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
     }
 
     public String getAssetHistoryId() {
