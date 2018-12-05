@@ -568,7 +568,7 @@ public class SearchFieldMapper {
      *
      * Builds an IN JPQL representation for lists of values
      *
-     * The resulting String = [ mc.value IN ( 'ABC123', 'ABC321' ) ]
+     * The resulting String = [ mc.in IN ( 'ABC123', 'ABC321' ) ]
      *
      *
      * @param searchValues

@@ -79,7 +79,7 @@ public class DraftMovement implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "draftmove_id")
+    @Column(columnDefinition = "uuid", name = "draftmove_id")
     private UUID id;
 
     @Size(max = 3)

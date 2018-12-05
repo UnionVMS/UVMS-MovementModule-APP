@@ -50,7 +50,7 @@ public class Track implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "track_seq")
-    @Column(name = "trac_id")
+    @Column(columnDefinition = "uuid", name = "trac_id")
     private UUID id;
 
     @Basic(optional = false)

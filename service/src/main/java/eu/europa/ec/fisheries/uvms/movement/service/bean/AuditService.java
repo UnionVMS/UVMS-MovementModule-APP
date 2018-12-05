@@ -42,13 +42,13 @@ public class AuditService {
         try {
             String auditData;
             if (MovementTypeType.MAN.equals(movement.getMovementType())) {
-                auditData = AuditModuleRequestMapper.mapAuditLogManualMovementCreated(movement.getGuid(), username);
+                auditData = AuditModuleRequestMapper.mapAuditLogManualMovementCreated(movement.getId(), username);
             } else {
-                auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(movement.getGuid(), username);
+                auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(movement.getId(), username);
             }
             producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
         } catch (AuditModelMarshallException e) {
-            LOG.error("Failed to send audit log message! Movement with guid {} was created ", movement.getGuid(), e);
+            LOG.error("Failed to send audit log message! Movement with guid {} was created ", movement.getId(), e);
         }
     }
     

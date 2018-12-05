@@ -94,7 +94,7 @@ public abstract class IncomingMovementMapper {
             md.setActivityMessageId(movement.getActivity().getMessageId());
             md.setActivityMessageType(movement.getActivity().getActivityType().value());
         }
-        md.setMovementGuid(movement.getGuid().toString());
+        md.setMovementGuid(movement.getId().toString());
         md.setLongitude(movement.getLocation().getX());
         md.setLatitude(movement.getLocation().getY());
         md.setAltitude(movement.getAltitude());

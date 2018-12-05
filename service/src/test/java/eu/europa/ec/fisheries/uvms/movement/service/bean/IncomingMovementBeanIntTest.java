@@ -53,7 +53,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         Movement movementType = MockData.createMovement(0d, 1d, uuid, 0, "TEST");
         movementType = movementBatchModelBean.createMovement(movementType);
-        assertNotNull("MovementType creation was successful.", movementType.getGuid());
+        assertNotNull("MovementType creation was successful.", movementType.getId());
         em.flush();
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(movementType.getMovementConnect().getId());

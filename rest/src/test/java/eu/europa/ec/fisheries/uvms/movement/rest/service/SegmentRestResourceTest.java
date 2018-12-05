@@ -34,12 +34,12 @@ public class SegmentRestResourceTest extends BuildMovementRestDeployment {
 
         SegmentDTO response = getWebTarget()
                 .path("segment")
-                .path("segmentByDestinationMovement/" + movementDestination.getGuid().toString())
+                .path("segmentByDestinationMovement/" + movementDestination.getId().toString())
                 .request(MediaType.APPLICATION_JSON)
                 .get(SegmentDTO.class);
 
-        assertEquals(movementDeparture.getGuid().toString(), response.getFromMovement());
-        assertEquals(movementDestination.getGuid().toString(), response.getToMovement());
+        assertEquals(movementDeparture.getId().toString(), response.getFromMovement());
+        assertEquals(movementDestination.getId().toString(), response.getToMovement());
 
 
     }

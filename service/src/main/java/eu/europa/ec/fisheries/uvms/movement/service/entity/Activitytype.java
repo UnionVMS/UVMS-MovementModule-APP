@@ -56,7 +56,7 @@ public class Activitytype implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "acttyp_id")
+    @Column(columnDefinition = "uuid", name = "acttyp_id")
     private UUID acttypId;
 
     @Basic(optional = false)

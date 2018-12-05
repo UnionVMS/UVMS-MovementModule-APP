@@ -53,7 +53,7 @@ public class SSEResource {
             UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
             Movement move = movementDao.getMovementByGUID(guid);
             if (move != null) {
-                MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(), move.getGuid(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
+                MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")
                         .id("" + System.currentTimeMillis())

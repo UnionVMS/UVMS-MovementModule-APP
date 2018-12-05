@@ -20,9 +20,9 @@ public class AlarmItem implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;                //internal DB ID
-    private String guid;            //Globally unique ID, exists in Type, same name
+    @GeneratedValue
+    @Column(columnDefinition = "uuid", name = "id")
+    private UUID id;                // DB ID
     private String ruleName;        //exists in Type, same name
     private String ruleGuid;        //exists in Type, same name
     @NotNull
@@ -40,14 +40,6 @@ public class AlarmItem implements Serializable {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
     }
 
     public String getRuleName() {
@@ -94,7 +86,6 @@ public class AlarmItem implements Serializable {
     public String toString() {
         return "AlarmItem{" +
                 "id=" + id +
-                ", guid='" + guid + '\'' +
                 ", ruleName='" + ruleName + '\'' +
                 ", ruleGuid='" + ruleGuid + '\'' +
                 ", updated=" + updated +

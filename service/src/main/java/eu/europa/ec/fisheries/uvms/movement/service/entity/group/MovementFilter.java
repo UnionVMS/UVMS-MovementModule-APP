@@ -39,7 +39,7 @@ public class MovementFilter implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "movefilt_id")
+    @Column(columnDefinition = "uuid", name = "movefilt_id")
     private UUID id;
 
     @Column(name = "movefilt_field")

@@ -72,7 +72,7 @@ public class MovementCreateBean {
                 ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
                 MovementRefType movementRefType = new MovementRefType();
                 movementRefType.setAckResponseMessageID(incomingMovement.getAckResponseMessageId());
-                movementRefType.setMovementRefGuid(createdMovement.getGuid().toString());
+                movementRefType.setMovementRefGuid(createdMovement.getId().toString());
                 movementRefType.setType(MovementRefTypeType.MOVEMENT);
                 processedMovementResponse.setMovementRefType(movementRefType);
                 exchangeBean.send(processedMovementResponse);

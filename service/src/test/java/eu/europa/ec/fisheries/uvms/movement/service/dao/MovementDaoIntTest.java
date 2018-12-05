@@ -552,7 +552,6 @@ public class MovementDaoIntTest extends TransactionalTests {
         movement.setMovementSource(MovementSourceType.NAF);
         movement.setMovementType(MovementTypeType.MAN);
         movement.setUpdatedBy("Arquillian");
-        movement.setGuid();
         movement.setTimestamp(timeStamp);
         movement.setUpdated(timeStamp);
         movement.setDuplicate(Boolean.FALSE);

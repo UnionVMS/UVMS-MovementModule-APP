@@ -22,7 +22,8 @@ import java.util.UUID;
 public class IncomingMovement {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
+    @Column(columnDefinition = "uuid", name = "id")
     private UUID id;
 
     private String assetHistoryId;

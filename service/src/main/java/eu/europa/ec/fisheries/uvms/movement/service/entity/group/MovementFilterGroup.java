@@ -42,7 +42,7 @@ public class MovementFilterGroup implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "movefiltgrp_id")
+    @Column(columnDefinition = "uuid", name = "movefiltgrp_id")
     private UUID id;
 
     @Column(name = "movefiltgrp_active")

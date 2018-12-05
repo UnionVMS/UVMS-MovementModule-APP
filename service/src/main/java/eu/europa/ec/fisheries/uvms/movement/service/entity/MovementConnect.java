@@ -52,7 +52,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "moveconn_asset_id")
+    @Column(columnDefinition = "uuid", name = "moveconn_asset_id")
     private UUID id;    //this is now the asset ID
 
     @Column(name = "moveconn_flagstate")

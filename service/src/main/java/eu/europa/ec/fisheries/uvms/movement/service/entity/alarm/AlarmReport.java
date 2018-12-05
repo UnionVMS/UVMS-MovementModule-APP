@@ -28,7 +28,7 @@ import java.util.UUID;
 @NamedQueries({
         @NamedQuery(name = AlarmReport.FIND_ALARM_REPORT_BY_ID, query = "SELECT ar FROM AlarmReport ar WHERE ar.id = :id"),
         @NamedQuery(name = AlarmReport.FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID, query = "SELECT ar FROM AlarmReport ar WHERE ar.incomingMovement.id = :movementGuid and ar.status = 'OPEN'"),
-        @NamedQuery(name = AlarmReport.FIND_ALARM_BY_GUID, query = "SELECT ar FROM AlarmReport ar WHERE ar.guid = :guid"),
+        @NamedQuery(name = AlarmReport.FIND_ALARM_BY_GUID, query = "SELECT ar FROM AlarmReport ar WHERE ar.id = :guid"),
         @NamedQuery(name = AlarmReport.FIND_ALARM_REPORT_BY_ASSET_GUID_AND_RULE_GUID, query = "SELECT ar FROM AlarmReport ar left join ar.alarmItemList ai WHERE ar.assetGuid = :assetGuid and ar.status = 'OPEN' and ai.ruleGuid = :ruleGuid"),
         @NamedQuery(name = AlarmReport.COUNT_OPEN_ALARMS, query = "SELECT count(ar) FROM AlarmReport ar where ar.status = 'OPEN'")
 })
@@ -47,9 +47,10 @@ public class AlarmReport implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;        //internal DB id
+    @Column(columnDefinition = "uuid", name = "id")
+    private UUID id;        //DB id
+
     private String pluginType;  //Expects values from the class PluginType, exists in Type, same name  TODO: make the *Type class use an enum instead of a string
-    private String guid;    //exists in Type, same name
     private String assetGuid;   //exists in Type, same name
     private String status;  //Expects values from teh class AlarmsStatusType, exists in Type, same name
     private String recipient;   //exists in Type, same name
@@ -69,11 +70,6 @@ public class AlarmReport implements Serializable {
     @OneToMany(mappedBy = "alarmReport", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<AlarmItem> alarmItemList;  //exists in Type, same name
 
-    @PrePersist
-    public void prePersist() {
-        this.guid = UUID.randomUUID().toString();
-    }
-
     public UUID getId() {
         return id;
     }
@@ -88,14 +84,6 @@ public class AlarmReport implements Serializable {
 
     public void setPluginType(String pluginType) {
         this.pluginType = pluginType;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
     }
 
     public String getAssetGuid() {
@@ -170,7 +158,6 @@ public class AlarmReport implements Serializable {
         return "AlarmReport{" +
                 "id=" + id +
                 ", pluginType='" + pluginType + '\'' +
-                ", guid='" + guid + '\'' +
                 ", assetGuid='" + assetGuid + '\'' +
                 ", status='" + status + '\'' +
                 ", recipient='" + recipient + '\'' +

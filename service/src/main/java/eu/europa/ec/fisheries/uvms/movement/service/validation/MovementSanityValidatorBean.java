@@ -145,7 +145,6 @@ public class MovementSanityValidatorBean {
             alarmReport = new AlarmReport();
             alarmReport.setAssetGuid(movement.getAssetGuid());
             alarmReport.setCreatedDate(Instant.now());
-            alarmReport.setGuid(UUID.randomUUID().toString());
             alarmReport.setPluginType(movement.getPluginType());
             //alarmReport.setRecipient();
             alarmReport.setStatus(AlarmStatusType.OPEN.value());
@@ -159,7 +158,6 @@ public class MovementSanityValidatorBean {
 
         AlarmItem item = new AlarmItem();
         item.setAlarmReport(alarmReport);
-        item.setGuid(UUID.randomUUID().toString());
         item.setRuleGuid(ruleName); // WTF?
         item.setRuleName(ruleName);
         item.setUpdated(Instant.now());
@@ -169,12 +167,12 @@ public class MovementSanityValidatorBean {
         alarmReport.getAlarmItemList().add(item);
 
         // Notify long-polling clients of the new alarm report
-        alarmReportEvent.fire(new NotificationMessage("guid", alarmReport.getGuid()));
+        alarmReportEvent.fire(new NotificationMessage("guid", alarmReport.getId()));
 
         // Notify long-polling clients of the change (no vlaue since FE will need to fetch it)
         alarmReportCountEvent.fire(new NotificationMessage("alarmCount", null));
             
-        auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.CREATE, alarmReport.getGuid(), null, alarmReport.getUpdatedBy());
+        auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.CREATE, alarmReport.getId().toString(), null, alarmReport.getUpdatedBy());
     }
 
     public AlarmListResponseDto getAlarmList(AlarmQuery query) {
@@ -210,7 +208,7 @@ public class MovementSanityValidatorBean {
     }
 
     public AlarmReport updateAlarmStatus(AlarmReport alarm) {
-        AlarmReport entity = alarmDAO.getAlarmReportByGuid(alarm.getGuid());
+        AlarmReport entity = alarmDAO.getAlarmReportByGuid(alarm.getId());
         if (entity == null) {
             throw new IllegalArgumentException("Alarm is null", null);
         }
@@ -233,11 +231,11 @@ public class MovementSanityValidatorBean {
         alarmReportCountEvent.fire(new NotificationMessage("alarmCount", null));
         */
 
-        auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, entity.getGuid(), null, alarm.getUpdatedBy());
+        auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, entity.getId().toString(), null, alarm.getUpdatedBy());
         return entity;
     }
 
-    public AlarmReport getAlarmReportByGuid(String guid) {
+    public AlarmReport getAlarmReportByGuid(UUID guid) {
         return alarmDAO.getAlarmReportByGuid(guid);
     }
 
@@ -254,7 +252,7 @@ public class MovementSanityValidatorBean {
             // Mark the alarm as REPROCESSED before reprocessing. That will create a new alarm (if still wrong) with the items remaining.
             alarm.setStatus(AlarmStatusType.REPROCESSED.value());
             alarm = updateAlarmStatus(alarm);
-            auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, alarm.getGuid(), null, username);
+            auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, alarm.getId().toString(), null, username);
             IncomingMovement incomingMovement = alarm.getIncomingMovement();
             movementCreate.processIncomingMovement(incomingMovement);
         }

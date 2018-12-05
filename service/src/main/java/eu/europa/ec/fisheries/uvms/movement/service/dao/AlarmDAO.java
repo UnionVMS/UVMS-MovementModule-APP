@@ -38,7 +38,7 @@ public class AlarmDAO {
         em.merge(entity);
     }
 
-    public AlarmReport getAlarmReportByGuid(String guid) {
+    public AlarmReport getAlarmReportByGuid(UUID guid) {
         try {
             TypedQuery<AlarmReport> query = em.createNamedQuery(AlarmReport.FIND_ALARM_BY_GUID, AlarmReport.class);
             query.setParameter("guid", guid);

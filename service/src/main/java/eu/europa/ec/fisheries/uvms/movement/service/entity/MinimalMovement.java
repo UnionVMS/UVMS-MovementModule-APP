@@ -56,14 +56,14 @@ import java.util.UUID;
 @NamedQueries({
     @NamedQuery(name = "MinimalMovement.findAll", query = "SELECT m FROM MinimalMovement m WHERE m.duplicate = false"),
     @NamedQuery(name = "MinimalMovement.findById", query = "SELECT m FROM MinimalMovement m WHERE m.id = :id AND m.duplicate = false"),
-    @NamedQuery(name = "MinimalMovement.findByGUID", query = "SELECT m FROM MinimalMovement m WHERE m.guid = :guid AND m.duplicate = false"),
+    @NamedQuery(name = "MinimalMovement.findByGUID", query = "SELECT m FROM MinimalMovement m WHERE m.id = :guid AND m.duplicate = false"),
     @NamedQuery(name = "MinimalMovement.findBySpeed", query = "SELECT m FROM MinimalMovement m WHERE m.speed = :speed AND m.duplicate = false"),
     @NamedQuery(name = "MinimalMovement.findByHeading", query = "SELECT m FROM MinimalMovement m WHERE m.heading = :heading AND m.duplicate = false"),
     @NamedQuery(name = "MinimalMovement.findByStatus", query = "SELECT m FROM MinimalMovement m WHERE m.status = :status AND m.duplicate = false"),
-    @NamedQuery(name = "MinimalMovement.findLatestByMovementConnect", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.value = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = "MinimalMovement.findLatest", query = "SELECT m FROM MinimalMovement m INNER JOIN m.movementConnect mc2 WHERE m.timestamp = (select max(mm.timestamp) from MinimalMovement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.timestamp < :date ) AND m.duplicate = false AND mc2.value = :id"),
-    @NamedQuery(name = "MinimalMovement.findFirst", query = "SELECT m FROM MinimalMovement m INNER JOIN m.movementConnect mc2 WHERE m.timestamp = (select min(mm.timestamp) from MinimalMovement mm INNER JOIN mm.movementConnect mc where mc.value = :id ) AND m.duplicate = false AND mc2.value = :id"),
-    @NamedQuery(name = "MinimalMovement.findExistingDate", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false")
+    @NamedQuery(name = "MinimalMovement.findLatestByMovementConnect", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.id = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = "MinimalMovement.findLatest", query = "SELECT m FROM MinimalMovement m INNER JOIN m.movementConnect mc2 WHERE m.timestamp = (select max(mm.timestamp) from MinimalMovement mm INNER JOIN mm.movementConnect mc where mc.id = :id and mm.timestamp < :date ) AND m.duplicate = false AND mc2.id = :id"),
+    @NamedQuery(name = "MinimalMovement.findFirst", query = "SELECT m FROM MinimalMovement m INNER JOIN m.movementConnect mc2 WHERE m.timestamp = (select min(mm.timestamp) from MinimalMovement mm INNER JOIN mm.movementConnect mc where mc.id = :id ) AND m.duplicate = false AND mc2.id = :id"),
+    @NamedQuery(name = "MinimalMovement.findExistingDate", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.id = :id AND m.timestamp = :date AND m.duplicate = false")
 })
 @DynamicUpdate
 @DynamicInsert
@@ -72,10 +72,9 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
     private static final long serialVersionUID = 1L;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "minimal_mov_seq")
-    @Basic(optional = false)
-    @Column(name = "move_id")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "uuid", name = "move_id")
+    private UUID id;
 
     @NotNull
     @Type(type = "org.hibernate.spatial.GeometryType")
@@ -87,11 +86,6 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
 
     @Column(name = "move_heading")
     private Double heading;
-
-    @NotNull
-    @Size(max = 36)
-    @Column(name = "move_guid", nullable = false)
-    private String guid;
 
     @Size(max = 60)
     @Column(name = "move_status")
@@ -129,16 +123,11 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
     @Column(name = "move_duplicate_id")
     private String duplicateId;
 
-    @PrePersist
-    public void setGuid() {
-        this.guid = UUID.randomUUID().toString();
-    }
-
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -180,14 +169,6 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
 
     public void setHeading(Double heading) {
         this.heading = heading;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
     }
 
     public String getStatus() {

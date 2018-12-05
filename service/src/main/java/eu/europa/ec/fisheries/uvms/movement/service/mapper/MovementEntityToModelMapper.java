@@ -45,7 +45,7 @@ public class MovementEntityToModelMapper {
         MovementBaseType model = new MovementBaseType();
         model.setReportedSpeed(movement.getSpeed());
         model.setReportedCourse(movement.getHeading());
-        model.setGuid(movement.getGuid().toString());
+        model.setGuid(movement.getId().toString());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
@@ -65,7 +65,7 @@ public class MovementEntityToModelMapper {
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
         model.setReportedSpeed(movement.getSpeed());
-        model.setGuid(movement.getGuid());
+        model.setGuid(movement.getId().toString());
         model.setReportedCourse(movement.getHeading());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
@@ -95,7 +95,7 @@ public class MovementEntityToModelMapper {
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
         model.setReportedSpeed(movement.getSpeed());
-        model.setGuid(movement.getGuid().toString());
+        model.setGuid(movement.getId().toString());
         model.setReportedCourse(movement.getHeading());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setActivity(mapToActivityType(movement.getActivity()));

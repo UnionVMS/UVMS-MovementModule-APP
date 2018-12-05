@@ -291,7 +291,7 @@ public class MovementService {
 
     private void fireMovementEvent(Movement createdMovement) {
         try {
-            createdMovementEvent.fire(new NotificationMessage("movementGuid", createdMovement.getGuid()));
+            createdMovementEvent.fire(new NotificationMessage("movementGuid", createdMovement.getId()));
         } catch (Exception e) {
             LOG.error("[ Error when firing notification of created temp movement. ] {}", e.getMessage());
         }

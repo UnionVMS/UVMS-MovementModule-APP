@@ -198,12 +198,12 @@ public class MovementServiceIntTest extends TransactionalTests {
             em.flush();
             assertNotNull(createdMovementType);
 
-            UUID guid = createdMovementType.getGuid();
+            UUID guid = createdMovementType.getId();
             assertNotNull(guid);
 
             Movement fetchedMovement = movementService.getById(guid);
             assertNotNull(fetchedMovement);
-            UUID fetchedGuid = fetchedMovement.getGuid();
+            UUID fetchedGuid = fetchedMovement.getId();
             assertNotNull(fetchedGuid);
             assertEquals(fetchedGuid, guid);
 

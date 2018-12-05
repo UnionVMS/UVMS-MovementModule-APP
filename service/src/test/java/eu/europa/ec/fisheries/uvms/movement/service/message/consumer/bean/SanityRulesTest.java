@@ -1,13 +1,24 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
@@ -49,6 +60,43 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         jmsHelper = new JMSHelper(connectionFactory);
         jmsHelper.clearQueue("UVMSMovementRulesEvent");
         jmsHelper.clearQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
+    }
+
+     @Inject
+    AlarmDAO dao;
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void basicAlarmPersistTest(){
+        AlarmReport alarmReport;
+        alarmReport = new AlarmReport();
+        alarmReport.setAssetGuid(UUID.randomUUID().toString());
+        alarmReport.setCreatedDate(Instant.now());
+        alarmReport.setPluginType(PluginType.MANUAL.value());
+        //alarmReport.setRecipient();
+        alarmReport.setStatus(AlarmStatusType.OPEN.value());
+        alarmReport.setUpdated(Instant.now());
+        alarmReport.setUpdatedBy("UVMS");
+        alarmReport.setIncomingMovement(null);
+        alarmReport.setAlarmItemList(new ArrayList<>());
+        dao.save(alarmReport);
+
+        assertNotNull(alarmReport.getId());
+
+        AlarmItem item = new AlarmItem();
+        //alarmReport.getAlarmItemList().add(item);
+        item.setAlarmReport(alarmReport);
+        item.setRuleGuid("Test rules"); // WTF?
+        item.setRuleName("Test rules");
+        item.setUpdated(Instant.now());
+        item.setUpdatedBy("UVMS");
+        dao.save(item);
+
+        assertNotNull(item.getId());
+
+        AlarmReport ar = dao.getAlarmReportByGuid(alarmReport.getId());
+
+        assertTrue(ar.getAlarmItemList().size() > 0);
     }
 
     @Test

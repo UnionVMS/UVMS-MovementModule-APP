@@ -77,7 +77,7 @@ public class Segment implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "seg_id")
+    @Column(columnDefinition = "uuid", name = "seg_id")
     private UUID id;
 
     @Type(type = "org.hibernate.spatial.GeometryType")
