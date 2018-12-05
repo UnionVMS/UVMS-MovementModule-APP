@@ -292,7 +292,7 @@ public class MovementSearchGroupServiceIntTest extends TransactionalTests {
             // fix a new one
             MovementSearchGroup aNewMovementSearchGroup = createMovementSearchGroupHelper("TEST", true, SearchKeyType.MOVEMENT, SearchKey.MOVEMENT_ID.value());
             // put id in it from the created so it can be used as update info
-            aNewMovementSearchGroup.setId(CalculationUtil.getBigIntegerFromUuid(createdMovementSearchGroupID));
+            aNewMovementSearchGroup.setId(CalculationUtil.convertToBigInteger(createdMovementSearchGroupID));
             aNewMovementSearchGroup.setName("CHANGED_NAME");
 
             MovementFilterGroup updated = movementSearchGroupService.updateMovementFilterGroup(aNewMovementSearchGroup, "TEST_UPD");

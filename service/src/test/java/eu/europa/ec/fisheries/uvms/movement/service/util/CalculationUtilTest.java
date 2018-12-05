@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
 import javax.ejb.EJB;
@@ -32,7 +34,16 @@ public class CalculationUtilTest extends TransactionalTests {
 
 	@EJB
 	private IncomingMovementBean incomingMovementBean;
-	
+
+	@Test
+	@OperateOnDeployment("movementservice")
+	public void bigIntegerToUUIDTest(){
+		UUID uuid = UUID.randomUUID();
+		BigInteger bigInt = CalculationUtil.convertToBigInteger(uuid);
+		UUID output = CalculationUtil.convertFromBigInteger(bigInt);
+		assertEquals(uuid, output);
+	}
+
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testCalculateDistance() {

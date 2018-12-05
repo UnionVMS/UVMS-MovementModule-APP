@@ -130,18 +130,26 @@ public class CalculationUtil {
                 * EARTH_RADIUS_METER;
     }
 
-    public static BigInteger getBigIntegerFromUuid(UUID uuid) {
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return new BigInteger(bb.array());
-    }
-
     public static final BigInteger B = BigInteger.ONE.shiftLeft(64); // 2^64
     public static final BigInteger L = BigInteger.valueOf(Long.MAX_VALUE);
+    public static BigInteger convertToBigInteger(UUID id)
+    {
+        BigInteger lo = BigInteger.valueOf(id.getLeastSignificantBits());
+        BigInteger hi = BigInteger.valueOf(id.getMostSignificantBits());
+
+        // If any of lo/hi parts is negative interpret as unsigned
+
+        if (hi.signum() < 0)
+            hi = hi.add(B);
+
+        if (lo.signum() < 0)
+            lo = lo.add(B);
+
+        return lo.add(hi.multiply(B));
+    }
+
     public static UUID convertFromBigInteger(BigInteger x)
     {
-        //UUID.nameUUIDFromBytes(x.toByteArray()); //Need to check if this actually works
         BigInteger[] parts = x.divideAndRemainder(B);
         BigInteger hi = parts[0];
         BigInteger lo = parts[1];

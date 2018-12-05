@@ -60,7 +60,7 @@ public class MovementGroupMapper {
         group.setUser(filterGroup.getUser());
 
         if (filterGroup.getId() != null) {
-            group.setId(CalculationUtil.getBigIntegerFromUuid(filterGroup.getId()));
+            group.setId(CalculationUtil.convertToBigInteger(filterGroup.getId()));
         }
 
         for (MovementFilter filter : filterGroup.getFilters()) {
