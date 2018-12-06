@@ -5,13 +5,6 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <include file="properties.xml" relativeToChangelogFile="true"/>
-    <!--include file="v0.1\db-changelog-createSequence_0.1.xml" relativeToChangelogFile="true"/>
-    <include file="v0.1\db-changelog-createTables_postgres_0.1.xml" relativeToChangelogFile="true"/>
-    <include file="v0.1\db-changelog-insertStaticValues_0.1.xml" relativeToChangelogFile="true"/>
-    
-    <include file="v4.0.17\db-changelog-4.0.17.xml" relativeToChangelogFile="true"/>
-
-    <include file="v5.0.3\db-changelog-5.0.3.xml" relativeToChangelogFile="true"/-->
 
     <include file="v5.1.6\db-changelog-createTables-5.1.6.xml" relativeToChangelogFile="true"/>
 
