@@ -6,10 +6,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 //@formatter:off
 @Entity
-@Table(name = "alarmitem")
+@Table(name = "alarmitem", indexes = {
+        @Index(columnList = "alarmreport_id", name = "alarmitem_alarmreport_fk_inx", unique = false)
+})
 @XmlRootElement
 //@formatter:on
 public class AlarmItem implements Serializable {
@@ -17,9 +20,9 @@ public class AlarmItem implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;                //internal DB ID
-    private String guid;            //Globally unique ID, exists in Type, same name
+    @GeneratedValue
+    @Column(columnDefinition = "uuid", name = "id")
+    private UUID id;                // DB ID
     private String ruleName;        //exists in Type, same name
     private String ruleGuid;        //exists in Type, same name
     @NotNull
@@ -31,20 +34,12 @@ public class AlarmItem implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private AlarmReport alarmReport;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
     }
 
     public String getRuleName() {
@@ -91,7 +86,6 @@ public class AlarmItem implements Serializable {
     public String toString() {
         return "AlarmItem{" +
                 "id=" + id +
-                ", guid='" + guid + '\'' +
                 ", ruleName='" + ruleName + '\'' +
                 ", ruleGuid='" + ruleGuid + '\'' +
                 ", updated=" + updated +

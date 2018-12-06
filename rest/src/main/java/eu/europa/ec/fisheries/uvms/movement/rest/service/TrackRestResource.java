@@ -37,7 +37,7 @@ public class TrackRestResource {
     public Response getTrack(@PathParam("id") String stringId) {
         try {
 
-            long id = Long.parseLong(stringId);
+            UUID id = UUID.fromString(stringId);
             Track track = movementDao.getTrackById(id);
             MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(track);
 

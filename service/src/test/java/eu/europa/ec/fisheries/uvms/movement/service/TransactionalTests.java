@@ -6,9 +6,7 @@ import org.junit.Before;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import javax.transaction.*;
 
 public class TransactionalTests extends BuildMovementServiceTestDeployment {
 
@@ -24,8 +22,9 @@ public class TransactionalTests extends BuildMovementServiceTestDeployment {
     }
 
     @After
-    public void after() throws SystemException {
+    public void after() throws SystemException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
         userTransaction.rollback();
+        //userTransaction.commit();
     }
 
 }

@@ -1,11 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -40,6 +34,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by thofan on 2017-01-30.
@@ -84,12 +80,12 @@ public class MovementDaoIntTest extends TransactionalTests {
         Movement createdMovement = movementDao.createMovement(movement);
         assertNotNull(createdMovement);
 
-        Long createdMovementId = createdMovement.getId();
+        UUID createdMovementId = createdMovement.getId();
         Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
         assertNotNull(fetchedMovement);
         assertEquals(createdMovementId, fetchedMovement.getId());
 
-        Long createdMovementConnectId = createdMovementConnect.getId();
+        UUID createdMovementConnectId = createdMovementConnect.getId();
         MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
         assertNotNull(fetchedMovementConnect);
         assertEquals(createdMovementConnectId, fetchedMovementConnect.getId());
@@ -109,7 +105,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         createdMovement.setProcessed(true);
         assertNotNull(createdMovement);
 
-        Long createdMovementId = createdMovement.getId();
+        UUID createdMovementId = createdMovement.getId();
         assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
 
         Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
@@ -117,7 +113,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         assertEquals(fetchedMovement.getId(), createdMovementId);
         MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
-        Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getValue());
+        Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getId());
         assertNotNull(firstMovement);
     }
 
@@ -234,7 +230,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         assertNotNull(createdMovement);
         assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
 
-        Long createdMovementId = createdMovement.getId();
+        UUID createdMovementId = createdMovement.getId();
         assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
 
         Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
@@ -251,11 +247,10 @@ public class MovementDaoIntTest extends TransactionalTests {
         movementDao.getMovementById(null);
     }
 
-    @Test(expected = NullPointerException.class)
     @OperateOnDeployment("movementservice")
     public void getMovementById_NonExisting_AS_SearchCriteria() {
-        Movement movement = movementDao.getMovementById(-42L);
-        movement.setId(42L);
+        Movement movement = movementDao.getMovementById(UUID.randomUUID());
+        assertNull(movement);
     }
 
     @Test
@@ -272,12 +267,12 @@ public class MovementDaoIntTest extends TransactionalTests {
         assertNotNull(createdMovement);
         assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
 
-        UUID createdMovementConnectValue = createdMovementConnect.getValue();
+        UUID createdMovementConnectValue = createdMovementConnect.getId();
 
         MovementConnect fetchedMovementConnect = movementDao.getMovementConnectByConnectId(createdMovementConnectValue);
         assertNotNull(fetchedMovementConnect);
 
-        UUID fetchedMovementConnectValue = fetchedMovementConnect.getValue();
+        UUID fetchedMovementConnectValue = fetchedMovementConnect.getId();
         assertNotNull(fetchedMovementConnectValue);
         assertEquals(createdMovementConnectValue, fetchedMovementConnectValue);
     }
@@ -488,7 +483,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         movement.setMovementConnect(createdMovementConnect);
         Movement createdMovement = movementDao.createMovement(movement);
 
-        Long createdMovementId = createdMovement.getId();
+        UUID createdMovementId = createdMovement.getId();
 
         // the upsert creates one if it is not there
         movementDao.upsertLatestMovement(createdMovement, createdMovementConnect);
@@ -508,7 +503,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         Movement DOES_NOT_EXIST_IN_DB = createMovementHelper();
         DOES_NOT_EXIST_IN_DB.setMovementConnect(createdMovementConnect);
 
-        Long createdMovementId = DOES_NOT_EXIST_IN_DB.getId();
+        UUID createdMovementId = DOES_NOT_EXIST_IN_DB.getId();
 
         List<LatestMovement> listBefore = movementDao.getLatestMovements(10000);
 
@@ -557,7 +552,6 @@ public class MovementDaoIntTest extends TransactionalTests {
         movement.setMovementSource(MovementSourceType.NAF);
         movement.setMovementType(MovementTypeType.MAN);
         movement.setUpdatedBy("Arquillian");
-        movement.setGuid();
         movement.setTimestamp(timeStamp);
         movement.setUpdated(timeStamp);
         movement.setDuplicate(Boolean.FALSE);
@@ -574,7 +568,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     private MovementConnect createMovementConnectHelper() {
         MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setValue(UUID.randomUUID());
+        movementConnect.setId(UUID.randomUUID());
         movementConnect.setUpdatedBy("Arquillian");
         movementConnect.setUpdated(DateUtil.nowUTC());
         return movementConnect;
@@ -592,10 +586,10 @@ public class MovementDaoIntTest extends TransactionalTests {
         return new ArrayList<>();
     }
 
-    private Boolean findLatestMovements(Long createdMovementId, List<LatestMovement> all) {
+    private Boolean findLatestMovements(UUID createdMovementId, List<LatestMovement> all) {
         for (LatestMovement latestMovement : all) {
             Movement movementFromLatestMovement = latestMovement.getMovement();
-            Long movementFromLatestMovementId = movementFromLatestMovement.getId();
+            UUID movementFromLatestMovementId = movementFromLatestMovement.getId();
             if (movementFromLatestMovementId.equals(createdMovementId)) {
                 return true;
             }

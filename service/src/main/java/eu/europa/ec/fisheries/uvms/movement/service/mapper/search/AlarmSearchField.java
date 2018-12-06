@@ -14,7 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.mapper.search;
 import java.util.Date;
 
 public enum AlarmSearchField {
-    ALARM_GUID("guid", AlarmSearchTables.ALARM_REPORT, String.class),
+    ALARM_GUID("id", AlarmSearchTables.ALARM_REPORT, String.class),
     ASSET_GUID("assetGuid", AlarmSearchTables.ALARM_REPORT, String.class),
     STATUS("status", AlarmSearchTables.ALARM_REPORT, String.class),
     RULE_RECIPIENT("recipient", AlarmSearchTables.ALARM_REPORT, String.class),

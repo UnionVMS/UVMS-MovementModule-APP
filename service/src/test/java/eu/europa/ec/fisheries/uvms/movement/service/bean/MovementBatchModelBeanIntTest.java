@@ -46,7 +46,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
         UUID randomUUID = UUID.randomUUID();
         MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(randomUUID);
         assertNotNull(fetchedMovementConnect);
-        assertEquals(fetchedMovementConnect.getValue(), randomUUID);
+        assertEquals(fetchedMovementConnect.getId(), randomUUID);
     }
 
 
@@ -57,7 +57,7 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
         // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
         MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(guid);
         assertNotNull(fetchedMovementConnect);
-        assertEquals(fetchedMovementConnect.getValue(), guid);
+        assertEquals(fetchedMovementConnect.getId(), guid);
     }
 
     @Test
@@ -74,11 +74,11 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
 
         UUID randomUUID = UUID.randomUUID();
         Movement movement = MockData.createMovement(longitude, latitude, randomUUID);
-        movement.getMovementConnect().setValue(randomUUID);
+        movement.getMovementConnect().setId(randomUUID);
 
         Movement created = movementBatchModelBean.createMovement(movement);
         assertNotNull(created);
-        assertEquals(randomUUID, created.getMovementConnect().getValue());
+        assertEquals(randomUUID, created.getMovementConnect().getId());
 
     }
 }

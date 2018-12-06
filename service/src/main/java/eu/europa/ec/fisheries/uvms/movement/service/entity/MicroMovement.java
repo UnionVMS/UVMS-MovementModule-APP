@@ -35,12 +35,12 @@ public class MicroMovement implements Serializable{
         @NotNull
         @Id
         @Size(max = 36)
-        @Column(name = "move_guid", nullable = false)
+        @Column(name = "move_id", nullable = false)
         private String guid;
 
         @NotNull
         @Fetch(FetchMode.JOIN)
-        @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_id")
+        @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_asset_id")
         @ManyToOne(cascade = CascadeType.PERSIST)
         private MovementConnect movementConnect;
 

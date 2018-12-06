@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -30,7 +31,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "activity", indexes = {
-        @Index(columnList = "act_acttyp_id", name = "activity_i_1", unique = false)
+        @Index(columnList = "act_acttyp_id", name = "activity_activitytype_fk_inx", unique = false)
 })
 @XmlRootElement
 @NamedQueries({
@@ -51,10 +52,9 @@ public class Activity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "activity_seq")
-    @Basic(optional = false)
-    @Column(name = "act_id")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "uuid", name = "act_id")
+    private UUID id;
 
     @Basic(optional = false)
     @Column(name = "act_messid")
@@ -81,11 +81,11 @@ public class Activity implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     private MovementActivityTypeType activityType;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

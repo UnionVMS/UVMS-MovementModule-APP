@@ -27,6 +27,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.UUID;
 
 @Path("/alarms")
 @Stateless
@@ -88,7 +89,7 @@ public class AlarmRestResource {
     @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/{guid}")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
-    public AlarmReport getAlarmReportByGuid(@PathParam("guid") String guid) {
+    public AlarmReport getAlarmReportByGuid(@PathParam("guid") UUID guid) {
         return validationService.getAlarmReportByGuid(guid);
     }
 

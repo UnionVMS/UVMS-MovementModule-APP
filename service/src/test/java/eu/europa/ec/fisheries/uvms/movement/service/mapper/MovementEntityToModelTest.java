@@ -63,7 +63,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		
 		assertEquals(0.0, output.getReportedSpeed(), 0D);
 		assertEquals(0.0, output.getReportedCourse(), 0D);
-		assertEquals(movement.getGuid().toString(), output.getGuid());
+		assertEquals(movement.getId().toString(), output.getGuid());
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId.toString(), output.getConnectId());
@@ -88,12 +88,13 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		movement.setMovementSource(MovementSourceType.IRIDIUM);
 		movement.setMovementType(MovementTypeType.POS);
 		MovementConnect movementConnect = new MovementConnect();
-		movementConnect.setValue(connectId);
+		movementConnect.setId(connectId);
         movement.setMovementConnect(movementConnect);
         movement.setTimestamp(Instant.now());
+        movement.setId(UUID.randomUUID());
 		//movement.setStatus(status);
 		MovementType movementType = MovementEntityToModelMapper.mapToMovementType(movement);
-		assertEquals(movement.getGuid(), movementType.getGuid());
+		assertEquals(movement.getId().toString(), movementType.getGuid());
         assertEquals(lat, movementType.getPosition().getLatitude(), 0D);
         assertEquals(lon, movementType.getPosition().getLongitude(), 0D);
         assertEquals(connectId.toString(), movementType.getConnectId());
@@ -113,7 +114,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		
 		assertEquals(0.0, output.getReportedSpeed(), 0D);
 		assertEquals(0.0, output.getReportedCourse(), 0D);
-		assertEquals(movement.getGuid().toString(), output.getGuid());
+		assertEquals(movement.getId().toString(), output.getGuid());
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId.toString(), output.getConnectId());

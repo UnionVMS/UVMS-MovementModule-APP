@@ -291,7 +291,7 @@ public class MovementService {
 
     private void fireMovementEvent(Movement createdMovement) {
         try {
-            createdMovementEvent.fire(new NotificationMessage("movementGuid", createdMovement.getGuid()));
+            createdMovementEvent.fire(new NotificationMessage("movementGuid", createdMovement.getId()));
         } catch (Exception e) {
             LOG.error("[ Error when firing notification of created temp movement. ] {}", e.getMessage());
         }
@@ -332,13 +332,13 @@ public class MovementService {
         if(tracks == null || movements == null) {
             throw new IllegalArgumentException("MovementTrack list or Movement list is null");
         }
-        Set<Long> trackIds = movements.stream()
+        Set<String> trackIds = movements.stream()
                 .filter(movement -> movement.getTrack() != null)
-                .map(movement -> movement.getTrack().getId())
+                .map(movement -> movement.getTrack().getId().toString())
                 .collect(Collectors.toSet());
 
         Set<MovementTrack> tracksToSave = tracks.stream()
-                .filter(track -> trackIds.contains(Long.valueOf(track.getId())))
+                .filter(track -> trackIds.contains(track.getId()))
                 .collect(Collectors.toSet());
 
         tracks.removeIf(track -> !tracksToSave.contains(track));

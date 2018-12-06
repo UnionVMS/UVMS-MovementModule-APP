@@ -32,116 +32,114 @@ import javax.xml.bind.annotation.XmlRootElement;
  **/
 //@formatter:off
 @Entity
-@Table(name = "tempmovement")
+@Table(name = "draftmovement")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = TempMovement.FIND_ALL, query = "SELECT t FROM TempMovement t"),
-    @NamedQuery(name = TempMovement.FIND_ALL_ORDERED, query = "SELECT t FROM TempMovement t where t.state != 'DELETED' order by timestamp desc"),
-    @NamedQuery(name = TempMovement.FIND_BY_ID, query = "SELECT t FROM TempMovement t WHERE t.id = :id"),
-    @NamedQuery(name = TempMovement.FIND_BY_FLAG, query = "SELECT t FROM TempMovement t WHERE t.flag = :flag"),
-    @NamedQuery(name = TempMovement.FIND_BY_IRCS, query = "SELECT t FROM TempMovement t WHERE t.ircs = :ircs"),
-    @NamedQuery(name = TempMovement.FIND_BY_CFR, query = "SELECT t FROM TempMovement t WHERE t.cfr = :cfr"),
-    @NamedQuery(name = TempMovement.FIND_BY_EXTERNAL_MARKING, query = "SELECT t FROM TempMovement t WHERE t.externalMarkings = :externalMarkings"),
-    @NamedQuery(name = TempMovement.FIND_BY_NAME, query = "SELECT t FROM TempMovement t WHERE t.name = :name"),
-    @NamedQuery(name = TempMovement.FIND_BY_STATUS, query = "SELECT t FROM TempMovement t WHERE t.status = :status"),
-    @NamedQuery(name = TempMovement.FIND_BY_TIMESTAMP, query = "SELECT t FROM TempMovement t WHERE t.timestamp = :timestamp"),
-    @NamedQuery(name = TempMovement.COUNT, query = "SELECT count(t) FROM TempMovement t where t.state != 'DELETED'"),
-    @NamedQuery(name = TempMovement.FIND_BY_LATITUDE, query = "SELECT t FROM TempMovement t WHERE t.latitude = :latitude"),
-    @NamedQuery(name = TempMovement.FIND_BY_LONGITUDE, query = "SELECT t FROM TempMovement t WHERE t.longitude = :longitude"),
-    @NamedQuery(name = TempMovement.FIND_BY_SPEED, query = "SELECT t FROM TempMovement t WHERE t.speed = :speed"),
-    @NamedQuery(name = TempMovement.FIND_BY_COURSE, query = "SELECT t FROM TempMovement t WHERE t.course = :course"),
-    @NamedQuery(name = TempMovement.FIND_BY_UPDATED, query = "SELECT t FROM TempMovement t WHERE t.updated = :updated"),
-    @NamedQuery(name = TempMovement.FIND_BY_UPDATED_BY, query = "SELECT t FROM TempMovement t WHERE t.updatedBy = :updatedBy") })
+    @NamedQuery(name = DraftMovement.FIND_ALL, query = "SELECT t FROM DraftMovement t"),
+    @NamedQuery(name = DraftMovement.FIND_ALL_ORDERED, query = "SELECT t FROM DraftMovement t where t.state != 'DELETED' order by timestamp desc"),
+    @NamedQuery(name = DraftMovement.FIND_BY_ID, query = "SELECT t FROM DraftMovement t WHERE t.id = :id"),
+    @NamedQuery(name = DraftMovement.FIND_BY_FLAG, query = "SELECT t FROM DraftMovement t WHERE t.flag = :flag"),
+    @NamedQuery(name = DraftMovement.FIND_BY_IRCS, query = "SELECT t FROM DraftMovement t WHERE t.ircs = :ircs"),
+    @NamedQuery(name = DraftMovement.FIND_BY_CFR, query = "SELECT t FROM DraftMovement t WHERE t.cfr = :cfr"),
+    @NamedQuery(name = DraftMovement.FIND_BY_EXTERNAL_MARKING, query = "SELECT t FROM DraftMovement t WHERE t.externalMarkings = :externalMarkings"),
+    @NamedQuery(name = DraftMovement.FIND_BY_NAME, query = "SELECT t FROM DraftMovement t WHERE t.name = :name"),
+    @NamedQuery(name = DraftMovement.FIND_BY_STATUS, query = "SELECT t FROM DraftMovement t WHERE t.status = :status"),
+    @NamedQuery(name = DraftMovement.FIND_BY_TIMESTAMP, query = "SELECT t FROM DraftMovement t WHERE t.timestamp = :timestamp"),
+    @NamedQuery(name = DraftMovement.COUNT, query = "SELECT count(t) FROM DraftMovement t where t.state != 'DELETED'"),
+    @NamedQuery(name = DraftMovement.FIND_BY_LATITUDE, query = "SELECT t FROM DraftMovement t WHERE t.latitude = :latitude"),
+    @NamedQuery(name = DraftMovement.FIND_BY_LONGITUDE, query = "SELECT t FROM DraftMovement t WHERE t.longitude = :longitude"),
+    @NamedQuery(name = DraftMovement.FIND_BY_SPEED, query = "SELECT t FROM DraftMovement t WHERE t.speed = :speed"),
+    @NamedQuery(name = DraftMovement.FIND_BY_COURSE, query = "SELECT t FROM DraftMovement t WHERE t.course = :course"),
+    @NamedQuery(name = DraftMovement.FIND_BY_UPDATED, query = "SELECT t FROM DraftMovement t WHERE t.updated = :updated"),
+    @NamedQuery(name = DraftMovement.FIND_BY_UPDATED_BY, query = "SELECT t FROM DraftMovement t WHERE t.updatedBy = :updatedBy") })
 //@formatter:on
 @DynamicUpdate
 @DynamicInsert
-public class TempMovement implements Serializable {
+public class DraftMovement implements Serializable {
     
-    public static final String FIND_ALL = "TempMovement.findAll";
-    public static final String FIND_ALL_ORDERED = "TempMovement.findAllOrdered";
-    public static final String FIND_BY_ID = "TempMovement.findById";
-    public static final String FIND_BY_FLAG = "TempMovement.findByFlag";
-    public static final String FIND_BY_IRCS = "TempMovement.findByIrcs";
-    public static final String FIND_BY_CFR = "TempMovement.findByCfr";
-    public static final String FIND_BY_EXTERNAL_MARKING = "TempMovement.findByExternalMarkings";
-    public static final String FIND_BY_NAME = "TempMovement.findByName";
-    public static final String FIND_BY_STATUS = "TempMovement.findByStatus";
-    public static final String FIND_BY_TIMESTAMP = "TempMovement.findByTimestamp";
-    public static final String COUNT = "TempMovement.count";
-    public static final String FIND_BY_LATITUDE = "TempMovement.findByLatitude";
-    public static final String FIND_BY_LONGITUDE = "TempMovement.findByLongitude";
-    public static final String FIND_BY_SPEED = "TempMovement.findBySpeed";
-    public static final String FIND_BY_COURSE = "TempMovement.findByCourse";
-    public static final String FIND_BY_UPDATED = "TempMovement.findByUpdated";
-    public static final String FIND_BY_UPDATED_BY = "TempMovement.findByUpdatedBy";
+    public static final String FIND_ALL = "DraftMovement.findAll";
+    public static final String FIND_ALL_ORDERED = "DraftMovement.findAllOrdered";
+    public static final String FIND_BY_ID = "DraftMovement.findById";
+    public static final String FIND_BY_FLAG = "DraftMovement.findByFlag";
+    public static final String FIND_BY_IRCS = "DraftMovement.findByIrcs";
+    public static final String FIND_BY_CFR = "DraftMovement.findByCfr";
+    public static final String FIND_BY_EXTERNAL_MARKING = "DraftMovement.findByExternalMarkings";
+    public static final String FIND_BY_NAME = "DraftMovement.findByName";
+    public static final String FIND_BY_STATUS = "DraftMovement.findByStatus";
+    public static final String FIND_BY_TIMESTAMP = "DraftMovement.findByTimestamp";
+    public static final String COUNT = "DraftMovement.count";
+    public static final String FIND_BY_LATITUDE = "DraftMovement.findByLatitude";
+    public static final String FIND_BY_LONGITUDE = "DraftMovement.findByLongitude";
+    public static final String FIND_BY_SPEED = "DraftMovement.findBySpeed";
+    public static final String FIND_BY_COURSE = "DraftMovement.findByCourse";
+    public static final String FIND_BY_UPDATED = "DraftMovement.findByUpdated";
+    public static final String FIND_BY_UPDATED_BY = "DraftMovement.findByUpdatedBy";
     
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Basic(optional = false)
-    @Column(name = "tmpmove_id")
+    @Column(columnDefinition = "uuid", name = "draftmove_id")
     private UUID id;
 
     @Size(max = 3)
-    @Column(name = "tmpmove_flag")
+    @Column(name = "draftmove_flag")
     private String flag;
 
     @Size(max = 70)
-    @Column(name = "tmpmove_ircs")
+    @Column(name = "draftmove_ircs")
     private String ircs;
 
     @Size(max = 12)
-    @Column(name = "tmpmove_cfr")
+    @Column(name = "draftmove_cfr")
     private String cfr;
 
     @Size(max = 14)
-    @Column(name = "tmpmove_extmark")
+    @Column(name = "draftmove_extmark")
     private String externalMarkings;
 
     @Size(max = 30)
-    @Column(name = "tmpmove_name")
+    @Column(name = "draftmove_name")
     private String name;
 
     @Size(max = 60)
-    @Column(name = "tmpmove_status")
+    @Column(name = "draftmove_status")
     private String status;
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
-    @Column(name = "tmpmove_timestamp")
+    @Column(name = "draftmove_timestamp")
     private Instant timestamp;
 
-    //@Column(name = "tmpmove_archive")
     @Enumerated(EnumType.STRING)
     @NotNull
-    @Column(name = "tmpmove_state")
+    @Column(name = "draftmove_state")
     private TempMovementStateEnum state;
 
     // @Max(value=?) @Min(value=?)//if you know range of your decimal fields
     // consider using these annotations to enforce field validation
-    @Column(name = "tmpmove_lat")
+    @Column(name = "draftmove_lat")
     private Double latitude;
 
-    @Column(name = "tmpmove_lon")
+    @Column(name = "draftmove_lon")
     private Double longitude;
 
-    @Column(name = "tmpmove_speed")
+    @Column(name = "draftmove_speed")
     private Double speed;
 
-    @Column(name = "tmpmove_course")
+    @Column(name = "draftmove_course")
     private Double course;
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
-    @Column(name = "tmpmove_updattim")
+    @Column(name = "draftmove_updattim")
     private Instant updated;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 60)
-    @Column(name = "tmpmove_upuser")
+    @Column(name = "draftmove_upuser")
     private String updatedBy;
 
     public UUID getId() {
@@ -275,10 +273,10 @@ public class TempMovement implements Serializable {
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are
         // not set
-        if (!(object instanceof TempMovement)) {
+        if (!(object instanceof DraftMovement)) {
             return false;
         }
-        TempMovement other = (TempMovement) object;
+        DraftMovement other = (DraftMovement) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -287,6 +285,6 @@ public class TempMovement implements Serializable {
 
     @Override
     public String toString() {
-        return "TempMovement [id=" + id + ", flag=" + flag + ", ircs=" + ircs + ", cfr=" + cfr + ", externalMarkings=" + externalMarkings + ", name=" + name + ", status=" + status + ", timestamp=" + timestamp + ", state=" + state + ", latitude=" + latitude + ", longitude=" + longitude + ", speed=" + speed + ", course=" + course + ", updated=" + updated + ", updatedBy=" + updatedBy + "]";
+        return "DraftMovement [id=" + id + ", flag=" + flag + ", ircs=" + ircs + ", cfr=" + cfr + ", externalMarkings=" + externalMarkings + ", name=" + name + ", status=" + status + ", timestamp=" + timestamp + ", state=" + state + ", latitude=" + latitude + ", longitude=" + longitude + ", speed=" + speed + ", course=" + course + ", updated=" + updated + ", updatedBy=" + updatedBy + "]";
     }
 }

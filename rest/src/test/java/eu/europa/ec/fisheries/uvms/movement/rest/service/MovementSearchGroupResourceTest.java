@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+
+import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -50,7 +52,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
         movementSearchGroup.getSearchFields().add(criteria);
         MovementSearchGroup createdMovementSearchGroup = createMovementSearchGroup(movementSearchGroup);
         
-        MovementSearchGroup fetchedMovementSearchGroup = getMovementSearchGroup(createdMovementSearchGroup.getId().toString());
+        MovementSearchGroup fetchedMovementSearchGroup = getMovementSearchGroup(CalculationUtil.convertFromBigInteger(createdMovementSearchGroup.getId()).toString());
         assertThat(fetchedMovementSearchGroup.getId(), is(createdMovementSearchGroup.getId()));
     }
     
@@ -69,7 +71,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
         createdMovementSearchGroup.setName(newName);
         updateMovementSearchGroup(createdMovementSearchGroup);
         
-        MovementSearchGroup fetchedGroup = getMovementSearchGroup(createdMovementSearchGroup.getId().toString());
+        MovementSearchGroup fetchedGroup = getMovementSearchGroup(CalculationUtil.convertFromBigInteger(createdMovementSearchGroup.getId()).toString());
         assertThat(fetchedGroup.getId(), is(createdMovementSearchGroup.getId()));
         assertThat(fetchedGroup.getName(), is(newName));
     }

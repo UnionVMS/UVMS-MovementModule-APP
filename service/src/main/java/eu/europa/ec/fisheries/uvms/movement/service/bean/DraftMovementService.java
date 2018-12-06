@@ -17,12 +17,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.DraftMovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,24 +38,22 @@ import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.TempMovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.DraftMovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.TempMovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.ModuleQueue;
 
 @Stateless
-public class TempMovementService {
+public class DraftMovementService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TempMovementService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DraftMovementService.class);
 
     @Inject
     private MovementMessageProducerBean producer;
     
     @Inject
-    private TempMovementDao dao;
+    private DraftMovementDao dao;
     
     @Inject
     private AuditService auditService;
@@ -64,42 +63,42 @@ public class TempMovementService {
     private Event<NotificationMessage> createdManualMovement;
 
     
-    public TempMovement createTempMovement(TempMovement tempMovement, String username) {
+    public DraftMovement createDraftMovement(DraftMovement draftMovement, String username) {
         checkUsernameProvided(username);
-        validatePosition(tempMovement.getLatitude(), tempMovement.getLongitude());
+        validatePosition(draftMovement.getLatitude(), draftMovement.getLongitude());
         try {
-            tempMovement = dao.createTempMovementEntity(tempMovement);
-            fireMovementEvent(tempMovement);
-            auditService.sendTempMovementCreatedAudit(tempMovement, username);
-            return tempMovement;
+            draftMovement = dao.createDraftMovementEntity(draftMovement);
+            fireMovementEvent(draftMovement);
+            auditService.sendTempMovementCreatedAudit(draftMovement, username);
+            return draftMovement;
         } catch (Exception e) {
             throw new EJBException("Error when creating temp movement", e);
         }
     }
 
-    public TempMovement archiveTempMovement(UUID guid, String username) {
+    public DraftMovement archiveDraftMovement(UUID guid, String username) {
         checkUsernameProvided(username);
-        return setTempMovementState(guid, TempMovementStateEnum.DELETED, username);
+        return setDraftMovementState(guid, TempMovementStateEnum.DELETED, username);
     }
     
-    public TempMovement updateTempMovement(TempMovement newTempMovement, String username) {
+    public DraftMovement updateDraftMovement(DraftMovement newDraftMovement, String username) {
         checkUsernameProvided(username);
-        if (newTempMovement == null) {
+        if (newDraftMovement == null) {
             throw new IllegalArgumentException("No temp movement to update");
         }
-        if (newTempMovement.getId() == null) {
+        if (newDraftMovement.getId() == null) {
             throw new IllegalArgumentException("Non valid id of temp movement to update");
         }
 
-        TempMovement tempMovement = dao.getTempMovementById(newTempMovement.getId());
-        tempMovement = TempMovementMapper.toExistingTempMovementEntity(tempMovement, newTempMovement, username);
-//            return TempMovementMapper.toTempMovement(tempMovement);
-        return tempMovement;
+        DraftMovement draftMovement = dao.getDraftMovementById(newDraftMovement.getId());
+        draftMovement = DraftMovementMapper.toExistingTempMovementEntity(draftMovement, newDraftMovement, username);
+//            return DraftMovementMapper.toTempMovement(draftMovement);
+        return draftMovement;
 
     }
 
     
-    public GetTempMovementListResponse getTempMovements(MovementQuery query) {
+    public GetTempMovementListResponse getDraftMovements(MovementQuery query) {
         if (query == null || query.getPagination() == null || query.getPagination().getPage() == null) {
             throw new IllegalArgumentException("No valid query");
         }
@@ -110,12 +109,12 @@ public class TempMovementService {
         Integer page = query.getPagination().getPage().intValue();
         Integer listSize = query.getPagination().getListSize().intValue();
 
-        List<TempMovement> tempMovementEntityList = dao.getTempMovementListPaginated(page, listSize);
-        for (TempMovement entity : tempMovementEntityList) {
-            tempMovementList.add(TempMovementMapper.toTempMovement(entity));
+        List<DraftMovement> draftMovementEntityList = dao.getDraftMovementListPaginated(page, listSize);
+        for (DraftMovement entity : draftMovementEntityList) {
+            tempMovementList.add(DraftMovementMapper.toTempMovement(entity));
         }
 
-        Long numberMatches = dao.getTempMovementListCount();
+        Long numberMatches = dao.getDraftMovementListCount();
         int numberOfPages = (int) (numberMatches / listSize);
         if (numberMatches % listSize != 0) {
             numberOfPages += 1;
@@ -129,10 +128,10 @@ public class TempMovementService {
     }
 
     
-    public TempMovement sendTempMovement(UUID guid, String username) {
+    public DraftMovement sendDraftMovement(UUID guid, String username) {
         checkUsernameProvided(username);
         try {
-            TempMovement movement = setTempMovementState(guid, TempMovementStateEnum.SENT, username);
+            DraftMovement movement = setDraftMovementState(guid, TempMovementStateEnum.SENT, username);
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
                     Date.from(DateUtil.nowUTC()), null, PluginType.MANUAL, username, null);
@@ -143,26 +142,26 @@ public class TempMovementService {
         }
     }
     
-    public TempMovement getTempMovement(UUID guid) {
+    public DraftMovement getDraftMovement(UUID guid) {
         if (guid == null) {
-            throw new IllegalArgumentException("TempMovement GUID cannot be null.");
+            throw new IllegalArgumentException("DraftMovement GUID cannot be null.");
         }
-        return dao.getTempMovementById(guid);
+        return dao.getDraftMovementById(guid);
 
     }
     
-    private TempMovement setTempMovementState(UUID guid, TempMovementStateEnum state, String username) {
+    private DraftMovement setDraftMovementState(UUID guid, TempMovementStateEnum state, String username) {
         if (guid == null) {
             throw new IllegalArgumentException("Non valid id of temp movement to update");
         }
-        TempMovement tempMovement = dao.getTempMovementById(guid);
-        tempMovement.setState(state);
-        tempMovement.setUpdated(Instant.now());
-        tempMovement.setUpdatedBy(username);
-        return tempMovement;
+        DraftMovement draftMovement = dao.getDraftMovementById(guid);
+        draftMovement.setState(state);
+        draftMovement.setUpdated(Instant.now());
+        draftMovement.setUpdatedBy(username);
+        return draftMovement;
     }
 
-    private void fireMovementEvent(TempMovement createdMovement) {
+    private void fireMovementEvent(DraftMovement createdMovement) {
         try {
             createdManualMovement.fire(new NotificationMessage("movementGuid", createdMovement.getId()));
         } catch (Exception e) {

@@ -7,10 +7,11 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public class SegmentDTO {
 
-    private Long id;
+    private UUID id;
 
     private String location;    //LineString in WKT
 
@@ -30,17 +31,17 @@ public class SegmentDTO {
 
     private SegmentCategoryType segmentCategory;
 
-    private Long track;
+    private UUID track;
 
     private String fromMovement;
 
     private String toMovement;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -108,11 +109,11 @@ public class SegmentDTO {
         this.segmentCategory = segmentCategory;
     }
 
-    public Long getTrack() {
+    public UUID getTrack() {
         return track;
     }
 
-    public void setTrack(Long track) {
+    public void setTrack(UUID track) {
         this.track = track;
     }
 

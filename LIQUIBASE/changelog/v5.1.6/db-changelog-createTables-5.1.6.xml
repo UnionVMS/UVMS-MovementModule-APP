@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="thofan (generated)" id="1544002649622-1">
+        <createSequence sequenceName="activity_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-2">
+        <createSequence sequenceName="activity_type_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-3">
+        <createSequence sequenceName="area_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-4">
+        <createSequence sequenceName="area_trans_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-5">
+        <createSequence sequenceName="areatype_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-6">
+        <createSequence sequenceName="hibernate_sequence"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-7">
+        <createSequence sequenceName="latest_movement_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-8">
+        <createSequence sequenceName="minimal_mov_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-9">
+        <createSequence sequenceName="movarea_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-10">
+        <createSequence sequenceName="movement_connect_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-11">
+        <createSequence sequenceName="movement_filter_group_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-12">
+        <createSequence sequenceName="movement_filter_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-13">
+        <createSequence sequenceName="movement_meta_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-14">
+        <createSequence sequenceName="segment_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-15">
+        <createSequence sequenceName="track_seq"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-16">
+        <createTable tableName="activity">
+            <column name="act_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="act_acttyp_id" type="INT"/>
+            <column name="act_callback" type="VARCHAR(400)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="act_messid" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="act_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="act_upuser" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-17">
+        <createTable tableName="activitytype">
+            <column name="acttyp_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="acttyp_desc" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="acttyp_name" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="acttyp_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="acttyp_upuser" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-18">
+        <createTable tableName="alarmitem" remarks="Alarm Item table.">
+            <column name="id" type="UUID" remarks="Guid of the alarm item.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ruleguid" type="VARCHAR(100)" remarks="Guid of rule."/>
+            <column name="rulename" type="VARCHAR(100)" remarks="Name of rule."/>
+            <column name="updated" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedby" type="VARCHAR(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="alarmreport_id" type="UUID" remarks="FK to Alarm Report."/>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-19">
+        <createTable tableName="alarmreport" remarks="Alarm Report table.">
+            <column name="id" type="UUID" remarks="Guid of alarm.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assetguid" type="VARCHAR(36)" remarks="Guid of asset."/>
+            <column name="createddate" type="TIMESTAMP(6) WITH TIME ZONE" remarks="When the report is created."/>
+            <column name="plugintype" type="VARCHAR(100)" remarks="Type of the plugin the report came from."/>
+            <column name="recipient" type="VARCHAR(20)" remarks="Recipient country code."/>
+            <column name="status" type="VARCHAR(20)" remarks="OPEN or CLOSED."/>
+            <column name="updated" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedby" type="VARCHAR(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="incomingmovement_id" type="UUID" remarks="FK to incomingmovement Report."/>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-20">
+        <createTable tableName="draftmovement">
+            <column name="draftmove_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="draftmove_cfr" type="VARCHAR(12)"/>
+            <column name="draftmove_course" type="FLOAT8"/>
+            <column name="draftmove_extmark" type="VARCHAR(14)"/>
+            <column name="draftmove_flag" type="VARCHAR(3)"/>
+            <column name="draftmove_ircs" type="VARCHAR(70)"/>
+            <column name="draftmove_lat" type="FLOAT8"/>
+            <column name="draftmove_lon" type="FLOAT8"/>
+            <column name="draftmove_name" type="VARCHAR(30)"/>
+            <column name="draftmove_speed" type="FLOAT8"/>
+            <column name="draftmove_state" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="draftmove_status" type="VARCHAR(60)"/>
+            <column name="draftmove_timestamp" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="draftmove_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="draftmove_upuser" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-21">
+        <createTable tableName="incomingmovement" remarks="The movement connected to the alarm report.">
+            <column name="id" type="UUID" remarks="Guid of movement.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ackresponsemessageid" type="VARCHAR(100)" remarks="???."/>
+            <column name="active" type="BOOLEAN" remarks="???."/>
+            <column name="activitycallback" type="VARCHAR(100)" remarks="???."/>
+            <column name="activitymessageid" type="VARCHAR(100)" remarks="???."/>
+            <column name="activitymessagetype" type="VARCHAR(100)" remarks="???."/>
+
+            <column name="latitude" type="FLOAT8" remarks="Latitude."/>
+            <column name="longitude" type="FLOAT8" remarks="Longitude."/>
+            <column name="altitude" type="FLOAT8" remarks="Altitude."/>
+            <column name="positiontime" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Reported time of movement."/>
+            <column name="reportedcourse" type="FLOAT8" remarks="???."/>
+            <column name="reportedspeed" type="FLOAT8" remarks="???."/>
+
+            <column name="assetcfr" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetguid" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assethistoryid" type="VARCHAR(100)"/>
+            <column name="assetid" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetimo" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetircs" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetmmsi" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetname" type="VARCHAR(100)" remarks="Asset name as it comes from FLUX/MAN."/>
+            <column name="assettype" type="VARCHAR(50)" remarks="Type of asset, e.g. VESSEL."/>
+            <column name="flagstate" type="VARCHAR(100)" remarks="Flagstate as it comes from FLUX/MAN."/>
+            <column name="externalmarking" type="VARCHAR(100)" remarks="External markings as it comes from FLUX/MAN."/>
+            <column name="internalreferencenumber" type="VARCHAR(100)" remarks="???."/>
+
+            <column name="datereceived" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Received time of movement."/>
+
+            <column name="comchanneltype" type="VARCHAR(100)" remarks="???."/>
+            <column name="mobileterminalconnectid" type="VARCHAR(100)" remarks="???"/>
+            <column name="mobileterminaldnid" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalguid" type="VARCHAR(100)" remarks="Mobile terminal guid."/>
+            <column name="mobileterminalles" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalmembernumber" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalserialnumber" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+
+            <column name="movementsourcetype" type="VARCHAR(100)" remarks="???."/>
+            <column name="movementtype" type="VARCHAR(100)" remarks="???."/>
+            <column name="plugintype" type="VARCHAR(100)" remarks="Type of the plugin the report came from."/>
+
+            <column name="status" type="VARCHAR(100)" remarks="???."/>
+            <column name="tripnumber" type="FLOAT8" remarks="???."/>
+            <column name="updated" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Last updated date time.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updatedby" type="VARCHAR(60)" remarks="Last update userid.">
+                <constraints nullable="false"/>
+            </column>
+            <column name="alarmreport_id" type="UUID">
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-23">
+        <createTable tableName="latestmovement">
+            <column name="movelate_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movelate_timestamp" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="movelate_move_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movelate_moveconn_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-24">
+        <createTable tableName="movement">
+            <column name="move_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="move_altitude" type="FLOAT8"/>
+            <column name="move_duplicate" type="BOOLEAN"/>
+            <column name="move_duplicate_id" type="UUID"/>
+            <column name="move_heading" type="FLOAT8"/>
+            <column name="move_internal_reference_number" type="VARCHAR(12)"/>
+            <column name="move_location" type="GEOMETRY">
+                <constraints nullable="false"/>
+            </column>
+            <column name="move_movesour_id" type="INT"/>
+            <column name="move_movetyp_id" type="INT"/>
+            <column name="move_processed" type="BOOLEAN"/>
+            <column name="move_speed" type="FLOAT8"/>
+            <column name="move_status" type="VARCHAR(60)"/>
+            <column name="move_timestamp" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="move_trip_number" type="FLOAT8"/>
+            <column name="move_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="move_upuser" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="move_act_id" type="UUID"/>
+            <column name="move_moveconn_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="move_trac_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-25">
+        <createTable tableName="movementconnect">
+            <column name="moveconn_asset_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="moveconn_flagstate" type="VARCHAR(100)"/>
+            <column name="moveconn_name" type="VARCHAR(100)"/>
+            <column name="moveconn_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="moveconn_upuser" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-26">
+        <createTable tableName="movementfilter">
+            <column name="movefilt_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movefilt_field" type="VARCHAR(100)"/>
+            <column name="movefilt_movefilttyp_id" type="INT"/>
+            <column name="movefilt_updattim" type="TIMESTAMP(6) WITH TIME ZONE"/>
+            <column name="movefilt_upuser" type="VARCHAR(100)"/>
+            <column name="movefilt_value" type="VARCHAR(100)"/>
+            <column name="movefilt_movefiltgrp_id" type="UUID"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-27">
+        <createTable tableName="movementfiltergroup">
+            <column name="movefiltgrp_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_active" type="VARCHAR(100)"/>
+            <column name="movefiltgrp_dynamic" type="VARCHAR(100)"/>
+            <column name="movefiltgrp_global" type="VARCHAR(100)"/>
+            <column name="movefiltgrp_name" type="VARCHAR(100)"/>
+            <column name="movefiltgrp_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_upuser" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_user_id" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-28">
+        <createTable tableName="movementtype">
+            <column name="movetyp_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movetyp_desc" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movetyp_name" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movetyp_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movetyp_upuser" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-29">
+        <createTable tableName="parameter">
+            <column name="param_id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="param_description" type="VARCHAR(100)"/>
+            <column name="param_value" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-30">
+        <createTable tableName="segment">
+            <column name="seg_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seg_cog" type="FLOAT8"/>
+            <column name="seg_distance" type="FLOAT8"/>
+            <column name="seg_duration" type="FLOAT8"/>
+            <column name="seg_geom" type="GEOMETRY"/>
+            <column name="seg_segcat_id" type="INT"/>
+            <column name="seg_sog" type="FLOAT8"/>
+            <column name="seg_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seg_upuser" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seg_frommove_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seg_tomove_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seg_trac_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-31">
+        <createTable tableName="track">
+            <column name="trac_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trac_avgspeed" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trac_distance" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trac_duration" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trac_geom" type="GEOMETRY"/>
+            <column name="track_totalsea" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trac_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trac_upuser" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-32">
+        <addPrimaryKey columnNames="act_id" constraintName="activity_pkey" tableName="activity"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-33">
+        <addPrimaryKey columnNames="acttyp_id" constraintName="activitytype_pkey" tableName="activitytype"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-34">
+        <addPrimaryKey columnNames="id" constraintName="alarmitem_pkey" tableName="alarmitem"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-35">
+        <addPrimaryKey columnNames="id" constraintName="alarmreport_pkey" tableName="alarmreport"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-36">
+        <addPrimaryKey columnNames="draftmove_id" constraintName="draftmovement_pkey" tableName="draftmovement"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-37">
+        <addPrimaryKey columnNames="id" constraintName="incomingmovement_pkey" tableName="incomingmovement"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-39">
+        <addPrimaryKey columnNames="movelate_id" constraintName="latestmovement_pkey" tableName="latestmovement"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-40">
+        <addPrimaryKey columnNames="move_id" constraintName="movement_pkey" tableName="movement"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-41">
+        <addPrimaryKey columnNames="moveconn_asset_id" constraintName="movementconnect_pkey" tableName="movementconnect"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-42">
+        <addPrimaryKey columnNames="movefilt_id" constraintName="movementfilter_pkey" tableName="movementfilter"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-43">
+        <addPrimaryKey columnNames="movefiltgrp_id" constraintName="movementfiltergroup_pkey" tableName="movementfiltergroup"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-44">
+        <addPrimaryKey columnNames="movetyp_id" constraintName="movementtype_pkey" tableName="movementtype"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-45">
+        <addPrimaryKey columnNames="param_id" constraintName="parameter_pkey" tableName="parameter"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-46">
+        <addPrimaryKey columnNames="seg_id" constraintName="segment_pkey" tableName="segment"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-47">
+        <addPrimaryKey columnNames="trac_id" constraintName="track_pkey" tableName="track"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-48">
+        <addUniqueConstraint columnNames="seg_frommove_id" constraintName="segment_seg_frommove_id_key" tableName="segment"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-49">
+        <addUniqueConstraint columnNames="seg_tomove_id" constraintName="segment_seg_tomove_id_key" tableName="segment"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-50">
+        <addUniqueConstraint columnNames="alarmreport_id" constraintName="incomingmovement_uc_alarmreport" tableName="incomingmovement"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-51">
+        <createIndex indexName="activity_activitytype_fk_inx" tableName="activity">
+            <column name="act_acttyp_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-52">
+        <createIndex indexName="alarmitem_alarmreport_fk_inx" tableName="alarmitem">
+            <column name="alarmreport_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-53">
+        <createIndex indexName="alarmreport_incomingmovement_fk_inx" tableName="alarmreport">
+            <column name="incomingmovement_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-54">
+        <createIndex indexName="movelate_move_fk_idx" tableName="latestmovement">
+            <column name="movelate_move_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-55">
+        <createIndex indexName="movelate_moveconnect_fk_idx" tableName="latestmovement">
+            <column name="movelate_moveconn_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-56">
+        <createIndex indexName="movement_act_fk_idx" tableName="movement">
+            <column name="move_act_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-57">
+        <createIndex indexName="movement_duplicate_idx" tableName="movement">
+            <column name="move_duplicate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-58">
+        <createIndex indexName="movement_moveconn_fk_idx" tableName="movement">
+            <column name="move_moveconn_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-59">
+        <createIndex indexName="movement_movesour_fk_idx" tableName="movement">
+            <column name="move_movesour_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-60">
+        <createIndex indexName="movement_movetyp_fk_idx" tableName="movement">
+            <column name="move_movetyp_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-61">
+        <createIndex indexName="movement_processed_idx" tableName="movement">
+            <column name="move_processed"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-62">
+        <createIndex indexName="movement_timestamp_idx" tableName="movement">
+            <column name="move_timestamp"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-63">
+        <createIndex indexName="movement_trac_fk_idx" tableName="movement">
+            <column name="move_trac_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-64">
+        <createIndex indexName="movementfilter_filtergroup_fk_inx" tableName="movementfilter">
+            <column name="movefilt_movefiltgrp_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-65">
+        <createIndex indexName="movementfilter_movefilttyp_fk_inx" tableName="movementfilter">
+            <column name="movefilt_movefilttyp_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-66">
+        <createIndex indexName="seg_segcat_fk_idx" tableName="segment">
+            <column name="seg_segcat_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-67">
+        <createIndex indexName="seg_trac_fk_idx" tableName="segment">
+            <column name="seg_trac_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-68">
+        <addForeignKeyConstraint baseColumnNames="seg_tomove_id" baseTableName="segment" constraintName="segment_tomovement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-70">
+        <addForeignKeyConstraint baseColumnNames="seg_trac_id" baseTableName="segment" constraintName="segment_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-71">
+        <addForeignKeyConstraint baseColumnNames="movelate_moveconn_id" baseTableName="latestmovement" constraintName="latestmovement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_asset_id" referencedTableName="movementconnect"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-72">
+        <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="movement" constraintName="movement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_asset_id" referencedTableName="movementconnect"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-73">
+        <addForeignKeyConstraint baseColumnNames="move_act_id" baseTableName="movement" constraintName="movement_activety_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="act_id" referencedTableName="activity"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-74">
+        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="alarmitem" constraintName="alarmitem_alarmreport_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="alarmreport"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-75">
+        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="incomingmovement" constraintName="incomingmovement_alarmreport_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="alarmreport"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-76">
+        <addForeignKeyConstraint baseColumnNames="move_trac_id" baseTableName="movement" constraintName="movement_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-77">
+        <addForeignKeyConstraint baseColumnNames="movefilt_movefiltgrp_id" baseTableName="movementfilter" constraintName="movementfilter_movementfiltergroup_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="movefiltgrp_id" referencedTableName="movementfiltergroup"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-78">
+        <addForeignKeyConstraint baseColumnNames="seg_frommove_id" baseTableName="segment" constraintName="segment_frommovement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-79">
+        <addForeignKeyConstraint baseColumnNames="incomingmovement_id" baseTableName="alarmreport" constraintName="alarmreport_incomingmovement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="incomingmovement"/>
+    </changeSet>
+    <changeSet author="thofan (generated)" id="1544002649622-80">
+        <addForeignKeyConstraint baseColumnNames="movelate_move_id" baseTableName="latestmovement" constraintName="latestmovement_movement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
+    </changeSet>
+</databaseChangeLog>

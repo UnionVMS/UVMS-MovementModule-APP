@@ -7,16 +7,14 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import javax.ejb.EJB;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.UUID;
+
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(Arquillian.class)
 public class AlarmDaoIntTest extends TransactionalTests {
@@ -33,6 +31,7 @@ public class AlarmDaoIntTest extends TransactionalTests {
         im.setUpdated(Instant.now());
         im.setUpdatedBy("TEST");
         alarmDAO.save(im);
+        assertNotNull(im.getId());
 
 
         AlarmReport alarmReport = new AlarmReport();
@@ -46,6 +45,7 @@ public class AlarmDaoIntTest extends TransactionalTests {
         alarmReport.setPluginType("TEST");
         alarmReport.setAlarmItemList(new ArrayList<>());
         alarmDAO.save(alarmReport);
+        assertNotNull(alarmReport.getId());
 
         im.setAlarmReport(alarmReport);
 
@@ -57,10 +57,12 @@ public class AlarmDaoIntTest extends TransactionalTests {
         alarmItem.setUpdatedBy("TEST");
         alarmDAO.save(alarmItem);
         alarmReport.getAlarmItemList().add(alarmItem);
+        assertNotNull(alarmItem.getId());
+        em.flush();
 
 
-        AlarmReport theReport = alarmDAO.getOpenAlarmReportByMovementGuid(im.getGuid());
-        Assert.assertNotNull(theReport);
+        AlarmReport theReport = alarmDAO.getOpenAlarmReportByMovementGuid(im.getId());
+        assertNotNull(theReport);
         Assert.assertEquals(alarmReport.getId(), theReport.getId());
     }
 

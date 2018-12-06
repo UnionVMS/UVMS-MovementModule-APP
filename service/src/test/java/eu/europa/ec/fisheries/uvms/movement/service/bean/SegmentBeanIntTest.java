@@ -170,10 +170,10 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Segment rsSegment1 = segmentList.get(0);
         Segment rsSegment2 = segmentList.get(1);
-        Long id1 = rsSegment1.getFromMovement().getId();
-        Long id2 = rsSegment1.getToMovement().getId();
-        Long id3 = rsSegment2.getFromMovement().getId();
-        Long id4 = rsSegment2.getToMovement().getId();
+        UUID id1 = rsSegment1.getFromMovement().getId();
+        UUID id2 = rsSegment1.getToMovement().getId();
+        UUID id3 = rsSegment2.getFromMovement().getId();
+        UUID id4 = rsSegment2.getToMovement().getId();
 
         // this is how it works no - but it is not OK
         assertEquals(id1, fromMovement.getId());
@@ -232,8 +232,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
         assertNotNull(fetchedFromMovement.getTrack().getId());
         assertNotNull(fetchedToMovement.getTrack().getId());
 
-        Long trackFromId = fetchedFromMovement.getTrack().getId();
-        Long trackToId = fetchedToMovement.getTrack().getId();
+        UUID trackFromId = fetchedFromMovement.getTrack().getId();
+        UUID trackToId = fetchedToMovement.getTrack().getId();
 
         assertEquals(trackFromId, trackToId);
     }
@@ -442,10 +442,10 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Segment  rsSegment1 = segmentList.get(0);
         Segment  rsSegment2 = segmentList.get(1);
 
-        Long id1 = rsSegment1.getFromMovement().getId();
-        Long id2 = rsSegment1.getToMovement().getId();
-        Long id3 = rsSegment2.getFromMovement().getId();
-        Long id4 = rsSegment2.getToMovement().getId();
+        UUID id1 = rsSegment1.getFromMovement().getId();
+        UUID id2 = rsSegment1.getToMovement().getId();
+        UUID id3 = rsSegment2.getFromMovement().getId();
+        UUID id4 = rsSegment2.getToMovement().getId();
 
         assertEquals(id1, beforeFirstMovement.getId());
         assertEquals(id2, firstMovement.getId());

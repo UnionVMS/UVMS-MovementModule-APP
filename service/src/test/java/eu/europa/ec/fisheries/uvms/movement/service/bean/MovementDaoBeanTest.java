@@ -46,9 +46,9 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		Movement move = movementHelpers.createMovement(20D, 20D, connectId, "TEST", Instant.now());
 		
-		output = movementDao.getMovementByGUID(move.getGuid());
+		output = movementDao.getMovementByGUID(move.getId());
 		System.out.println(output);
-		assertEquals(move.getGuid(), output.getGuid());
+		assertEquals(move.getId(), output.getId());
 	}
 	
 	@Test
@@ -74,7 +74,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		input.add(connectID);
 		output = movementDao.getLatestMovementsByConnectIdList(input);
 		assertEquals(1, output.size());
-		assertEquals(move2.getGuid(), output.get(0).getGuid());
+		assertEquals(move2.getId(), output.get(0).getId());
 		
 		input.add(connectID2);
 		output = movementDao.getLatestMovementsByConnectIdList(input);
@@ -106,7 +106,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		
 		List<Movement> output = movementDao.getLatestMovementsByConnectId(connectID, 1);
 		assertEquals(1, output.size());
-		assertEquals(move3.getGuid(), output.get(0).getGuid());
+		assertEquals(move3.getId(), output.get(0).getId());
 		
 		output = movementDao.getLatestMovementsByConnectId(connectID, 3);
 		assertEquals(3, output.size());
@@ -143,7 +143,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		
 		List<Movement> output = movementDao.getLatestMovementsByConnectId(connectID, 1);
 		assertEquals(1, output.size());
-		assertEquals(move3.getGuid(), output.get(0).getGuid());
+		assertEquals(move3.getId(), output.get(0).getId());
 
 		movementDao.getLatestMovementsByConnectId(connectID, -3);
 	}

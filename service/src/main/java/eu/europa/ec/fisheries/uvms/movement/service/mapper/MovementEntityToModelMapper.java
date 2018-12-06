@@ -45,7 +45,7 @@ public class MovementEntityToModelMapper {
         MovementBaseType model = new MovementBaseType();
         model.setReportedSpeed(movement.getSpeed());
         model.setReportedCourse(movement.getHeading());
-        model.setGuid(movement.getGuid().toString());
+        model.setGuid(movement.getId().toString());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
@@ -65,7 +65,7 @@ public class MovementEntityToModelMapper {
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
         model.setReportedSpeed(movement.getSpeed());
-        model.setGuid(movement.getGuid());
+        model.setGuid(movement.getId().toString());
         model.setReportedCourse(movement.getHeading());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
@@ -95,7 +95,7 @@ public class MovementEntityToModelMapper {
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
         model.setReportedSpeed(movement.getSpeed());
-        model.setGuid(movement.getGuid().toString());
+        model.setGuid(movement.getId().toString());
         model.setReportedCourse(movement.getHeading());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setActivity(mapToActivityType(movement.getActivity()));
@@ -173,7 +173,7 @@ public class MovementEntityToModelMapper {
 
     private static String mapToConnectId(MovementConnect connect) {
         if (connect != null) {
-            return connect.getValue().toString();
+            return connect.getId().toString();
         }
         return null;
     }
@@ -212,10 +212,10 @@ public class MovementEntityToModelMapper {
     public static Map<UUID, List<Movement>> orderMovementsByConnectId(List<Movement> movements) {
         Map<UUID, List<Movement>> orderedMovements = new HashMap<>();
         for (Movement movement : movements) {
-            if (orderedMovements.get(movement.getMovementConnect().getValue()) == null) {
-                orderedMovements.put(movement.getMovementConnect().getValue(), new ArrayList<>(Collections.singletonList(movement)));
+            if (orderedMovements.get(movement.getMovementConnect().getId()) == null) {
+                orderedMovements.put(movement.getMovementConnect().getId(), new ArrayList<>(Collections.singletonList(movement)));
             } else {
-                orderedMovements.get(movement.getMovementConnect().getValue()).add(movement);
+                orderedMovements.get(movement.getMovementConnect().getId()).add(movement);
             }
         }
         return orderedMovements;
