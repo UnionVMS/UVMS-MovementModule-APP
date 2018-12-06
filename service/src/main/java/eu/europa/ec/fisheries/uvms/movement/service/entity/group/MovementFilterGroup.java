@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -59,9 +60,11 @@ public class MovementFilterGroup implements Serializable {
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
+    @NotNull
     @Column(name = "movefiltgrp_updattim")
     private Instant updated;
 
+    @NotNull
     @Column(name = "movefiltgrp_upuser")
     private String updatedBy;
 

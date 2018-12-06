@@ -65,7 +65,7 @@ public class MovementDao {
         return query.getResultList();
     }
 
-    public Track getTrackById(Long id){
+    public Track getTrackById(UUID id){
         return em.find(Track.class, id);
     }
 

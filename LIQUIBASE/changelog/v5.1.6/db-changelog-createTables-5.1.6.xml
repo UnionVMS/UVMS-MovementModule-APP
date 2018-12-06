@@ -54,7 +54,7 @@
             <column name="act_callback" type="VARCHAR(400)">
                 <constraints nullable="false"/>
             </column>
-            <column name="act_messid" type="VARCHAR(255)">
+            <column name="act_messid" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="act_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
@@ -85,38 +85,38 @@
         </createTable>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-18">
-        <createTable tableName="alarmitem">
-            <column name="id" type="UUID">
+        <createTable tableName="alarmitem" remarks="Alarm Item table.">
+            <column name="id" type="UUID" remarks="Guid of the alarm item.">
                 <constraints nullable="false"/>
             </column>
-            <column name="ruleguid" type="VARCHAR(255)"/>
-            <column name="rulename" type="VARCHAR(255)"/>
-            <column name="updated" type="TIMESTAMP(6) WITH TIME ZONE">
+            <column name="ruleguid" type="VARCHAR(100)" remarks="Guid of rule."/>
+            <column name="rulename" type="VARCHAR(100)" remarks="Name of rule."/>
+            <column name="updated" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Last updated date time.">
                 <constraints nullable="false"/>
             </column>
-            <column name="updatedby" type="VARCHAR(255)">
+            <column name="updatedby" type="VARCHAR(60)" remarks="Last update userid.">
                 <constraints nullable="false"/>
             </column>
-            <column name="alarmreport_id" type="UUID"/>
+            <column name="alarmreport_id" type="UUID" remarks="FK to Alarm Report."/>
         </createTable>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-19">
-        <createTable tableName="alarmreport">
-            <column name="id" type="UUID">
+        <createTable tableName="alarmreport" remarks="Alarm Report table.">
+            <column name="id" type="UUID" remarks="Guid of alarm.">
                 <constraints nullable="false"/>
             </column>
-            <column name="assetguid" type="VARCHAR(255)"/>
-            <column name="createddate" type="TIMESTAMP(6) WITH TIME ZONE"/>
-            <column name="plugintype" type="VARCHAR(255)"/>
-            <column name="recipient" type="VARCHAR(255)"/>
-            <column name="status" type="VARCHAR(255)"/>
-            <column name="updated" type="TIMESTAMP(6) WITH TIME ZONE">
+            <column name="assetguid" type="VARCHAR(36)" remarks="Guid of asset."/>
+            <column name="createddate" type="TIMESTAMP(6) WITH TIME ZONE" remarks="When the report is created."/>
+            <column name="plugintype" type="VARCHAR(100)" remarks="Type of the plugin the report came from."/>
+            <column name="recipient" type="VARCHAR(20)" remarks="Recipient country code."/>
+            <column name="status" type="VARCHAR(20)" remarks="OPEN or CLOSED."/>
+            <column name="updated" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Last updated date time.">
                 <constraints nullable="false"/>
             </column>
-            <column name="updatedby" type="VARCHAR(255)">
+            <column name="updatedby" type="VARCHAR(60)" remarks="Last update userid.">
                 <constraints nullable="false"/>
             </column>
-            <column name="incomingmovement_id" type="UUID"/>
+            <column name="incomingmovement_id" type="UUID" remarks="FK to incomingmovement Report."/>
         </createTable>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-20">
@@ -133,7 +133,7 @@
             <column name="draftmove_lon" type="FLOAT8"/>
             <column name="draftmove_name" type="VARCHAR(30)"/>
             <column name="draftmove_speed" type="FLOAT8"/>
-            <column name="draftmove_state" type="VARCHAR(255)">
+            <column name="draftmove_state" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="draftmove_status" type="VARCHAR(60)"/>
@@ -147,72 +147,59 @@
         </createTable>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-21">
-        <createTable tableName="incomingmovement">
-            <column name="id" type="UUID">
+        <createTable tableName="incomingmovement" remarks="The movement connected to the alarm report.">
+            <column name="id" type="UUID" remarks="Guid of movement.">
                 <constraints nullable="false"/>
             </column>
-            <column name="ackresponsemessageid" type="VARCHAR(255)"/>
-            <column name="active" type="BOOLEAN">
+            <column name="ackresponsemessageid" type="VARCHAR(100)" remarks="???."/>
+            <column name="active" type="BOOLEAN" remarks="???."/>
+            <column name="activitycallback" type="VARCHAR(100)" remarks="???."/>
+            <column name="activitymessageid" type="VARCHAR(100)" remarks="???."/>
+            <column name="activitymessagetype" type="VARCHAR(100)" remarks="???."/>
+
+            <column name="latitude" type="FLOAT8" remarks="Latitude."/>
+            <column name="longitude" type="FLOAT8" remarks="Longitude."/>
+            <column name="altitude" type="FLOAT8" remarks="Altitude."/>
+            <column name="positiontime" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Reported time of movement."/>
+            <column name="reportedcourse" type="FLOAT8" remarks="???."/>
+            <column name="reportedspeed" type="FLOAT8" remarks="???."/>
+
+            <column name="assetcfr" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetguid" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assethistoryid" type="VARCHAR(100)"/>
+            <column name="assetid" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetimo" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetircs" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetmmsi" type="VARCHAR(100)" remarks="Asset type value."/>
+            <column name="assetname" type="VARCHAR(100)" remarks="Asset name as it comes from FLUX/MAN."/>
+            <column name="assettype" type="VARCHAR(50)" remarks="Type of asset, e.g. VESSEL."/>
+            <column name="flagstate" type="VARCHAR(100)" remarks="Flagstate as it comes from FLUX/MAN."/>
+            <column name="externalmarking" type="VARCHAR(100)" remarks="External markings as it comes from FLUX/MAN."/>
+            <column name="internalreferencenumber" type="VARCHAR(100)" remarks="???."/>
+
+            <column name="datereceived" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Received time of movement."/>
+
+            <column name="comchanneltype" type="VARCHAR(100)" remarks="???."/>
+            <column name="mobileterminalconnectid" type="VARCHAR(100)" remarks="???"/>
+            <column name="mobileterminaldnid" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalguid" type="VARCHAR(100)" remarks="Mobile terminal guid."/>
+            <column name="mobileterminalles" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalmembernumber" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+            <column name="mobileterminalserialnumber" type="VARCHAR(100)" remarks="Mobile terminal id value."/>
+
+            <column name="movementsourcetype" type="VARCHAR(100)" remarks="???."/>
+            <column name="movementtype" type="VARCHAR(100)" remarks="???."/>
+            <column name="plugintype" type="VARCHAR(100)" remarks="Type of the plugin the report came from."/>
+
+            <column name="status" type="VARCHAR(100)" remarks="???."/>
+            <column name="tripnumber" type="FLOAT8" remarks="???."/>
+            <column name="updated" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Last updated date time.">
                 <constraints nullable="false"/>
             </column>
-            <column name="activitycallback" type="VARCHAR(255)"/>
-            <column name="activitymessageid" type="VARCHAR(255)"/>
-            <column name="activitymessagetype" type="VARCHAR(255)"/>
-            <column name="altitude" type="FLOAT8"/>
-            <column name="assetcfr" type="VARCHAR(255)"/>
-            <column name="assetguid" type="VARCHAR(255)"/>
-            <column name="assethistoryid" type="VARCHAR(255)"/>
-            <column name="assetid" type="VARCHAR(255)"/>
-            <column name="assetimo" type="VARCHAR(255)"/>
-            <column name="assetircs" type="VARCHAR(255)"/>
-            <column name="assetmmsi" type="VARCHAR(255)"/>
-            <column name="assetname" type="VARCHAR(255)"/>
-            <column name="assettype" type="VARCHAR(255)"/>
-            <column name="comchanneltype" type="VARCHAR(255)"/>
-            <column name="datereceived" type="TIMESTAMP(6) WITH TIME ZONE"/>
-            <column name="externalmarking" type="VARCHAR(255)"/>
-            <column name="flagstate" type="VARCHAR(255)"/>
-            <column name="internalreferencenumber" type="VARCHAR(255)"/>
-            <column name="latitude" type="FLOAT8"/>
-            <column name="longitude" type="FLOAT8"/>
-            <column name="mobileterminalconnectid" type="VARCHAR(255)"/>
-            <column name="mobileterminaldnid" type="VARCHAR(255)"/>
-            <column name="mobileterminalguid" type="VARCHAR(255)"/>
-            <column name="mobileterminalles" type="VARCHAR(255)"/>
-            <column name="mobileterminalmembernumber" type="VARCHAR(255)"/>
-            <column name="mobileterminalserialnumber" type="VARCHAR(255)"/>
-            <column name="movementsourcetype" type="VARCHAR(255)"/>
-            <column name="movementtype" type="VARCHAR(255)"/>
-            <column name="plugintype" type="VARCHAR(255)"/>
-            <column name="positiontime" type="TIMESTAMP(6) WITH TIME ZONE"/>
-            <column name="reportedcourse" type="FLOAT8"/>
-            <column name="reportedspeed" type="FLOAT8"/>
-            <column name="status" type="VARCHAR(255)"/>
-            <column name="tripnumber" type="FLOAT8"/>
-            <column name="updated" type="TIMESTAMP(6) WITH TIME ZONE">
-                <constraints nullable="false"/>
-            </column>
-            <column name="updatedby" type="VARCHAR(255)">
+            <column name="updatedby" type="VARCHAR(60)" remarks="Last update userid.">
                 <constraints nullable="false"/>
             </column>
             <column name="alarmreport_id" type="UUID">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-    <changeSet author="thofan (generated)" id="1544002649622-22">
-        <createTable tableName="latest_pos_view">
-            <column name="move_guid" type="VARCHAR(36)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="move_heading" type="FLOAT8"/>
-            <column name="move_location" type="GEOMETRY">
-                <constraints nullable="false"/>
-            </column>
-            <column name="move_speed" type="FLOAT8"/>
-            <column name="move_timestamp" type="TIMESTAMP(6) WITH TIME ZONE"/>
-            <column name="move_moveconn_id" type="UUID">
-                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
@@ -268,8 +255,8 @@
             <column name="moveconn_asset_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="moveconn_flagstate" type="VARCHAR(255)"/>
-            <column name="moveconn_name" type="VARCHAR(255)"/>
+            <column name="moveconn_flagstate" type="VARCHAR(100)"/>
+            <column name="moveconn_name" type="VARCHAR(100)"/>
             <column name="moveconn_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
                 <constraints nullable="false"/>
             </column>
@@ -283,11 +270,11 @@
             <column name="movefilt_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="movefilt_field" type="VARCHAR(255)"/>
+            <column name="movefilt_field" type="VARCHAR(100)"/>
             <column name="movefilt_movefilttyp_id" type="INT"/>
             <column name="movefilt_updattim" type="TIMESTAMP(6) WITH TIME ZONE"/>
-            <column name="movefilt_upuser" type="VARCHAR(255)"/>
-            <column name="movefilt_value" type="VARCHAR(255)"/>
+            <column name="movefilt_upuser" type="VARCHAR(100)"/>
+            <column name="movefilt_value" type="VARCHAR(100)"/>
             <column name="movefilt_movefiltgrp_id" type="UUID"/>
         </createTable>
     </changeSet>
@@ -296,13 +283,17 @@
             <column name="movefiltgrp_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="movefiltgrp_active" type="VARCHAR(255)"/>
-            <column name="movefiltgrp_dynamic" type="VARCHAR(255)"/>
-            <column name="movefiltgrp_global" type="VARCHAR(255)"/>
-            <column name="movefiltgrp_name" type="VARCHAR(255)"/>
-            <column name="movefiltgrp_updattim" type="TIMESTAMP(6) WITH TIME ZONE"/>
-            <column name="movefiltgrp_upuser" type="VARCHAR(255)"/>
-            <column name="movefiltgrp_user_id" type="VARCHAR(255)"/>
+            <column name="movefiltgrp_active" type="VARCHAR(100)"/>
+            <column name="movefiltgrp_dynamic" type="VARCHAR(100)"/>
+            <column name="movefiltgrp_global" type="VARCHAR(100)"/>
+            <column name="movefiltgrp_name" type="VARCHAR(100)"/>
+            <column name="movefiltgrp_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_upuser" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+            </column>
+            <column name="movefiltgrp_user_id" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-28">
@@ -326,11 +317,11 @@
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-29">
         <createTable tableName="parameter">
-            <column name="param_id" type="VARCHAR(255)">
+            <column name="param_id" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="param_description" type="VARCHAR(255)"/>
-            <column name="param_value" type="VARCHAR(255)"/>
+            <column name="param_description" type="VARCHAR(100)"/>
+            <column name="param_value" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-30">
@@ -405,9 +396,6 @@
     <changeSet author="thofan (generated)" id="1544002649622-37">
         <addPrimaryKey columnNames="id" constraintName="incomingmovement_pkey" tableName="incomingmovement"/>
     </changeSet>
-    <changeSet author="thofan (generated)" id="1544002649622-38">
-        <addPrimaryKey columnNames="move_guid" constraintName="latest_pos_view_pkey" tableName="latest_pos_view"/>
-    </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-39">
         <addPrimaryKey columnNames="movelate_id" constraintName="latestmovement_pkey" tableName="latestmovement"/>
     </changeSet>
@@ -442,7 +430,7 @@
         <addUniqueConstraint columnNames="seg_tomove_id" constraintName="segment_seg_tomove_id_key" tableName="segment"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-50">
-        <addUniqueConstraint columnNames="alarmreport_id" constraintName="uk_dcuobiqryenliv917fcrk5wim" tableName="incomingmovement"/>
+        <addUniqueConstraint columnNames="alarmreport_id" constraintName="incomingmovement_uc_alarmreport" tableName="incomingmovement"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-51">
         <createIndex indexName="activity_activitytype_fk_inx" tableName="activity">
@@ -530,42 +518,39 @@
         </createIndex>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-68">
-        <addForeignKeyConstraint baseColumnNames="seg_tomove_id" baseTableName="segment" constraintName="fk1qk66u9629h39hcgssikng1ki" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
-    </changeSet>
-    <changeSet author="thofan (generated)" id="1544002649622-69">
-        <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="latest_pos_view" constraintName="fk2hibr2qgsw1uj8gdqonns6l76" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_asset_id" referencedTableName="movementconnect"/>
+        <addForeignKeyConstraint baseColumnNames="seg_tomove_id" baseTableName="segment" constraintName="segment_tomovement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-70">
-        <addForeignKeyConstraint baseColumnNames="seg_trac_id" baseTableName="segment" constraintName="fk4v1powa71f5r0mbycxkqjrmms" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track"/>
+        <addForeignKeyConstraint baseColumnNames="seg_trac_id" baseTableName="segment" constraintName="segment_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-71">
-        <addForeignKeyConstraint baseColumnNames="movelate_moveconn_id" baseTableName="latestmovement" constraintName="fk6k68s1dt6e5tr1s4dea6rb3bs" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_asset_id" referencedTableName="movementconnect"/>
+        <addForeignKeyConstraint baseColumnNames="movelate_moveconn_id" baseTableName="latestmovement" constraintName="latestmovement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_asset_id" referencedTableName="movementconnect"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-72">
-        <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="movement" constraintName="fk7kt8s0tbjg47v8b1bqi1nkn28" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_asset_id" referencedTableName="movementconnect"/>
+        <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="movement" constraintName="movement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_asset_id" referencedTableName="movementconnect"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-73">
-        <addForeignKeyConstraint baseColumnNames="move_act_id" baseTableName="movement" constraintName="fk8al2xvxilj2a7aviioqnmercb" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="act_id" referencedTableName="activity"/>
+        <addForeignKeyConstraint baseColumnNames="move_act_id" baseTableName="movement" constraintName="movement_activety_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="act_id" referencedTableName="activity"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-74">
-        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="alarmitem" constraintName="fk8pxwwo3gnfp8f3wdu9bb67toe" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="alarmreport"/>
+        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="alarmitem" constraintName="alarmitem_alarmreport_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="alarmreport"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-75">
-        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="incomingmovement" constraintName="fk97yjlxuoctwumrw6ao3lcsmlg" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="alarmreport"/>
+        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="incomingmovement" constraintName="incomingmovement_alarmreport_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="alarmreport"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-76">
-        <addForeignKeyConstraint baseColumnNames="move_trac_id" baseTableName="movement" constraintName="fkjnnxijc3r99qaqcd3q488t7r0" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track"/>
+        <addForeignKeyConstraint baseColumnNames="move_trac_id" baseTableName="movement" constraintName="movement_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-77">
-        <addForeignKeyConstraint baseColumnNames="movefilt_movefiltgrp_id" baseTableName="movementfilter" constraintName="fkkw4mvutwerikeyviapt9h279p" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="movefiltgrp_id" referencedTableName="movementfiltergroup"/>
+        <addForeignKeyConstraint baseColumnNames="movefilt_movefiltgrp_id" baseTableName="movementfilter" constraintName="movementfilter_movementfiltergroup_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="movefiltgrp_id" referencedTableName="movementfiltergroup"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-78">
-        <addForeignKeyConstraint baseColumnNames="seg_frommove_id" baseTableName="segment" constraintName="fklxxn8bntm8byhkak6l3l9fhjy" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
+        <addForeignKeyConstraint baseColumnNames="seg_frommove_id" baseTableName="segment" constraintName="segment_frommovement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-79">
-        <addForeignKeyConstraint baseColumnNames="incomingmovement_id" baseTableName="alarmreport" constraintName="fkr80kylggwhh8dhvxbclpl5se3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="incomingmovement"/>
+        <addForeignKeyConstraint baseColumnNames="incomingmovement_id" baseTableName="alarmreport" constraintName="alarmreport_incomingmovement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="incomingmovement"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-80">
-        <addForeignKeyConstraint baseColumnNames="movelate_move_id" baseTableName="latestmovement" constraintName="fkt0724wsi01t0s5b74ywwnn81p" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
+        <addForeignKeyConstraint baseColumnNames="movelate_move_id" baseTableName="latestmovement" constraintName="latestmovement_movement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
     </changeSet>
 </databaseChangeLog>

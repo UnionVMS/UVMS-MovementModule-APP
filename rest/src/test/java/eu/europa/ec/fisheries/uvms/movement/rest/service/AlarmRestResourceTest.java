@@ -171,7 +171,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("alarms/reprocess")
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(Collections.singletonList("NULL_GUID")), String.class);
+                .post(Entity.json(Collections.singletonList(UUID.randomUUID())), String.class);      //previsouly "NULL_GUID"
 
         assertThat(response, is("OK"));
 

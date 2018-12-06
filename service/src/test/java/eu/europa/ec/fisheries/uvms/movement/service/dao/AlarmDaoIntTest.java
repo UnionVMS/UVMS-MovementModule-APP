@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import static org.junit.Assert.assertNotNull;
+
 @RunWith(Arquillian.class)
 public class AlarmDaoIntTest extends TransactionalTests {
 
@@ -33,6 +35,7 @@ public class AlarmDaoIntTest extends TransactionalTests {
         im.setUpdated(Instant.now());
         im.setUpdatedBy("TEST");
         alarmDAO.save(im);
+        assertNotNull(im.getId());
 
 
         AlarmReport alarmReport = new AlarmReport();
@@ -46,6 +49,7 @@ public class AlarmDaoIntTest extends TransactionalTests {
         alarmReport.setPluginType("TEST");
         alarmReport.setAlarmItemList(new ArrayList<>());
         alarmDAO.save(alarmReport);
+        assertNotNull(alarmReport.getId());
 
         im.setAlarmReport(alarmReport);
 
@@ -57,10 +61,12 @@ public class AlarmDaoIntTest extends TransactionalTests {
         alarmItem.setUpdatedBy("TEST");
         alarmDAO.save(alarmItem);
         alarmReport.getAlarmItemList().add(alarmItem);
+        assertNotNull(alarmItem.getId());
+        em.flush();
 
 
         AlarmReport theReport = alarmDAO.getOpenAlarmReportByMovementGuid(im.getId());
-        Assert.assertNotNull(theReport);
+        assertNotNull(theReport);
         Assert.assertEquals(alarmReport.getId(), theReport.getId());
     }
 

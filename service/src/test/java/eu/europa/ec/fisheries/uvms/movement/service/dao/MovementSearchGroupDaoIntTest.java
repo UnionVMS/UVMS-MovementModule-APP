@@ -12,6 +12,8 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.persistence.PersistenceException;
+import javax.validation.ConstraintViolationException;
+
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
@@ -44,7 +46,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovementFilterGroupNoUpdateTime()  {
-        expectedException.expect(PersistenceException.class);
+        expectedException.expect(ConstraintViolationException.class);
 
         MovementFilterGroup movementFilterGroup = newFilterGroup();
         movementFilterGroup.setUpdated(null);
@@ -56,7 +58,7 @@ public class MovementSearchGroupDaoIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovementFilterGroupNoUpdateBy()  {
-        expectedException.expect(PersistenceException.class);
+        expectedException.expect(ConstraintViolationException.class);
 
         MovementFilterGroup movementFilterGroup = newFilterGroup();
         movementFilterGroup.setUpdatedBy(null);

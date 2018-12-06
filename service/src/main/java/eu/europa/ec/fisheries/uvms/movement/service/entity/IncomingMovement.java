@@ -82,7 +82,7 @@ public class IncomingMovement {
     @NotNull
     private String updatedBy;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)    //DB is set to allow null values here since, for some reason, hibernate passes a null that is later changed into the correct value.
     private AlarmReport alarmReport;
 
 

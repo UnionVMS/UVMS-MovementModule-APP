@@ -38,7 +38,7 @@ public enum SearchField implements SearchFieldType {
     /**
      * The value of the connected Object in MovementConnect
      */
-    CONNECT_ID("value", SearchTables.MOVEMENT_CONNECT, String.class),
+    CONNECT_ID("id", SearchTables.MOVEMENT_CONNECT, String.class),
     /**
      * The Type of movement
      */

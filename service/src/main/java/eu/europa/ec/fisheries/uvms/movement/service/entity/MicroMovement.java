@@ -35,7 +35,7 @@ public class MicroMovement implements Serializable{
         @NotNull
         @Id
         @Size(max = 36)
-        @Column(name = "move_guid", nullable = false)
+        @Column(name = "move_id", nullable = false)
         private String guid;
 
         @NotNull

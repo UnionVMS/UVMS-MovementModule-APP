@@ -91,9 +91,10 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		movementConnect.setId(connectId);
         movement.setMovementConnect(movementConnect);
         movement.setTimestamp(Instant.now());
+        movement.setId(UUID.randomUUID());
 		//movement.setStatus(status);
 		MovementType movementType = MovementEntityToModelMapper.mapToMovementType(movement);
-		assertEquals(movement.getId(), movementType.getGuid());
+		assertEquals(movement.getId().toString(), movementType.getGuid());
         assertEquals(lat, movementType.getPosition().getLatitude(), 0D);
         assertEquals(lon, movementType.getPosition().getLongitude(), 0D);
         assertEquals(connectId.toString(), movementType.getConnectId());

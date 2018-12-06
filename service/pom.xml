@@ -23,6 +23,7 @@
         <docker.dev.start.phase>test-compile</docker.dev.start.phase>
         <docker.liquibase.phase>test-compile</docker.liquibase.phase>
 		<docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
+
     </properties>
 
     <dependencies>
@@ -138,7 +139,14 @@
 			<version>2.9.6</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
+
+        <!--dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+            <version>5.3.7.Final</version>
+        </dependency-->
+
+        <dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 			<version>2.9.6</version>
