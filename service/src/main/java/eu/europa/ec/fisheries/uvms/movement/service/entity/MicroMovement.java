@@ -52,6 +52,12 @@ public class MicroMovement implements Serializable{
         @Column(name = "move_speed")
         private Double speed;
 
+        @Column(name = "moveconn_flagstate")
+        private String flagstate;
+
+        @Column(name = "moveconn_name")
+        private String name;
+
 
         public Point getLocation() {
             return location;
