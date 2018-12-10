@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +35,7 @@ import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementSearchGroupService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementGroupMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,9 +89,10 @@ public class MovementSearchGroupResource {
     @Path("/group/{id}")
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto getMovementSearchGroup(@PathParam("id") UUID id) {
+    public ResponseDto getMovementSearchGroup(@PathParam("id") BigInteger id) {
         try {
-            MovementFilterGroup filterGroup = service.getMovementFilterGroup(id);
+            UUID uuid = CalculationUtil.convertFromBigInteger(id);
+            MovementFilterGroup filterGroup = service.getMovementFilterGroup(uuid);
             MovementSearchGroup searchGroup = MovementGroupMapper.toMovementSearchGroup(filterGroup);
             return new ResponseDto(searchGroup, RestResponseCode.OK);
         } catch (Exception e) {
@@ -155,9 +158,10 @@ public class MovementSearchGroupResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto deleteMovementSearchGroup(@PathParam(value = "id") UUID id) {
+    public ResponseDto deleteMovementSearchGroup(@PathParam(value = "id") BigInteger id) {
         try {
-            MovementFilterGroup deletedSearchGroup = service.deleteMovementFilterGroup(id);
+            UUID uuid = CalculationUtil.convertFromBigInteger(id);
+            MovementFilterGroup deletedSearchGroup = service.deleteMovementFilterGroup(uuid);
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(deletedSearchGroup);
             return new ResponseDto(movementSearchGroup, RestResponseCode.OK);
         } catch (Exception e) {
