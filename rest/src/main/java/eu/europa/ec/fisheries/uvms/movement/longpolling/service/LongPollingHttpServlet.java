@@ -68,8 +68,8 @@ public class LongPollingHttpServlet extends HttpServlet {
     }
     
     public void observeAlarmCreated(@Observes @AlarmReportEvent NotificationMessage message) throws IOException {
-        String guid = (String) message.getProperties().get(LongPollingConstants.PROPERTY_GUID);
-        completePoll(LongPollingConstants.ALARM_REPORT_PATH, createJsonMessage(guid));
+        UUID guid = (UUID) message.getProperties().get(LongPollingConstants.PROPERTY_GUID);
+        completePoll(LongPollingConstants.ALARM_REPORT_PATH, createJsonMessage(guid.toString()));
     }
     
     public void observeTicketCount(@Observes @AlarmReportCountEvent NotificationMessage message) throws IOException {
