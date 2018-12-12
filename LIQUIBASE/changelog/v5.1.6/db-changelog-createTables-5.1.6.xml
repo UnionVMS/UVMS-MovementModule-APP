@@ -366,7 +366,6 @@
             <column name="trac_duration" type="FLOAT8">
                 <constraints nullable="false"/>
             </column>
-            <column name="trac_geom" type="GEOMETRY"/>
             <column name="track_totalsea" type="FLOAT8">
                 <constraints nullable="false"/>
             </column>

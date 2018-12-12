@@ -137,13 +137,6 @@ public class SegmentBean {
         double calculatedDurationInSeconds = track.getDuration() + segment.getDuration();
         track.setDuration(calculatedDurationInSeconds);
 
-        // TODO calculate whole line string each update?
-        List<Geometry> points = dao.getPointsFromTrack(track);
-        if(points.size() > 1) {    //if there is more then one movement, create a string of movements, aka a string of positions
-            LineString updatedTrackLineString = GeometryUtil.getLineStringFromPoints(points);
-            track.setLocation(updatedTrackLineString);
-        }
-
         if (!segment.getSegmentCategory().equals(SegmentCategoryType.ENTER_PORT) || !segment.getSegmentCategory().equals(SegmentCategoryType.IN_PORT)) {     //if we have not entered a port or are in a port, add to the total amount of time
             double totalTimeAtSea = track.getTotalTimeAtSea();                                                                                               //this makes it so that the last segment of a track is not counted towards the total time of a track
             track.setTotalTimeAtSea(totalTimeAtSea + segment.getDuration());
@@ -155,7 +148,6 @@ public class SegmentBean {
         track.setDistance(segment.getDistance());
         track.setDuration(segment.getDuration());
         track.setUpdated(DateUtil.nowUTC());
-        track.setLocation(segment.getLocation());
         track.setUpdatedBy("UVMS");
         segment.setTrack(track);
         return track;

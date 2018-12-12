@@ -1,25 +1,27 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentDTO;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.SegmentMapper;
-import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
-import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import java.util.List;
+import java.util.UUID;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.UUID;
+import com.vividsolutions.jts.geom.Geometry;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
+import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
+import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
 @Path("/track")
 @Stateless
@@ -39,8 +41,9 @@ public class TrackRestResource {
 
             UUID id = UUID.fromString(stringId);
             Track track = movementDao.getTrackById(id);
-            MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(track);
-
+            List<Geometry> points = movementDao.getPointsFromTrack(track);
+            MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(track, 
+                    WKTUtil.getWktLineString(points));
 
             return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();

@@ -199,12 +199,12 @@ public class MovementEntityToModelMapper {
         return movSegment;
     }
 
-    public static MovementTrack mapToMovementTrack(Track track) {
+    public static MovementTrack mapToMovementTrack(Track track, String wktString) {
         MovementTrack movementTrack = new MovementTrack();
         movementTrack.setDistance(track.getDistance());
         movementTrack.setDuration(track.getDuration());
         movementTrack.setTotalTimeAtSea(track.getTotalTimeAtSea());
-        movementTrack.setWkt(WKTUtil.getWktLineStringFromTrack(track));
+        movementTrack.setWkt(wktString);
         movementTrack.setId(track.getId().toString());
         return movementTrack;
     }
@@ -221,16 +221,12 @@ public class MovementEntityToModelMapper {
         return orderedMovements;
     }
 
-    public static List<MovementTrack> extractTracks(List<Segment> segments) {
+    public static List<Track> extractTracks(List<Segment> segments) {
         Set<Track> tracks = new HashSet<>();
         for (Segment segment : segments) {
             tracks.add(segment.getTrack());
         }
-        List<MovementTrack> movementTracks = new ArrayList<>();
-        for (Track track : tracks) {
-            movementTracks.add(mapToMovementTrack(track));
-        }
-        return movementTracks;
+        return new ArrayList<>(tracks);
     }
 
     public static ArrayList<Segment> extractSegments(ArrayList<Movement> movements, boolean excludeFirstLastSegment) {

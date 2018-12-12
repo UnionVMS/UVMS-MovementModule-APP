@@ -84,10 +84,6 @@ public class Track implements Serializable {
     @Column(name = "trac_upuser")
     private String updatedBy;
 
-    @Type(type = "org.hibernate.spatial.GeometryType")
-    @Column(name = "trac_geom", columnDefinition = "Geometry")
-    private LineString location;
-
     public UUID getId() {
         return id;
     }
@@ -126,14 +122,6 @@ public class Track implements Serializable {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public LineString getLocation() {
-        return location;
-    }
-
-    public void setLocation(LineString location) {
-        this.location = location;
     }
 
     public double getTotalTimeAtSea() {

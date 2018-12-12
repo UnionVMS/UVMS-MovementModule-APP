@@ -21,16 +21,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.message.MovementTestHelper;
 
 @RunWith(Arquillian.class)
 public class MovementServiceIntTest extends TransactionalTests {
@@ -163,6 +166,34 @@ public class MovementServiceIntTest extends TransactionalTests {
         }
     }
 
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void trackLineStringTest() {
+        UUID connectId = UUID.randomUUID();
+        
+        Movement movement1 = MockData.createMovement(1d, 1d, connectId);
+        movementService.createMovement(movement1);
+        Movement movement2 = MockData.createMovement(1d, 2d, connectId);
+        movementService.createMovement(movement2);
+        Movement movement3 = MockData.createMovement(1d, 3d, connectId);
+        movementService.createMovement(movement3);
+        
+        MovementQuery query = createMovementQuery(false);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId.toString());
+        query.getMovementSearchCriteria().add(criteria);
+        
+        GetMovementMapByQueryResponse mapByQuery = movementService.getMapByQuery(query);
+        assertThat(mapByQuery.getMovementMap().size(), CoreMatchers.is(1));
+        MovementMapResponseType movement = mapByQuery.getMovementMap().get(0);
+        List<MovementTrack> tracks = movement.getTracks();
+        assertThat(tracks.size(), CoreMatchers.is(1));
+        MovementTrack movementTrack = tracks.get(0);
+        String expectedWktString = "LINESTRING (1.0 1.0, 1.0 2.0, 1.0 3.0)";
+        assertThat(movementTrack.getWkt(), CoreMatchers.is(expectedWktString));
+    }
+    
     @Test
     @OperateOnDeployment("movementservice")
     public void createBatch() {
