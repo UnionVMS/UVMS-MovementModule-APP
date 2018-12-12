@@ -14,7 +14,6 @@ import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 @Stateless
 public class ExchangeBean extends AbstractProducer {
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void send(ProcessedMovementResponse processedMovementResponse) throws ExchangeModelMarshallException, MessageException {
         processedMovementResponse.setMethod(ExchangeModuleMethod.PROCESSED_MOVEMENT);
         processedMovementResponse.setUsername("");
