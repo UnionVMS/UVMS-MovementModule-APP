@@ -185,6 +185,8 @@ public class MovementMapper {
         dto.setLocation(mp);
         dto.setTimestamp(mm.getTimestamp());
         dto.setSpeed(mm.getSpeed());
+        dto.setFlagstate(mm.getFlagstate());
+        dto.setAssetName(mm.getAssetName());
         return dto;
     }
 }

@@ -30,6 +30,10 @@ public class MicroMovementDto {
 
     private Double speed;
 
+    private String flagstate;
+
+    private String assetName;
+
     public MicroMovementDto() {
 
     }
@@ -44,6 +48,8 @@ public class MicroMovementDto {
         this.asset = asset.getId().toString();
         this.timestamp = timestamp;
         this.speed = speed;
+        flagstate = asset.getFlagState();
+        assetName = asset.getName();
     }
 
     public MovementPoint getLocation() {
@@ -92,5 +98,21 @@ public class MicroMovementDto {
 
     public void setSpeed(Double speed) {
         this.speed = speed;
+    }
+
+    public String getFlagstate() {
+        return flagstate;
+    }
+
+    public void setFlagstate(String flagstate) {
+        this.flagstate = flagstate;
+    }
+
+    public String getAssetName() {
+        return assetName;
+    }
+
+    public void setAssetName(String assetName) {
+        this.assetName = assetName;
     }
 }
