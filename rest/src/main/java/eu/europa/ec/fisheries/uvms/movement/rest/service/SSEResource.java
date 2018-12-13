@@ -48,10 +48,8 @@ public class SSEResource {
         this.sseBroadcaster = sse.newBroadcaster();
     }
 
-    public void createdMovement(@Observes @CreatedMovement NotificationMessage message){
+    public void createdMovement(@Observes @CreatedMovement Movement move){
         try {
-            UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
-            Movement move = movementDao.getMovementByGUID(guid);
             if (move != null) {
                 MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
                 OutboundSseEvent sseEvent = eventBuilder

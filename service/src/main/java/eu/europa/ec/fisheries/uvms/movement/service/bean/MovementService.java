@@ -75,7 +75,7 @@ public class MovementService {
 
     @Inject
     @CreatedMovement
-    private Event<NotificationMessage> createdMovementEvent;
+    private Event<Movement> createdMovementEvent;
 
     /**
      *
@@ -300,7 +300,7 @@ public class MovementService {
 
     private void fireMovementEvent(Movement createdMovement) {
         try {
-            createdMovementEvent.fire(new NotificationMessage("movementGuid", createdMovement.getId()));
+            createdMovementEvent.fire(createdMovement);
         } catch (Exception e) {
             LOG.error("[ Error when firing notification of created temp movement. ] {}", e.getMessage());
         }
