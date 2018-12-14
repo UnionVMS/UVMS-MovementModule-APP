@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 import java.time.Instant;
 import java.util.UUID;
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefType;
@@ -29,6 +30,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.message.IncomingMovementMapp
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
+@Stateless
 public class MovementCreateBean {
 
     @Inject
