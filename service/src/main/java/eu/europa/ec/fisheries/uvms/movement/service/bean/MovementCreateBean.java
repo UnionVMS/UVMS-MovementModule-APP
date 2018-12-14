@@ -62,11 +62,13 @@ public class MovementCreateBean {
                         .getUpdatedBy());
                 Movement createdMovement = movementService.createMovement(movement);
 
-                // send to MovementRules
-                MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
-                int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
-                movementDetails.setSumPositionReport(sumPositionReport);
-                movementRulesBean.send(movementDetails);
+                // send to MovementRules if it is not a duplicate
+                if(!createdMovement.getDuplicate()) {
+                    MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
+                    int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
+                    movementDetails.setSumPositionReport(sumPositionReport);
+                    movementRulesBean.send(movementDetails);
+                }
                 // report ok to Exchange...
                 // Tracer Id
                 ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
