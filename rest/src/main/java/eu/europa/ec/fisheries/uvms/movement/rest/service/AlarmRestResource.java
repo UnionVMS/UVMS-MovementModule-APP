@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
@@ -22,10 +23,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,10 +40,12 @@ public class AlarmRestResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmRestResource.class);
 
-
     @EJB
     private MovementSanityValidatorBean validationService;
 
+    @Inject
+    private AlarmDAO alarmDao;
+    
     @Context
     private HttpServletRequest request;
 
@@ -106,9 +113,10 @@ public class AlarmRestResource {
     @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/reprocess")
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
-    public String reprocessAlarm(final List<String> alarmGuidList) {
+    public Response reprocessAlarm(final List<String> alarmGuidList) {
         LOG.info("Reprocess alarm invoked in rest layer");
-        return validationService.reprocessAlarm(alarmGuidList, request.getRemoteUser());
+        validationService.reprocessAlarm(alarmGuidList, request.getRemoteUser());
+        return Response.ok().build();
     }
 
     /**
@@ -120,11 +128,20 @@ public class AlarmRestResource {
      *
      */
     @GET
-    @Produces(value = { MediaType.APPLICATION_JSON })
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/countopen")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
-    public long getNumberOfOpenAlarmReports() {
-        return validationService.getNumberOfOpenAlarmReports();
+    public Response getNumberOfOpenAlarmReports() {
+        long openAlarmReports = validationService.getNumberOfOpenAlarmReports();
+        JsonObject json = Json.createObjectBuilder().add("count", openAlarmReports).build();
+        return Response.ok(json).build();
     }
 
+    @GET
+    @Path("/sanityrules")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
+    public List<String> getTriggeredSanityRuleNames() {
+        return alarmDao.getTriggeredSanityRuleNames();
+    }
 }

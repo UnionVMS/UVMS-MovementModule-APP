@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
+import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,11 @@ public class AlarmDAO {
         TypedQuery<AlarmReport> query = em.createQuery(sql, AlarmReport.class);
         query.setFirstResult(listSize * (page - 1));
         query.setMaxResults(listSize);
+        return query.getResultList();
+    }
+    
+    public List<String> getTriggeredSanityRuleNames() {
+        TypedQuery<String> query = em.createNamedQuery(AlarmItem.FIND_RULE_NAMES, String.class);
         return query.getResultList();
     }
 

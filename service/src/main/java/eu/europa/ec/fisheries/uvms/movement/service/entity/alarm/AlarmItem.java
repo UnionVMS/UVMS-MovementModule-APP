@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
 
 //@formatter:off
@@ -14,9 +13,14 @@ import java.util.UUID;
         @Index(columnList = "alarmreport_id", name = "alarmitem_alarmreport_fk_inx", unique = false)
 })
 @XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = AlarmItem.FIND_RULE_NAMES, query = "SELECT DISTINCT item.ruleName FROM AlarmItem item")
+})
 //@formatter:on
 public class AlarmItem implements Serializable {
 
+    public static final String FIND_RULE_NAMES = "AlarmItem.ruleNames";
+    
     private static final long serialVersionUID = 1L;
 
     @Id
