@@ -11,9 +11,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
 import eu.europa.ec.fisheries.uvms.audit.model.mapper.AuditLogMapper;
@@ -37,7 +36,7 @@ public class AuditService {
     @Inject
     private MovementMessageProducerBean producer;
 
-    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
+    @Asynchronous
     public void sendMovementCreatedAudit(Movement movement, String username) {
         try {
             String auditData;
@@ -51,9 +50,8 @@ public class AuditService {
             LOG.error("Failed to send audit log message! Movement with guid {} was created ", movement.getId(), e);
         }
     }
-    
-    // TODO what should be audited during batch?
-    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
+
+    @Asynchronous
     public void sendMovementBatchCreatedAudit(String guid, String username) {
         try {
             String auditData = AuditModuleRequestMapper.mapAuditLogMovementBatchCreated(guid, username);
@@ -63,7 +61,7 @@ public class AuditService {
         }
     }
 
-    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
+    @Asynchronous
     public void sendTempMovementCreatedAudit(DraftMovement draftMovement, String username) {
         try {
             String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(draftMovement.getId().toString(),
@@ -74,7 +72,7 @@ public class AuditService {
         }
     }
 
-    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
+    @Asynchronous
     public void sendAuditMessage(AuditObjectTypeEnum type, AuditOperationEnum operation, String affectedObject, String comment, String username) {
         try {
             String message = AuditLogMapper.mapToAuditLog(type.getValue(), operation.getValue(), affectedObject, comment, username);
