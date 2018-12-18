@@ -97,6 +97,9 @@ public class MovementCreateBean {
         im.setMobileTerminalConnectId(response.getMobileTerminalConnectId());
         im.setAssetGuid(response.getAssetUUID());
         im.setAssetHistoryId(response.getAssetHistoryId());
+
+        im.setAssetName(response.getAssetName());
+        im.setFlagState(response.getFlagstate());
     }
 
     private AssetMTEnrichmentRequest createRequest(IncomingMovement ic, String username) {
