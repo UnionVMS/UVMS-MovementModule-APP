@@ -131,10 +131,8 @@ public class AlarmRestResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/countopen")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
-    public Response getNumberOfOpenAlarmReports() {
-        long openAlarmReports = validationService.getNumberOfOpenAlarmReports();
-        JsonObject json = Json.createObjectBuilder().add("count", openAlarmReports).build();
-        return Response.ok(json).build();
+    public long getNumberOfOpenAlarmReports() {
+        return validationService.getNumberOfOpenAlarmReports();
     }
 
     @GET
