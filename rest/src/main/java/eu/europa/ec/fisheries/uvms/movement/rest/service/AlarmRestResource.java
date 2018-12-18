@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -44,9 +42,6 @@ public class AlarmRestResource {
     @EJB
     private MovementSanityValidatorBean validationService;
 
-    @Inject
-    private AlarmDAO alarmDao;
-    
     @Context
     private HttpServletRequest request;
 

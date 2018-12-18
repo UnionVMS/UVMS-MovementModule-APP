@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
-import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
