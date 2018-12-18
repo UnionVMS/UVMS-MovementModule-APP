@@ -16,6 +16,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
+import eu.europa.ec.fisheries.uvms.movement.service.validation.SanityRule;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.slf4j.Logger;
@@ -29,8 +30,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Path("/alarms")
 @Stateless
@@ -137,7 +140,9 @@ public class AlarmRestResource {
     @Path("/sanityrules")
     @Produces(MediaType.APPLICATION_JSON)
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
-    public List<String> getTriggeredSanityRuleNames() {
-        return alarmDao.getTriggeredSanityRuleNames();
+    public List<String> getSanityRuleNames() {
+        return Arrays.stream(SanityRule.values())
+                .map(SanityRule::getRuleName)
+                .collect(Collectors.toList());
     }
 }

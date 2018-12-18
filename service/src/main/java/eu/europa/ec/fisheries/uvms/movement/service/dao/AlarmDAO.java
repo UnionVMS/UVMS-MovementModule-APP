@@ -70,11 +70,6 @@ public class AlarmDAO {
         query.setMaxResults(listSize);
         return query.getResultList();
     }
-    
-    public List<String> getTriggeredSanityRuleNames() {
-        TypedQuery<String> query = em.createNamedQuery(AlarmItem.FIND_RULE_NAMES, String.class);
-        return query.getResultList();
-    }
 
     public void removeAlarmReportAfterTests(AlarmReport alarmReport) {
         em.remove(em.contains(alarmReport) ? alarmReport : em.merge(alarmReport));
