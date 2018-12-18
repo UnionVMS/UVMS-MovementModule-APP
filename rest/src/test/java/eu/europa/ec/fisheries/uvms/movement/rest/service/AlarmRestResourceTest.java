@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -168,12 +169,12 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
     @Test
     @OperateOnDeployment("movement")
     public void reprocessAlarmTest() throws Exception {
-        String response = getWebTarget()
+        Response response = getWebTarget()
                 .path("alarms/reprocess")
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(Collections.singletonList(UUID.randomUUID())), String.class);      //previsouly "NULL_GUID"
+                .post(Entity.json(Collections.singletonList(UUID.randomUUID())));      //previsouly "NULL_GUID"
 
-        assertThat(response, is("OK"));
+        assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
 
         AlarmReport alarmReport = getBasicAlarmReport();
         IncomingMovement incomingMovement = new IncomingMovement();
@@ -189,16 +190,16 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         response = getWebTarget()
                 .path("alarms/reprocess")
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(Collections.singletonList(alarmReport.getId())), String.class);
+                .post(Entity.json(Collections.singletonList(alarmReport.getId())));
 
-        assertThat(response, is("OK"));
+        assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
 
-        response = getWebTarget()
+        String response2 = getWebTarget()
                 .path("alarms/" + alarmReport.getId())
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
-        AlarmReport responseAlarmReportType = deserialize(response, AlarmReport.class);
+        AlarmReport responseAlarmReportType = deserialize(response2, AlarmReport.class);
         assertNotNull(responseAlarmReportType);
         assertEquals(AlarmStatusType.REPROCESSED.value(), responseAlarmReportType.getStatus());
     }
