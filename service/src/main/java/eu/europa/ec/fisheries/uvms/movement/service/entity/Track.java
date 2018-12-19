@@ -18,6 +18,7 @@ import com.vividsolutions.jts.geom.LineString;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -49,9 +50,8 @@ public class Track implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "track_seq")
-    @Basic(optional = false)
-    @Column(name = "trac_id")
-    private Long id;
+    @Column(columnDefinition = "uuid", name = "trac_id")
+    private UUID id;
 
     @Basic(optional = false)
     @NotNull
@@ -84,15 +84,11 @@ public class Track implements Serializable {
     @Column(name = "trac_upuser")
     private String updatedBy;
 
-    @Type(type = "org.hibernate.spatial.GeometryType")
-    @Column(name = "trac_geom", columnDefinition = "Geometry")
-    private LineString location;
-
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -126,14 +122,6 @@ public class Track implements Serializable {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public LineString getLocation() {
-        return location;
-    }
-
-    public void setLocation(LineString location) {
-        this.location = location;
     }
 
     public double getTotalTimeAtSea() {

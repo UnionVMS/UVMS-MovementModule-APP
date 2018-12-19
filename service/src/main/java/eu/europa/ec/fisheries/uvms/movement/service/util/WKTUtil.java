@@ -23,7 +23,6 @@ import com.vividsolutions.jts.io.WKTWriter;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 
 public class WKTUtil {
     
@@ -52,10 +51,6 @@ public class WKTUtil {
 
     public static String getWktLineStringFromSegment(Segment segment) {
         return WKTWriter.toLineString(segment.getLocation().getCoordinateSequence());
-    }
-
-    public static String getWktLineStringFromTrack(Track track) {
-        return WKTWriter.toLineString(track.getLocation().getCoordinateSequence());
     }
 
     public static Geometry getGeometryFromWKTSrring(String wkt) {

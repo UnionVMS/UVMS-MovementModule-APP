@@ -12,12 +12,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.util.List;
+import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementSearchGroupDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementGroupMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidatorBean;
 
 @Stateless
@@ -42,11 +44,11 @@ public class MovementSearchGroupService {
             }
     }
 
-    public MovementFilterGroup getMovementFilterGroup(Long id) {
-            MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(id.intValue());
+    public MovementFilterGroup getMovementFilterGroup(UUID id) {
+            MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(id);
             if (filterGroup == null) {
                 throw new IllegalArgumentException("Could not get movement search group by group ID:"
-                        + id.intValue());
+                        + id);
             }
             return filterGroup;
     }
@@ -61,7 +63,7 @@ public class MovementSearchGroupService {
             throw new IllegalArgumentException("Error when updating movement search group." +
                     " MovementSearchGroup has no id set or the username is null");
         }
-            MovementFilterGroup currentGroup = dao.getMovementFilterGroupById(updatedDTO.getId().intValue());
+            MovementFilterGroup currentGroup = dao.getMovementFilterGroupById(CalculationUtil.convertFromBigInteger(updatedDTO.getId()));
             if(!currentGroup.getUser().equalsIgnoreCase(updatedDTO.getUser())){
                 throw new IllegalArgumentException("Could not update movement search groups due to invalid username");
             }
@@ -70,9 +72,9 @@ public class MovementSearchGroupService {
             return dao.updateMovementFilterGroup(currentGroup);
     }
 
-    public MovementFilterGroup deleteMovementFilterGroup(Long id) {
+    public MovementFilterGroup deleteMovementFilterGroup(UUID id) {
         try {
-            MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(id.intValue());
+            MovementFilterGroup filterGroup = dao.getMovementFilterGroupById(id);
             filterGroup = dao.deleteMovementFilterGroup(filterGroup);
             return filterGroup;
         } catch (Exception e) {

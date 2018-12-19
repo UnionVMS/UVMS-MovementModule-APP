@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.longpolling.constants.LongPollingConstants;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportCountEvent;
 import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportEvent;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
@@ -57,9 +58,8 @@ public class LongPollingHttpServlet extends HttpServlet {
         asyncContexts.add(ctx, req.getServletPath());
     }
 
-    public void createdMovement(@Observes @CreatedMovement NotificationMessage message) throws IOException {
-        UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
-        completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(guid.toString()));
+    public void createdMovement(@Observes @CreatedMovement Movement movement) throws IOException {
+        completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(movement.getId().toString()));
     }
 
     public void createdManualMovement(@Observes @CreatedManualMovement NotificationMessage message) throws IOException {
@@ -68,8 +68,8 @@ public class LongPollingHttpServlet extends HttpServlet {
     }
     
     public void observeAlarmCreated(@Observes @AlarmReportEvent NotificationMessage message) throws IOException {
-        String guid = (String) message.getProperties().get(LongPollingConstants.PROPERTY_GUID);
-        completePoll(LongPollingConstants.ALARM_REPORT_PATH, createJsonMessage(guid));
+        UUID guid = (UUID) message.getProperties().get(LongPollingConstants.PROPERTY_GUID);
+        completePoll(LongPollingConstants.ALARM_REPORT_PATH, createJsonMessage(guid.toString()));
     }
     
     public void observeTicketCount(@Observes @AlarmReportCountEvent NotificationMessage message) throws IOException {

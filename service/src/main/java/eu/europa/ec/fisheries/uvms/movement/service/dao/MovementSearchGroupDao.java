@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
 import java.util.List;
+import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,8 +29,8 @@ public class MovementSearchGroupDao {
         return filterGroup;
     }
 
-    public MovementFilterGroup getMovementFilterGroupById(Integer groupId) {
-        return em.find(MovementFilterGroup.class, groupId.longValue());
+    public MovementFilterGroup getMovementFilterGroupById(UUID groupId) {
+        return em.find(MovementFilterGroup.class, groupId);
     }
 
     public List<MovementFilterGroup> getMovementFilterGroupsByUser(String user) {
@@ -40,7 +41,7 @@ public class MovementSearchGroupDao {
 
     public MovementFilterGroup updateMovementFilterGroup(MovementFilterGroup filterGroup){
         //Sanity check on id to prevent create operation instead of update operation.
-        if(filterGroup.getId() != null && getMovementFilterGroupById(filterGroup.getId().intValue()) != null) {
+        if(filterGroup.getId() != null && getMovementFilterGroupById(filterGroup.getId()) != null) {
             filterGroup = em.merge(filterGroup);
             em.flush();
         } else {

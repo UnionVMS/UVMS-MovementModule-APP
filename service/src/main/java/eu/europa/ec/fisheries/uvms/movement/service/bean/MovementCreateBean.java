@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 import java.time.Instant;
 import java.util.UUID;
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefType;
@@ -29,6 +30,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.message.IncomingMovementMapp
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
+@Stateless
 public class MovementCreateBean {
 
     @Inject
@@ -62,17 +64,19 @@ public class MovementCreateBean {
                         .getUpdatedBy());
                 Movement createdMovement = movementService.createMovement(movement);
 
-                // send to MovementRules
-                MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
-                int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
-                movementDetails.setSumPositionReport(sumPositionReport);
-                movementRulesBean.send(movementDetails);
+                // send to MovementRules if it is not a duplicate
+                if(!createdMovement.getDuplicate()) {
+                    MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
+                    int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
+                    movementDetails.setSumPositionReport(sumPositionReport);
+                    movementRulesBean.send(movementDetails);
+                }
                 // report ok to Exchange...
                 // Tracer Id
                 ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
                 MovementRefType movementRefType = new MovementRefType();
                 movementRefType.setAckResponseMessageID(incomingMovement.getAckResponseMessageId());
-                movementRefType.setMovementRefGuid(createdMovement.getGuid().toString());
+                movementRefType.setMovementRefGuid(createdMovement.getId().toString());
                 movementRefType.setType(MovementRefTypeType.MOVEMENT);
                 processedMovementResponse.setMovementRefType(movementRefType);
                 exchangeBean.send(processedMovementResponse);
@@ -93,6 +97,9 @@ public class MovementCreateBean {
         im.setMobileTerminalConnectId(response.getMobileTerminalConnectId());
         im.setAssetGuid(response.getAssetUUID());
         im.setAssetHistoryId(response.getAssetHistoryId());
+
+        im.setAssetName(response.getAssetName());
+        im.setFlagState(response.getFlagstate());
     }
 
     private AssetMTEnrichmentRequest createRequest(IncomingMovement ic, String username) {

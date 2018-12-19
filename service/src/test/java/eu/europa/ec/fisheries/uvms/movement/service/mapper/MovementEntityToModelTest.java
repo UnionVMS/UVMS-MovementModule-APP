@@ -21,7 +21,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
@@ -36,6 +35,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 
 @RunWith(Arquillian.class)
 public class MovementEntityToModelTest extends TransactionalTests {
@@ -63,7 +63,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		
 		assertEquals(0.0, output.getReportedSpeed(), 0D);
 		assertEquals(0.0, output.getReportedCourse(), 0D);
-		assertEquals(movement.getGuid().toString(), output.getGuid());
+		assertEquals(movement.getId().toString(), output.getGuid());
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId.toString(), output.getConnectId());
@@ -88,12 +88,13 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		movement.setMovementSource(MovementSourceType.IRIDIUM);
 		movement.setMovementType(MovementTypeType.POS);
 		MovementConnect movementConnect = new MovementConnect();
-		movementConnect.setValue(connectId);
+		movementConnect.setId(connectId);
         movement.setMovementConnect(movementConnect);
         movement.setTimestamp(Instant.now());
+        movement.setId(UUID.randomUUID());
 		//movement.setStatus(status);
 		MovementType movementType = MovementEntityToModelMapper.mapToMovementType(movement);
-		assertEquals(movement.getGuid(), movementType.getGuid());
+		assertEquals(movement.getId().toString(), movementType.getGuid());
         assertEquals(lat, movementType.getPosition().getLatitude(), 0D);
         assertEquals(lon, movementType.getPosition().getLongitude(), 0D);
         assertEquals(connectId.toString(), movementType.getConnectId());
@@ -113,7 +114,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		
 		assertEquals(0.0, output.getReportedSpeed(), 0D);
 		assertEquals(0.0, output.getReportedCourse(), 0D);
-		assertEquals(movement.getGuid().toString(), output.getGuid());
+		assertEquals(movement.getId().toString(), output.getGuid());
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId.toString(), output.getConnectId());
@@ -315,11 +316,11 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		}
 		
 		List<Segment> input = new ArrayList<>(MovementEntityToModelMapper.extractSegments(movementList, true));
-		List<MovementTrack> output = MovementEntityToModelMapper.extractTracks(input);
+		List<Track> output = MovementEntityToModelMapper.extractTracks(input);
 		
 		assertEquals(1, output.size());
 		assertEquals(movementList.get(0).getTrack().getDuration(), output.get(0).getDuration(),0D);
-		assertEquals(movementList.get(0).getTrack().getId().toString(), output.get(0).getId());
+		assertEquals(movementList.get(0).getTrack().getId(), output.get(0).getId());
 		
 		try {
 			output = MovementEntityToModelMapper.extractTracks(null);

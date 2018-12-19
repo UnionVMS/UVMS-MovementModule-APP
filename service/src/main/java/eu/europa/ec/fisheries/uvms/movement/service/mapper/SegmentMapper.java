@@ -12,8 +12,8 @@ public class SegmentMapper {
         dto.setCourseOverGround(segment.getCourseOverGround());
         dto.setDistance(segment.getDistance());
         dto.setDuration(segment.getDuration());
-        dto.setFromMovement(segment.getFromMovement().getGuid().toString());
-        dto.setToMovement(segment.getToMovement().getGuid().toString());
+        dto.setFromMovement(segment.getFromMovement().getId().toString());
+        dto.setToMovement(segment.getToMovement().getId().toString());
         dto.setLocation(WKTUtil.getWktLineStringFromSegment(segment));
         dto.setSegmentCategory(segment.getSegmentCategory());
         dto.setSpeedOverGround(segment.getSpeedOverGround());

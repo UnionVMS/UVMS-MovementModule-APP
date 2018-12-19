@@ -7,7 +7,7 @@
 
         <createView viewName="LATEST_POS_VIEW">
             SELECT
-            b.move_guid, b.move_heading, b.move_location, b.move_moveconn_id, b.move_timestamp, b.move_speed
+            b.move_id, b.move_heading, b.move_location, b.move_moveconn_id, b.move_timestamp, b.move_speed, mc.moveconn_flagstate, mc.moveconn_name
             FROM movement.movement b
             INNER JOIN (SELECT
             move_moveconn_id,
@@ -15,6 +15,7 @@
             FROM movement.movement
             WHERE movement.move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1' DAY)
             GROUP BY move_moveconn_id) a ON a.move_moveconn_id = b.move_moveconn_id AND a.MaxValue = b.move_timestamp
+            INNER JOIN movement.movementconnect mc ON b.move_moveconn_id = mc.moveconn_asset_id
             WHERE
             b.move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1' DAY)
         </createView>

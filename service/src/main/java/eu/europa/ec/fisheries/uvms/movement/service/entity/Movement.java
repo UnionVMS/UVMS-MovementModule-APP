@@ -38,7 +38,6 @@ import org.hibernate.annotations.Type;
 @Table(name = "movement", indexes = {
         @Index(columnList = "move_act_id", name = "movement_act_fk_idx", unique = false),
         @Index(columnList = "move_duplicate", name = "movement_duplicate_idx", unique = false),
-        @Index(columnList = "move_guid", name = "movement_guid_idx", unique = false),
         @Index(columnList = "move_moveconn_id", name = "movement_moveconn_fk_idx", unique = false),
         @Index(columnList = "move_movesour_id", name = "movement_movesour_fk_idx", unique = false),
         @Index(columnList = "move_movetyp_id", name = "movement_movetyp_fk_idx", unique = false),
@@ -55,19 +54,19 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = Movement.FIND_UNPROCESSED, query = "SELECT m FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_UNPROCESSED_ID, query = "SELECT m.id FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_BY_GUID, query = "SELECT m FROM Movement m WHERE m.guid = :guid AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_BY_GUID, query = "SELECT m FROM Movement m WHERE m.id = :guid AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_ALTITUDE, query = "SELECT m FROM Movement m WHERE m.altitude = :altitude AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_SPEED, query = "SELECT m FROM Movement m WHERE m.speed = :speed AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_HEADING, query = "SELECT m FROM Movement m WHERE m.heading = :heading AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_STATUS, query = "SELECT m FROM Movement m WHERE m.status = :status AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_UPDATED, query = "SELECT m FROM Movement m WHERE m.updated = :updated AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_UPDATED_BY, query = "SELECT m FROM Movement m WHERE m.updatedBy = :updatedBy AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_PREVIOUS, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select max(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.timestamp < :date and mm.processed = true) AND mc2.value = :id and m.processed = true"),
-    @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.value = :id and mm.duplicate = false and mm.processed = true) AND mc2.value = :id and m.processed = true"),
-    @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true"),
-    @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.value = :asset AND m.duplicate = false"),
-    @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.guid, m.movementConnect, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.duplicate = false"),
+    @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_PREVIOUS, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select max(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.id = :id and mm.timestamp < :date and mm.processed = true) AND mc2.id = :id and m.processed = true"),
+    @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m INNER JOIN m.movementConnect mc2 WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm INNER JOIN mm.movementConnect mc where mc.id = :id and mm.duplicate = false and mm.processed = true) AND mc2.id = :id and m.processed = true"),
+    @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true"),
+    @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.id = :asset AND m.duplicate = false"),
+    @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.duplicate = false"),
 })
 @DynamicUpdate
 @DynamicInsert
@@ -96,23 +95,14 @@ public class Movement implements Serializable, Comparable<Movement> {
     
     private static final long serialVersionUID = 1L;
 
-    /*@JoinColumn(name = "move_movetyp_id", referencedColumnName = "movetyp_id")
-     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-     private MovementType moveMovetypId;
-    
-     @JoinColumn(name = "move_movesour_id", referencedColumnName = "movesour_id")
-     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-     private MovementSource moveMovesourId;*/
-    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Basic(optional = false)
-    @Column(name = "move_id")
-    private Long id;
+    @Column(columnDefinition = "uuid", name = "move_id")
+    private UUID id;
 
     @NotNull
-    @Type(type = "org.hibernate.spatial.GeometryType")
     @Column(name = "move_location", columnDefinition = "Geometry")
+    @Type(type = "org.hibernate.spatial.GeometryType")
     private Point location;
 
     @Column(name = "move_speed")
@@ -131,17 +121,13 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_altitude")
     private Double altitude;
 
-    @NotNull
-    @Column(name = "move_guid", nullable = false)
-    private UUID guid;
-
     @Size(max = 60)
     @Column(name = "move_status")
     private String status;
 
     @NotNull
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_id")
+    @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_asset_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     private MovementConnect movementConnect;
 
@@ -193,19 +179,14 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_duplicate")
     private Boolean duplicate;
 
-    @Column(name = "move_duplicate_id")
+    @Column(columnDefinition = "uuid", name = "move_duplicate_id")
     private UUID duplicateId;
 
-    @PrePersist
-    public void setGuid() {
-        this.guid = UUID.randomUUID();
-    }
-
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -255,14 +236,6 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setHeading(Double heading) {
         this.heading = heading;
-    }
-
-    public UUID getGuid() {
-        return guid;
-    }
-
-    public void setGuid(UUID guid) {
-        this.guid = guid;
     }
 
     public String getStatus() {

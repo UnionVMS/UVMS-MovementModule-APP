@@ -3,7 +3,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.validation;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.Stateless;
@@ -57,82 +56,15 @@ public class MovementSanityValidatorBean {
     public boolean evaluateSanity(IncomingMovement movement) {
 
         boolean isOk = true;
-
-        // Evaluate positional data
-        if(movement.getPositionTime() == null){  //Time missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 1 - Time missing'");
-            createAlarmReport("Time missing", movement);
-            isOk = false;
+        
+        for (SanityRule sanityRule : SanityRule.values()) {
+            if (sanityRule.evaluate(movement)) {
+                LOG.info("\t==> Executing RULE {}", sanityRule.getRuleName());
+                createAlarmReport(sanityRule.getRuleName(), movement);
+                isOk = false;
+            }
         }
-
-        if(movement.getLatitude() == null){  //Lat missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 2 - Lat missing'");
-            createAlarmReport("Lat missing", movement);
-            isOk = false;
-        }
-
-        if(movement.getLongitude() == null){  //Long missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 3 - Long missing'");
-            createAlarmReport("Long missing", movement);
-            isOk = false;
-        }
-
-        if(movement.getPositionTime() != null && movement.getPositionTime().isAfter(Instant.now())){  //Time in the future
-            LOG.info("\t==> Executing RULE 'Sanity rule 12 - Time in the future'" + "[" + movement.getPositionTime() + " > " + new Date() + "]");
-            createAlarmReport("Time in future", movement);
-            isOk = false;
-        }
-
-        if(movement.getPluginType() == null || movement.getPluginType().isEmpty()){  //Plugin Type missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 11 - Plugin Type missing'");
-            createAlarmReport("Plugin Type missing", movement);
-            isOk = false;
-        }
-
-        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && (movement.getMobileTerminalConnectId() == null || movement.getMobileTerminalConnectId().isEmpty())){  //Transponder not found
-            LOG.info("\t==> Executing RULE 'Sanity rule 4 - Transponder not found'");
-            createAlarmReport("Transponder not found", movement);
-            isOk = false;
-        }
-
-        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && movement.getMovementSourceType().equals("INMARSAT_C") && (movement.getMobileTerminalMemberNumber() == null || movement.getMobileTerminalMemberNumber().isEmpty())){  //Mem No. missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 6 - Mem No. missing'");
-            createAlarmReport("Mem No. missing", movement);
-            isOk = false;
-        }
-
-        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && movement.getMovementSourceType().equals("INMARSAT_C") && (movement.getMobileTerminalDNID() == null || movement.getMobileTerminalDNID().isEmpty())){  //DNID missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 7 - DNID missing'");
-            createAlarmReport("DNID missing", movement);
-            isOk = false;
-        }
-
-        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && movement.getMovementSourceType().equals("IRIDIUM") && (movement.getMobileTerminalSerialNumber() == null || movement.getMobileTerminalSerialNumber().isEmpty())){  //Serial No. missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 8 - Serial No. missing'");
-            createAlarmReport("Serial No. missing", movement);
-            isOk = false;
-        }
-
-        //should there really be a satellite receiver here? o well
-        if((movement.getPluginType() == null || movement.getPluginType().equals("SATELLITE_RECEIVER")) && (movement.getComChannelType() == null || movement.getComChannelType().isEmpty())){  //ComChannel Type missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 9 - ComChannel Type missing'");
-            createAlarmReport("ComChannel Type missing", movement);
-            isOk = false;
-        }
-
-        //it is rather unclear if this should be that both missing or just one missing, using both for now. Also unclear if ircs is unique or not
-        if(((movement.getAssetCFR() == null || movement.getAssetCFR().isEmpty()) && (movement.getAssetIRCS() == null || movement.getAssetIRCS().isEmpty())) && ("FLUX".equals(movement.getPluginType()) || "MANUAL".equals(movement.getComChannelType()))){  //CFR and IRCS missing
-            LOG.info("\t==> Executing RULE 'Sanity rule 10 - CFR and IRCS missing'");
-            createAlarmReport("CFR and IRCS missing", movement);
-            isOk = false;
-        }
-
-        if(movement.getAssetGuid() == null || movement.getAssetGuid().isEmpty()){  //Asset not found
-            LOG.info("\t==> Executing RULE 'Sanity rule 5 - Asset not found'");
-            createAlarmReport("Asset not found", movement);
-            isOk = false;
-        }
-
+        
         return isOk;
     }
 
@@ -140,12 +72,11 @@ public class MovementSanityValidatorBean {
 
         LOG.info("Create alarm invoked in validation service, rule: {}", ruleName);
 
-        AlarmReport alarmReport = alarmDAO.getOpenAlarmReportByMovementGuid(movement.getGuid());
+        AlarmReport alarmReport = alarmDAO.getOpenAlarmReportByMovementGuid(movement.getId());
         if(alarmReport == null) {
             alarmReport = new AlarmReport();
             alarmReport.setAssetGuid(movement.getAssetGuid());
             alarmReport.setCreatedDate(Instant.now());
-            alarmReport.setGuid(UUID.randomUUID().toString());
             alarmReport.setPluginType(movement.getPluginType());
             //alarmReport.setRecipient();
             alarmReport.setStatus(AlarmStatusType.OPEN.value());
@@ -159,7 +90,6 @@ public class MovementSanityValidatorBean {
 
         AlarmItem item = new AlarmItem();
         item.setAlarmReport(alarmReport);
-        item.setGuid(UUID.randomUUID().toString());
         item.setRuleGuid(ruleName); // WTF?
         item.setRuleName(ruleName);
         item.setUpdated(Instant.now());
@@ -169,12 +99,12 @@ public class MovementSanityValidatorBean {
         alarmReport.getAlarmItemList().add(item);
 
         // Notify long-polling clients of the new alarm report
-        alarmReportEvent.fire(new NotificationMessage("guid", alarmReport.getGuid()));
+        alarmReportEvent.fire(new NotificationMessage("guid", alarmReport.getId()));
 
         // Notify long-polling clients of the change (no vlaue since FE will need to fetch it)
         alarmReportCountEvent.fire(new NotificationMessage("alarmCount", null));
             
-        auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.CREATE, alarmReport.getGuid(), null, alarmReport.getUpdatedBy());
+        auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.CREATE, alarmReport.getId().toString(), null, alarmReport.getUpdatedBy());
     }
 
     public AlarmListResponseDto getAlarmList(AlarmQuery query) {
@@ -210,7 +140,7 @@ public class MovementSanityValidatorBean {
     }
 
     public AlarmReport updateAlarmStatus(AlarmReport alarm) {
-        AlarmReport entity = alarmDAO.getAlarmReportByGuid(alarm.getGuid());
+        AlarmReport entity = alarmDAO.getAlarmReportByGuid(alarm.getId());
         if (entity == null) {
             throw new IllegalArgumentException("Alarm is null", null);
         }
@@ -233,11 +163,11 @@ public class MovementSanityValidatorBean {
         alarmReportCountEvent.fire(new NotificationMessage("alarmCount", null));
         */
 
-        auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, entity.getGuid(), null, alarm.getUpdatedBy());
+        auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, entity.getId().toString(), null, alarm.getUpdatedBy());
         return entity;
     }
 
-    public AlarmReport getAlarmReportByGuid(String guid) {
+    public AlarmReport getAlarmReportByGuid(UUID guid) {
         return alarmDAO.getAlarmReportByGuid(guid);
     }
 
@@ -254,7 +184,7 @@ public class MovementSanityValidatorBean {
             // Mark the alarm as REPROCESSED before reprocessing. That will create a new alarm (if still wrong) with the items remaining.
             alarm.setStatus(AlarmStatusType.REPROCESSED.value());
             alarm = updateAlarmStatus(alarm);
-            auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, alarm.getGuid(), null, username);
+            auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, alarm.getId().toString(), null, username);
             IncomingMovement incomingMovement = alarm.getIncomingMovement();
             movementCreate.processIncomingMovement(incomingMovement);
         }

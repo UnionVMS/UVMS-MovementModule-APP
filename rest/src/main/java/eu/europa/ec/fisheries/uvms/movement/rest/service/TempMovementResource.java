@@ -26,7 +26,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.TempMovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.DraftMovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.DraftMovementMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +36,6 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.TempMovementMapper;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
@@ -46,7 +46,7 @@ public class TempMovementResource {
     private final static Logger LOG = LoggerFactory.getLogger(TempMovementResource.class);
 
     @EJB
-    TempMovementService service;
+    DraftMovementService service;
 
     @Context
     private HttpServletRequest request;
@@ -66,9 +66,9 @@ public class TempMovementResource {
     public ResponseDto create(final TempMovementType data) {
         LOG.debug("Create temp movement invoked in rest layer");
         try {
-            TempMovement tempMovement = TempMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
-            tempMovement = service.createTempMovement(tempMovement, request.getRemoteUser());
-            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            DraftMovement draftMovement = DraftMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
+            draftMovement = service.createDraftMovement(draftMovement, request.getRemoteUser());
+            TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
             return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
         } catch (Throwable throwable) {
             LOG.error("[ Error when creating. ] {} ", throwable);
@@ -82,8 +82,8 @@ public class TempMovementResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto get(@PathParam("guid") String guid) {
         try {
-            TempMovement tempMovement = service.getTempMovement(UUID.fromString(guid));
-            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            DraftMovement draftMovement = service.getDraftMovement(UUID.fromString(guid));
+            TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
             return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
         } catch (Exception ex) {
             LOG.error("[ Error when getting temp movement with GUID. ] {} ", ex);
@@ -107,8 +107,8 @@ public class TempMovementResource {
     public ResponseDto remove(@PathParam("guid") String guid) {
         LOG.debug("Archive(remove) temp movement invoked in rest layer");
         try {
-            TempMovement tempMovement = service.archiveTempMovement(UUID.fromString(guid), request.getRemoteUser());
-            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            DraftMovement draftMovement = service.archiveDraftMovement(UUID.fromString(guid), request.getRemoteUser());
+            TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
             return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
         } catch (Exception ex) {
             LOG.error("[ Error when archiving temp movement ] {} ", ex.getStackTrace());
@@ -131,9 +131,9 @@ public class TempMovementResource {
     public ResponseDto update(final TempMovementType data) {
         LOG.debug("Update temp movement invoked in rest layer");
         try {
-            TempMovement tempMovement = TempMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
-            tempMovement = service.updateTempMovement(tempMovement, request.getRemoteUser());
-            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            DraftMovement draftMovement = DraftMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
+            draftMovement = service.updateDraftMovement(draftMovement, request.getRemoteUser());
+            TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
             return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
         } catch (Exception ex) {
             LOG.error("[ Error while updating temp movement. ] {} ", ex.getStackTrace());
@@ -154,10 +154,10 @@ public class TempMovementResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewManualMovements)
-    public ResponseDto<GetTempMovementListResponse> getTempMovements(MovementQuery query) {
+    public ResponseDto<GetTempMovementListResponse> getDraftMovements(MovementQuery query) {
         LOG.debug("List all active temp movement invoked in rest layer");
         try {
-            return new ResponseDto<>(service.getTempMovements(query), RestResponseCode.OK);
+            return new ResponseDto<>(service.getDraftMovements(query), RestResponseCode.OK);
         } catch (Exception ex) {
             LOG.error("[ Error while getting list. ] {} ", ex);
             return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR);
@@ -180,8 +180,8 @@ public class TempMovementResource {
     public ResponseDto send(@PathParam("guid") String guid) {
         LOG.debug("Send temp movement invoked in rest layer");
         try {
-            TempMovement tempMovement = service.sendTempMovement(UUID.fromString(guid), request.getRemoteUser());
-            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            DraftMovement draftMovement = service.sendDraftMovement(UUID.fromString(guid), request.getRemoteUser());
+            TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
             return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error while sending temp movement] {} ", e);
@@ -194,11 +194,11 @@ public class TempMovementResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/archive/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto archiveTempMovement(@PathParam("guid") String guid) {
+    public ResponseDto archiveDraftMovement(@PathParam("guid") String guid) {
         LOG.debug("Archive movement");
         try {
-            TempMovement tempMovement = service.archiveTempMovement(UUID.fromString(guid), request.getRemoteUser());
-            TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
+            DraftMovement draftMovement = service.archiveDraftMovement(UUID.fromString(guid), request.getRemoteUser());
+            TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
             return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error while creating temp movement ] {} ", e);

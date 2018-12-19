@@ -27,9 +27,9 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.vividsolutions.jts.geom.Geometry;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
@@ -46,12 +46,14 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
+import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 
 @Stateless
 public class MovementService {
@@ -73,7 +75,7 @@ public class MovementService {
 
     @Inject
     @CreatedMovement
-    private Event<NotificationMessage> createdMovementEvent;
+    private Event<Movement> createdMovementEvent;
 
     /**
      *
@@ -168,7 +170,14 @@ public class MovementService {
                 List<MovementType> mapToMovementType = MovementEntityToModelMapper.mapToMovementType(entries.getValue());
                 responseType.getMovements().addAll(mapToMovementType);
 
-                List<MovementTrack> extractTracks = MovementEntityToModelMapper.extractTracks(extractSegments);
+                List<Track> tracks = MovementEntityToModelMapper.extractTracks(extractSegments);
+                List<MovementTrack> extractTracks = new ArrayList<>();
+                for (Track track : tracks) {
+                    List<Geometry> points = dao.getPointsFromTrack(track);
+                    extractTracks.add(MovementEntityToModelMapper.mapToMovementTrack(track, 
+                            WKTUtil.getWktLineString(points)));
+                }
+                
                 // In the rare event of segments that are attached to two different tracks, the track that is not
                 //connected to the any relevant Movement should be removed from the search result.
                 removeTrackMismatches(extractTracks, entries.getValue());
@@ -291,7 +300,7 @@ public class MovementService {
 
     private void fireMovementEvent(Movement createdMovement) {
         try {
-            createdMovementEvent.fire(new NotificationMessage("movementGuid", createdMovement.getGuid()));
+            createdMovementEvent.fire(createdMovement);
         } catch (Exception e) {
             LOG.error("[ Error when firing notification of created temp movement. ] {}", e.getMessage());
         }
@@ -332,13 +341,13 @@ public class MovementService {
         if(tracks == null || movements == null) {
             throw new IllegalArgumentException("MovementTrack list or Movement list is null");
         }
-        Set<Long> trackIds = movements.stream()
+        Set<String> trackIds = movements.stream()
                 .filter(movement -> movement.getTrack() != null)
-                .map(movement -> movement.getTrack().getId())
+                .map(movement -> movement.getTrack().getId().toString())
                 .collect(Collectors.toSet());
 
         Set<MovementTrack> tracksToSave = tracks.stream()
-                .filter(track -> trackIds.contains(Long.valueOf(track.getId())))
+                .filter(track -> trackIds.contains(track.getId()))
                 .collect(Collectors.toSet());
 
         tracks.removeIf(track -> !tracksToSave.contains(track));

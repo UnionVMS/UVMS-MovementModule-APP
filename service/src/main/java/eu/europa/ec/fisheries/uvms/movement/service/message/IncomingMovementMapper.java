@@ -26,8 +26,12 @@ public abstract class IncomingMovementMapper {
         entity.setStatus(ic.getStatus());
         //entity.setAltitude(ic.getAltitude());
         //entity.setMoveAltitude(ic.getAltitude());
+
+        //MovementConnect (aka asset)
         MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setValue(UUID.fromString(ic.getAssetHistoryId()));
+        movementConnect.setId(UUID.fromString(ic.getAssetHistoryId()));
+        movementConnect.setFlagState(ic.getFlagState());
+        movementConnect.setName(ic.getAssetName());
         movementConnect.setUpdated(Instant.now());
         movementConnect.setUpdatedBy(username);
         entity.setMovementConnect(movementConnect);
@@ -90,7 +94,7 @@ public abstract class IncomingMovementMapper {
             md.setActivityMessageId(movement.getActivity().getMessageId());
             md.setActivityMessageType(movement.getActivity().getActivityType().value());
         }
-        md.setMovementGuid(movement.getGuid().toString());
+        md.setMovementGuid(movement.getId().toString());
         md.setLongitude(movement.getLocation().getX());
         md.setLatitude(movement.getLocation().getY());
         md.setAltitude(movement.getAltitude());
@@ -102,7 +106,7 @@ public abstract class IncomingMovementMapper {
         }
         md.setReportedCourse(movement.getHeading());
         md.setReportedSpeed(movement.getSpeed());
-        md.setPositionTime(Date.from(movement.getTimestamp()));
+        md.setPositionTime(movement.getTimestamp());
         md.setStatusCode(movement.getStatus());
         md.setTripNumber(movement.getTripNumber());
         md.setWkt("");

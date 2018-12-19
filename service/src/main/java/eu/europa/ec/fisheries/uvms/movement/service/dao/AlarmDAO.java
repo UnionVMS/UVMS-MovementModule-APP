@@ -10,6 +10,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.UUID;
 
 @Stateless
 public class AlarmDAO {
@@ -19,7 +20,7 @@ public class AlarmDAO {
     @PersistenceContext
     private EntityManager em;
 
-    public AlarmReport getOpenAlarmReportByMovementGuid(String guid) {
+    public AlarmReport getOpenAlarmReportByMovementGuid(UUID guid) {
         try {
             TypedQuery<AlarmReport> query = em.createNamedQuery(AlarmReport.FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID, AlarmReport.class);
             query.setParameter("movementGuid", guid);
@@ -37,7 +38,7 @@ public class AlarmDAO {
         em.merge(entity);
     }
 
-    public AlarmReport getAlarmReportByGuid(String guid) {
+    public AlarmReport getAlarmReportByGuid(UUID guid) {
         try {
             TypedQuery<AlarmReport> query = em.createNamedQuery(AlarmReport.FIND_ALARM_BY_GUID, AlarmReport.class);
             query.setParameter("guid", guid);

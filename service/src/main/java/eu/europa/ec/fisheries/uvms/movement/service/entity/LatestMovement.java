@@ -29,6 +29,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "latestmovement", indexes = {
@@ -37,8 +38,8 @@ import java.time.Instant;
 })
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value = :connectId"),
-    @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.value in :connectId"),
+    @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.id = :connectId"),
+    @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.id in :connectId"),
     @NamedQuery(name = LatestMovement.FIND_LATEST, query = "SELECT m FROM LatestMovement m ORDER BY m.timestamp")
 
 })
@@ -54,13 +55,12 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "latest_movement_seq")
-    @Basic(optional = false)
-    @Column(name = "movelate_id")
-    private Long id;
+    @Column(columnDefinition = "uuid", name = "movelate_id")
+    private UUID id;
 
     @NotNull
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "movelate_moveconn_id", referencedColumnName = "moveconn_id")
+    @JoinColumn(name = "movelate_moveconn_id", referencedColumnName = "moveconn_asset_id")
     @ManyToOne(cascade = CascadeType.PERSIST)
     private MovementConnect movementConnect;
 
@@ -75,11 +75,11 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     @Column(name = "movelate_timestamp")
     private Instant timestamp;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

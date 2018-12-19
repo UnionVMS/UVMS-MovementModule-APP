@@ -36,12 +36,10 @@ import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 
 @Entity
-@Table(name = "movementconnect", uniqueConstraints = {
-        @UniqueConstraint(name = "moveconn_value_unique", columnNames = "moveconn_value")
-})
+@Table(name = "movementconnect")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_BY_CONNECT_ID, query = "SELECT m FROM MovementConnect m WHERE m.value = :value"),
+    @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_BY_CONNECT_ID, query = "SELECT m FROM MovementConnect m WHERE m.id = :value"),
     @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_GET_ALL, query = "SELECT m FROM MovementConnect m")
 })
 @DynamicUpdate
@@ -54,15 +52,14 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "movement_connect_seq")
-    @Basic(optional = false)
-    @Column(name = "moveconn_id")
-    private Long id;
+    @Column(columnDefinition = "uuid", name = "moveconn_asset_id")
+    private UUID id;    //this is now the asset ID
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "moveconn_value")
-    private UUID value;
+    @Column(name = "moveconn_flagstate")
+    private String flagState;
+
+    @Column(name = "moveconn_name")
+    private String name;
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
@@ -79,31 +76,24 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     public MovementConnect() {
     }
 
-    public MovementConnect(Long id) {
+    public MovementConnect(UUID id) {
         this.id = id;
     }
 
-    public MovementConnect(Long id, UUID value, Instant updated, String updatedBy) {
+    public MovementConnect(UUID id, String flagState, String name, Instant updated, String updatedBy) {
         this.id = id;
-        this.value = value;
+        this.flagState = flagState;
+        this.name = name;
         this.updated = updated;
         this.updatedBy = updatedBy;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
-    }
-
-    public UUID getValue() {
-        return value;
-    }
-
-    public void setValue(UUID value) {
-        this.value = value;
     }
 
     public Instant getUpdated() {
@@ -122,7 +112,23 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         this.updatedBy = updatedBy;
     }
 
-	@Override
+    public String getFlagState() {
+        return flagState;
+    }
+
+    public void setFlagState(String flagState) {
+        this.flagState = flagState;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
 	public int compareTo(MovementConnect o2) {
 		return MovementComparator.MOVEMENT_CONNECT.compare(this, o2);
 	}
