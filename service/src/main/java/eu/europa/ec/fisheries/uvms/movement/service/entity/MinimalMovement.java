@@ -55,8 +55,6 @@ import java.util.UUID;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "MinimalMovement.findAll", query = "SELECT m FROM MinimalMovement m WHERE m.duplicate = false"),
-    @NamedQuery(name = "MinimalMovement.findById", query = "SELECT m FROM MinimalMovement m WHERE m.id = :id AND m.duplicate = false"),
-    @NamedQuery(name = "MinimalMovement.findByGUID", query = "SELECT m FROM MinimalMovement m WHERE m.id = :guid AND m.duplicate = false"),
     @NamedQuery(name = "MinimalMovement.findBySpeed", query = "SELECT m FROM MinimalMovement m WHERE m.speed = :speed AND m.duplicate = false"),
     @NamedQuery(name = "MinimalMovement.findByHeading", query = "SELECT m FROM MinimalMovement m WHERE m.heading = :heading AND m.duplicate = false"),
     @NamedQuery(name = "MinimalMovement.findByStatus", query = "SELECT m FROM MinimalMovement m WHERE m.status = :status AND m.duplicate = false"),

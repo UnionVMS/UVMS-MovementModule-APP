@@ -40,9 +40,7 @@ public class AlarmDAO {
 
     public AlarmReport getAlarmReportByGuid(UUID guid) {
         try {
-            TypedQuery<AlarmReport> query = em.createNamedQuery(AlarmReport.FIND_ALARM_BY_GUID, AlarmReport.class);
-            query.setParameter("guid", guid);
-            return query.getSingleResult();
+            return em.find(AlarmReport.class, guid);
         } catch (NoResultException e) {
             throw new NoResultException("[ No alarmreport with guid: " + guid + " can be found ]");  //Trying to remove NoEntityFoundException but I still want the error message, so maybe do it this way?
         }

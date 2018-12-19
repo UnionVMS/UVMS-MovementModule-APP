@@ -54,7 +54,6 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = Movement.FIND_UNPROCESSED, query = "SELECT m FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_UNPROCESSED_ID, query = "SELECT m.id FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_BY_GUID, query = "SELECT m FROM Movement m WHERE m.id = :guid AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_ALTITUDE, query = "SELECT m FROM Movement m WHERE m.altitude = :altitude AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_SPEED, query = "SELECT m FROM Movement m WHERE m.speed = :speed AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_HEADING, query = "SELECT m FROM Movement m WHERE m.heading = :heading AND m.duplicate = false"),
@@ -79,7 +78,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_UNPROCESSED = "Movement.findUnprocessed";
     public static final String FIND_UNPROCESSED_ID = "Movement.findUnprocessedId";
     public static final String FIND_BY_ID = "Movement.findById";
-    public static final String FIND_BY_GUID = "Movement.findByGUID";
     public static final String FIND_BY_ALTITUDE = "Movement.findByAltitude";
     public static final String FIND_BY_SPEED = "Movement.findBySpeed";
     public static final String FIND_BY_HEADING = "Movement.findByHeading";
