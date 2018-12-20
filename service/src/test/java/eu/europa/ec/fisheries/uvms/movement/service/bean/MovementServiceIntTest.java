@@ -16,8 +16,10 @@ import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.container.test.api.ShouldThrowException;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
@@ -247,9 +249,13 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getById_Null_ID() {
-        UUID connectId = null;
-        Movement byId = movementService.getById(connectId);
-        assertNull(byId);
+        try {
+            UUID connectId = null;
+            Movement byId = movementService.getById(connectId);
+            fail();
+        }catch (EJBTransactionRolledbackException e){
+
+        }
     }
 
     @Test

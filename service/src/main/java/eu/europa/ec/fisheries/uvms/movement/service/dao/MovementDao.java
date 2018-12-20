@@ -70,12 +70,7 @@ public class MovementDao {
     }
 
     public Movement getMovementByGUID(UUID guid) {
-        try {
             return em.find(Movement.class, guid);
-        } catch (NoResultException e) {
-            LOG.debug("No result when retrieving movements by GUID: {}", guid);
-            return null;
-        }
     }
 
     public Movement getMovementById(UUID id) {
@@ -256,11 +251,7 @@ public class MovementDao {
     }
 
     public MovementConnect getMovementConnectByConnectId(UUID id) {
-        try {
             return em.find(MovementConnect.class, id);
-        } catch (NoResultException ex) {
-            return null;
-        }
     }
 
     public Movement createMovement(Movement entity) {

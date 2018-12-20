@@ -39,11 +39,7 @@ public class AlarmDAO {
     }
 
     public AlarmReport getAlarmReportByGuid(UUID guid) {
-        try {
             return em.find(AlarmReport.class, guid);
-        } catch (NoResultException e) {
-            throw new NoResultException("[ No alarmreport with guid: " + guid + " can be found ]");  //Trying to remove NoEntityFoundException but I still want the error message, so maybe do it this way?
-        }
     }
 
     public long getNumberOfOpenAlarms() {
