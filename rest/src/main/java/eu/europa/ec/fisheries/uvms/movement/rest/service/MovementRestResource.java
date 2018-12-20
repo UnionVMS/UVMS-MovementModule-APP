@@ -39,6 +39,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
@@ -242,7 +243,7 @@ public class MovementRestResource {
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting Micro Movement. ]", e);
-            return Response.status(500).entity(e).build();
+            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
 
@@ -262,7 +263,7 @@ public class MovementRestResource {
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting Micro Movement. ]", e);
-            return Response.status(500).entity(e).build();
+            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
 }

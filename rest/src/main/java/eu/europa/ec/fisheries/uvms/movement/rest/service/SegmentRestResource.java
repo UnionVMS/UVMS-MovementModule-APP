@@ -7,6 +7,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.SegmentMapper;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -42,7 +43,7 @@ public class SegmentRestResource {
 
         } catch (Exception e) {
             LOG.error("[ Error when getting segment. ] {}", e.getMessage(), e);
-            return Response.status(500).entity(e).type(MediaType.APPLICATION_JSON)
+            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         }
     }
