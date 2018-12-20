@@ -59,8 +59,8 @@ import java.util.UUID;
     @NamedQuery(name = "MinimalMovement.findByHeading", query = "SELECT m FROM MinimalMovement m WHERE m.heading = :heading AND m.duplicate = false"),
     @NamedQuery(name = "MinimalMovement.findByStatus", query = "SELECT m FROM MinimalMovement m WHERE m.status = :status AND m.duplicate = false"),
     @NamedQuery(name = "MinimalMovement.findLatestByMovementConnect", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.id = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = "MinimalMovement.findLatest", query = "SELECT m FROM MinimalMovement m INNER JOIN m.movementConnect mc2 WHERE m.timestamp = (select max(mm.timestamp) from MinimalMovement mm INNER JOIN mm.movementConnect mc where mc.id = :id and mm.timestamp < :date ) AND m.duplicate = false AND mc2.id = :id"),
-    @NamedQuery(name = "MinimalMovement.findFirst", query = "SELECT m FROM MinimalMovement m INNER JOIN m.movementConnect mc2 WHERE m.timestamp = (select min(mm.timestamp) from MinimalMovement mm INNER JOIN mm.movementConnect mc where mc.id = :id ) AND m.duplicate = false AND mc2.id = :id"),
+    @NamedQuery(name = "MinimalMovement.findLatest", query = "SELECT m FROM MinimalMovement m  WHERE m.timestamp = (select max(mm.timestamp) from MinimalMovement mm  where mm.movementConnect.id = :id and mm.timestamp < :date ) AND m.duplicate = false AND m.movementConnect.id = :id"),
+    @NamedQuery(name = "MinimalMovement.findFirst", query = "SELECT m FROM MinimalMovement m WHERE m.timestamp = (select min(mm.timestamp) from MinimalMovement mm where mm.movementConnect.id = :id ) AND m.duplicate = false AND m.movementConnect.id = :id"),
     @NamedQuery(name = "MinimalMovement.findExistingDate", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.id = :id AND m.timestamp = :date AND m.duplicate = false")
 })
 @DynamicUpdate
