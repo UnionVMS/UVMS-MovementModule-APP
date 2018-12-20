@@ -39,14 +39,12 @@ import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 @Table(name = "movementconnect")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_BY_CONNECT_ID, query = "SELECT m FROM MovementConnect m WHERE m.id = :value"),
     @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_GET_ALL, query = "SELECT m FROM MovementConnect m")
 })
 @DynamicUpdate
 @DynamicInsert
 public class MovementConnect implements Serializable, Comparable<MovementConnect> {
 
-    public static final String MOVEMENT_CONNECT_BY_CONNECT_ID = "MovementConnect.findByValue";
     public static final String MOVEMENT_CONNECT_GET_ALL = "MovementConnect.findAll";
     
     private static final long serialVersionUID = 1L;

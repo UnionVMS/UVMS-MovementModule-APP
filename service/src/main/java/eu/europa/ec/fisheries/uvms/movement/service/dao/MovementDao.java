@@ -70,14 +70,7 @@ public class MovementDao {
     }
 
     public Movement getMovementByGUID(UUID guid) {
-        try {
-            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_BY_GUID, Movement.class);
-            query.setParameter("guid", guid);
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            LOG.debug("No result when retrieving movements by GUID: {}", guid);
-            return null;
-        }
+            return em.find(Movement.class, guid);
     }
 
     public Movement getMovementById(UUID id) {
@@ -258,13 +251,7 @@ public class MovementDao {
     }
 
     public MovementConnect getMovementConnectByConnectId(UUID id) {
-        try {
-            TypedQuery<MovementConnect> query = em.createNamedQuery(MovementConnect.MOVEMENT_CONNECT_BY_CONNECT_ID, MovementConnect.class);
-            query.setParameter("value", id);
-            return query.getSingleResult();
-        } catch (NoResultException ex) {
-            return null;
-        }
+            return em.find(MovementConnect.class, id);
     }
 
     public Movement createMovement(Movement entity) {

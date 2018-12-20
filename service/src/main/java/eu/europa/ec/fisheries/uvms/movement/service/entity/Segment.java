@@ -48,7 +48,6 @@ import org.hibernate.annotations.*;
 @NamedQueries({
     @NamedQuery(name = Segment.FIND_ALL, query = "SELECT s FROM Segment s"),
     @NamedQuery(name = Segment.FIND_ALL_BY_TRACK, query = "SELECT s FROM Segment s where s.track = :track"),
-    @NamedQuery(name = Segment.FIND_BY_ID, query = "SELECT s FROM Segment s WHERE s.id = :id"),
     @NamedQuery(name = Segment.FIND_BY_DISTANCE, query = "SELECT s FROM Segment s WHERE s.distance = :distance"),
     @NamedQuery(name = Segment.FIND_BY_DURATION, query = "SELECT s FROM Segment s WHERE s.duration = :duration"),
     @NamedQuery(name = Segment.FIND_BY_SPEED_OVER_GROUND, query = "SELECT s FROM Segment s WHERE s.speedOverGround = :speedOverGround"),
@@ -64,7 +63,6 @@ public class Segment implements Serializable {
 
     public static final String FIND_ALL = "Segment.findAll";
     public static final String FIND_ALL_BY_TRACK = "Segment.findAllSegementsByTrack";
-    public static final String FIND_BY_ID = "Segment.findById";
     public static final String FIND_BY_DISTANCE = "Segment.findByDistance";
     public static final String FIND_BY_DURATION = "Segment.findByDuration";
     public static final String FIND_BY_SPEED_OVER_GROUND = "Segment.findBySpeedOverGround";
