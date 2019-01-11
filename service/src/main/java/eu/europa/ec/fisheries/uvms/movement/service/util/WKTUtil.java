@@ -29,9 +29,6 @@ public class WKTUtil {
     private WKTUtil() {}
 
     public static String getWktLineString(List<Geometry> geometries) {
-        if (geometries.size() < 2) {
-            return null;
-        }
         List<Coordinate> coords = new ArrayList<>();
         for (Geometry geom : geometries) {
         	for(Coordinate verti : geom.getCoordinates()) {

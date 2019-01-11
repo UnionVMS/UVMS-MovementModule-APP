@@ -174,8 +174,7 @@ public class MovementService {
                 List<MovementTrack> extractTracks = new ArrayList<>();
                 for (Track track : tracks) {
                     List<Geometry> points = dao.getPointsFromTrack(track);
-                    extractTracks.add(MovementEntityToModelMapper.mapToMovementTrack(track, 
-                            WKTUtil.getWktLineString(points)));
+                    extractTracks.add(MovementEntityToModelMapper.mapToMovementTrack(track, points));
                 }
                 
                 // In the rare event of segments that are attached to two different tracks, the track that is not

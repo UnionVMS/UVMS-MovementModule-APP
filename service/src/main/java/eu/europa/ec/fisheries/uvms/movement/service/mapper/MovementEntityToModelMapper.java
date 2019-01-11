@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
@@ -199,12 +200,14 @@ public class MovementEntityToModelMapper {
         return movSegment;
     }
 
-    public static MovementTrack mapToMovementTrack(Track track, String wktString) {
+    public static MovementTrack mapToMovementTrack(Track track, List<Geometry> points) {
         MovementTrack movementTrack = new MovementTrack();
         movementTrack.setDistance(track.getDistance());
         movementTrack.setDuration(track.getDuration());
         movementTrack.setTotalTimeAtSea(track.getTotalTimeAtSea());
-        movementTrack.setWkt(wktString);
+        if (points.size() > 1) {
+            movementTrack.setWkt(WKTUtil.getWktLineString(points));
+        }
         movementTrack.setId(track.getId().toString());
         return movementTrack;
     }

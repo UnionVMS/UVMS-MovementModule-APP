@@ -44,8 +44,7 @@ public class TrackRestResource {
             UUID id = UUID.fromString(stringId);
             Track track = movementDao.getTrackById(id);
             List<Geometry> points = movementDao.getPointsFromTrack(track);
-            MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(track, 
-                    WKTUtil.getWktLineString(points));
+            MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(track, points);
 
             return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
