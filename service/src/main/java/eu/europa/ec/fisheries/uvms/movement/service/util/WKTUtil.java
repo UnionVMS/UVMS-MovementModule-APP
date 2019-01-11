@@ -33,7 +33,6 @@ public class WKTUtil {
         for (Geometry geom : geometries) {
         	for(Coordinate verti : geom.getCoordinates()) {
         		coords.add(verti);
-            //coords.add(geom.getCoordinate());
         	}
         }
         CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[0]));
