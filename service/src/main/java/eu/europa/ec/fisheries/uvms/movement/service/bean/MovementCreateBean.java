@@ -108,6 +108,9 @@ public class MovementCreateBean {
         // GFCM, UVI, ACCAT = > belg req
 
         AssetMTEnrichmentRequest req = new AssetMTEnrichmentRequest();
+        req.setAssetName(ic.getAssetName());
+        req.setExternalMarking(ic.getExternalMarking());
+        req.setFlagState(ic.getFlagState());
         req.setIrcsValue(ic.getAssetIRCS());
         req.setCfrValue(ic.getAssetCFR());
         if (ic.getAssetGuid() != null) {
