@@ -100,10 +100,6 @@ public class MovementCreateBean {
 
         im.setAssetName(response.getAssetName());
         im.setFlagState(response.getFlagstate());
-        im.setExternalMarking(response.getExternalMarking());
-        im.setAssetCFR(response.getCfr());
-        im.setAssetIRCS(response.getIrcs());
-        im.setAssetMMSI(response.getMmsi());
     }
 
     private AssetMTEnrichmentRequest createRequest(IncomingMovement ic, String username) {
