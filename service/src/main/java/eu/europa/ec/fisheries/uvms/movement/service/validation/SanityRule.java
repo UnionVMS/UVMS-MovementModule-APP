@@ -12,6 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.validation;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
 public enum SanityRule {
@@ -37,7 +38,9 @@ public enum SanityRule {
     TIME_IN_FUTURE("Time in future") {
         @Override
         public boolean evaluate(IncomingMovement movement) {
-            return movement.getPositionTime() != null && movement.getPositionTime().isAfter(Instant.now());
+            return movement.getPositionTime() != null && 
+                    (!movement.getMovementSourceType().equals("AIS") && movement.getPositionTime().isAfter(Instant.now()) ||
+                    (movement.getMovementSourceType().equals("AIS") && movement.getPositionTime().isAfter(Instant.now().plus(2, ChronoUnit.MINUTES))));
         }
     },
     PLUGIN_TYPE_MISSING("Plugin Type missing") {
