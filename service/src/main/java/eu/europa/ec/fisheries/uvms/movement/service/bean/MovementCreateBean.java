@@ -100,6 +100,10 @@ public class MovementCreateBean {
 
         im.setAssetName(response.getAssetName());
         im.setFlagState(response.getFlagstate());
+        im.setExternalMarking(response.getExternalMarking());
+        im.setAssetCFR(response.getCfr());
+        im.setAssetIRCS(response.getIrcs());
+        im.setAssetMMSI(response.getMmsi());
     }
 
     private AssetMTEnrichmentRequest createRequest(IncomingMovement ic, String username) {
@@ -108,6 +112,9 @@ public class MovementCreateBean {
         // GFCM, UVI, ACCAT = > belg req
 
         AssetMTEnrichmentRequest req = new AssetMTEnrichmentRequest();
+        req.setAssetName(ic.getAssetName());
+        req.setExternalMarking(ic.getExternalMarking());
+        req.setFlagState(ic.getFlagState());
         req.setIrcsValue(ic.getAssetIRCS());
         req.setCfrValue(ic.getAssetCFR());
         if (ic.getAssetGuid() != null) {
