@@ -40,7 +40,7 @@ public enum SanityRule {
         public boolean evaluate(IncomingMovement movement) {
             return movement.getPositionTime() != null && 
                     (!movement.getMovementSourceType().equals("AIS") && movement.getPositionTime().isAfter(Instant.now()) ||
-                    (movement.getMovementSourceType().equals("AIS") && movement.getPositionTime().isAfter(Instant.now().plus(2, ChronoUnit.MINUTES))));
+                    movement.getMovementSourceType().equals("AIS") && movement.getPositionTime().isAfter(Instant.now().plus(2, ChronoUnit.MINUTES)));
         }
     },
     PLUGIN_TYPE_MISSING("Plugin Type missing") {
