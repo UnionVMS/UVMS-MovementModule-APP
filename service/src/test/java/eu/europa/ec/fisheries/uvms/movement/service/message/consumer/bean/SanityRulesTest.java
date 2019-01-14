@@ -127,6 +127,32 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
 
     @Test
     @OperateOnDeployment("movementservice")
+    public void setMovementReportLatitudeOver90ShouldTriggerSanityRuleTest() throws Exception {
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setLatitude(360d);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportLongitudeOver180ShouldTriggerSanityRuleTest() throws Exception {
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setLongitude(1024d);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
     public void setMovementReportFutureDateShouldTriggerSanityRuleTest() throws Exception {
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
