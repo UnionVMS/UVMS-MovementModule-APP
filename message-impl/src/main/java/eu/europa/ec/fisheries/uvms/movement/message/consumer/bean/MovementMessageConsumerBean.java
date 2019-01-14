@@ -11,11 +11,15 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
@@ -25,6 +29,18 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 
+
+@MessageDriven(mappedName = MessageConstants.QUEUE_MODULE_MOVEMENT, activationConfig = {
+        @ActivationConfigProperty(propertyName = MessageConstants.MESSAGING_TYPE_STR, propertyValue = MessageConstants.CONNECTION_TYPE),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_TYPE_STR, propertyValue = MessageConstants.DESTINATION_TYPE_QUEUE),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_STR, propertyValue = MessageConstants.COMPONENT_MESSAGE_IN_QUEUE),
+        @ActivationConfigProperty(propertyName = MessageConstants.DESTINATION_JNDI_NAME, propertyValue = MessageConstants.QUEUE_MODULE_MOVEMENT),
+        @ActivationConfigProperty(propertyName = MessageConstants.CONNECTION_FACTORY_JNDI_NAME, propertyValue = MessageConstants.CONNECTION_FACTORY),
+        @ActivationConfigProperty(propertyName = "maxMessagesPerSessions", propertyValue = "100"),
+        @ActivationConfigProperty(propertyName = "initialRedeliveryDelay", propertyValue = "60000"),
+        @ActivationConfigProperty(propertyName = "maximumRedeliveries", propertyValue = "3"),
+        @ActivationConfigProperty(propertyName = "maxSessions", propertyValue = "10")
+})
 public class MovementMessageConsumerBean implements MessageListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementMessageConsumerBean.class);

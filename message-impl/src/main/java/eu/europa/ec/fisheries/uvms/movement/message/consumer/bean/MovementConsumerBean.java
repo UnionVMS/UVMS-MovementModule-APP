@@ -12,33 +12,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractConsumer;
-import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
-import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageConsumer;
 import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless
 @LocalBean
-public class MovementConsumerBean extends AbstractConsumer implements MessageConsumer, ConfigMessageConsumer {
-
-    final static Logger LOG = LoggerFactory.getLogger(MovementConsumerBean.class);
-
-    private static final long TIMEOUT = 30000;
-
-    @Override
-    public <T> T getConfigMessage(String correlationId, Class type) throws ConfigMessageException {
-        try {
-            return getMessage(correlationId, type, TIMEOUT);
-        } catch (MessageException e) {
-            LOG.error("[ Error when getting message ] {}", e.getMessage());
-            throw new ConfigMessageException("Error when retrieving message: ");
-        } 
-    }
+public class MovementConsumerBean extends AbstractConsumer implements MessageConsumer {
 
     @Override
     public String getDestinationName() {

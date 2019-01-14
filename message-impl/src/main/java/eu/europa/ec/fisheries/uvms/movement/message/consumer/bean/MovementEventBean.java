@@ -131,7 +131,7 @@ public class MovementEventBean {
     
     public void getMovementMapByQuery(TextMessage jmsMessage) {
         try {
-            LOG.info("Get Movement By Query Received.. processing request in MovementEventServiceBean : {}", jmsMessage.getText());
+            LOG.debug("Get Movement By Query Received.. processing request in MovementEventServiceBean");
             GetMovementMapByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementMapByQueryRequest.class);
             GetMovementMapByQueryResponse movementList = movementService.getMapByQuery(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapToMovementMapResponse(movementList.getMovementMap());

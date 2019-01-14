@@ -16,8 +16,6 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JMSUtils;
-import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
-import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
@@ -25,6 +23,9 @@ import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageExc
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -33,11 +34,9 @@ import javax.enterprise.event.Observes;
 import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless
-public class MovementMessageProducerBean extends AbstractProducer implements MessageProducer, ConfigMessageProducer {
+public class MovementMessageProducerBean extends AbstractProducer implements MessageProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementMessageProducerBean.class);
 
@@ -116,17 +115,6 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
         } catch (Exception e) {
             LOG.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MovementMessageException("[ Error when sending message. ]", e);
-        }
-    }
-
-    @Override
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendConfigMessage(String text) throws ConfigMessageException {
-        try {
-            return sendModuleMessage(text, ModuleQueue.CONFIG);
-        } catch (MovementMessageException e) {
-            LOG.error("[ Error when sending config message. ] {}", e.getMessage());
-            throw new ConfigMessageException("[ Error when sending config message. ]");
         }
     }
 
