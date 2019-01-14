@@ -132,7 +132,7 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
-        incomingMovement.setLatitude(360d);
+        incomingMovement.setLatitude(91d);
         ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));

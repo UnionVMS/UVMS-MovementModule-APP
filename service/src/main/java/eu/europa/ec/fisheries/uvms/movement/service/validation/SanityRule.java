@@ -38,13 +38,13 @@ public enum SanityRule {
     LAT_OVER_90("Latitude is over/under 90") {
         @Override
         public boolean evaluate(IncomingMovement movement) {
-            return Math.abs(movement.getLatitude()) > 90d;
+            return (movement.getLatitude() == null) ? false : Math.abs(movement.getLatitude()) > 90d;
         }
     },
     LONG_OVER_90("Longitude is over/under 180") {
         @Override
         public boolean evaluate(IncomingMovement movement) {
-            return Math.abs(movement.getLongitude()) > 180d;
+            return (movement.getLongitude() == null) ? false : Math.abs(movement.getLongitude()) > 180d;
         }
     },
     TIME_IN_FUTURE("Time in future") {
