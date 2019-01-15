@@ -317,11 +317,11 @@
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-29">
         <createTable tableName="parameter">
-            <column name="param_id" type="VARCHAR(100)">
+            <column name="param_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="param_description" type="VARCHAR(100)"/>
-            <column name="param_value" type="VARCHAR(100)"/>
+            <column name="param_description" type="VARCHAR(255)"/>
+            <column name="param_value" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-30">
