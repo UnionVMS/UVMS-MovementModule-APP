@@ -15,7 +15,7 @@
 
     <filter>
         <filter-name>MDCFilter</filter-name>
-        <filter-class>eu.europa.ec.fisheries.uvms.commons.rest.filter.CrossOriginFilter</filter-class>
+        <filter-class>eu.europa.ec.fisheries.uvms.commons.rest.filter.MDCFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>MDCFilter</filter-name>
