@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
@@ -32,20 +34,6 @@ public class IncomingMovementBean {
         UUID connectId = currentMovement.getMovementConnect().getId();
         Instant timeStamp = currentMovement.getTimestamp();
 
-        List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
-        if (!duplicateMovements.isEmpty()) {
-            // If they have different movement types
-            if (!currentMovement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {
- 				Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);                    
- 				currentMovement.setTimestamp(newDate);
-            } else {
-                LOG.info("Got a duplicate movement. Marking it as such.{}", currentMovement.getId());
-                currentMovement.setProcessed(true);
-                currentMovement.setDuplicate(true);
-                currentMovement.setDuplicateId(duplicateMovements.get(0).getId());
-                return;
-            }
-        }
         currentMovement.setDuplicate(false);
 
         List<Movement> latestMovements = dao.getLatestMovementsByConnectId(connectId, 1);
@@ -69,5 +57,26 @@ public class IncomingMovementBean {
         }
         dao.upsertLatestMovement(currentMovement, currentMovement.getMovementConnect());
         currentMovement.setProcessed(true);
+    }
+    public boolean checkAndSetDuplicate(IncomingMovement movement) {
+        if(movement.getPositionTime() == null || movement.getAssetHistoryId() == null){     //if these two are null the check cant complete and one of the other sanity rules will get it
+            return false;
+        }
+        UUID connectId = UUID.fromString(movement.getAssetHistoryId());
+        Instant timeStamp = movement.getPositionTime();
+
+        List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
+        if (!duplicateMovements.isEmpty()) {
+            // If they have different movement types
+            if (!movement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {
+                Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);
+                movement.setPositionTime(newDate);
+            } else {
+                LOG.info("Got a duplicate movement for Asset {}. Marking it as such.", movement.getAssetGuid());
+                movement.setDuplicate(true);
+                return true;
+            }
+        }
+        return false;
     }
 }

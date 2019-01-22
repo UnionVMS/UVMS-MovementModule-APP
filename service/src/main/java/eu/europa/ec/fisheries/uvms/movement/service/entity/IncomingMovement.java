@@ -74,6 +74,7 @@ public class IncomingMovement {
 
     private String pluginType;
     private boolean active;
+    private boolean duplicate = false;
 
     @NotNull
     @JsonSerialize(using = InstantSerializer.class)
@@ -404,5 +405,13 @@ public class IncomingMovement {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isDuplicate() {
+        return duplicate;
+    }
+
+    public void setDuplicate(boolean duplicate) {
+        this.duplicate = duplicate;
     }
 }
