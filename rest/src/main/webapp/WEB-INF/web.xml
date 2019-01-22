@@ -16,14 +16,6 @@
 		<listener-class>net.bull.javamelody.SessionListener</listener-class>
 	</listener>
 	<filter>
-		<filter-name>MDCFilter</filter-name>
-		<filter-class>eu.europa.ec.fisheries.uvms.commons.rest.filter.MDCFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>MDCFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	<filter>
 		<filter-name>javamelody</filter-name>
 		<filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
 		<async-supported>true</async-supported>
@@ -66,6 +58,15 @@
 		<url-pattern>/rest/segment/*</url-pattern>
 		<url-pattern>/rest/track/*</url-pattern>
 		<url-pattern>/rest/sse/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>MDCFilter</filter-name>
+		<filter-class>eu.europa.ec.fisheries.uvms.commons.rest.filter.CrossOriginFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>MDCFilter</filter-name>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
 </web-app>
