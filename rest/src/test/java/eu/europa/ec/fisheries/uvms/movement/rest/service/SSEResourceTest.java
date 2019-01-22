@@ -60,7 +60,7 @@ public class SSEResourceTest extends BuildMovementRestDeployment {
             Thread.sleep(1000 * 1 * 1);
             assertTrue(source.isOpen());
             assertTrue(errorString,errorString.isEmpty());
-            assertEquals(3,dataString.split("\\}\\{").length);
+            assertEquals(dataString,3 ,dataString.split("\\}\\{").length);
         }
 
 
