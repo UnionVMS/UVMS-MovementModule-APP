@@ -12,5 +12,14 @@
         <filter-name>AuthenticationFilterMock</filter-name>
         <url-pattern>/rest/*</url-pattern>
     </filter-mapping>
+
+    <filter>
+        <filter-name>MDCFilter</filter-name>
+        <filter-class>eu.europa.ec.fisheries.uvms.commons.rest.filter.MDCFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>MDCFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     
 </web-app>
