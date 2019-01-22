@@ -2,14 +2,14 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
+
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.UUID;
 import javax.inject.Inject;
+import javax.transaction.UserTransaction;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -202,6 +202,78 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         AlarmReport responseAlarmReportType = deserialize(response2, AlarmReport.class);
         assertNotNull(responseAlarmReportType);
         assertEquals(AlarmStatusType.REPROCESSED.value(), responseAlarmReportType.getStatus());
+    }
+
+    @Inject
+    private UserTransaction userTransaction;
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void changeIncomingMovementTest() throws Exception {
+
+
+        AlarmReport alarmReport = getBasicAlarmReport();
+        IncomingMovement incomingMovement = new IncomingMovement();
+        incomingMovement.setUpdated(Instant.now());
+        incomingMovement.setUpdatedBy("Test User");
+        incomingMovement.setActive(true);
+        incomingMovement.setAlarmReport(alarmReport);
+        incomingMovement.setPluginType("NAF");
+        incomingMovement.setComChannelType("Test");
+        alarmReport.setIncomingMovement(incomingMovement);
+        alarmDao.save(alarmReport);
+
+        assertNotNull(incomingMovement.getId());
+
+        String response2 = getWebTarget()
+                .path("alarms/" + alarmReport.getId())
+                .request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+
+        AlarmReport responseAlarmReportType = deserialize(response2, AlarmReport.class);
+        assertNotNull(responseAlarmReportType);
+        IncomingMovement savedMovement = responseAlarmReportType.getIncomingMovement();
+
+
+        savedMovement.setUpdatedBy("Another User");
+
+
+        Response response = getWebTarget()
+                .path("alarms/incomingMovement")
+                .request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(savedMovement));
+
+        assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
+
+        response2 = getWebTarget()
+                .path("alarms/" + alarmReport.getId())
+                .request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+
+        responseAlarmReportType = deserialize(response2, AlarmReport.class);
+        assertNotNull(responseAlarmReportType);
+        assertEquals(AlarmStatusType.OPEN.value(), responseAlarmReportType.getStatus());
+        assertTrue(responseAlarmReportType.getIncomingMovement().getUpdatedBy().equals("Another User"));
+
+        savedMovement.setAlarmReport(null);
+        savedMovement.setUpdatedBy("Yet Another User");
+
+        response = getWebTarget()
+                .path("alarms/incomingMovement")
+                .request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(savedMovement));
+
+        assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
+
+        response2 = getWebTarget()
+                .path("alarms/" + alarmReport.getId())
+                .request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+
+        responseAlarmReportType = deserialize(response2, AlarmReport.class);
+        assertNotNull(responseAlarmReportType);
+        assertEquals(AlarmStatusType.OPEN.value(), responseAlarmReportType.getStatus());
+        assertTrue(responseAlarmReportType.getIncomingMovement().getUpdatedBy().equals("Yet Another User"));
     }
 
     @Test

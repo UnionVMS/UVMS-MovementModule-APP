@@ -13,6 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmQuery;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.SanityRule;
@@ -78,6 +79,16 @@ public class AlarmRestResource {
     public AlarmReport updateAlarmStatus(final AlarmReport alarmReport) {
         LOG.info("Update alarm status invoked in rest layer");
         return validationService.updateAlarmStatus(alarmReport);
+    }
+
+    @PUT
+    @Consumes(value = { MediaType.APPLICATION_JSON })
+    @Produces(value = { MediaType.APPLICATION_JSON })
+    @Path("/incomingMovement")
+    @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
+    public IncomingMovement updateIncomingMovement(IncomingMovement movement) {
+        LOG.info("Update incomingMovement in holding table");
+        return validationService.updateIncomingMovement(movement);
     }
 
     /**
