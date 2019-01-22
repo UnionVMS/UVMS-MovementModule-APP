@@ -201,6 +201,7 @@
             </column>
             <column name="alarmreport_id" type="UUID">
             </column>
+            <column name="duplicate" type="boolean" remarks="If this is a duplicate of something already in the DB"/>
         </createTable>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-23">

@@ -38,6 +38,9 @@ public class MovementCreateBean {
 
     @Inject
     private MovementService movementService;
+
+    @Inject
+    private IncomingMovementBean incomingMovementBean;
     
     @EJB
     private AssetClient assetClient;
@@ -58,6 +61,7 @@ public class MovementCreateBean {
             AssetMTEnrichmentResponse response = assetClient.collectAssetMT(request);
             enrichIncomingMovement(incomingMovement, response);
 
+            incomingMovementBean.checkAndSetDuplicate(incomingMovement);
             boolean isOk = movementSanityValidatorBean.evaluateSanity(incomingMovement);
             if (isOk) {
                 Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement
