@@ -156,15 +156,23 @@ public class MovementSanityValidatorBean {
 
         alarmDAO.merge(entity);
 
-        /*
-        // Notify long-polling clients of the change
-        alarmReportEvent.fire(new NotificationMessage("guid", entity.getGuid()));
-        // Notify long-polling clients of the change (no vlaue since FE will need to fetch it)
-        alarmReportCountEvent.fire(new NotificationMessage("alarmCount", null));
-        */
-
         auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, entity.getId().toString(), null, alarm.getUpdatedBy());
         return entity;
+    }
+
+    public IncomingMovement updateIncomingMovement(IncomingMovement movement){
+        if(movement == null || movement.getId() == null){
+            throw new IllegalArgumentException("IncomingMovement or its ID is null");
+        }
+
+        if(movement.getAlarmReport() == null) {
+            movement.setAlarmReport(alarmDAO.getOpenAlarmReportByMovementGuid(movement.getId()));
+        }
+        movement.getAlarmReport().setIncomingMovement(movement); //since these two infinetly recurse we make sure that they recurse into each other
+        movement.setUpdated(Instant.now());
+        alarmDAO.merge(movement);
+
+        return movement;
     }
 
     public AlarmReport getAlarmReportByGuid(UUID guid) {
