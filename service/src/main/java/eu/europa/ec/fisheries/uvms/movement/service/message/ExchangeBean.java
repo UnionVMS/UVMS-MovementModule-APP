@@ -5,7 +5,6 @@ import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
@@ -17,8 +16,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 public class ExchangeBean extends AbstractProducer {
 
     public void sendAckToExchange(MovementRefTypeType refType, Movement movement, String ackResponseMessageId) throws ExchangeModelMarshallException, MessageException {
-        // Do not send acknowledge for AIS
-        if (movement != null && movement.getMovementSource().equals(MovementSourceType.AIS)) {
+        if (ackResponseMessageId == null) {
             return;
         }
         ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
