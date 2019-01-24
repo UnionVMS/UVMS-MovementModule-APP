@@ -39,6 +39,8 @@ public class MovementTestHelper {
         movement.setMovementType(MovementTypeType.POS);
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setId(UUID.randomUUID());
+        movementConnect.setUpdated(Instant.now());
+        movementConnect.setUpdatedBy("MovementTestHelper");
         movement.setMovementConnect(movementConnect);
 
         Coordinate coordinate = new Coordinate(longitude, latitude);
