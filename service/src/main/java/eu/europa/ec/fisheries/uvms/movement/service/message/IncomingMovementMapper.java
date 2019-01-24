@@ -10,7 +10,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
 
 public abstract class IncomingMovementMapper {
@@ -49,7 +48,7 @@ public abstract class IncomingMovementMapper {
         if (ic.getMovementSourceType() != null) {
             entity.setMovementSource(MovementSourceType.fromValue(ic.getMovementSourceType()));
         } else {
-            entity.setMovementSource(MovementSourceType.INMARSAT_C);
+            entity.setMovementSource(MovementSourceType.OTHER);
         }
 
         if (ic.getMovementType() != null) {
