@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 import org.hibernate.annotations.*;
@@ -75,6 +76,9 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     @Column(name = "movelate_timestamp")
     private Instant timestamp;
 
+    @Column(name = "geom")
+    private Point location;
+
     public UUID getId() {
         return id;
     }
@@ -110,5 +114,13 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     @Override
     public int compareTo(LatestMovement o) {
         return MovementComparator.LATEST_MOVEMENT.compare(this, o);
+    }
+
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
     }
 }

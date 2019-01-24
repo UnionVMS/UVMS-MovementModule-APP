@@ -140,11 +140,13 @@ public class MovementDao {
             latestMovement = new LatestMovement();
             latestMovement.setMovementConnect(movementConnect);
             latestMovement.setMovement(movement);
+            latestMovement.setLocation(movement.getLocation());
             latestMovement.setTimestamp(movement.getTimestamp());
             em.persist(latestMovement);
         } else if (latestMovement.getTimestamp().isBefore(movement.getTimestamp())) {
             latestMovement.setMovement(movement);
             latestMovement.setTimestamp(movement.getTimestamp());
+            latestMovement.setLocation(movement.getLocation());
         }
     }
 
