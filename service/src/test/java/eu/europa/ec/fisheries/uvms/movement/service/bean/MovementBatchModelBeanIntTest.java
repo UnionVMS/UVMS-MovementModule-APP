@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Instant;
 import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
@@ -42,28 +43,34 @@ public class MovementBatchModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementConnect() {
-        // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batch import to succeed)
-        UUID randomUUID = UUID.randomUUID();
-        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(randomUUID);
+        // Note getOrCreateMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batch import to succeed)
+        MovementConnect mc = new MovementConnect();
+        mc.setId(UUID.randomUUID());
+        mc.setUpdated(Instant.now());
+        mc.setUpdatedBy("Test Connector");
+        MovementConnect fetchedMovementConnect = movementBatchModelBean.getOrCreateMovementConnectByConnectId(mc);
         assertNotNull(fetchedMovementConnect);
-        assertEquals(fetchedMovementConnect.getId(), randomUUID);
+        assertEquals(fetchedMovementConnect.getId(), mc.getId());
     }
 
 
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementConnect_ZEROISH_GUID() {
-        UUID guid = UUID.fromString("100000-0000-0000-0000-000000000000");
-        // Note getMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
-        MovementConnect fetchedMovementConnect = movementBatchModelBean.getMovementConnectByConnectId(guid);
+        MovementConnect mc = new MovementConnect();
+        mc.setId(UUID.fromString("100000-0000-0000-0000-000000000000"));
+        mc.setUpdated(Instant.now());
+        mc.setUpdatedBy("Test Connector");
+        // Note getOrCreateMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
+        MovementConnect fetchedMovementConnect = movementBatchModelBean.getOrCreateMovementConnectByConnectId(mc);
         assertNotNull(fetchedMovementConnect);
-        assertEquals(fetchedMovementConnect.getId(), guid);
+        assertEquals(fetchedMovementConnect.getId(), mc.getId());
     }
 
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementConnect_NULL_GUID() {
-        assertNull(movementBatchModelBean.getMovementConnectByConnectId(null));
+        assertNull(movementBatchModelBean.getOrCreateMovementConnectByConnectId(null));
     }
 
     @Test
