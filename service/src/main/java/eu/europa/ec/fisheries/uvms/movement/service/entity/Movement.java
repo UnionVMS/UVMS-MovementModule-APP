@@ -54,7 +54,6 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = Movement.FIND_UNPROCESSED, query = "SELECT m FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_UNPROCESSED_ID, query = "SELECT m.id FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_BY_ALTITUDE, query = "SELECT m FROM Movement m WHERE m.altitude = :altitude AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_SPEED, query = "SELECT m FROM Movement m WHERE m.speed = :speed AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_HEADING, query = "SELECT m FROM Movement m WHERE m.heading = :heading AND m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_BY_STATUS, query = "SELECT m FROM Movement m WHERE m.status = :status AND m.duplicate = false"),
@@ -78,7 +77,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_UNPROCESSED = "Movement.findUnprocessed";
     public static final String FIND_UNPROCESSED_ID = "Movement.findUnprocessedId";
     public static final String FIND_BY_ID = "Movement.findById";
-    public static final String FIND_BY_ALTITUDE = "Movement.findByAltitude";
     public static final String FIND_BY_SPEED = "Movement.findBySpeed";
     public static final String FIND_BY_HEADING = "Movement.findByHeading";
     public static final String FIND_BY_STATUS = "Movement.findByStatus";
@@ -99,8 +97,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     private UUID id;
 
     @NotNull
-    @Column(name = "move_location", columnDefinition = "Geometry")
-    @Type(type = "org.hibernate.spatial.GeometryType")
+    @Column(name = "move_location", columnDefinition="geography(POINT, 4326)")
     private Point location;
 
     @Column(name = "move_speed")
@@ -115,9 +112,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_internal_reference_number")
     @Size(max = 12)
     private String internalReferenceNumber;
-
-    @Column(name = "move_altitude")
-    private Double altitude;
 
     @Size(max = 60)
     @Column(name = "move_status")
@@ -167,7 +161,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     private Instant updated;
 
     @NotNull
-    @Size(min = 1, max = 60)
+    @Size(min = 1, max = 20)
     @Column(name = "move_upuser")
     private String updatedBy;
 
@@ -306,14 +300,6 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public Double getAltitude() {
-        return altitude;
-    }
-
-    public void setAltitude(Double altitude) {
-        this.altitude = altitude;
     }
 
     public Track getTrack() {

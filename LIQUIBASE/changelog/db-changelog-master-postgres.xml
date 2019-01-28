@@ -9,5 +9,7 @@
     <include file="v5.1.6\db-changelog-createTables-5.1.6.xml" relativeToChangelogFile="true"/>
 
     <include file="v5.1.1\db-changelog-create-view-5.1.1-postgres.xml" relativeToChangelogFile="true"/>
+
+    <include file="v5.1.6\insertParameter.xml" relativeToChangelogFile="true"/>
         
 </databaseChangeLog>

@@ -35,9 +35,9 @@ public class ConfigServiceMock implements MessageListener {
     public void onMessage(Message message) {
         try {
             SettingType mockSetting = new SettingType();
-            mockSetting.setKey("Key");
-            mockSetting.setValue("Value");
-            mockSetting.setDescription("From ConfigServiceMock.java");
+            mockSetting.setKey("maxDistance");
+            mockSetting.setValue("500");
+            mockSetting.setDescription("Set in ConfigServiceMock.java");
             String response = ModuleResponseMapper.toPullSettingsResponse(Arrays.asList(mockSetting), PullSettingsStatus.OK);
             messageProducer.sendMessageBackToRecipient((TextMessage) message, response);
         } catch (ModelMarshallException e) {

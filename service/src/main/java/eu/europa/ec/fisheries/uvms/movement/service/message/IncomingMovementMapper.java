@@ -41,7 +41,6 @@ public abstract class IncomingMovementMapper {
         Point point = factory.createPoint(coordinate);
         point.setSRID(4326);
         entity.setLocation(point);
-        entity.setAltitude(ic.getAltitude());
 
         entity.setUpdated(DateUtil.nowUTC());
         entity.setUpdatedBy(username);
@@ -97,7 +96,6 @@ public abstract class IncomingMovementMapper {
         md.setMovementGuid(movement.getId().toString());
         md.setLongitude(movement.getLocation().getX());
         md.setLatitude(movement.getLocation().getY());
-        md.setAltitude(movement.getAltitude());
         md.setMovementType(movement.getMovementType().value());
         if(movement.getFromSegment() != null) {
             md.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());

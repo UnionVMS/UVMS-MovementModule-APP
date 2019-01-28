@@ -109,9 +109,6 @@ public class MovementEntityToModelMapper {
 
         movementPoint.setLatitude(point.getY());
         movementPoint.setLongitude(point.getX());
-        if (movement.getAltitude() != null) {
-            movementPoint.setAltitude(movement.getAltitude().doubleValue());
-        }
         model.setPosition(movementPoint);
 
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
