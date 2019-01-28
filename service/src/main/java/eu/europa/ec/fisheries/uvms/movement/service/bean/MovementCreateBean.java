@@ -86,20 +86,9 @@ public class MovementCreateBean {
                 }
                 // report ok to Exchange...
                 // Tracer Id
-                ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
-                MovementRefType movementRefType = new MovementRefType();
-                movementRefType.setAckResponseMessageID(incomingMovement.getAckResponseMessageId());
-                movementRefType.setMovementRefGuid(createdMovement.getId().toString());
-                movementRefType.setType(MovementRefTypeType.MOVEMENT);
-                processedMovementResponse.setMovementRefType(movementRefType);
-                exchangeBean.send(processedMovementResponse);
+                exchangeBean.sendAckToExchange(MovementRefTypeType.MOVEMENT, createdMovement, incomingMovement.getAckResponseMessageId());
             } else {
-                ProcessedMovementResponse processedMovementResponse = new ProcessedMovementResponse();
-                MovementRefType movementRefType = new MovementRefType();
-                movementRefType.setAckResponseMessageID(incomingMovement.getAckResponseMessageId());
-                movementRefType.setType(MovementRefTypeType.ALARM);
-                processedMovementResponse.setMovementRefType(movementRefType);
-                exchangeBean.send(processedMovementResponse);
+                exchangeBean.sendAckToExchange(MovementRefTypeType.ALARM, null, incomingMovement.getAckResponseMessageId());
             }
         } catch (Exception e) {
             throw new IllegalStateException("Could not process incoming movement", e);

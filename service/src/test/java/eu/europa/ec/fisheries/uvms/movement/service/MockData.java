@@ -55,6 +55,8 @@ public class MockData {
         movement.setActivity(activityType);
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setId(connectId);
+        movementConnect.setUpdated(Instant.now());
+        movementConnect.setUpdatedBy("Mock Data");
         movement.setMovementConnect(movementConnect);
         movement.setInternalReferenceNumber("TEST");
         Coordinate coordinate = new Coordinate(latlong.longitude, latlong.latitude);

@@ -45,6 +45,7 @@ public class MovementTestHelper {
         im.setTripNumber(0d);
         im.setComChannelType(MovementComChannelType.NAF.value());
         im.setUpdatedBy("TEST");
+        im.setAckResponseMessageId(UUID.randomUUID().toString());
 
         return im;
     }

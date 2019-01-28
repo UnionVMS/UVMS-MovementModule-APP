@@ -34,9 +34,8 @@ public class MovementBatchModelBean {
         if(movement.getMovementConnect().getId() == null) {
             throw new IllegalArgumentException("No movementConnect ID");
         }
-        UUID connectId = movement.getMovementConnect().getId();
         try {
-            MovementConnect moveConnect = getMovementConnectByConnectId(connectId);
+            MovementConnect moveConnect = getOrCreateMovementConnectByConnectId(movement.getMovementConnect());
 
             movement.setMovementConnect(moveConnect);
             return movementDao.createMovement(movement);
@@ -45,20 +44,16 @@ public class MovementBatchModelBean {
         }
     }
     
-    public MovementConnect getMovementConnectByConnectId(UUID connectId) {
+    public MovementConnect getOrCreateMovementConnectByConnectId(MovementConnect connect) {
         MovementConnect movementConnect;
         
-        if (connectId == null) {
+        if (connect == null) {
             return null;
         }
-        movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        movementConnect = movementDao.getMovementConnectByConnectId(connect.getId());
         
         if (movementConnect == null) {
             LOG.info("Creating new MovementConnect");
-            MovementConnect connect = new MovementConnect();
-            connect.setUpdated(DateUtil.nowUTC());
-            connect.setUpdatedBy("UVMS");
-            connect.setId(connectId);
             return movementDao.createMovementConnect(connect);
         }
         return movementConnect;

@@ -134,7 +134,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 //        Movement createdMovement = movementDao.create(movement);
 //        movementDao.flush();
 //        assertNotNull(createdMovement);
-//        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnectByConnectId().getId());
+//        assertEquals(createdMovementConnect.getId(), createdMovement.getOrCreateMovementConnectByConnectId().getId());
 //
 //        Long createdMovementId = createdMovement.getId();
 //        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
@@ -142,7 +142,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 //        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
 //        assertNotNull(fetchedMovement);
 //        assertEquals(fetchedMovement.getId(), createdMovementId);
-//        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnectByConnectId();
+//        MovementConnect fetchedMovementConnect = fetchedMovement.getOrCreateMovementConnectByConnectId();
 //        assertNotNull(fetchedMovementConnect);
 //
 //        Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
@@ -165,7 +165,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 //        Movement createdMovement = movementDao.create(movement);
 //        movementDao.flush();
 //        assertNotNull(createdMovement);
-//        assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnectByConnectId().getId());
+//        assertEquals(createdMovementConnect.getId(), createdMovement.getOrCreateMovementConnectByConnectId().getId());
 //
 //        Long createdMovementId = createdMovement.getId();
 //        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
@@ -173,7 +173,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 //        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
 //        assertNotNull(fetchedMovement);
 //        assertEquals(fetchedMovement.getId(), createdMovementId);
-//        MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnectByConnectId();
+//        MovementConnect fetchedMovementConnect = fetchedMovement.getOrCreateMovementConnectByConnectId();
 //        assertNotNull(fetchedMovementConnect);
 //
 //        Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
