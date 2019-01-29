@@ -65,6 +65,19 @@ import org.hibernate.annotations.Type;
     @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true"),
     @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.id = :asset AND m.duplicate = false"),
     @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.duplicate = false"),
+
+        /*
+            Native postgres query for finding all positions in the vicinity of a point in space/time:
+                select *, _ST_DistanceUnCached(m.move_location, ST_MakePoint(11.952357,57.704903)::geography)
+		            from movement.movement m
+				    where m.move_timestamp < (TIMESTAMP '2019-01-23 12:00' + INTERVAL '1 hour')
+				   	and m.move_timestamp > (TIMESTAMP '2019-01-23 12:00' - INTERVAL '1 hour')
+				    and ST_DWithin(m.move_location, ST_MakePoint(11.952357,57.704903)::geography, 500);
+
+            This query might require modification so that it understands that it is dealing with geography rather then geometries
+		    To implement this in HQL requires changing location from a geom to a geog and modifying/replacing hibernate-spatial-4x-to-5x-wrapper in Docker such that a number of nativ postgres functions are available in HQL.
+         */
+
 })
 @DynamicUpdate
 @DynamicInsert
