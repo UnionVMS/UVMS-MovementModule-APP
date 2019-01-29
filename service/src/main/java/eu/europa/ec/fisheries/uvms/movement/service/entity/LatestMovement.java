@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 import org.hibernate.annotations.*;
@@ -40,7 +41,12 @@ import java.util.UUID;
 @NamedQueries({
     @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.id in :connectId"),
-    @NamedQuery(name = LatestMovement.FIND_LATEST, query = "SELECT m FROM LatestMovement m ORDER BY m.timestamp")
+    @NamedQuery(name = LatestMovement.FIND_LATEST, query = "SELECT m FROM LatestMovement m ORDER BY m.timestamp"),
+    @NamedQuery(name = LatestMovement.FIND_NEAREST, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(m.movementConnect.id, m.movement.id, function ('distance', m.location, :point))" +
+                                                                "FROM LatestMovement m " +
+                                                                "WHERE function ('dwithin', m.location, :point, cast((SELECT value FROM Parameter WHERE id = 'maxDistance') as int)) = TRUE " +
+                                                                //"WHERE function ('dwithin', m.location, :point, 500) = TRUE " +
+                                                                "AND m.movementConnect.id <> :excludedID")
 
 })
 @DynamicUpdate
@@ -50,6 +56,7 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     public static final String FIND_LATEST_BY_MOVEMENT_CONNECT = "LatestMovement.findLatestByMovementConnect";
     public static final String FIND_LATEST_BY_MOVEMENT_CONNECT_LIST = "LatestMovement.findLatestByMovementConnectList";
     public static final String FIND_LATEST = "LatestMovement.findLatest";
+    public static final String FIND_NEAREST = "LatestMovement.findVicinity";
 
     private static final long serialVersionUID = 1L;
     
@@ -74,6 +81,9 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     @Column(name = "movelate_timestamp")
     private Instant timestamp;
+
+    @Column(name = "movelate_geom", columnDefinition="geography(POINT, 4326)")
+    private Point location;
 
     public UUID getId() {
         return id;
@@ -110,5 +120,13 @@ public class LatestMovement implements Serializable, Comparable<LatestMovement> 
     @Override
     public int compareTo(LatestMovement o) {
         return MovementComparator.LATEST_MOVEMENT.compare(this, o);
+    }
+
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
     }
 }

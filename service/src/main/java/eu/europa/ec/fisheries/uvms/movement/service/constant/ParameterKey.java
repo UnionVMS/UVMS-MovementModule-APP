@@ -13,7 +13,9 @@ package eu.europa.ec.fisheries.uvms.movement.service.constant;
 
 public enum ParameterKey {
 
-    USE_NATIONAL("mobileterminal.national.use");
+    USE_NATIONAL("mobileterminal.national.use"),
+
+    MAX_DISTANCE("maxDistance");
 
     private final String key;
 

@@ -3,17 +3,12 @@ package eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
+
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.jms.ConnectionFactory;
@@ -156,7 +151,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
         assertThat(movementDetails.getLongitude(), is(incomingMovement.getLongitude()));
         assertThat(movementDetails.getLatitude(), is(incomingMovement.getLatitude()));
-        assertEquals(incomingMovement.getAltitude(), movementDetails.getAltitude());
         assertEquals(movementDetails.getPositionTime().toEpochMilli(), incomingMovement.getPositionTime().toEpochMilli());
         assertThat(movementDetails.getStatusCode(), is(incomingMovement.getStatus()));
         assertThat(movementDetails.getReportedSpeed(), is(incomingMovement.getReportedSpeed()));
@@ -643,6 +637,77 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         
         assertThat(dlqAfter, is(dlqBefore + 1));
         assertThat(responseQueueBefore, is(responseQueueAfter));
+    }
+
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void vicinityOfBasicTest() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setAssetIRCS("TestIrcs:" + connectId);
+        incomingMovement.setLongitude(Math.random() * 360d - 180d);
+        incomingMovement.setLatitude(Math.random() * 180d - 90d);
+        incomingMovement.setPositionTime(Instant.now().minusSeconds(60));
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        assertNotNull(movementDetails);
+        assertNotNull(movementDetails.getVicinityOf());
+        assertTrue(movementDetails.getVicinityOf().isEmpty());
+
+        movementDetails.setPositionTime(Instant.now().minusSeconds(30));
+        movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        assertNotNull(movementDetails);
+        assertNotNull(movementDetails.getVicinityOf());
+        assertTrue(movementDetails.getVicinityOf().isEmpty());
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void vicinityOfSeveralBoatsTest() throws Exception {
+
+        double lon = Math.random() * 360d - 180d;
+        double lat = Math.random() * 180d - 90d;
+        UUID connectId = UUID.randomUUID();
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setLongitude(lon);
+        incomingMovement.setLatitude(lat);
+        incomingMovement.setAssetIRCS("TestIrcs:" + connectId);     //this is bc we save history id in movementsDB but send asset id to MR, setting it like this makes both asset id and asset history id to be the same
+        incomingMovement.setPositionTime(Instant.now().minusSeconds(60));
+        MovementDetails movementDetails1 = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        assertNotNull(movementDetails1);
+        assertNotNull(movementDetails1.getVicinityOf());
+        assertTrue("" + movementDetails1.getVicinityOf().size(), movementDetails1.getVicinityOf().isEmpty());
+
+        incomingMovement.setLongitude(lon + 0.0001);
+        incomingMovement.setLatitude(lat + 0.0001);
+        incomingMovement.setAssetIRCS(null);
+        incomingMovement.setPositionTime(Instant.now().minusSeconds(30));
+        MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        assertNotNull(movementDetails2);
+        assertNotNull(movementDetails2.getVicinityOf());
+        assertEquals(1, movementDetails2.getVicinityOf().size());
+        assertEquals(movementDetails1.getAssetGuid(), movementDetails2.getVicinityOf().get(0).getAsset().toString());
+        assertTrue(movementDetails2.getVicinityOf().get(0).getDistance() > 0);
+
+        incomingMovement.setLongitude(lon - 0.0002);
+        incomingMovement.setLatitude(lat - 0.0002);
+        incomingMovement.setPositionTime(Instant.now().minusSeconds(15));
+        MovementDetails movementDetails3 = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        assertNotNull(movementDetails3);
+        assertNotNull(movementDetails3.getVicinityOf());
+        assertEquals(2, movementDetails3.getVicinityOf().size());
+        assertTrue(movementDetails3.getVicinityOf().get(0).getDistance() > 0);
+        assertTrue(movementDetails3.getVicinityOf().get(1).getDistance() > 0);
     }
 
     private MovementDetails sendIncomingMovementAndWaitForResponse(IncomingMovement incomingMovement) throws Exception{

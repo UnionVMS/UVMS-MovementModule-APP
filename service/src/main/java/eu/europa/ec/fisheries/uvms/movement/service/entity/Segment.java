@@ -102,7 +102,7 @@ public class Segment implements Serializable {
 
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 60)
+    @Size(min = 1, max = 20)
     @Column(name = "seg_upuser")
     private String updatedBy;
 

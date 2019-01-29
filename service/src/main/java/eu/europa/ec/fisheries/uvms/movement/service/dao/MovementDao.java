@@ -24,6 +24,7 @@ import javax.persistence.TypedQuery;
 
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
+import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,11 +141,13 @@ public class MovementDao {
             latestMovement = new LatestMovement();
             latestMovement.setMovementConnect(movementConnect);
             latestMovement.setMovement(movement);
+            latestMovement.setLocation(movement.getLocation());
             latestMovement.setTimestamp(movement.getTimestamp());
             em.persist(latestMovement);
         } else if (latestMovement.getTimestamp().isBefore(movement.getTimestamp())) {
             latestMovement.setMovement(movement);
             latestMovement.setTimestamp(movement.getTimestamp());
+            latestMovement.setLocation(movement.getLocation());
         }
     }
 
@@ -156,6 +159,13 @@ public class MovementDao {
         } catch (NoResultException nre) {
             return null;
         }
+    }
+
+    public List<VicinityInfoDTO> getVicinityOfMovement(Movement move){
+        TypedQuery<VicinityInfoDTO> latestMovementQuery = em.createNamedQuery(LatestMovement.FIND_NEAREST, VicinityInfoDTO.class);
+        latestMovementQuery.setParameter("excludedID", move.getMovementConnect().getId());
+        latestMovementQuery.setParameter("point", move.getLocation());
+        return latestMovementQuery.getResultList();
     }
 
     public Movement getFirstMovement(UUID movementConnectValue) {

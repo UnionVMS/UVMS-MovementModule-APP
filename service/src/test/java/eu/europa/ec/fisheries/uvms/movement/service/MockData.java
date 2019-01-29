@@ -64,7 +64,6 @@ public class MockData {
         Point point = factory.createPoint(coordinate);
         point.setSRID(4326);
         movement.setLocation(point);
-        movement.setAltitude(0d);
         movement.setHeading(latlong.bearing);
         movement.setSpeed(latlong.speed);
         movement.setMovementSource(MovementSourceType.NAF);
