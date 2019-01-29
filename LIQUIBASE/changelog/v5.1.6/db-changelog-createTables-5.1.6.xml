@@ -228,7 +228,7 @@
             <column name="move_duplicate_id" type="UUID"/>
             <column name="move_heading" type="FLOAT8"/>
             <column name="move_internal_reference_number" type="VARCHAR(12)"/>
-            <column name="move_location" type="geography">
+            <column name="move_location" type="GEOMETRY">
                 <constraints nullable="false"/>
             </column>
             <column name="move_movesour_id" type="SMALLINT"/>
