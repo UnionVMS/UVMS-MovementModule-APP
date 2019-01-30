@@ -657,7 +657,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertNotNull(movementDetails.getVicinityOf());
         assertTrue(movementDetails.getVicinityOf().isEmpty());
 
-        movementDetails.setPositionTime(Instant.now().minusSeconds(30));
+        incomingMovement.setPositionTime(Instant.now().minusSeconds(30));
         movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
 
         assertNotNull(movementDetails);

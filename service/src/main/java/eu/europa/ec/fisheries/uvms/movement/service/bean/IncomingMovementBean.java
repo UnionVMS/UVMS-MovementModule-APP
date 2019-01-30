@@ -68,7 +68,7 @@ public class IncomingMovementBean {
         List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
         if (!duplicateMovements.isEmpty()) {
             // If they have different movement types
-            if (!movement.getMovementType().equals(duplicateMovements.get(0).getMovementType())) {
+            if (!movement.getMovementType().equals(duplicateMovements.get(0).getMovementType().value())) {
                 Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);
                 movement.setPositionTime(newDate);
             } else {
