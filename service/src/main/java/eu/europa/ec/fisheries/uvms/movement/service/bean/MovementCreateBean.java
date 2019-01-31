@@ -78,9 +78,9 @@ public class MovementCreateBean {
                 if(!createdMovement.getDuplicate()) {
                     MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
                     int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
-                    List<VicinityInfoDTO> vicinityOf = dao.getVicinityOfMovement(createdMovement);
+                   // List<VicinityInfoDTO> vicinityOf = dao.getVicinityOfMovement(createdMovement);
                     movementDetails.setSumPositionReport(sumPositionReport);
-                    movementDetails.setVicinityOf(vicinityOf);
+                   // movementDetails.setVicinityOf(vicinityOf);
 
                     movementRulesBean.send(movementDetails);
                 }

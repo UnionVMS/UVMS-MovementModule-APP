@@ -43,4 +43,26 @@ public class TrackRestResourceTest extends BuildMovementRestDeployment {
 
         assertEquals(movementDestination.getTrack().getId().toString(), response.getId());
     }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getTrackByMovementGuidTest() {
+        Movement movement = MovementTestHelper.createMovement();
+        Movement movementDeparture = movementService.createMovement(movement);
+
+        movement = MovementTestHelper.createMovement(57d,12d);    //plus one on both from above
+        movement.setMovementConnect(movementDeparture.getMovementConnect());
+        Movement movementDestination = movementService.createMovement(movement);
+
+        MovementTrack response = getWebTarget()
+                .path("track/byMovementGUID")
+                .path(movementDestination.getId().toString())
+                .request(MediaType.APPLICATION_JSON)
+                .get(MovementTrack.class);
+
+        assertNotNull(response);
+
+        assertEquals(movementDestination.getTrack().getId().toString(), response.getId());
+        assertNotNull(response.getWkt());
+    }
 }
