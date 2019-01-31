@@ -62,6 +62,35 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     @OperateOnDeployment("movement")
+    public void getListByQueryByAssetId() throws Exception {
+        UUID assetId = UUID.randomUUID();
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        movementBaseType.getMovementConnect().setAssetId(assetId);
+        movementService.createMovement(movementBaseType);
+        
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType2.getMovementConnect().setId(UUID.randomUUID());
+        movementBaseType2.getMovementConnect().setAssetId(assetId);
+        movementService.createMovement(movementBaseType2);
+        
+        MovementQuery query = MovementTestHelper.createMovementQuery();
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.ASSET_ID);
+        criteria.setValue(assetId.toString());
+        query.getMovementSearchCriteria().add(criteria);
+        
+        GetMovementListByQueryResponse queryResponse = getListByQuery(query);
+        
+        assertThat(queryResponse, is(notNullValue()));
+        List<MovementType> movements = queryResponse.getMovement();
+        assertThat(movements.size(), is(2));
+        
+        assertThat(movements.get(0).getAssetId().getValue(), is(assetId.toString()));
+        assertThat(movements.get(1).getAssetId().getValue(), is(assetId.toString()));
+    }
+    
+    @Test
+    @OperateOnDeployment("movement")
     public void getMinimalListByQueryByConnectId() throws Exception {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createMovement(movementBaseType);

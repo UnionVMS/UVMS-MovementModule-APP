@@ -253,9 +253,10 @@
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-25">
         <createTable tableName="movementconnect">
-            <column name="moveconn_asset_id" type="UUID">
+            <column name="moveconn_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
+            <column name="moveconn_asset_id" type="UUID"/>
             <column name="moveconn_flagstate" type="VARCHAR(100)"/>
             <column name="moveconn_name" type="VARCHAR(100)"/>
             <column name="moveconn_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
@@ -403,7 +404,7 @@
         <addPrimaryKey columnNames="move_id" constraintName="movement_pkey" tableName="movement"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-41">
-        <addPrimaryKey columnNames="moveconn_asset_id" constraintName="movementconnect_pkey" tableName="movementconnect"/>
+        <addPrimaryKey columnNames="moveconn_id" constraintName="movementconnect_pkey" tableName="movementconnect"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-42">
         <addPrimaryKey columnNames="movefilt_id" constraintName="movementfilter_pkey" tableName="movementfilter"/>
@@ -524,10 +525,10 @@
         <addForeignKeyConstraint baseColumnNames="seg_trac_id" baseTableName="segment" constraintName="segment_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-71">
-        <addForeignKeyConstraint baseColumnNames="movelate_moveconn_id" baseTableName="latestmovement" constraintName="latestmovement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_asset_id" referencedTableName="movementconnect"/>
+        <addForeignKeyConstraint baseColumnNames="movelate_moveconn_id" baseTableName="latestmovement" constraintName="latestmovement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_id" referencedTableName="movementconnect"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-72">
-        <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="movement" constraintName="movement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_asset_id" referencedTableName="movementconnect"/>
+        <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="movement" constraintName="movement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_id" referencedTableName="movementconnect"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-73">
         <addForeignKeyConstraint baseColumnNames="move_act_id" baseTableName="movement" constraintName="movement_activety_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="act_id" referencedTableName="activity"/>

@@ -133,7 +133,7 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     @NotNull
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_asset_id")
+    @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     private MovementConnect movementConnect;
 

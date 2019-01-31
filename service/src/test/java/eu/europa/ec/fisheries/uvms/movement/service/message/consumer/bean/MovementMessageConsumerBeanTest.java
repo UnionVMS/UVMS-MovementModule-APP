@@ -400,8 +400,37 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movements.size(), is(2));
     }
     
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getMovementListByAssetId() throws Exception {
+        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
+        String uuid = UUID.randomUUID().toString();
+        Instant timestamp = Instant.now();
 
-    @Ignore //TODO: This should work when query searches guid instead of id
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId("TestIrcs");
+        incomingMovement.setAssetIRCS("TestIrcs:" + uuid);
+        incomingMovement.setPositionTime(timestamp.minusSeconds(10));
+        sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
+        incomingMovement2.setAssetGuid(null);
+        incomingMovement2.setAssetHistoryId("TestIrcs");
+        incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);                                              //I set the asset mocker up so that TestIrcs returns the id behind the :
+        sendIncomingMovementAndWaitForResponse(incomingMovement2);
+
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.ASSET_ID);
+        criteria.setValue(uuid);
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, uuid);
+        List<MovementType> movements = listByQueryResponse.getMovement();
+        assertThat(movements.size(), is(2));
+    }
+
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementListByMovementId() throws Exception {
@@ -425,7 +454,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movements.get(0).getPositionTime().getTime(), is(movementDetails.getPositionTime().toEpochMilli()));
     }
     
-    @Ignore //TODO: This should work when query searches guid instead of id
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementListByMovementIdTwoMovements() throws Exception {
