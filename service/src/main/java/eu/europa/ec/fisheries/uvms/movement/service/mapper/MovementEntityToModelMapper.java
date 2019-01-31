@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.UUID;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
+import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
@@ -58,6 +60,7 @@ public class MovementEntityToModelMapper {
         movementPoint.setLongitude(point.getX());
         model.setPosition(movementPoint);
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
+        model.setAssetId(mapToAssetId(movement.getMovementConnect()));
         return model;
     }
 
@@ -78,6 +81,7 @@ public class MovementEntityToModelMapper {
         movementPoint.setLongitude(point.getX());
         model.setPosition(movementPoint);
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
+        model.setAssetId(mapToAssetId(movement.getMovementConnect()));
 
         if (movement.getFromSegment() != null) {
             model.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
@@ -112,6 +116,7 @@ public class MovementEntityToModelMapper {
         model.setPosition(movementPoint);
 
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
+        model.setAssetId(mapToAssetId(movement.getMovementConnect()));
 
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
         if (movement.getFromSegment() != null) {
@@ -174,6 +179,16 @@ public class MovementEntityToModelMapper {
             return connect.getId().toString();
         }
         return null;
+    }
+    
+    private static AssetId mapToAssetId(MovementConnect connect) {
+        AssetId assetId = null;
+        if (connect != null && connect.getAssetId() != null) {
+            assetId = new AssetId();
+            assetId.setIdType(AssetIdType.GUID);
+            assetId.setValue(connect.getAssetId().toString());
+        }
+        return assetId;
     }
 
     public static List<MovementSegment> mapToMovementSegment(List<Segment> segments) {
