@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,30 @@ public class TrackRestResource {
                     .header("MDC", MDC.get("requestId")).build();
 
         } catch (Exception e) {
-            LOG.error("[ Error when getting segment. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when getting track. ] {}", e.getMessage(), e);
+            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+        }
+    }
+
+    @GET
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path(value = "/byMovementGUID/{id}")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public Response getTrackByMovement(@PathParam("id") String stringId) {
+        try {
+
+            UUID id = UUID.fromString(stringId);
+            Movement movement = movementDao.getMovementByGUID(id);
+            List<Geometry> points = movementDao.getPointsFromTrack(movement.getTrack());
+            MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(movement.getTrack(), points);
+
+            return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+
+        } catch (Exception e) {
+            LOG.error("[ Error when getting track. ] {}", e.getMessage(), e);
             return Response.status(500).entity(ExceptionUtils.getRootCause(e)).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         }

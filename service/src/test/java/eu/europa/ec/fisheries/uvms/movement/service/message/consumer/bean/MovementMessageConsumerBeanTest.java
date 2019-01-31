@@ -640,6 +640,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
 
 
+    @Ignore //commented out the parts this tests in the flow, so this will not function
     @Test
     @OperateOnDeployment("movementservice")
     public void vicinityOfBasicTest() throws Exception {
@@ -665,6 +666,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertTrue(movementDetails.getVicinityOf().isEmpty());
     }
 
+    @Ignore  //see above
     @Test
     @OperateOnDeployment("movementservice")
     public void vicinityOfSeveralBoatsTest() throws Exception {
