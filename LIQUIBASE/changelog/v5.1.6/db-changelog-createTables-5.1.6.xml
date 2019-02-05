@@ -298,25 +298,6 @@
             <column name="movefiltgrp_user_id" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
-    <changeSet author="thofan (generated)" id="1544002649622-28">
-        <createTable tableName="movementtype">
-            <column name="movetyp_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="movetyp_desc" type="VARCHAR(200)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="movetyp_name" type="VARCHAR(60)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="movetyp_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
-                <constraints nullable="false"/>
-            </column>
-            <column name="movetyp_upuser" type="VARCHAR(60)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-29">
         <createTable tableName="parameter">
             <column name="param_id" type="VARCHAR(255)">
@@ -412,9 +393,6 @@
     <changeSet author="thofan (generated)" id="1544002649622-43">
         <addPrimaryKey columnNames="movefiltgrp_id" constraintName="movementfiltergroup_pkey" tableName="movementfiltergroup"/>
     </changeSet>
-    <changeSet author="thofan (generated)" id="1544002649622-44">
-        <addPrimaryKey columnNames="movetyp_id" constraintName="movementtype_pkey" tableName="movementtype"/>
-    </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-45">
         <addPrimaryKey columnNames="param_id" constraintName="parameter_pkey" tableName="parameter"/>
     </changeSet>
@@ -476,11 +454,6 @@
     <changeSet author="thofan (generated)" id="1544002649622-59">
         <createIndex indexName="movement_movesour_fk_idx" tableName="movement">
             <column name="move_movesour_id"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="thofan (generated)" id="1544002649622-60">
-        <createIndex indexName="movement_movetyp_fk_idx" tableName="movement">
-            <column name="move_movetyp_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-61">
