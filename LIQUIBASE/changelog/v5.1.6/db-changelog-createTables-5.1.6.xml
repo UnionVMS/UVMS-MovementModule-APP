@@ -335,7 +335,7 @@
             <column name="seg_duration" type="FLOAT8"/>
             <column name="seg_geom" type="GEOMETRY"/>
             <column name="seg_segcat_id" type="SMALLINT"/>
-            <column name="seg_sog" type="FLOAT8"/>
+            <column name="seg_sog" type="FLOAT8" remarks="This is in knots per second"/>
             <column name="seg_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
                 <constraints nullable="false"/>
             </column>
