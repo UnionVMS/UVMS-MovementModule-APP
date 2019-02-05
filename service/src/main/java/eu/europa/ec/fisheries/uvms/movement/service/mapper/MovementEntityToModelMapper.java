@@ -214,6 +214,9 @@ public class MovementEntityToModelMapper {
 
     public static MovementTrack mapToMovementTrack(Track track, List<Geometry> points) {
         MovementTrack movementTrack = new MovementTrack();
+        if(track == null){
+            return movementTrack;
+        }
         movementTrack.setDistance(track.getDistance());
         movementTrack.setDuration(track.getDuration());
         movementTrack.setTotalTimeAtSea(track.getTotalTimeAtSea());
