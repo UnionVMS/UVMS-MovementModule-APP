@@ -1,9 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;

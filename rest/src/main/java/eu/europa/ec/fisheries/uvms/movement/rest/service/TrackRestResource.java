@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.Stateless;
@@ -44,7 +45,7 @@ public class TrackRestResource {
 
             UUID id = UUID.fromString(stringId);
             Track track = movementDao.getTrackById(id);
-            List<Geometry> points = movementDao.getPointsFromTrack(track);
+            List<Geometry> points = ((track == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(track));
             MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(track, points);
 
             return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)
@@ -67,7 +68,7 @@ public class TrackRestResource {
 
             UUID id = UUID.fromString(stringId);
             Movement movement = movementDao.getMovementByGUID(id);
-            List<Geometry> points = movementDao.getPointsFromTrack(movement.getTrack());
+            List<Geometry> points = ((movement.getTrack() == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(movement.getTrack()));
             MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(movement.getTrack(), points);
 
             return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)
