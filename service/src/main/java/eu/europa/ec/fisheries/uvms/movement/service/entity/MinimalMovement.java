@@ -91,7 +91,7 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
 
     @NotNull
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_asset_id")
+    @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_id")
     @ManyToOne(cascade = CascadeType.PERSIST)
     private MovementConnect movementConnect;
     
