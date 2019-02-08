@@ -92,7 +92,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
             try {
                 errorCode = Integer.parseInt(message.getErrorMessage());
             } catch (NumberFormatException e) {
-                LOG.error("[ERROR] NumberFormatException while truying to parse int from errorMessage!");
+                LOG.error("[ERROR] NumberFormatException while trying to parse int from errorMessage!");
             }
             exception.setCode(errorCode);
             exception.setFault(message.getErrorMessage());
