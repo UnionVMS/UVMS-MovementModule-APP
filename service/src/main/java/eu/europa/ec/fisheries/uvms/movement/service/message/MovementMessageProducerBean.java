@@ -79,8 +79,8 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
             }
             return corrId;
         } catch (MessageException e) {
-            LOG.error("[ Error when sending data source message. ] {}", e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            LOG.error("[ Error when sending data source message. ] {}", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -99,7 +99,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
             String text = JAXBMarshaller.marshallJaxBObjectToString(exception);
             sendResponseMessageToSender(message.getJmsMessage(), text);
         } catch (MessageException e) {
-            LOG.error("[ Error when sending message. ] {}", e.getMessage());
+            LOG.error("[ Error when sending message. ] {}", e);
             throw new RuntimeException("[ Error when sending message. ]", e);
         }
     }
@@ -109,7 +109,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
         try {
             sendResponseMessageToSender(requestMessage, returnMessage);
         } catch (Exception e) {
-            LOG.error("[ Error when sending message. ] {}", e.getMessage());
+            LOG.error("[ Error when sending message. ] {}", e);
             throw new RuntimeException("[ Error when sending message. ]", e);
         }
     }
@@ -120,7 +120,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Con
         try {
             return sendModuleMessage(text, ModuleQueue.CONFIG);
         } catch (RuntimeException e) {
-            LOG.error("[ Error when sending config message. ] {}", e.getMessage());
+            LOG.error("[ Error when sending config message. ] {}", e);
             throw new ConfigMessageException("[ Error when sending config message. ]");
         }
     }
