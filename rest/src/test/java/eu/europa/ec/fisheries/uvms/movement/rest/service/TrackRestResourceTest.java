@@ -82,4 +82,43 @@ public class TrackRestResourceTest extends BuildMovementRestDeployment {
 
         assertNull(response.getWkt());
     }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMaxTrackTest() {
+        Movement movement = MovementTestHelper.createMovement();
+        Movement movementDeparture = movementService.createMovement(movement);
+
+        movement = MovementTestHelper.createMovement(57d,12d);    //plus one on both from above
+        movement.setMovementConnect(movementDeparture.getMovementConnect());
+        Movement movementMiddle = movementService.createMovement(movement);
+
+        movement = MovementTestHelper.createMovement(58d,13d);    //plus one on both from above
+        movement.setMovementConnect(movementDeparture.getMovementConnect());
+        Movement movementDestination = movementService.createMovement(movement);
+
+
+        MovementTrack response = getWebTarget()
+                .path("track/byMovementGUID")
+                .path(movementDestination.getId().toString())
+                .queryParam("maxNbr", 2)
+                .request(MediaType.APPLICATION_JSON)
+                .get(MovementTrack.class);
+
+        assertNotNull(response);
+
+        assertEquals(response.getWkt(), 2, response.getWkt().split(",").length);
+        String wkt = response.getWkt();
+
+        response = getWebTarget()
+                .path("track")
+                .path(movementDestination.getTrack().getId().toString())
+                .queryParam("maxNbr", 2)
+                .request(MediaType.APPLICATION_JSON)
+                .get(MovementTrack.class);
+
+        assertNotNull(response);
+
+        assertEquals(wkt , response.getWkt());
+    }
 }
