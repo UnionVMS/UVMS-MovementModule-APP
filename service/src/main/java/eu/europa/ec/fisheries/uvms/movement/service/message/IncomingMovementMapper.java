@@ -51,11 +51,7 @@ public abstract class IncomingMovementMapper {
             entity.setMovementSource(MovementSourceType.OTHER);
         }
 
-        if (ic.getMovementType() != null) {
-            entity.setMovementType(MovementTypeType.fromValue(ic.getMovementType()));
-        } else {
-            entity.setMovementType(MovementTypeType.POS);
-        }
+        entity.setMovementType(MovementTypeType.fromValue(ic.getMovementType()));
 
         if (ic.getPositionTime() != null) {
             entity.setTimestamp(ic.getPositionTime());

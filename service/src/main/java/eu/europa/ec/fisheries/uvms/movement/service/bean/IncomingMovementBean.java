@@ -2,10 +2,12 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +70,7 @@ public class IncomingMovementBean {
         List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
         if (!duplicateMovements.isEmpty()) {
             // If they have different movement types
-            if (!movement.getMovementType().equals(duplicateMovements.get(0).getMovementType().value())) {
+            if (!Objects.equals(movement.getMovementType(), duplicateMovements.get(0).getMovementType().value())) {
                 Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);
                 movement.setPositionTime(newDate);
             } else {
