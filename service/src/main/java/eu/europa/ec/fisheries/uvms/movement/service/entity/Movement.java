@@ -47,7 +47,7 @@ import org.hibernate.annotations.Type;
 @NamedQueries({
     @NamedQuery(name = Movement.FIND_ALL, query = "SELECT m FROM Movement m WHERE m.duplicate = false"),
     @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT m FROM Movement m WHERE m.duplicate = false and m.track = :track ORDER BY m.timestamp ASC"),
-    @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.duplicate = false and m.track = :track ORDER BY m.timestamp ASC"),
+    @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.duplicate = false and m.track = :track ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_ALL_BY_MOVEMENTCONNECT, query = "SELECT m FROM Movement m WHERE m.duplicate = false and m.movementConnect = :movementConnect ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_UNPROCESSED, query = "SELECT m FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_UNPROCESSED_ID, query = "SELECT m.id FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
