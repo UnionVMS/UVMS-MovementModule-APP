@@ -13,6 +13,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.jms.ConnectionFactory;
 import javax.jms.TextMessage;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
@@ -665,6 +668,20 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         
         assertThat(dlqAfter, is(dlqBefore + 1));
         assertThat(responseQueueBefore, is(responseQueueAfter));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementTypeTest() throws Exception {
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setMovementType(null);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        assertNotNull(movementDetails.getMovementType());
+
     }
 
 

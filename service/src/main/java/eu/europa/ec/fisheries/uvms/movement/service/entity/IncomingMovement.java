@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @XmlRootElement
 //@DynamicUpdate
 //@DynamicInsert
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class IncomingMovement {
 
     @Id
