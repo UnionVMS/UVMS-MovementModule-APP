@@ -3,6 +3,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 
@@ -43,7 +44,7 @@ public class IncomingMovement {
     private Double tripNumber;
     private String internalReferenceNumber;
 
-    private String movementType;
+    private String movementType = MovementTypeType.POS.value();
     private String movementSourceType;
 
     private String assetType;
