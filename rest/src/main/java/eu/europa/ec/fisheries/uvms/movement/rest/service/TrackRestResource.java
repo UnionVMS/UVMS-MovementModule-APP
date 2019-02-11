@@ -5,11 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -40,12 +36,13 @@ public class TrackRestResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/{id}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getTrack(@PathParam("id") String stringId) {
+    public Response getTrack(@PathParam("id") String stringId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
         try {
 
             UUID id = UUID.fromString(stringId);
             Track track = movementDao.getTrackById(id);
             List<Geometry> points = ((track == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(track));
+            points = ((points.size() > maxNbr) ? points.subList(0, maxNbr) : points);
             MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(track, points);
 
             return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)
@@ -63,12 +60,13 @@ public class TrackRestResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/byMovementGUID/{id}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getTrackByMovement(@PathParam("id") String stringId) {
+    public Response getTrackByMovement(@PathParam("id") String stringId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
         try {
 
             UUID id = UUID.fromString(stringId);
             Movement movement = movementDao.getMovementByGUID(id);
             List<Geometry> points = ((movement.getTrack() == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(movement.getTrack()));
+            points = ((points.size() > maxNbr) ? points.subList(0, maxNbr) : points);
             MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(movement.getTrack(), points);
 
             return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)

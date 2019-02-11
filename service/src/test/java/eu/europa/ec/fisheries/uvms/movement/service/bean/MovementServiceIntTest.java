@@ -237,7 +237,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         List<MovementTrack> tracks = movement.getTracks();
         assertThat(tracks.size(), CoreMatchers.is(1));
         MovementTrack movementTrack = tracks.get(0);
-        String expectedWktString = "LINESTRING (1.0 1.0, 1.0 2.0, 1.0 3.0)";
+        String expectedWktString = "LINESTRING (1.0 3.0, 1.0 2.0, 1.0 1.0)";
         assertThat(movementTrack.getWkt(), CoreMatchers.is(expectedWktString));
     }
     
