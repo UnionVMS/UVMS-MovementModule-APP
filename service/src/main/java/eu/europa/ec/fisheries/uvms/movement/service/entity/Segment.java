@@ -86,7 +86,7 @@ public class Segment implements Serializable {
     private Double distance;
 
     @Column(name = "seg_duration")
-    private Double duration;
+    private int duration;
 
     @Column(name = "seg_sog")
     private Double speedOverGround;
@@ -149,11 +149,11 @@ public class Segment implements Serializable {
         this.distance = distance;
     }
 
-    public Double getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(Double duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
