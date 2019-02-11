@@ -17,7 +17,7 @@ public class SegmentDTO {
 
     private Double distance;
 
-    private Double duration;
+    private Integer duration;
 
     private Double speedOverGround;
 
@@ -61,11 +61,11 @@ public class SegmentDTO {
         this.distance = distance;
     }
 
-    public Double getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(Double duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 

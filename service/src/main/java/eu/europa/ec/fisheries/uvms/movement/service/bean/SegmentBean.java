@@ -87,7 +87,7 @@ public class SegmentBean {
         segment.setDistance(positionCalculations.getDistanceBetweenPoints());
         segment.setSpeedOverGround(positionCalculations.getAvgSpeed());
         segment.setCourseOverGround(positionCalculations.getCourse());
-        segment.setDuration(positionCalculations.getDurationBetweenPoints());
+        segment.setDuration((int)positionCalculations.getDurationBetweenPoints());
 
         segment.setFromMovement(fromMovement);
         segment.setToMovement(toMovement);

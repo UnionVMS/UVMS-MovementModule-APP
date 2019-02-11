@@ -226,7 +226,7 @@
             </column>
             <column name="move_duplicate" type="BOOLEAN"/>
             <column name="move_duplicate_id" type="UUID"/>
-            <column name="move_heading" type="FLOAT8"/>
+            <column name="move_heading" type="FLOAT4"/>
             <column name="move_internal_reference_number" type="VARCHAR(12)"/>
             <column name="move_location" type="GEOMETRY">
                 <constraints nullable="false"/>
@@ -234,7 +234,7 @@
             <column name="move_movesour_id" type="SMALLINT"/>
             <column name="move_movetyp_id" type="SMALLINT"/>
             <column name="move_processed" type="BOOLEAN"/>
-            <column name="move_speed" type="FLOAT8"/>
+            <column name="move_speed" type="FLOAT4"/>
             <column name="move_status" type="VARCHAR(60)"/>
             <column name="move_timestamp" type="TIMESTAMP(6) WITH TIME ZONE"/>
             <column name="move_trip_number" type="FLOAT8"/>
@@ -312,12 +312,12 @@
             <column name="seg_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="seg_cog" type="FLOAT8"/>
+            <column name="seg_cog" type="FLOAT4"/>
             <column name="seg_distance" type="FLOAT8"/>
-            <column name="seg_duration" type="FLOAT8"/>
+            <column name="seg_duration" type="SMALLINT"/>
             <column name="seg_geom" type="GEOMETRY"/>
             <column name="seg_segcat_id" type="SMALLINT"/>
-            <column name="seg_sog" type="FLOAT8" remarks="This is in knots per second"/>
+            <column name="seg_sog" type="FLOAT4" remarks="This is in knots per second"/>
             <column name="seg_updattim" type="TIMESTAMP(6) WITH TIME ZONE">
                 <constraints nullable="false"/>
             </column>

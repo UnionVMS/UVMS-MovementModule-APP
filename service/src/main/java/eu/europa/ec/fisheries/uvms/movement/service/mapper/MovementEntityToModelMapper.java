@@ -207,7 +207,7 @@ public class MovementEntityToModelMapper {
         movSegment.setWkt(WKTUtil.getWktLineStringFromSegment(segment));
         movSegment.setCourseOverGround(segment.getCourseOverGround());
         movSegment.setSpeedOverGround(segment.getSpeedOverGround());
-        movSegment.setDuration(segment.getDuration());
+        movSegment.setDuration((double)segment.getDuration());
         movSegment.setDistance(segment.getDistance());
         return movSegment;
     }
