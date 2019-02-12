@@ -31,7 +31,7 @@
 		<!-- UVMS Libraries -->
 		<uvms.common.version>3.3-W14J8</uvms.common.version>
 		<usm4uvms.version>4.0.14-W14-J8</usm4uvms.version>
-		<uvms.config.version>4.0.3-W14J8</uvms.config.version>
+		<uvms.config.version>4.1-W14J8</uvms.config.version>
 
 		<hibernate.version>5.1.9.Final</hibernate.version>
 	</properties>
