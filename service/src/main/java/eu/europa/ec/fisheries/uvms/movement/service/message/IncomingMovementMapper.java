@@ -18,8 +18,8 @@ public abstract class IncomingMovementMapper {
     public static Movement mapNewMovementEntity(IncomingMovement ic, String username) {
         Movement entity = new Movement();
 
-        entity.setSpeed(ic.getReportedSpeed());
-        entity.setHeading(ic.getReportedCourse());
+        entity.setSpeed(ic.getReportedSpeed().floatValue());
+        entity.setHeading(ic.getReportedCourse().floatValue());
         entity.setInternalReferenceNumber(ic.getInternalReferenceNumber());
         entity.setTripNumber(ic.getTripNumber());
         entity.setStatus(ic.getStatus());
@@ -94,12 +94,12 @@ public abstract class IncomingMovementMapper {
         md.setLatitude(movement.getLocation().getY());
         md.setMovementType(movement.getMovementType().value());
         if(movement.getFromSegment() != null) {
-            md.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
-            md.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
+            md.setCalculatedCourse(movement.getFromSegment().getCourseOverGround().doubleValue());
+            md.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround().doubleValue());
             md.setSegmentType(movement.getFromSegment().getSegmentCategory().value());
         }
-        md.setReportedCourse(movement.getHeading());
-        md.setReportedSpeed(movement.getSpeed());
+        md.setReportedCourse(movement.getHeading().doubleValue());
+        md.setReportedSpeed(movement.getSpeed().doubleValue());
         md.setPositionTime(movement.getTimestamp());
         md.setStatusCode(movement.getStatus());
         md.setTripNumber(movement.getTripNumber());

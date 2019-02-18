@@ -89,10 +89,10 @@ public class Segment implements Serializable {
     private int duration;
 
     @Column(name = "seg_sog")
-    private Double speedOverGround;
+    private Float speedOverGround;
 
     @Column(name = "seg_cog")
-    private Double courseOverGround;
+    private Float courseOverGround;
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
@@ -157,19 +157,19 @@ public class Segment implements Serializable {
         this.duration = duration;
     }
 
-    public Double getSpeedOverGround() {
+    public Float getSpeedOverGround() {
         return speedOverGround;
     }
 
-    public void setSpeedOverGround(Double speedOverGround) {
+    public void setSpeedOverGround(Float speedOverGround) {
         this.speedOverGround = speedOverGround;
     }
 
-    public Double getCourseOverGround() {
+    public Float getCourseOverGround() {
         return courseOverGround;
     }
 
-    public void setCourseOverGround(Double courseOverGround) {
+    public void setCourseOverGround(Float courseOverGround) {
         this.courseOverGround = courseOverGround;
     }
 

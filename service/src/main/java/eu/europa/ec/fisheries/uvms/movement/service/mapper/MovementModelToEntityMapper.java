@@ -34,11 +34,11 @@ public class MovementModelToEntityMapper {
         Movement entity = new Movement();
 
         if (movement.getReportedSpeed() != null) {
-            entity.setSpeed(movement.getReportedSpeed());
+            entity.setSpeed(movement.getReportedSpeed().floatValue());
         }
 
         if (movement.getReportedCourse() != null) {
-            entity.setHeading(movement.getReportedCourse());
+            entity.setHeading(movement.getReportedCourse().floatValue());
         }
 
         entity.setInternalReferenceNumber(movement.getInternalReferenceNumber());
@@ -91,11 +91,11 @@ public class MovementModelToEntityMapper {
         Movement entity = new Movement();
 
         if (movement.getReportedSpeed() != null) {
-            entity.setSpeed(movement.getReportedSpeed());
+            entity.setSpeed(movement.getReportedSpeed().floatValue());
         }
 
         if (movement.getReportedCourse() != null) {
-            entity.setHeading(movement.getReportedCourse());
+            entity.setHeading(movement.getReportedCourse().floatValue());
         }
 
         entity.setInternalReferenceNumber(movement.getInternalReferenceNumber());

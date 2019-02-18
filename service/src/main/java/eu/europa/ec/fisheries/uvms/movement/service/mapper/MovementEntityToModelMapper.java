@@ -46,8 +46,8 @@ public class MovementEntityToModelMapper {
 
     public static MovementBaseType mapToMovementBaseType(Movement movement) {
         MovementBaseType model = new MovementBaseType();
-        model.setReportedSpeed(movement.getSpeed());
-        model.setReportedCourse(movement.getHeading());
+        model.setReportedSpeed(movement.getSpeed().doubleValue());
+        model.setReportedCourse(movement.getHeading().doubleValue());
         model.setGuid(movement.getId().toString());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
@@ -84,8 +84,8 @@ public class MovementEntityToModelMapper {
         model.setAssetId(mapToAssetId(movement.getMovementConnect()));
 
         if (movement.getFromSegment() != null) {
-            model.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
-            model.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
+            model.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround().doubleValue());
+            model.setCalculatedCourse(movement.getFromSegment().getCourseOverGround().doubleValue());
         }
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
         return model;
@@ -99,9 +99,9 @@ public class MovementEntityToModelMapper {
 
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
-        model.setReportedSpeed(movement.getSpeed());
+        model.setReportedSpeed(movement.getSpeed().doubleValue());
         model.setGuid(movement.getId().toString());
-        model.setReportedCourse(movement.getHeading());
+        model.setReportedCourse(movement.getHeading().doubleValue());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setActivity(mapToActivityType(movement.getActivity()));
         model.setStatus(movement.getStatus());
@@ -121,8 +121,8 @@ public class MovementEntityToModelMapper {
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
         if (movement.getFromSegment() != null) {
             model.getSegmentIds().add(movement.getFromSegment().getId().toString());
-            model.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
-            model.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround());
+            model.setCalculatedCourse(movement.getFromSegment().getCourseOverGround().doubleValue());
+            model.setCalculatedSpeed(movement.getFromSegment().getSpeedOverGround().doubleValue());
         }
 
         if (movement.getToSegment() != null) {
@@ -205,8 +205,8 @@ public class MovementEntityToModelMapper {
         movSegment.setId(segment.getId().toString());
         movSegment.setTrackId(segment.getTrack().getId().toString());
         movSegment.setWkt(WKTUtil.getWktLineStringFromSegment(segment));
-        movSegment.setCourseOverGround(segment.getCourseOverGround());
-        movSegment.setSpeedOverGround(segment.getSpeedOverGround());
+        movSegment.setCourseOverGround(segment.getCourseOverGround().doubleValue());
+        movSegment.setSpeedOverGround(segment.getSpeedOverGround().doubleValue());
         movSegment.setDuration((double)segment.getDuration());
         movSegment.setDistance(segment.getDistance());
         return movSegment;
