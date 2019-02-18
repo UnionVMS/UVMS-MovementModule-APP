@@ -556,7 +556,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         movement.setUpdated(timeStamp);
         movement.setDuplicate(Boolean.FALSE);
         movement.setProcessed(Boolean.FALSE);
-        movement.setSpeed(12D);
+        movement.setSpeed(12F);
 
         Coordinate coordinate = new Coordinate(longitude, latitude);
         Point point = geometryFactory.createPoint(coordinate);

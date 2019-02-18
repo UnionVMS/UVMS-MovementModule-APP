@@ -113,10 +113,10 @@ public class Movement implements Serializable, Comparable<Movement> {
     private Point location;
 
     @Column(name = "move_speed")
-    private Double speed;
+    private Float speed;
 
     @Column(name = "move_heading")
-    private Double heading;
+    private Float heading;
 
     @Column(name = "move_trip_number")
     private Double tripNumber;
@@ -226,19 +226,19 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.movementConnect = movementConnect;
     }
 
-    public Double getSpeed() {
+    public Float getSpeed() {
         return speed;
     }
 
-    public void setSpeed(Double speed) {
+    public void setSpeed(Float speed) {
         this.speed = speed;
     }
 
-    public Double getHeading() {
+    public Float getHeading() {
         return heading;
     }
 
-    public void setHeading(Double heading) {
+    public void setHeading(Float heading) {
         this.heading = heading;
     }
 

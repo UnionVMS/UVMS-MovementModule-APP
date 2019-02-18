@@ -38,16 +38,16 @@ public class MicroMovementDto {
 
     }
 
-    public MicroMovementDto(Geometry geo, double heading, UUID guid, MovementConnect asset, Instant timestamp, Double speed) {
+    public MicroMovementDto(Geometry geo, Float heading, UUID guid, MovementConnect asset, Instant timestamp, Float speed) {
         Point point = (Point)geo;
         location = new MovementPoint();
         location.setLatitude(point.getY());
         location.setLongitude(point.getX());
-        this.heading = heading;
+        this.heading = heading.doubleValue();
         this.guid = guid.toString();
         this.asset = asset.getId().toString();
         this.timestamp = timestamp;
-        this.speed = speed;
+        this.speed = speed.doubleValue();
         flagstate = asset.getFlagState();
         assetName = asset.getName();
     }
