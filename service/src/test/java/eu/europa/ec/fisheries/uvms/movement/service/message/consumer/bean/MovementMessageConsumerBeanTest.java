@@ -358,13 +358,13 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement.setAssetHistoryId("TestIrcs");
         incomingMovement.setAssetIRCS("TestIrcs:" + uuid);
         incomingMovement.setPositionTime(timestamp.minusSeconds(10));
-        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement, uuid);
 
         IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
         incomingMovement2.setAssetGuid(null);
         incomingMovement2.setAssetHistoryId("TestIrcs");
         incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);                                              //I set the asset mocker up so that TestIrcs returns the id behind the :
-        MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2);
+        MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2, uuid);
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
