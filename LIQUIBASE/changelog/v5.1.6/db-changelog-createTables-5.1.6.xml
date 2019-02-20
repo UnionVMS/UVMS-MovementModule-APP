@@ -314,7 +314,7 @@
             </column>
             <column name="seg_cog" type="FLOAT4"/>
             <column name="seg_distance" type="FLOAT8"/>
-            <column name="seg_duration" type="SMALLINT"/>
+            <column name="seg_duration" type="INT"/>
             <column name="seg_geom" type="GEOMETRY"/>
             <column name="seg_segcat_id" type="SMALLINT"/>
             <column name="seg_sog" type="FLOAT4" remarks="This is in knots per second"/>
