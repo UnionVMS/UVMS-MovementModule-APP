@@ -15,7 +15,6 @@ import java.util.List;
 import javax.jms.*;
 
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
-import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
@@ -28,7 +27,7 @@ public class JMSHelper {
 
     private static final long TIMEOUT = 20000;
     private static final String MOVEMENT_QUEUE = "UVMSMovementEvent";
-    public static final String RESPONSE_QUEUE = "MovementTestQueue";
+    public static final String RESPONSE_QUEUE = "IntegrationTestsResponseQueue";
 
     private final ConnectionFactory connectionFactory;
 
