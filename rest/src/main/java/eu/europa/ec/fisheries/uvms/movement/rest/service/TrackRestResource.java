@@ -41,8 +41,7 @@ public class TrackRestResource {
 
             UUID id = UUID.fromString(stringId);
             Track track = movementDao.getTrackById(id);
-            List<Geometry> points = ((track == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(track));
-            points = ((points.size() > maxNbr) ? points.subList(0, maxNbr) : points);
+            List<Geometry> points = ((track == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(track, maxNbr));
             MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(track, points);
 
             return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)
@@ -65,8 +64,7 @@ public class TrackRestResource {
 
             UUID id = UUID.fromString(stringId);
             Movement movement = movementDao.getMovementByGUID(id);
-            List<Geometry> points = ((movement.getTrack() == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(movement.getTrack()));
-            points = ((points.size() > maxNbr) ? points.subList(0, maxNbr) : points);
+            List<Geometry> points = ((movement.getTrack() == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(movement.getTrack(), maxNbr));
             MovementTrack returnTrack = MovementEntityToModelMapper.mapToMovementTrack(movement.getTrack(), points);
 
             return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)

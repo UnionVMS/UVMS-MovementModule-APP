@@ -42,8 +42,9 @@ public class MovementDao {
     @PersistenceContext
     private EntityManager em;
 
-    public List<Geometry> getPointsFromTrack(Track track) {
+    public List<Geometry> getPointsFromTrack(Track track, int maxResults) {
         TypedQuery<Geometry> query = em.createNamedQuery(Movement.FIND_ALL_LOCATIONS_BY_TRACK, Geometry.class);
+        query.setMaxResults(maxResults);
         query.setParameter("track", track);
         return query.getResultList();
     }
