@@ -21,10 +21,6 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-
-import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.DraftMovementMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.message.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
@@ -32,6 +28,7 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
@@ -39,10 +36,12 @@ import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnu
 import eu.europa.ec.fisheries.uvms.movement.model.dto.TempMovementsListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.DraftMovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementDataSourceResponseMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.DraftMovementMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.message.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.movement.service.message.ExchangeBean;
 
 @Stateless
 public class DraftMovementService {
@@ -50,7 +49,7 @@ public class DraftMovementService {
     private static final Logger LOG = LoggerFactory.getLogger(DraftMovementService.class);
 
     @Inject
-    private MovementMessageProducerBean producer;
+    private ExchangeBean exchangeProducer;
     
     @Inject
     private DraftMovementDao dao;
@@ -124,7 +123,7 @@ public class DraftMovementService {
         response.setCurrentPage(query.getPagination().getPage());
         response.setTempMovementList(tempMovementList);
 
-        return MovementDataSourceResponseMapper.tempMovementListResponse(response);
+        return MovementResponseMapper.tempMovementListResponse(response);
     }
 
     
@@ -135,10 +134,10 @@ public class DraftMovementService {
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
                     Date.from(DateUtil.nowUTC()), null, PluginType.MANUAL, username, null);
-            producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
+            exchangeProducer.sendModuleMessage(exchangeRequest);
             return movement;
-        } catch (ExchangeModelMarshallException ex) {
-            throw new RuntimeException("Error when marshaling exchange request.", ex);
+        } catch (ExchangeModelMarshallException | MessageException ex) {
+            throw new IllegalArgumentException("Error when marshaling exchange request.", ex);
         }
     }
     

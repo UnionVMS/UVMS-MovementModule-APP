@@ -17,7 +17,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
@@ -40,7 +39,7 @@ public class MovementEventBean {
     private MovementService movementService;
 
     @Inject
-    private MovementMessageProducerBean messageProducer;
+    private MovementProducer messageProducer;
 
     @Inject
     @ErrorEvent
@@ -52,7 +51,7 @@ public class MovementEventBean {
             GetMovementListByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementListByQueryRequest.class);
             GetMovementListByQueryResponse movementList = movementService.getList(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapTogetMovementListByQueryResponse(movementList.getMovement());
-            messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
+            messageProducer.sendResponseMessageToSender(jmsMessage, responseString);
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (Exception ex) {
             LOG.error("[ Error on getMovementListByQuery ] ", ex);
@@ -71,7 +70,7 @@ public class MovementEventBean {
             GetMovementMapByQueryResponse movementList = movementService.getMapByQuery(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapToMovementMapResponse(movementList.getMovementMap());
 
-            messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
+            messageProducer.sendResponseMessageToSender(jmsMessage, responseString);
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (Exception ex) {
             LOG.error("[ Error when creating getMovementMapByQuery ] ", ex);
@@ -84,9 +83,14 @@ public class MovementEventBean {
     }
     
     public void ping(TextMessage message) {
+        try {
             PingResponse pingResponse = new PingResponse();
             pingResponse.setResponse("pong");
-            messageProducer.sendMessageBackToRecipient(message, JAXBMarshaller.marshallJaxBObjectToString(pingResponse));
+            messageProducer.sendResponseMessageToSender(message, JAXBMarshaller.marshallJaxBObjectToString(
+                    pingResponse));
+        } catch (Exception e) {
+            LOG.error("Could not send ping reply", e);
+        }
     }
 
     
