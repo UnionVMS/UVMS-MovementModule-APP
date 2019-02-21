@@ -173,7 +173,7 @@ public class MovementService {
                 List<Track> tracks = MovementEntityToModelMapper.extractTracks(extractSegments);
                 List<MovementTrack> extractTracks = new ArrayList<>();
                 for (Track track : tracks) {
-                    List<Geometry> points = dao.getPointsFromTrack(track);
+                    List<Geometry> points = dao.getPointsFromTrack(track,2000);             //2k is a magical int that looks good........
                     extractTracks.add(MovementEntityToModelMapper.mapToMovementTrack(track, points));
                 }
                 
