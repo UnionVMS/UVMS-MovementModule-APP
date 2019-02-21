@@ -16,10 +16,9 @@ import javax.inject.Inject;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-
-import eu.europa.ec.fisheries.uvms.movement.service.message.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.uvms.movement.service.message.MovementProducer;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import eu.europa.ec.fisheries.uvms.user.model.mapper.UserModuleResponseMapper;
 import eu.europa.ec.fisheries.wsdl.user.types.Context;
@@ -37,7 +36,7 @@ public class UserModuleMock implements MessageListener {
     final static Logger LOG = LoggerFactory.getLogger(UserModuleMock.class);
     
     @Inject
-    MovementMessageProducerBean messageProducer;
+    MovementProducer messageProducer;
     
     @Override
     public void onMessage(Message message) {
@@ -47,7 +46,7 @@ public class UserModuleMock implements MessageListener {
         String responseString;
             responseString = UserModuleResponseMapper.mapToGetUserContextResponse(userContext);
 
-        messageProducer.sendMessageBackToRecipient((TextMessage) message, responseString);
+        messageProducer.sendResponseMessageToSender((TextMessage) message, responseString);
 
         } catch (Exception e) {
             LOG.error("UserModuleMock Error", e);

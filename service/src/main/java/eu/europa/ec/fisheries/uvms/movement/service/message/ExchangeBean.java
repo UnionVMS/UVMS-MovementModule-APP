@@ -1,6 +1,10 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.jms.Queue;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefType;
@@ -15,6 +19,9 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 @Stateless
 public class ExchangeBean extends AbstractProducer {
 
+    @Resource(mappedName = "java:/jms/queue/UVMSMovement")
+    private Queue replyToQueue;
+    
     public void sendAckToExchange(MovementRefTypeType refType, Movement movement, String ackResponseMessageId) throws ExchangeModelMarshallException, MessageException {
         if (ackResponseMessageId == null) {
             return;
@@ -37,6 +44,11 @@ public class ExchangeBean extends AbstractProducer {
         sendModuleMessage(xml, null);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public String sendModuleMessage(String text) throws MessageException {
+        return sendModuleMessage(text, replyToQueue);
+    }
+    
     @Override
     public String getDestinationName() {
         return MessageConstants.QUEUE_EXCHANGE_EVENT;

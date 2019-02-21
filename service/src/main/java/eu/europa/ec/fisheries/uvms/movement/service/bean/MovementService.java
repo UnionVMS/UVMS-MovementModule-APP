@@ -48,7 +48,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementDataSourceResponseMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
@@ -185,7 +185,7 @@ public class MovementService {
                 mapResponse.add(responseType);
 
             }
-            return MovementDataSourceResponseMapper.createMovementMapResponse(mapResponse);
+            return MovementResponseMapper.createMovementMapResponse(mapResponse);
         } catch (Exception  ex) {
             throw new RuntimeException("Error when getting movement map by query", ex);
         }
@@ -233,7 +233,7 @@ public class MovementService {
             response.setMovementList(movementList);
             response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
 
-            return MovementDataSourceResponseMapper.createMovementListResponse(response);
+            return MovementResponseMapper.createMovementListResponse(response);
         } catch (ParseException e) {
             throw new RuntimeException("Error when getting movement list by query: ParseException", e);
         }
@@ -280,7 +280,7 @@ public class MovementService {
             response.setCurrentPage(BigInteger.valueOf(page));
             response.setMovementList(movementList);
             response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
-            return MovementDataSourceResponseMapper.createMovementListResponse(response);
+            return MovementResponseMapper.createMovementListResponse(response);
         } catch (ParseException ex) {
             throw new RuntimeException("Error when getting movement list by query", ex);
         }
