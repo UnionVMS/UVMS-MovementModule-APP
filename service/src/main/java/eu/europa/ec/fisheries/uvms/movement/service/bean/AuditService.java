@@ -14,19 +14,18 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-
-import eu.europa.ec.fisheries.uvms.audit.model.mapper.AuditLogMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
-import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
-import eu.europa.ec.fisheries.uvms.movement.service.message.MovementMessageProducerBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
+import eu.europa.ec.fisheries.uvms.audit.model.mapper.AuditLogMapper;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.message.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.service.message.AuditModuleRequestMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.AuditModuleRequestMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.message.AuditProducer;
 
 @Stateless
 public class AuditService {
@@ -34,7 +33,7 @@ public class AuditService {
     private static final Logger LOG = LoggerFactory.getLogger(AuditService.class);
 
     @Inject
-    private MovementMessageProducerBean producer;
+    private AuditProducer producer;
 
     @Asynchronous
     public void sendMovementCreatedAudit(Movement movement, String username) {
@@ -45,8 +44,8 @@ public class AuditService {
             } else {
                 auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(movement.getId(), username);
             }
-            producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
-        } catch (AuditModelMarshallException e) {
+            producer.sendModuleMessage(auditData);
+        } catch (AuditModelMarshallException | MessageException e) {
             LOG.error("Failed to send audit log message! Movement with guid {} was created ", movement.getId(), e);
         }
     }
@@ -55,8 +54,8 @@ public class AuditService {
     public void sendMovementBatchCreatedAudit(String guid, String username) {
         try {
             String auditData = AuditModuleRequestMapper.mapAuditLogMovementBatchCreated(guid, username);
-            producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
-        } catch (AuditModelMarshallException e) {
+            producer.sendModuleMessage(auditData);
+        } catch (AuditModelMarshallException | MessageException e) {
             LOG.error("Failed to send audit log message! Movement batch with guid {} was created ", guid, e);
         }
     }
@@ -66,8 +65,8 @@ public class AuditService {
         try {
             String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(draftMovement.getId().toString(),
                     username);
-            producer.sendModuleMessage(auditRequest, ModuleQueue.AUDIT);
-        } catch (AuditModelMarshallException e) {
+            producer.sendModuleMessage(auditRequest);
+        } catch (AuditModelMarshallException | MessageException e) {
             LOG.error("Failed to send audit log message! DraftMovement with guid {} was created ", draftMovement.getId().toString(), e);
         }
     }
@@ -76,8 +75,8 @@ public class AuditService {
     public void sendAuditMessage(AuditObjectTypeEnum type, AuditOperationEnum operation, String affectedObject, String comment, String username) {
         try {
             String message = AuditLogMapper.mapToAuditLog(type.getValue(), operation.getValue(), affectedObject, comment, username);
-            producer.sendModuleMessage(message, ModuleQueue.AUDIT);
-        } catch (AuditModelMarshallException e) {
+            producer.sendModuleMessage(message);
+        } catch (AuditModelMarshallException | MessageException e) {
             LOG.error("[ERROR] Error when sending message to Audit. ] {}", e.getMessage());
         }
     }

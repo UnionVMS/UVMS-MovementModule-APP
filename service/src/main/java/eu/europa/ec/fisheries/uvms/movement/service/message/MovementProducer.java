@@ -11,6 +11,15 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
-public enum ModuleQueue {
-    AUDIT, SPATIAL, CONFIG, EXCHANGE, USER;
+import javax.ejb.Stateless;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
+
+@Stateless
+public class MovementProducer extends AbstractProducer {
+
+    @Override
+    public String getDestinationName() {
+        return MessageConstants.QUEUE_MOVEMENT;
+    }
 }

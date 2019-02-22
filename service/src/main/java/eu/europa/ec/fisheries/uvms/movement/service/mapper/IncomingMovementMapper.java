@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.movement.service.message;
+package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;

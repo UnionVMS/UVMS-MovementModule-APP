@@ -25,14 +25,12 @@ import org.slf4j.LoggerFactory;
 @Stateless
 public class MovementConsumerBean extends AbstractConsumer implements ConfigMessageConsumer {
 
-    final static Logger LOG = LoggerFactory.getLogger(MovementConsumerBean.class);
-
-    private static final long TIMEOUT = 30000;
+    private static final Logger LOG = LoggerFactory.getLogger(MovementConsumerBean.class);
 
     @Override
     public <T> T getConfigMessage(String correlationId, Class type) throws ConfigMessageException {
         try {
-            return getMessage(correlationId, type, TIMEOUT);
+            return getMessage(correlationId, type);
         } catch (MessageException e) {
             LOG.error("[ Error when getting message ] {}", e.getMessage());
             throw new ConfigMessageException("Error when retrieving message: ");
