@@ -1,13 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
@@ -20,6 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
 @Path("/internal")
 @Stateless
 @Consumes(value = {MediaType.APPLICATION_JSON})
@@ -28,10 +29,10 @@ public class InternalRestResource {
     private static final Logger LOG = LoggerFactory.getLogger(InternalRestResource.class);
 
     @Inject
-    MovementService movementService;
+    private MovementService movementService;
 
     @Inject
-    MovementDao movementDao;
+    private MovementDao movementDao;
 
     @POST
     @Path("/list")
