@@ -1,13 +1,10 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
@@ -20,6 +17,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
 @Path("/internal")
 @Stateless
 @Consumes(value = {MediaType.APPLICATION_JSON})
@@ -28,10 +34,12 @@ public class InternalRestResource {
     private static final Logger LOG = LoggerFactory.getLogger(InternalRestResource.class);
 
     @Inject
-    MovementService movementService;
+    private MovementService movementService;
 
     @Inject
-    MovementDao movementDao;
+    private MovementDao movementDao;
+
+    private ObjectMapper mapper = new ObjectMapper();
 
     @POST
     @Path("/list")
@@ -88,7 +96,9 @@ public class InternalRestResource {
     public Response getMovementMapByQuery(MovementQuery query) {
         try {
             GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
-            return Response.ok(response).build();
+            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            String strValue = mapper.writeValueAsString(response);
+            return Response.ok(strValue).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity("No MovementQuery found").build();
         } catch (Exception e) {
