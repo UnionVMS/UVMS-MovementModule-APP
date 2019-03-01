@@ -17,6 +17,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.UUID;
 
 public class CalculationUtil {
@@ -61,7 +62,7 @@ public class CalculationUtil {
         Point pointPreviousPosition = previousPosition.getLocation();
 
         double distanceInMeters = 0;
-        double durationInSeconds = 0;
+        double durationInMilliSeconds = 0;
         double speedOverGround = 0;
         double courseOverGround = 0;
         double distanceBetweenPointsInNauticalMiles = 0;
@@ -69,17 +70,17 @@ public class CalculationUtil {
         if ((pointThisPosition.getX() != pointPreviousPosition.getX()) ||  (pointThisPosition.getY() != pointPreviousPosition.getY())) {
 
             distanceInMeters = calculateDistance(pointPreviousPosition.getY(), pointPreviousPosition.getX(), pointThisPosition.getY(), pointThisPosition.getX());
-            durationInSeconds = (currentPosition.getTimestamp().getEpochSecond() - previousPosition.getTimestamp().getEpochSecond());
+            durationInMilliSeconds = (double)Duration.between(previousPosition.getTimestamp(), currentPosition.getTimestamp()).toMillis();
 
             courseOverGround = calculateCourse(pointPreviousPosition.getY(), pointPreviousPosition.getX(), pointThisPosition.getY(), pointThisPosition.getX());
             distanceBetweenPointsInNauticalMiles = CalculationUtil.getNauticalMilesFromMeter(distanceInMeters);
 
-            speedOverGround = (distanceInMeters / durationInSeconds) * FACTOR_METER_PER_SECOND_TO_KNOTS;
+            speedOverGround = (distanceInMeters / (durationInMilliSeconds/1000)) * FACTOR_METER_PER_SECOND_TO_KNOTS;
         }
 
         calculations.setAvgSpeed(speedOverGround);
         calculations.setDistanceBetweenPoints(distanceBetweenPointsInNauticalMiles);
-        calculations.setDurationBetweenPoints(durationInSeconds);
+        calculations.setDurationBetweenPoints(durationInMilliSeconds/1000);
         calculations.setCourse(courseOverGround);
 
         return calculations;
