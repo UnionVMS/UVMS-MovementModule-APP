@@ -1,11 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.UUID;
@@ -22,6 +16,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class CalculationUtilTest extends TransactionalTests {
@@ -98,7 +94,7 @@ public class CalculationUtilTest extends TransactionalTests {
 			assertTrue(true);
 		}
 	}
-	
+
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testCalculateCourse() {
@@ -171,6 +167,30 @@ public class CalculationUtilTest extends TransactionalTests {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
+	}
+
+	@Test
+	@OperateOnDeployment("movementservice")
+	public void testGetPositionCalculationsMillisecondTimespan () {
+		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		UUID connectId = UUID.randomUUID();
+		Instant dateStartMovement = DateUtil.nowUTC();
+
+		double startLon = 15.4479166666667;
+		double startLat = 54.9316516666667;
+
+		double endLon = 15.4479433333333;
+		double endLat = 54.9314733333333;
+
+		Movement start =  movementHelpers.createMovement(startLon, startLat, connectId, "ONE", dateStartMovement);
+		Movement end =  movementHelpers.createMovement(endLon, endLat, connectId, "ONE", dateStartMovement.plusMillis(42));
+
+		SegmentCalculations segmentCalc = CalculationUtil.getPositionCalculations(start, end);
+
+		assertNotNull(segmentCalc);
+		assertFalse(Double.isInfinite(segmentCalc.getAvgSpeed()));
+		assertEquals(0.042D, segmentCalc.getDurationBetweenPoints(),0);
+
 	}
 	
 	@Test
