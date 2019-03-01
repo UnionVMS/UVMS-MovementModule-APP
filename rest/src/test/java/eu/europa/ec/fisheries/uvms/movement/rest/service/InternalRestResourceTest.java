@@ -60,12 +60,11 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .path("internal/movementMapByQuery/")
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(query), String.class);
+        assertNotNull(response);
 
         GetMovementMapByQueryResponse movMap = mapper.readValue(response, GetMovementMapByQueryResponse.class);
         assertNotNull(movMap);
         assertEquals(1, movMap.getMovementMap().size());
-
-        assertNotNull(response);
     }
 
     private MovementQuery createMovementQuery(Movement createdMovement) {
