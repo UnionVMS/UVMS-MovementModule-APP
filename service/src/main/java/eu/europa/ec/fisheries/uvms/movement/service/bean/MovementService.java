@@ -202,7 +202,7 @@ public class MovementService {
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
             throw new IllegalArgumentException("Pagination in movementlist query is null");
         }
-        if (query.getMovementSearchCriteria().isEmpty()) {
+        if (query.getMovementSearchCriteria() == null || query.getMovementSearchCriteria().isEmpty()) {
             throw new IllegalArgumentException("No search criterias in MovementList query");
         }
         try {
@@ -250,7 +250,7 @@ public class MovementService {
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
             throw new IllegalArgumentException("Pagination in movementList query is null");
         }
-        if (query.getMovementSearchCriteria() == null) {
+        if (query.getMovementSearchCriteria() == null || query.getMovementSearchCriteria().isEmpty()) {
             throw new IllegalArgumentException("No search criterias in MovementList query");
         }
         try {
