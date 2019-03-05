@@ -78,7 +78,6 @@ public class Segment implements Serializable {
     @Column(columnDefinition = "uuid", name = "seg_id")
     private UUID id;
 
-    @Type(type = "org.hibernate.spatial.GeometryType")
     @Column(name = "seg_geom", columnDefinition = "Geometry", nullable = true)
     private LineString location;
 
