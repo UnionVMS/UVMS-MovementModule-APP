@@ -108,7 +108,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     private UUID id;
 
     @NotNull
-    @Type(type = "org.hibernate.spatial.GeometryType")
     @Column(name = "move_location", columnDefinition = "Geometry")
     private Point location;
 

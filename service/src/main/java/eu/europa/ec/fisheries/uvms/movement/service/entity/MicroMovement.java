@@ -24,7 +24,6 @@ public class MicroMovement implements Serializable{
 
 
     @NotNull
-    @Type(type = "org.hibernate.spatial.GeometryType")
     @Column(name = "move_location", columnDefinition = "Geometry")
     private Point location;
 
