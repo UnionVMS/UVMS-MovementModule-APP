@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -34,6 +35,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 
 @RunWith(Arquillian.class)
 public class MovementServiceIntTest extends TransactionalTests {
@@ -57,7 +59,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
         Movement movementType = MockData.createMovement(longitude, latitude, connectId);
         try {
-            Movement createdMovementType = movementService.createMovement(movementType);
+            Movement createdMovementType = movementService.createAndProcessMovement(movementType);
             assertNotNull(createdMovementType);
         } catch (Exception e) {
             fail();
@@ -104,7 +106,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
         Movement movementType = MockData.createMovement(longitude, latitude, connectId);
         try {
-            createdMovement = movementService.createMovement(movementType);
+            createdMovement = movementService.createAndProcessMovement(movementType);
             assertNotNull(createdMovement);
         } catch (Exception e) {
             fail(e.getMessage());
@@ -136,17 +138,17 @@ public class MovementServiceIntTest extends TransactionalTests {
         
         Movement movement1 = MockData.createMovement(1d, 1d, connectId);
         movement1.getMovementConnect().setAssetId(assetId);
-        Movement createdMovement1 = movementService.createMovement(movement1);
+        Movement createdMovement1 = movementService.createAndProcessMovement(movement1);
         
         Movement movement2 = MockData.createMovement(2d, 2d, connectId);
         movement2.getMovementConnect().setAssetId(assetId);
-        Movement createdMovement2 = movementService.createMovement(movement2);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movement2);
         
         // new connect id
         connectId = UUID.randomUUID();
         Movement movement3 = MockData.createMovement(3d, 3d, connectId);
         movement3.getMovementConnect().setAssetId(assetId);
-        Movement createdMovement3 = movementService.createMovement(movement3);
+        Movement createdMovement3 = movementService.createAndProcessMovement(movement3);
 
         MovementQuery query = createMovementQuery(true);
         ListCriteria criteria = new ListCriteria();
@@ -219,11 +221,11 @@ public class MovementServiceIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
         
         Movement movement1 = MockData.createMovement(1d, 1d, connectId);
-        movementService.createMovement(movement1);
+        movementService.createAndProcessMovement(movement1);
         Movement movement2 = MockData.createMovement(1d, 2d, connectId);
-        movementService.createMovement(movement2);
+        movementService.createAndProcessMovement(movement2);
         Movement movement3 = MockData.createMovement(1d, 3d, connectId);
-        movementService.createMovement(movement3);
+        movementService.createAndProcessMovement(movement3);
         
         MovementQuery query = createMovementQuery(false);
         ListCriteria criteria = new ListCriteria();
@@ -272,7 +274,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             UUID connectId = UUID.randomUUID();
             Movement movementType = MockData.createMovement(longitude, latitude, connectId);
             assertNotNull(movementService);
-            Movement createdMovementType = movementService.createMovement(movementType);
+            Movement createdMovementType = movementService.createAndProcessMovement(movementType);
             em.flush();
             assertNotNull(createdMovementType);
 
@@ -325,6 +327,55 @@ public class MovementServiceIntTest extends TransactionalTests {
         } catch (Exception e) {
             assertNotNull(e);
         }
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getMovementConnect() {
+        // Note getOrCreateMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batch import to succeed)
+        MovementConnect mc = new MovementConnect();
+        mc.setId(UUID.randomUUID());
+        mc.setUpdated(Instant.now());
+        mc.setUpdatedBy("Test Connector");
+        MovementConnect fetchedMovementConnect = movementService.getOrCreateMovementConnectByConnectId(mc);
+        assertNotNull(fetchedMovementConnect);
+        assertEquals(fetchedMovementConnect.getId(), mc.getId());
+    }
+
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getMovementConnect_ZEROISH_GUID() {
+        MovementConnect mc = new MovementConnect();
+        mc.setId(UUID.fromString("100000-0000-0000-0000-000000000000"));
+        mc.setUpdated(Instant.now());
+        mc.setUpdatedBy("Test Connector");
+        // Note getOrCreateMovementConnectByConnectId CREATES one if it does not exists  (probably to force a batchimport to succeed)
+        MovementConnect fetchedMovementConnect = movementService.getOrCreateMovementConnectByConnectId(mc);
+        assertNotNull(fetchedMovementConnect);
+        assertEquals(fetchedMovementConnect.getId(), mc.getId());
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getMovementConnect_NULL_GUID() {
+        assertNull(movementService.getOrCreateMovementConnectByConnectId(null));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createMovement2() {
+        double longitude = rnd.nextDouble();
+        double latitude = rnd.nextDouble();
+
+        UUID randomUUID = UUID.randomUUID();
+        Movement movement = MockData.createMovement(longitude, latitude, randomUUID);
+        movement.getMovementConnect().setId(randomUUID);
+
+        Movement created = movementService.createMovement(movement);
+        assertNotNull(created);
+        assertEquals(randomUUID, created.getMovementConnect().getId());
+
     }
 
     /******************************************************************************************************************

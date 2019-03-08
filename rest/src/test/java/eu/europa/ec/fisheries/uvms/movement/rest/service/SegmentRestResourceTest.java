@@ -26,11 +26,11 @@ public class SegmentRestResourceTest extends BuildMovementRestDeployment {
     public void getSegmentByMovementsTest(){
 
         Movement movement = MovementTestHelper.createMovement();
-        Movement movementDeparture = movementService.createMovement(movement);
+        Movement movementDeparture = movementService.createAndProcessMovement(movement);
 
         movement = MovementTestHelper.createMovement(57d,12d);    //plus one on both from above
         movement.setMovementConnect(movementDeparture.getMovementConnect());
-        Movement movementDestination = movementService.createMovement(movement);
+        Movement movementDestination = movementService.createAndProcessMovement(movement);
 
         SegmentDTO response = getWebTarget()
                 .path("segment")

@@ -17,7 +17,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
@@ -25,7 +25,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 public class GeometryUtilTest extends TransactionalTests {
 
 	@EJB
-	private MovementBatchModelBean movementBatchModelBean;
+	private MovementService movementService;
 
 	@EJB
 	private MovementDao movementDao;
@@ -77,7 +77,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testGetCoordinateSequenceFromMovements() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
@@ -104,7 +104,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testGetLineStringFromMovments() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		
 		List<Movement> varbergGrenaTourReverse = movementHelpers.createVarbergGrenaMovements(2, 100, connectId);

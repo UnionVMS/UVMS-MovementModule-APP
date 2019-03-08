@@ -10,17 +10,17 @@ import com.peertopark.java.geocalc.Coordinate;
 import com.peertopark.java.geocalc.DegreeCoordinate;
 import com.peertopark.java.geocalc.EarthCalc;
 import com.peertopark.java.geocalc.Point;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
 public class MovementHelpers {
 
-    private final MovementBatchModelBean movementBatchModelBean;
+    private final MovementService movementService;
 
     private Random rnd = new Random();
 
-    public MovementHelpers(MovementBatchModelBean movementBatchModelBean) {
-        this.movementBatchModelBean = movementBatchModelBean;
+    public MovementHelpers(MovementService movementBatchModelBean) {
+        this.movementService = movementBatchModelBean;
     }
 
     /******************************************************************************************************************
@@ -32,7 +32,7 @@ public class MovementHelpers {
 
             Movement movement = MockData.createMovement(longitude, latitude, connectId, 0, userName);
             movement.setTimestamp(positionTime);
-            movement = movementBatchModelBean.createMovement(movement);
+            movement = movementService.createMovement(movement);
             return movement;
 
 
@@ -42,7 +42,7 @@ public class MovementHelpers {
 
             Movement movement = MockData.createMovement(latlong,  connectId, userName);
             movement.setTimestamp(positionTime);
-            return movementBatchModelBean.createMovement(movement);
+            return movementService.createMovement(movement);
 
     }
 

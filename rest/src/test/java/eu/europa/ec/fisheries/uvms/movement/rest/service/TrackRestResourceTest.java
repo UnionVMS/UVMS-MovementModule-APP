@@ -26,11 +26,11 @@ public class TrackRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getTrackByIdTest() {
         Movement movement = MovementTestHelper.createMovement();
-        Movement movementDeparture = movementService.createMovement(movement);
+        Movement movementDeparture = movementService.createAndProcessMovement(movement);
 
         movement = MovementTestHelper.createMovement(57d,12d);    //plus one on both from above
         movement.setMovementConnect(movementDeparture.getMovementConnect());
-        Movement movementDestination = movementService.createMovement(movement);
+        Movement movementDestination = movementService.createAndProcessMovement(movement);
 
         MovementTrack response = getWebTarget()
                 .path("track")
@@ -47,11 +47,11 @@ public class TrackRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getTrackByMovementGuidTest() {
         Movement movement = MovementTestHelper.createMovement();
-        Movement movementDeparture = movementService.createMovement(movement);
+        Movement movementDeparture = movementService.createAndProcessMovement(movement);
 
         movement = MovementTestHelper.createMovement(57d,12d);    //plus one on both from above
         movement.setMovementConnect(movementDeparture.getMovementConnect());
-        Movement movementDestination = movementService.createMovement(movement);
+        Movement movementDestination = movementService.createAndProcessMovement(movement);
 
         MovementTrack response = getWebTarget()
                 .path("track/byMovementGUID")
@@ -69,7 +69,7 @@ public class TrackRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getTrackFromASingleMovementTest() {  //should not result in a 500 bc no track
         Movement movement = MovementTestHelper.createMovement();
-        Movement singelMovement = movementService.createMovement(movement);
+        Movement singelMovement = movementService.createAndProcessMovement(movement);
 
 
         MovementTrack response = getWebTarget()
@@ -87,15 +87,15 @@ public class TrackRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getMaxTrackTest() {
         Movement movement = MovementTestHelper.createMovement();
-        Movement movementDeparture = movementService.createMovement(movement);
+        Movement movementDeparture = movementService.createAndProcessMovement(movement);
 
         movement = MovementTestHelper.createMovement(57d,12d);    //plus one on both from above
         movement.setMovementConnect(movementDeparture.getMovementConnect());
-        Movement movementMiddle = movementService.createMovement(movement);
+        Movement movementMiddle = movementService.createAndProcessMovement(movement);
 
         movement = MovementTestHelper.createMovement(58d,13d);    //plus one on both from above
         movement.setMovementConnect(movementDeparture.getMovementConnect());
-        Movement movementDestination = movementService.createMovement(movement);
+        Movement movementDestination = movementService.createAndProcessMovement(movement);
 
 
         MovementTrack response = getWebTarget()

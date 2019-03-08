@@ -47,13 +47,13 @@ public class SSEResourceTest extends BuildMovementRestDeployment {
             assertTrue(source.isOpen());
 
             Movement movementBaseType = MovementTestHelper.createMovement();
-            Movement createdMovement = movementService.createMovement(movementBaseType);
+            Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
             movementBaseType = MovementTestHelper.createMovement();
-            createdMovement = movementService.createMovement(movementBaseType);
+            createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
             movementBaseType = MovementTestHelper.createMovement();
-            createdMovement = movementService.createMovement(movementBaseType);
+            createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
 
 
