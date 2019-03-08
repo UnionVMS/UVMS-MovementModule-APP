@@ -43,7 +43,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getMovementListByQuery() throws IOException {
         Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createMovement(movementBaseType);
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
         assertNotNull(createdMovement.getId());
 
@@ -65,7 +65,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getMovementMinimalListByQuery() throws IOException {
         Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createMovement(movementBaseType);
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
         assertNotNull(createdMovement.getId());
 
@@ -87,7 +87,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getLatestMovementsByConnectIds() throws IOException {
         Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createMovement(movementBaseType);
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
         assertNotNull(createdMovement.getId());
 
@@ -110,7 +110,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void countMovementsInTheLastDayForAssetTest() {
         Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createMovement(movementBaseType);
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
         Instant now = Instant.now().plusSeconds(60);
 
         long response = getWebTarget()
@@ -126,7 +126,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getMovementMapByQuery() throws IOException {
         Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createMovement(movementBaseType);
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
         MovementQuery query = createMovementQuery(createdMovement);
 

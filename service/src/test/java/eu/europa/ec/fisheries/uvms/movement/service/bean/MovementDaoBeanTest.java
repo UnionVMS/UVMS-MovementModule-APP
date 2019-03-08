@@ -25,7 +25,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@EJB
-    private MovementBatchModelBean movementBatchModelBean;
+    private MovementService movementService;
 	
 	@Inject
 	private IncomingMovementBean incomingMovementBean;
@@ -43,7 +43,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		assertNull(output);
 		
 		UUID connectId = UUID.randomUUID();
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		Movement move = movementHelpers.createMovement(20D, 20D, connectId, "TEST", Instant.now());
 		
 		output = movementDao.getMovementByGUID(move.getId());
@@ -56,7 +56,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	public void testGetLatestMovementByConnectIdList() throws Exception {
 		UUID connectID = UUID.randomUUID();
 		UUID connectID2 = UUID.randomUUID();
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
 		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.now().plusSeconds(1));
 		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID2, "TEST", Instant.now().plusSeconds(2));
@@ -95,7 +95,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	@OperateOnDeployment("movementservice")
 	public void testGetLatestMovementsByConnectID() throws Exception {
 		UUID connectID = UUID.randomUUID();
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
 		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.now().plusSeconds(1));
 		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID, "TEST42", Instant.now().plusSeconds(2));
@@ -132,7 +132,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		thrown.expect(EJBTransactionRolledbackException.class);
 
 		UUID connectID = UUID.randomUUID();
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
 		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.ofEpochMilli(System.currentTimeMillis() + 100L));
 		Movement move3 = movementHelpers.createMovement(22D, 22D, connectID, "TEST42", Instant.ofEpochMilli(System.currentTimeMillis() + 200L));

@@ -27,7 +27,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
@@ -41,7 +41,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 public class MovementEntityToModelTest extends TransactionalTests {
 
 	@EJB
-    private MovementBatchModelBean movementBatchModelBean;
+    private MovementService movementService;
 
     @EJB
     private MovementDao movementDao;
@@ -52,7 +52,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testMovementBaseType() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
@@ -103,7 +103,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testMapToMovementTypeWithMovementInput() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		double lon = 11.641982;
@@ -145,7 +145,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
 	public void testMapToMovementTypeWithAListOfMovements() {
 		//Most of the method is tested by testMapToMovementType
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
@@ -167,7 +167,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testMapToMovementTypeWithAListOfLatestMovements() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
@@ -196,7 +196,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testMapToMovementSegment() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
@@ -229,7 +229,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testOrderMovementsByConnectId() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		List<UUID> connectId = new ArrayList<>();
 		List<Movement> input = new ArrayList<>();
 		UUID ID;
@@ -257,7 +257,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testExtractSegments() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		//srsly......
@@ -304,7 +304,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testExtractTracks() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));
 		for (Movement movement : movementList) {

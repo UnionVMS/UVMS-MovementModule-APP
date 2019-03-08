@@ -72,7 +72,7 @@ public class MovementCreateBean {
             if (isOk) {
                 Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement
                         .getUpdatedBy());
-                Movement createdMovement = movementService.createMovement(movement);
+                Movement createdMovement = movementService.createAndProcessMovement(movement);
 
                 // send to MovementRules if it is not a duplicate
                 if(!createdMovement.getDuplicate()) {

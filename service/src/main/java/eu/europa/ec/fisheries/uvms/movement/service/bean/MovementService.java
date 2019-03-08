@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -39,12 +39,12 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryRes
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
@@ -53,16 +53,11 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModel
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
-import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 
 @Stateless
 public class MovementService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementService.class);
-
-
-    @EJB
-    private MovementBatchModelBean movementBatch;
     
     @Inject
     private IncomingMovementBean incomingMovementBean;
@@ -81,8 +76,8 @@ public class MovementService {
      *
      * @param movement
      */
-    public Movement createMovement(Movement movement) {
-        movementBatch.createMovement(movement);
+    public Movement createAndProcessMovement(Movement movement) {
+        createMovement(movement);
         incomingMovementBean.processMovement(movement);
         if(movement != null){
             fireMovementEvent(movement);
@@ -93,11 +88,40 @@ public class MovementService {
 
     public List<Movement> createMovementBatch(List<Movement> movements) {
         for (Movement movement : movements) {
-            movementBatch.createMovement(movement);
+            createMovement(movement);
             incomingMovementBean.processMovement(movement);
         }
         return movements;
 
+    }
+
+    public Movement createMovement(Movement movement) {
+        if(movement.getMovementConnect().getId() == null) {
+            throw new IllegalArgumentException("No movementConnect ID");
+        }
+        try {
+            MovementConnect moveConnect = getOrCreateMovementConnectByConnectId(movement.getMovementConnect());
+
+            movement.setMovementConnect(moveConnect);
+            return dao.createMovement(movement);
+        } catch (Exception e) {
+            throw new EJBException("Could not create movement.", e);
+        }
+    }
+
+    public MovementConnect getOrCreateMovementConnectByConnectId(MovementConnect connect) {
+        MovementConnect movementConnect;
+
+        if (connect == null) {
+            return null;
+        }
+        movementConnect = dao.getMovementConnectByConnectId(connect.getId());
+
+        if (movementConnect == null) {
+            LOG.info("Creating new MovementConnect");
+            return dao.createMovementConnect(connect);
+        }
+        return movementConnect;
     }
 
     public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) {

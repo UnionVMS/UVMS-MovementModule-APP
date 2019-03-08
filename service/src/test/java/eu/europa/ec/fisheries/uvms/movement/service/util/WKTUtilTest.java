@@ -17,7 +17,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementBatchModelBean;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
@@ -25,7 +25,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 public class WKTUtilTest extends TransactionalTests {
 
 	@EJB
-    private MovementBatchModelBean movementBatchModelBean;
+    private MovementService movementService;
 
     @EJB
     private MovementDao movementDao;
@@ -36,7 +36,7 @@ public class WKTUtilTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testGetWKTLineString() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = Instant.now();
 		
@@ -71,7 +71,7 @@ public class WKTUtilTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testGetWktLineStringFromMovementList() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = Instant.now();
 		
@@ -101,7 +101,7 @@ public class WKTUtilTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testGetWktLineStringFromMovementGeometryList()  {
-		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
+		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = Instant.now();
 
