@@ -18,8 +18,12 @@ public abstract class IncomingMovementMapper {
     public static Movement mapNewMovementEntity(IncomingMovement ic, String username) {
         Movement entity = new Movement();
 
-        entity.setSpeed(ic.getReportedSpeed().floatValue());
-        entity.setHeading(ic.getReportedCourse().floatValue());
+        if (ic.getReportedSpeed() != null) {
+            entity.setSpeed(ic.getReportedSpeed().floatValue());
+        }
+        if (ic.getReportedCourse() != null) {
+            entity.setHeading(ic.getReportedCourse().floatValue());
+        }
         entity.setInternalReferenceNumber(ic.getInternalReferenceNumber());
         entity.setTripNumber(ic.getTripNumber());
         entity.setStatus(ic.getStatus());
