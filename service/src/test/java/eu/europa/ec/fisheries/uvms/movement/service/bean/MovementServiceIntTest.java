@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
@@ -376,6 +380,172 @@ public class MovementServiceIntTest extends TransactionalTests {
         assertNotNull(created);
         assertEquals(randomUUID, created.getMovementConnect().getId());
 
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getMovementListBySegmentDuration() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement movementType = MockData.createMovement(1d, 1d, connectId);
+        movementType.setTimestamp(timestamp);
+        Movement createdMovementType = movementService.createAndProcessMovement(movementType);
+
+        Movement movementType2 = MockData.createMovement(2d, 2d, connectId);
+        movementType2.setTimestamp(timestamp.plusSeconds(10));
+        Movement createdMovementType2 = movementService.createAndProcessMovement(movementType2);
+
+        MovementQuery query = createMovementQuery(true);
+
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId.toString());
+        query.getMovementSearchCriteria().add(criteria);
+
+        RangeCriteria rangeCriteria = new RangeCriteria();
+        rangeCriteria.setKey(RangeKeyType.SEGMENT_DURATION);
+        rangeCriteria.setFrom("9");
+        rangeCriteria.setTo("11");
+        query.getMovementRangeSearchCriteria().add(rangeCriteria);
+
+        GetMovementListByQueryResponse response = movementService.getList(query);
+        assertNotNull(response);
+
+        List<MovementType> movements = response.getMovement();
+        assertThat(movements, is(notNullValue()));
+
+        assertThat(movements.size(), is(2));
+        assertTrue(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovementType.getId().toString())));
+        assertTrue(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovementType2.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getMovementMapBySegmentDuration() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement movementType = MockData.createMovement(1d, 1d, connectId);
+        movementType.setTimestamp(timestamp);
+        Movement createdMovementType = movementService.createAndProcessMovement(movementType);
+
+        Movement movementType2 = MockData.createMovement(2d, 2d, connectId);
+        movementType2.setTimestamp(timestamp.plusSeconds(10));
+        Movement createdMovementType2 = movementService.createAndProcessMovement(movementType2);
+
+        MovementQuery query = createMovementQuery(false);
+
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId.toString());
+        query.getMovementSearchCriteria().add(criteria);
+
+        RangeCriteria rangeCriteria = new RangeCriteria();
+        rangeCriteria.setKey(RangeKeyType.SEGMENT_DURATION);
+        rangeCriteria.setFrom("9");
+        rangeCriteria.setTo("11");
+        query.getMovementRangeSearchCriteria().add(rangeCriteria);
+
+        GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
+        assertNotNull(response);
+
+        List<MovementMapResponseType> movementMap = response.getMovementMap();
+        assertThat(movementMap, is(notNullValue()));
+
+        assertThat(movementMap.size(), is(1));
+        MovementMapResponseType movementMapType = movementMap.get(0);
+
+        assertThat(movementMapType.getKey(), is(connectId.toString()));
+        assertThat(movementMapType.getMovements().size(), is(2));
+        assertThat(movementMapType.getSegments().size(), is(1));
+
+        assertTrue(movementMapType.getMovements().stream().anyMatch(m -> m.getGuid().equals(createdMovementType.getId().toString())));
+        assertTrue(movementMapType.getMovements().stream().anyMatch(m -> m.getGuid().equals(createdMovementType2.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getMovementMapBySegmentLength() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
+        movementType.setTimestamp(timestamp);
+        Movement createdMovementType = movementService.createAndProcessMovement(movementType);
+
+        Movement movementType2 = MockData.createMovement(57.714580, 11.972838, connectId);
+        movementType2.setTimestamp(timestamp.plusSeconds(10));
+        Movement createdMovementType2 = movementService.createAndProcessMovement(movementType2);
+
+        MovementQuery query = createMovementQuery(false);
+
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId.toString());
+        query.getMovementSearchCriteria().add(criteria);
+
+        RangeCriteria rangeCriteria = new RangeCriteria();
+        rangeCriteria.setKey(RangeKeyType.SEGMENT_LENGTH);
+        rangeCriteria.setFrom("0.05");
+        rangeCriteria.setTo("0.06");
+        query.getMovementRangeSearchCriteria().add(rangeCriteria);
+
+        GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
+        assertNotNull(response);
+
+        List<MovementMapResponseType> movementMap = response.getMovementMap();
+        assertThat(movementMap, is(notNullValue()));
+
+        assertThat(movementMap.size(), is(1));
+        MovementMapResponseType movementMapType = movementMap.get(0);
+
+        assertThat(movementMapType.getKey(), is(connectId.toString()));
+        assertThat(movementMapType.getMovements().size(), is(2));
+        assertThat(movementMapType.getSegments().size(), is(1));
+
+        assertTrue(movementMapType.getMovements().stream().anyMatch(m -> m.getGuid().equals(createdMovementType.getId().toString())));
+        assertTrue(movementMapType.getMovements().stream().anyMatch(m -> m.getGuid().equals(createdMovementType2.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getMovementMapBySegmentSpeed() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
+        movementType.setTimestamp(timestamp);
+        Movement createdMovementType = movementService.createAndProcessMovement(movementType);
+
+        Movement movementType2 = MockData.createMovement(57.714580, 11.972838, connectId);
+        movementType2.setTimestamp(timestamp.plusSeconds(10));
+        Movement createdMovementType2 = movementService.createAndProcessMovement(movementType2);
+
+        MovementQuery query = createMovementQuery(false);
+
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(connectId.toString());
+        query.getMovementSearchCriteria().add(criteria);
+
+        RangeCriteria rangeCriteria = new RangeCriteria();
+        rangeCriteria.setKey(RangeKeyType.SEGMENT_SPEED);
+        rangeCriteria.setFrom("18");
+        rangeCriteria.setTo("19");
+        query.getMovementRangeSearchCriteria().add(rangeCriteria);
+
+        GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
+        assertNotNull(response);
+
+        List<MovementMapResponseType> movementMap = response.getMovementMap();
+        assertThat(movementMap, is(notNullValue()));
+
+        assertThat(movementMap.size(), is(1));
+        MovementMapResponseType movementMapType = movementMap.get(0);
+
+        assertThat(movementMapType.getKey(), is(connectId.toString()));
+        assertThat(movementMapType.getMovements().size(), is(2));
+        assertThat(movementMapType.getSegments().size(), is(1));
+
+        assertTrue(movementMapType.getMovements().stream().anyMatch(m -> m.getGuid().equals(createdMovementType.getId().toString())));
+        assertTrue(movementMapType.getMovements().stream().anyMatch(m -> m.getGuid().equals(createdMovementType2.getId().toString())));
     }
 
     /******************************************************************************************************************
