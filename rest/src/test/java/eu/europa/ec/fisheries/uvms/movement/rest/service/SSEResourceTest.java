@@ -6,6 +6,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -33,6 +34,12 @@ public class SSEResourceTest extends BuildMovementRestDeployment {
 
     private static String dataString = "";
     private static String errorString = "";
+
+    @Before
+    public void clearStrings(){
+        dataString = "";
+        errorString = "";
+    }
 
     @Test
     @OperateOnDeployment("movement")
