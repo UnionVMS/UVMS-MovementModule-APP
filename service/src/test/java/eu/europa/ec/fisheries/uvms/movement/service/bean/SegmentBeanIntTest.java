@@ -69,7 +69,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         querySegment.setParameter("fromMovement", fetchedFromMovement);
         querySegment.setParameter("toMovement", fetchedToMovement);
         Segment fetchedSegment = querySegment.getSingleResult();
-        List<Movement> movements = movementDao.getMovementsByTrack(fetchedSegment.getTrack());
+        List<Movement> movements = movementDao.getMovementsByTrack(fetchedSegment.getTrack(),2000);
         Movement movement1FromList = movements.get(0);
         Movement movement2FromList = movements.get(1);
 
@@ -111,7 +111,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         querySegment.setParameter("fromMovement", fetchedFromMovement);
         querySegment.setParameter("toMovement", fetchedToMovement);
         Segment fetchedSegment = querySegment.getSingleResult();
-        List<Movement> movements = movementDao.getMovementsByTrack(fetchedSegment.getTrack());
+        List<Movement> movements = movementDao.getMovementsByTrack(fetchedSegment.getTrack(),2000);
         Movement movement1FromList = movements.get(0);
         Movement movement2FromList = movements.get(1);
 
@@ -146,7 +146,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         List<Segment> segments = movementDao.getSegmentsByTrack(toMovement.getTrack());
         assertEquals(1, segments.size());
 
-        List<Movement> movements = movementDao.getMovementsByTrack(toMovement.getTrack());
+        List<Movement> movements = movementDao.getMovementsByTrack(toMovement.getTrack(),2000);
         assertEquals(2, movements.size());
 
 //--------------------------------------------------------------------------
@@ -209,7 +209,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         assertNotNull(track);
         List<Segment> segments = movementDao.getSegmentsByTrack(track);
         assertEquals(1, segments.size());
-        List<Movement> movements = movementDao.getMovementsByTrack(track);
+        List<Movement> movements = movementDao.getMovementsByTrack(track,2000);
         assertEquals(2, movements.size());
 
         // get movement from db
@@ -421,7 +421,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         assertNotNull(secondMovement.getTrack());
         List<Segment> segments = movementDao.getSegmentsByTrack(track);
         assertEquals(1, segments.size());
-        List<Movement> movements = movementDao.getMovementsByTrack(track);
+        List<Movement> movements = movementDao.getMovementsByTrack(track,2000);
         assertEquals(2, movements.size());
 
         Movement beforeFirstMovement = movementHelpers.createMovement(1d, 1d, connectId, "BEFORE_ONE", date_before);

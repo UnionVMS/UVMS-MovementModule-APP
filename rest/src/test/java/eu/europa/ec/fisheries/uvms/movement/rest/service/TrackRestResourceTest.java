@@ -4,6 +4,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentDTO;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -12,7 +13,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -63,6 +67,30 @@ public class TrackRestResourceTest extends BuildMovementRestDeployment {
 
         assertEquals(movementDestination.getTrack().getId().toString(), response.getId());
         assertNotNull(response.getWkt());
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMicroMovementTrackByMovementGuidTest() {
+        Movement movement = MovementTestHelper.createMovement();
+        Movement movementDeparture = movementService.createAndProcessMovement(movement);
+
+        movement = MovementTestHelper.createMovement(57d,12d);    //plus one on both from above
+        movement.setMovementConnect(movementDeparture.getMovementConnect());
+        Movement movementDestination = movementService.createAndProcessMovement(movement);
+
+        List<MicroMovementDtoV2> response = getWebTarget()
+                .path("track/microMovement/byMovementGUID")
+                .path(movementDestination.getId().toString())
+                .request(MediaType.APPLICATION_JSON)
+                .get(new GenericType<List<MicroMovementDtoV2>>() {});
+
+        assertNotNull(response);
+
+        assertFalse(response.isEmpty());
+        assertEquals(movement.getId().toString(), response.get(1).getGuid());
+        assertEquals(movement.getLocation().getX(), response.get(1).getLocation().getLongitude(), 0);
+        assertEquals(movement.getLocation().getY(), response.get(1).getLocation().getLatitude(), 0);
     }
 
     @Test

@@ -324,10 +324,11 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementListByConnectId() throws Exception {
+        UUID groupId = UUID.randomUUID();
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
-        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement, groupId.toString());
 
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
@@ -336,7 +337,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria.setValue(movementDetails.getConnectId());
         query.getMovementSearchCriteria().add(criteria);
 
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movementDetails.getConnectId());
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, groupId.toString());
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(1));
         assertThat(movements.get(0).getConnectId(), is(movementDetails.getConnectId()));
