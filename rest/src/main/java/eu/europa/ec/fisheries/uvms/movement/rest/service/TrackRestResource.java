@@ -9,6 +9,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -59,7 +60,7 @@ public class TrackRestResource {
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/byMovementGUID/{id}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getTrackByMovement(@PathParam("id") String stringId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
+    public Response getWKTTrackByMovement(@PathParam("id") String stringId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
         try {
 
             UUID id = UUID.fromString(stringId);
@@ -76,4 +77,31 @@ public class TrackRestResource {
                     .header("MDC", MDC.get("requestId")).build();
         }
     }
+
+    @GET
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path(value = "/microMovement/byMovementGUID/{id}")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public Response getMicroMovementTrackByMovement(@PathParam("id") String stringId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
+        try {
+
+            UUID id = UUID.fromString(stringId);
+            Movement movement = movementDao.getMovementByGUID(id);
+            List<Movement> movementList = movementDao.getMovementsByTrack(movement.getTrack());
+            List<MicroMovementDtoV2> returnList = new ArrayList<>();
+            for (Movement move : movementList) {
+                returnList.add(new MicroMovementDtoV2(move));
+            }
+
+            return Response.ok(returnList).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+
+        } catch (Exception e) {
+            LOG.error("[ Error when getting track. ] {}", e.getMessage(), e);
+            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+        }
+    }
+
 }

@@ -1,8 +1,9 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
@@ -25,9 +26,9 @@ import javax.ws.rs.sse.SseEventSink;
 
 
 @ApplicationScoped
-@Path("sse")
+@Path("sseV2")
 @RequiresFeature(UnionVMSFeature.viewMovements)
-public class SSEResource {
+public class NewSSEResource {
 
     private final static Logger LOG = LoggerFactory.getLogger(SSEResource.class);
 
@@ -48,12 +49,12 @@ public class SSEResource {
     public void createdMovement(@Observes @CreatedMovement Movement move){
         try {
             if (move != null) {
-                MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
+                MicroMovementDtoV2Extended micro = new MicroMovementDtoV2Extended(move.getLocation(), move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")
                         .id("" + System.currentTimeMillis())
                         .mediaType(MediaType.APPLICATION_JSON_PATCH_JSON_TYPE)
-                        .data(MicroMovementDto.class, micro)
+                        .data(MicroMovementDtoV2Extended.class, micro)
                         //.reconnectDelay(3000) //this one is optional and governs how long the client should wait b4 attempting to reconnect to this server
                         .comment("New Movement")
                         .build();
@@ -70,7 +71,7 @@ public class SSEResource {
     @Path("subscribe")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     public void listen(@Context SseEventSink sseEventSink) {
-        sseEventSink.send(sse.newEvent("Welcome to UVMS SSE notifications."));
+        sseEventSink.send(sse.newEvent("Welcome to UVMS SSE notifications. Version 2"));
         sseBroadcaster.register(sseEventSink);
         sseEventSink.send(sse.newEvent("You are now registered for receiving new movements."));
     }

@@ -44,6 +44,7 @@ public class RestActivator extends Application {
         set.add(SegmentRestResource.class);
         set.add(TrackRestResource.class);
         set.add(SSEResource.class);
+        set.add(NewSSEResource.class);
         set.add(ObjectMapperContextResolver.class);
         LOG.info(RestConstants.MODULE_NAME + " module starting up");
     }
