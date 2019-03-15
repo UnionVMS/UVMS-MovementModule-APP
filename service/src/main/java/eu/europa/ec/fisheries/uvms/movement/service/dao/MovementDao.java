@@ -55,8 +55,9 @@ public class MovementDao {
         return query.getResultList();
     }
 
-    public List<Movement> getMovementsByTrack(Track track) {
+    public List<Movement> getMovementsByTrack(Track track, int maxResults) {
         TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_BY_TRACK, Movement.class);
+        query.setMaxResults(maxResults);
         query.setParameter("track", track);
         return query.getResultList();
     }

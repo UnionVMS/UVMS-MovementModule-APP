@@ -88,7 +88,7 @@ public class TrackRestResource {
 
             UUID id = UUID.fromString(stringId);
             Movement movement = movementDao.getMovementByGUID(id);
-            List<Movement> movementList = movementDao.getMovementsByTrack(movement.getTrack());
+            List<Movement> movementList = movementDao.getMovementsByTrack(movement.getTrack(), maxNbr);
             List<MicroMovementDtoV2> returnList = new ArrayList<>();
             for (Movement move : movementList) {
                 returnList.add(new MicroMovementDtoV2(move));

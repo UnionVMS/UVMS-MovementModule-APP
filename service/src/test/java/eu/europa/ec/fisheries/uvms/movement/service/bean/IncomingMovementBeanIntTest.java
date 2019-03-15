@@ -326,7 +326,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(secondMovement.getTrack()));
         assertThat(track, is(thirdMovement.getTrack()));
 
-        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track);
+        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track,2000);
 
         assertThat(trackMovementList.size(), is(3));
 
@@ -370,7 +370,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(secondMovement.getTrack()));
         assertThat(track, is(thirdMovement.getTrack()));
 
-        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track);
+        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track,2000);
         assertThat(trackMovementList.size(), is(3));
 
         assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
@@ -413,7 +413,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(secondMovement.getTrack()));
         assertThat(track, is(thirdMovement.getTrack()));
 
-        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track);
+        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track,2000);
         assertThat(trackMovementList.size(), is(3));
 
         assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
@@ -593,7 +593,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Track track = firstMovement.getTrack();
         if (movements.size() > 1) {
             assertThat(track, is(notNullValue()));
-            List<Movement> movementList = movementDao.getMovementsByTrack(track);
+            List<Movement> movementList = movementDao.getMovementsByTrack(track,2000);
             assertThat(movementList.size(), is(movements.size()));
             
             for (Movement movement : movements) {
