@@ -1,7 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 
-import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -23,16 +21,13 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
-
+/* Old version of sseResource, kept around to keep the old version of the realtime map running */
 @ApplicationScoped
 @Path("sse")
 @RequiresFeature(UnionVMSFeature.viewMovements)
 public class SSEResource {
 
     private final static Logger LOG = LoggerFactory.getLogger(SSEResource.class);
-
-    @Inject
-    MovementDao movementDao;
 
     Sse sse;
     OutboundSseEvent.Builder eventBuilder;
