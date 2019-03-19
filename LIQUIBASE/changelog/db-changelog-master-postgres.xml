@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
          logicalFilePath="changelog/db-changelog-master-postgres.xml">
 
     <include file="properties.xml" relativeToChangelogFile="true"/>
@@ -12,5 +12,7 @@
     <include file="v5.1.1\db-changelog-create-view-5.1.1-postgres.xml" relativeToChangelogFile="true"/>
 
     <include file="v5.1.6\insertParameter.xml" relativeToChangelogFile="true"/>
+
+    <include file="v5.1.20\db-changelog-createIndex-5.1.20.xml" relativeToChangelogFile="true"/>
         
 </databaseChangeLog>
