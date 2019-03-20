@@ -12,8 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.clients;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
@@ -30,14 +30,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.*;
-import org.slf4j.Logger;
 
 @Stateless
 public class SpatialRestClient{
@@ -51,7 +47,10 @@ public class SpatialRestClient{
     public void initClient() {
         String url = spatialEndpoint + "/spatialnonsecure/json/";
 
-        Client client = ClientBuilder.newClient();
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+        clientBuilder.connectTimeout(30, TimeUnit.SECONDS);
+        clientBuilder.readTimeout(30, TimeUnit.SECONDS);
+        Client client = clientBuilder.build();
         client.register(new ContextResolver<ObjectMapper>() {
             @Override
             public ObjectMapper getContext(Class<?> type) {
