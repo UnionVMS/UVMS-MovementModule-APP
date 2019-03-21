@@ -25,22 +25,11 @@
 			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jvnet.jaxb2_commons</groupId>
-			<artifactId>jaxb2-basics</artifactId>
-			<version>0.9.5</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-lang3</artifactId>
 		    <scope>compile</scope>
-		</dependency>		
+		</dependency>
 	</dependencies>
-
-	<scm>
-		<connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-MODEL.git</connection>
-		<tag>HEAD</tag>
-	</scm>
 
 	<build>
 		<plugins>
