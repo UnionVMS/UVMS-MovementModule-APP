@@ -221,6 +221,33 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
+    public void getMicroMovementsForAssetAfterTest() throws Exception {
+        Instant time = Instant.now().minusSeconds(61);
+        UUID connectId = UUID.randomUUID();
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        movementBaseType.getMovementConnect().setId(connectId);
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
+
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType2.getMovementConnect().setId(connectId);
+        movementBaseType2.setTimestamp(Instant.now().minusSeconds(60));
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
+
+        String response = getWebTarget()
+                .path("movement")
+                .path("microMovementListAfterForAsset/")
+                .path(connectId.toString())
+                .path(DateUtil.parseUTCDateToString(time))
+                .request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+
+        assertTrue(response.contains(createdMovement.getId().toString()));
+        assertTrue(response.contains(createdMovement2.getId().toString()));
+
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
     public void getLastMicroMovementForAllAssetsTest() throws Exception {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);

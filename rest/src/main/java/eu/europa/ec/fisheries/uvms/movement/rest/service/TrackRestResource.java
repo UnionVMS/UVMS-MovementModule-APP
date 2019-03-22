@@ -20,7 +20,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
@@ -72,7 +71,7 @@ public class TrackRestResource {
                     .header("MDC", MDC.get("requestId")).build();
 
         } catch (Exception e) {
-            LOG.error("[ Error when getting track. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when getting track for movement: {}. ] {}", stringId, e.getMessage(), e);
             return Response.status(500).entity(ExceptionUtils.getRootCause(e)).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         }
@@ -88,12 +87,8 @@ public class TrackRestResource {
 
             UUID id = UUID.fromString(stringId);
             Movement movement = movementDao.getMovementByGUID(id);
-            List<Movement> movementList = movementDao.getMovementsByTrack(movement.getTrack(), maxNbr);
-            List<MicroMovementDtoV2> returnList = new ArrayList<>();
-            for (Movement move : movementList) {
-                returnList.add(new MicroMovementDtoV2(move));
-            }
 
+            List<MicroMovementDtoV2> returnList = movementDao.getMicroMovementsDtoByTrack(movement.getTrack(), maxNbr);
             return Response.ok(returnList).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
 

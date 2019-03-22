@@ -22,15 +22,12 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import eu.europa.ec.fisheries.uvms.movement.service.dto.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +40,6 @@ import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -230,15 +224,32 @@ public class MovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getMicroMovementListAfter(@PathParam("timestamp") String date) {
         try {
-            List<MicroMovementDto> microList = movementDao.getMicroMovementsAfterDate(DateUtil.getDateFromString(date));
-            Map<String, List<MicroMovementDto>> returnMap = new HashMap<>(microList.size());
-            for (MicroMovementDto micro: microList) {
+            List<MicroMovementDtoV2Extended> microList = movementDao.getMicroMovementsAfterDate(DateUtil.getDateFromString(date));
+            Map<String, List<MicroMovementDtoV2Extended>> returnMap = new HashMap<>(microList.size());
+            for (MicroMovementDtoV2Extended micro: microList) {
                 if(!returnMap.containsKey(micro.getAsset())){
                     returnMap.put(micro.getAsset(), new ArrayList<>());
                 }
                 returnMap.get(micro.getAsset()).add(micro);
             }
             return Response.ok().entity(returnMap).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when getting Micro Movement. ]", e);
+            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+
+    @GET
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    @Path("/microMovementListAfterForAsset/{id}/{timestamp}")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public Response getMicroMovementListAfter(@PathParam("id") String uuid ,@PathParam("timestamp") String date) {
+        try {
+            UUID connectID = UUID.fromString(uuid);
+            List<MicroMovementDtoV2> microList = movementDao.getMicroMovementsForAssetAfterDate(connectID,DateUtil.getDateFromString(date));
+            return Response.ok().entity(microList).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting Micro Movement. ]", e);
