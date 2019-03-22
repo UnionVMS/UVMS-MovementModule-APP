@@ -220,29 +220,6 @@ public class MovementRestResource {
     @GET
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
-    @Path("/microMovementListAfter/{timestamp}")
-    @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementListAfter(@PathParam("timestamp") String date) {
-        try {
-            List<MicroMovementDtoV2Extended> microList = movementDao.getMicroMovementsAfterDate(DateUtil.getDateFromString(date));
-            Map<String, List<MicroMovementDtoV2Extended>> returnMap = new HashMap<>(microList.size());
-            for (MicroMovementDtoV2Extended micro: microList) {
-                if(!returnMap.containsKey(micro.getAsset())){
-                    returnMap.put(micro.getAsset(), new ArrayList<>());
-                }
-                returnMap.get(micro.getAsset()).add(micro);
-            }
-            return Response.ok().entity(returnMap).type(MediaType.APPLICATION_JSON)
-                    .header("MDC", MDC.get("requestId")).build();
-        } catch (Exception e) {
-            LOG.error("[ Error when getting Micro Movement. ]", e);
-            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
-        }
-    }
-
-    @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/microMovementListAfterForAsset/{id}/{timestamp}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getMicroMovementListAfter(@PathParam("id") String uuid ,@PathParam("timestamp") String date) {
