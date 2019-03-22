@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -40,7 +41,7 @@ public class NewSSEResource {
         this.sseBroadcaster = sse.newBroadcaster();
     }
 
-    public void createdMovement(@Observes @CreatedMovement Movement move){
+    public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement move){
         try {
             if (move != null) {
                 MicroMovementDtoV2Extended micro = new MicroMovementDtoV2Extended(move.getLocation(), move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());

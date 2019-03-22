@@ -185,37 +185,28 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void getMicroMovementsTest() throws Exception {
-        Instant time = Instant.now();
+    public void getMicroMovementsForAssetAfterTest() throws Exception {
+        Instant time = Instant.now().minusSeconds(61);
+        UUID connectId = UUID.randomUUID();
         Movement movementBaseType = MovementTestHelper.createMovement();
+        movementBaseType.getMovementConnect().setId(connectId);
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
+
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType2.getMovementConnect().setId(connectId);
+        movementBaseType2.setTimestamp(Instant.now().minusSeconds(60));
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
 
         String response = getWebTarget()
                 .path("movement")
-                .path("microMovementListAfter/" + DateUtil.parseUTCDateToString(time))
+                .path("microMovementListAfterForAsset/")
+                .path(connectId.toString())
+                .path(DateUtil.parseUTCDateToString(time))
                 .request(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
         assertTrue(response.contains(createdMovement.getId().toString()));
-        assertTrue(response.contains(createdMovement.getMovementConnect().getId().toString()));
-
-    }
-
-    @Test
-    @OperateOnDeployment("movement")
-    public void getMicroMovementsFutureTimeTest() throws Exception {
-        Instant time = Instant.ofEpochMilli(System.currentTimeMillis() + 1000l * 60l * 60l * 24l);
-        Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
-
-        Map<String, MicroMovementDto> response = getWebTarget()
-                .path("movement")
-                .path("microMovementListAfter/" + DateUtil.parseUTCDateToString(time))
-                .request(MediaType.APPLICATION_JSON)
-                .get(new GenericType<Map<String, MicroMovementDto>>() {});
-
-
-        assertTrue(response.isEmpty());
+        assertTrue(response.contains(createdMovement2.getId().toString()));
 
     }
 

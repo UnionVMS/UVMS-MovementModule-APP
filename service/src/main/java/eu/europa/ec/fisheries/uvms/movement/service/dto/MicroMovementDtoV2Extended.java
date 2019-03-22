@@ -10,6 +10,7 @@ import java.util.UUID;
 public class MicroMovementDtoV2Extended {  //TODO: find better name for this
 
     public static final String FIND_ALL_AFTER_DATE = "MicroMovementDtoV2Extended.findAllAfterDate";
+    public static final String FIND_ALL_FOR_ASSET_AFTER_DATE = "MicroMovementDtoV2Extended.findAllForAssetAfterDate";
 
     private MicroMovementDtoV2 microMove;
 

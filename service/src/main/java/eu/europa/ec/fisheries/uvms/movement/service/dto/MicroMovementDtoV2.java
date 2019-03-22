@@ -12,7 +12,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import java.time.Instant;
 import java.util.UUID;
 
-public class MicroMovementDtoV2 {
+public class MicroMovementDtoV2 {       //Using two versions of this class to keep the old version of the realtime map running until we are ready to deploy the new one. When that happens the old version of this class will be removed and only this one will remain
 
     public static final String FIND_ALL_AFTER_DATE = "MicroMovementDtoV2.findAllAfterDate";
 

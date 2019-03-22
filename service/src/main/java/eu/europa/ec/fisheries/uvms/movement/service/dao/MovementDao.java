@@ -22,7 +22,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 import org.hibernate.HibernateException;
@@ -55,8 +56,8 @@ public class MovementDao {
         return query.getResultList();
     }
 
-    public List<Movement> getMovementsByTrack(Track track, int maxResults) {
-        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_BY_TRACK, Movement.class);
+    public List<MicroMovementDtoV2> getMicroMovementsDtoByTrack(Track track, int maxResults) {
+        TypedQuery<MicroMovementDtoV2> query = em.createNamedQuery(Movement.FIND_ALL_BY_TRACK, MicroMovementDtoV2.class);
         query.setMaxResults(maxResults);
         query.setParameter("track", track);
         return query.getResultList();
@@ -287,13 +288,25 @@ public class MovementDao {
         return movementConnect;
     }
 
-    public List<MicroMovementDto> getMicroMovementsAfterDate(Instant date) {
+    public List<MicroMovementDtoV2Extended> getMicroMovementsAfterDate(Instant date) {
         try {
-            TypedQuery<MicroMovementDto> query = em.createNamedQuery(MicroMovementDto.FIND_ALL_AFTER_DATE, MicroMovementDto.class);
+            TypedQuery<MicroMovementDtoV2Extended> query = em.createNamedQuery(MicroMovementDtoV2Extended.FIND_ALL_AFTER_DATE, MicroMovementDtoV2Extended.class);
             query.setParameter("date", date);
             return query.getResultList();
         } catch (NoResultException e) {
             LOG.debug("No positions found after date: {}", date);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<MicroMovementDtoV2> getMicroMovementsForAssetAfterDate(UUID id, Instant date){
+        try {
+            TypedQuery<MicroMovementDtoV2> query = em.createNamedQuery(MicroMovementDtoV2Extended.FIND_ALL_FOR_ASSET_AFTER_DATE, MicroMovementDtoV2.class);
+            query.setParameter("id", id);
+            query.setParameter("date", date);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            LOG.debug("No positions found for asset after date: {}", date);
             return new ArrayList<>();
         }
     }
