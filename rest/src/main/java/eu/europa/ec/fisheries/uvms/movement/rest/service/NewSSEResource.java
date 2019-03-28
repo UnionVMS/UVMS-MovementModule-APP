@@ -21,7 +21,8 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
-/* New version of sseResource, using a new datastructure when sending data to the new version of the realtime map. At some point in the future this version will replace the old version */
+/* New version of sseResource, using a new data structure when sending data to the new version of the real-time map.
+ At some point in the future this version will replace the old version */
 @ApplicationScoped
 @Path("sseV2")
 @RequiresFeature(UnionVMSFeature.viewMovements)
@@ -29,10 +30,9 @@ public class NewSSEResource {
 
     private final static Logger LOG = LoggerFactory.getLogger(SSEResource.class);
 
-
-    Sse sse;
-    OutboundSseEvent.Builder eventBuilder;
-    SseBroadcaster sseBroadcaster;
+    private Sse sse;
+    private OutboundSseEvent.Builder eventBuilder;
+    private SseBroadcaster sseBroadcaster;
 
     @Context
     public void setSse(Sse sse) {
@@ -44,7 +44,8 @@ public class NewSSEResource {
     public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement move){
         try {
             if (move != null) {
-                MicroMovementDtoV2Extended micro = new MicroMovementDtoV2Extended(move.getLocation(), move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
+                MicroMovementDtoV2Extended micro = new MicroMovementDtoV2Extended(move.getLocation(),
+                        move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")
                         .id("" + System.currentTimeMillis())
@@ -61,7 +62,6 @@ public class NewSSEResource {
         }
     }
 
-
     @GET
     @Path("subscribe")
     @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -70,5 +70,4 @@ public class NewSSEResource {
         sseBroadcaster.register(sseEventSink);
         sseEventSink.send(sse.newEvent("You are now registered for receiving new movements."));
     }
-
 }

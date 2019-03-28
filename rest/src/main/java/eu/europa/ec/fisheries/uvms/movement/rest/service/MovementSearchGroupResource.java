@@ -46,127 +46,91 @@ import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
 @Path("/search")
 @Stateless
+@Consumes(value = {MediaType.APPLICATION_JSON})
+@Produces(value = {MediaType.APPLICATION_JSON})
 public class MovementSearchGroupResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementSearchGroupResource.class);
 
     @EJB
-    MovementSearchGroupService service;
+    private MovementSearchGroupService service;
 
     @Context
     private HttpServletRequest request;
 
-    /**
-     * @param searchGroup a search group to be created
-     * @summary Creates a new movement search group.
-     * @return the created search group
-     */
     @POST
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Path("/group")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto createMovementSearchGroup(MovementSearchGroup searchGroup) {
+    public ResponseDto<?> createMovementSearchGroup(MovementSearchGroup searchGroup) {
         try {
             MovementFilterGroup createdFilterGroup = service.createMovementFilterGroup(searchGroup, request.getRemoteUser());
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(createdFilterGroup);
-            return new ResponseDto(movementSearchGroup, RestResponseCode.OK);
+            return new ResponseDto<>(movementSearchGroup, RestResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 
-    /**
-     * @param id the ID of a known movement search group
-     * @summary Returns the movement search group with the provided ID.
-     * @return a movement search group
-     */
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/group/{id}")
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto getMovementSearchGroup(@PathParam("id") BigInteger id) {
+    public ResponseDto<?> getMovementSearchGroup(@PathParam("id") BigInteger id) {
         try {
             UUID uuid = CalculationUtil.convertFromBigInteger(id);
             MovementFilterGroup filterGroup = service.getMovementFilterGroup(uuid);
             MovementSearchGroup searchGroup = MovementGroupMapper.toMovementSearchGroup(filterGroup);
-            return new ResponseDto(searchGroup, RestResponseCode.OK);
+            return new ResponseDto<>(searchGroup, RestResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 
-    /**
-     * @param searchGroup a search group object
-     * @summary Updates an existing movement search group with new values.
-     * @return the updated movement search group.
-     */
     @PUT
     @Path("/group")
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto updateMovementSearchGroup(MovementSearchGroup searchGroup) {
+    public ResponseDto<?> updateMovementSearchGroup(MovementSearchGroup searchGroup) {
         try {
             MovementFilterGroup updatedFilterGroup = service.updateMovementFilterGroup(searchGroup, request.getRemoteUser());
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(updatedFilterGroup);
-            return new ResponseDto(movementSearchGroup, RestResponseCode.OK);
+            return new ResponseDto<>(movementSearchGroup, RestResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 
-    /**
-     * @param user a user name
-     * @summary Lists movement search groups by query.
-     * @return a list of movement search groups for the provided user
-     */
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Path("/groups")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto getMovementSearchGroupsByUser(@QueryParam(value = "user") String user) {
+    public ResponseDto<?> getMovementSearchGroupsByUser(@QueryParam(value = "user") String user) {
         try {
             List<MovementFilterGroup> filterGroups = service.getMovementFilterGroupsByUser(user);
             List<MovementSearchGroup> searchGroups = new ArrayList<>();
             for (MovementFilterGroup filterGroup : filterGroups) {
                 searchGroups.add(MovementGroupMapper.toMovementSearchGroup(filterGroup));
             }
-            return new ResponseDto(searchGroups, RestResponseCode.OK);
+            return new ResponseDto<>(searchGroups, RestResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 
-    /**
-     * @param id the ID of a movement search group to be deleted
-     * @summary Deletes the movement search group with the provided ID.
-     * @return the deleted movement search group
-     */
     @DELETE
     @Path("/group/{id}")
     @Produces(value = {MediaType.APPLICATION_JSON})
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto deleteMovementSearchGroup(@PathParam(value = "id") BigInteger id) {
+    public ResponseDto<?> deleteMovementSearchGroup(@PathParam(value = "id") BigInteger id) {
         try {
             UUID uuid = CalculationUtil.convertFromBigInteger(id);
             MovementFilterGroup deletedSearchGroup = service.deleteMovementFilterGroup(uuid);
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(deletedSearchGroup);
-            return new ResponseDto(movementSearchGroup, RestResponseCode.OK);
+            return new ResponseDto<>(movementSearchGroup, RestResponseCode.OK);
         } catch (Exception e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
+            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
         }
     }
 }

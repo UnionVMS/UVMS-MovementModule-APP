@@ -11,24 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.math.BigInteger;
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.ejb.EJBException;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
@@ -41,18 +23,25 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJBException;
+import javax.ejb.Stateless;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.math.BigInteger;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Stateless
 public class MovementService {
@@ -72,10 +61,6 @@ public class MovementService {
     @CreatedMovement
     private Event<Movement> createdMovementEvent;
 
-    /**
-     *
-     * @param movement
-     */
     public Movement createAndProcessMovement(Movement movement) {
         createMovement(movement);
         incomingMovementBean.processMovement(movement);
@@ -214,11 +199,7 @@ public class MovementService {
             throw new RuntimeException("Error when getting movement map by query", ex);
         }
     }
-    
-    /**
-     *
-     * @return
-     */
+
     public GetMovementListByQueryResponse getList(MovementQuery query){
         if (query == null) {
             throw new IllegalArgumentException("Movement list query is null");
@@ -248,8 +229,6 @@ public class MovementService {
 
             Long numberMatches = dao.getMovementListSearchCount(countSql, searchKeyValues);
             List<Movement> movementEntityList = dao.getMovementListPaginated(page, listSize, sql, searchKeyValues, Movement.class);
-            //List<Movement> movementEntityList = dao.getMovementList(sql, searchKeyValues);
-            //int numberMatches = movementEntityList.size();
 
             movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMovementType(movement)));
 
@@ -258,15 +237,11 @@ public class MovementService {
             response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
 
             return MovementResponseMapper.createMovementListResponse(response);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error when getting movement list by query: ParseException", e);
         }
     }
 
-    /**
-     *
-     * @return
-     */
     public GetMovementListByQueryResponse getMinimalList(MovementQuery query) {
         if (query == null) {
             throw new IllegalArgumentException("Movement list query is null");
@@ -305,17 +280,11 @@ public class MovementService {
             response.setMovementList(movementList);
             response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
             return MovementResponseMapper.createMovementListResponse(response);
-        } catch (ParseException ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("Error when getting movement list by query", ex);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param id
-     * @return
-     */
     public Movement getById(UUID id) {
         return dao.getMovementByGUID(id);
     }

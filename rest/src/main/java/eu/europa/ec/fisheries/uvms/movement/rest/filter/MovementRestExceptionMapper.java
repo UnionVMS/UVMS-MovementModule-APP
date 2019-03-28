@@ -14,11 +14,10 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-
 @Provider
 public class MovementRestExceptionMapper implements ExceptionMapper<Exception> {
 
-    final static Logger LOG = LoggerFactory.getLogger(RequestFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RequestFilter.class);
 
     @Context
     private HttpServletRequest request;
@@ -33,10 +32,8 @@ public class MovementRestExceptionMapper implements ExceptionMapper<Exception> {
         super();
     }
 
-
     @Override
     public Response toResponse(Exception ex) {
-
         if (ex instanceof IllegalArgumentException) {
             LOG.error(ex.getMessage(), ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(ex)).type(MediaType.APPLICATION_JSON).build();
@@ -46,8 +43,3 @@ public class MovementRestExceptionMapper implements ExceptionMapper<Exception> {
         }
     }
 }
-
-
-
-
-

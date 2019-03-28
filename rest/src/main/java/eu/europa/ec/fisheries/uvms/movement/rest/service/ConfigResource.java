@@ -35,14 +35,14 @@ import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
 @Path("/config")
 @Stateless
+@Consumes(value = {MediaType.APPLICATION_JSON})
+@Produces(value = {MediaType.APPLICATION_JSON})
 @RequiresFeature(UnionVMSFeature.viewMovements)
 public class ConfigResource {
 
-    private final static Logger LOG = LoggerFactory.getLogger(ConfigResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigResource.class);
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/movementTypes")
     public ResponseDto getMovementTypes() {
         try {
@@ -54,8 +54,6 @@ public class ConfigResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/segmentCategoryTypes")
     public ResponseDto getSegmentTypes() {
         try {
@@ -67,8 +65,6 @@ public class ConfigResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/searchKeys")
     public ResponseDto getMovementSearchKeys() {
         try {
@@ -80,8 +76,6 @@ public class ConfigResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/movementSourceTypes")
     public ResponseDto getMovementSourceTypes() {
         try {
@@ -93,8 +87,6 @@ public class ConfigResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/activityTypes")
     public ResponseDto getActivityTypes() {
         try {
@@ -106,8 +98,6 @@ public class ConfigResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     public ResponseDto getConfiguration() {
         try {
             return new ResponseDto(MovementMockConfig.getValues(), RestResponseCode.OK);
@@ -117,14 +107,8 @@ public class ConfigResource {
         }
     }
     
-    /**
-     * @responseMessage 200 Alarm statuses fetched
-     * @responseMessage 500 No config fetched
-     * @summary Get alarm statuses
-     */
+
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/alarmstatus")
     public ResponseDto getAlarmStatuses() {
         try {

@@ -11,59 +11,43 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import java.util.UUID;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.DraftMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.DraftMovementMapper;
+import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
+import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
-import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import java.util.UUID;
 
 @Path("/tempmovement")
 @Stateless
+@Consumes(value = {MediaType.APPLICATION_JSON})
+@Produces(value = {MediaType.APPLICATION_JSON})
 public class TempMovementResource {
 
     private final static Logger LOG = LoggerFactory.getLogger(TempMovementResource.class);
 
     @EJB
-    DraftMovementService service;
+    private DraftMovementService service;
 
     @Context
     private HttpServletRequest request;
 
-    /**
-     *
-     * @responseMessage 200 Temp Movement successfully created
-     * @responseMessage 500 Error when creating Temp Movement
-     *
-     * @summary Creates a temp movement
-     *
-     */
     @POST
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto create(final TempMovementType data) {
+    public ResponseDto<?> create(final TempMovementType data) {
         LOG.debug("Create temp movement invoked in rest layer");
         try {
             DraftMovement draftMovement = DraftMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
@@ -77,10 +61,9 @@ public class TempMovementResource {
     }
 
     @GET
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/{guid}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto get(@PathParam("guid") String guid) {
+    public ResponseDto<?> get(@PathParam("guid") String guid) {
         try {
             DraftMovement draftMovement = service.getDraftMovement(UUID.fromString(guid));
             TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
@@ -91,44 +74,24 @@ public class TempMovementResource {
         }
     }
 
-    /**
-     *
-     * @responseMessage 200 Temp Movement successfully archived
-     * @responseMessage 500 Error when archiving Temp Movement
-     *
-     * @summary Archives a temp movement
-     *
-     */
     @PUT
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/remove/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto remove(@PathParam("guid") String guid) {
+    public ResponseDto<?> remove(@PathParam("guid") String guid) {
         LOG.debug("Archive(remove) temp movement invoked in rest layer");
         try {
             DraftMovement draftMovement = service.archiveDraftMovement(UUID.fromString(guid), request.getRemoteUser());
             TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
             return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
         } catch (Exception ex) {
-            LOG.error("[ Error when archiving temp movement ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when archiving temp movement ] {} ", ex);
             return new ResponseDto<>(ex.getMessage(), RestResponseCode.ERROR);
         }
     }
 
-    /**
-     *
-     * @responseMessage 200 Temp Movement successfully updated
-     * @responseMessage 500 Error when updating Temp Movement
-     *
-     * @summary Updates a temp movement
-     *
-     */
     @PUT
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto update(final TempMovementType data) {
+    public ResponseDto<?> update(final TempMovementType data) {
         LOG.debug("Update temp movement invoked in rest layer");
         try {
             DraftMovement draftMovement = DraftMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
@@ -136,48 +99,32 @@ public class TempMovementResource {
             TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
             return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
         } catch (Exception ex) {
-            LOG.error("[ Error while updating temp movement. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error while updating temp movement. ] {} ", ex);
             return new ResponseDto<>(ex.getMessage(), RestResponseCode.ERROR);
         }
     }
 
-    /**
-     *
-     * @responseMessage 200 All active temp movements fetched
-     * @responseMessage 500 Error when fetching active temp movements
-     *
-     * @summary List all active temp movements
-     *
-     */
     @POST
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewManualMovements)
-    public ResponseDto<GetTempMovementListResponse> getDraftMovements(MovementQuery query) {
+    public ResponseDto<?> getDraftMovements(MovementQuery query) {
         LOG.debug("List all active temp movement invoked in rest layer");
         try {
             return new ResponseDto<>(service.getDraftMovements(query), RestResponseCode.OK);
         } catch (Exception ex) {
             LOG.error("[ Error while getting list. ] {} ", ex);
-            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR);
+            return new ResponseDto<>(ex.getMessage(), RestResponseCode.ERROR);
         }
     }
 
-    /**
-     *
-     * @responseMessage 200 Temp Movement successfully sent
-     * @responseMessage 500 Error when sending Temp Movement
-     *
-     * @summary Sends a temp movement
-     *
-     */
     @PUT
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/send/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto send(@PathParam("guid") String guid) {
+    public ResponseDto<?> send(@PathParam("guid") String guid) {
         LOG.debug("Send temp movement invoked in rest layer");
         try {
             DraftMovement draftMovement = service.sendDraftMovement(UUID.fromString(guid), request.getRemoteUser());
@@ -190,11 +137,9 @@ public class TempMovementResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/archive/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto archiveDraftMovement(@PathParam("guid") String guid) {
+    public ResponseDto<?> archiveDraftMovement(@PathParam("guid") String guid) {
         LOG.debug("Archive movement");
         try {
             DraftMovement draftMovement = service.archiveDraftMovement(UUID.fromString(guid), request.getRemoteUser());

@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
@@ -21,7 +20,7 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
-/* Old version of sseResource, kept around to keep the old version of the realtime map running */
+/* Old version of sseResource, kept around to keep the old version of the real-time map running */
 @ApplicationScoped
 @Path("sse")
 @RequiresFeature(UnionVMSFeature.viewMovements)
@@ -29,9 +28,9 @@ public class SSEResource {
 
     private final static Logger LOG = LoggerFactory.getLogger(SSEResource.class);
 
-    Sse sse;
-    OutboundSseEvent.Builder eventBuilder;
-    SseBroadcaster sseBroadcaster;
+    private Sse sse;
+    private OutboundSseEvent.Builder eventBuilder;
+    private SseBroadcaster sseBroadcaster;
 
     @Context
     public void setSse(Sse sse) {
@@ -43,7 +42,8 @@ public class SSEResource {
     public void createdMovement(@Observes @CreatedMovement Movement move){
         try {
             if (move != null) {
-                MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
+                MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(),
+                        move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")
                         .id("" + System.currentTimeMillis())
@@ -59,7 +59,6 @@ public class SSEResource {
             throw new RuntimeException(e);
         }
     }
-
 
     @GET
     @Path("subscribe")

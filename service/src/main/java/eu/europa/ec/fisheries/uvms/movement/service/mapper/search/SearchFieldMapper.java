@@ -11,15 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper.search;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
@@ -28,6 +19,16 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 public class SearchFieldMapper {
 
@@ -48,7 +49,7 @@ public class SearchFieldMapper {
         selectBuffer.append(createInitFromSearchSql(SearchTables.MOVEMENT));
 
         if (searchFields != null && !searchFields.isEmpty()) {
-            selectBuffer.append(createSearchSql(searchFields, isDynamic, true));
+            selectBuffer.append(createSearchSql(searchFields, isDynamic, true, false));
             selectBuffer.append(" AND ");
         } else {
             selectBuffer.append(" WHERE ");
@@ -72,14 +73,14 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    public static String createMinimalSelectSearchSql(List<SearchValue> searchFields, boolean isDynamic) throws ParseException {
+    public static String createMinimalSelectSearchSql(List<SearchValue> searchFields, boolean isDynamic) {
         StringBuilder selectBuffer = new StringBuilder();
 
         selectBuffer.append(createInitSearchSql(SearchTables.MINIMAL_MOVEMENT));
         selectBuffer.append(createInitFromSearchSql(SearchTables.MINIMAL_MOVEMENT));
 
         if (searchFields != null && !searchFields.isEmpty()) {
-            selectBuffer.append(createMinimalSearchSql(searchFields, isDynamic, true));
+            selectBuffer.append(createSearchSql(searchFields, isDynamic, true, true));
             selectBuffer.append(" AND ");
         } else {
             selectBuffer.append(" WHERE ");
@@ -128,7 +129,7 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    public static String createCountSearchSql(List<SearchValue> searchFields, boolean isDynamic) throws ParseException {
+    public static String createCountSearchSql(List<SearchValue> searchFields, boolean isDynamic) {
         StringBuilder countBuffer = new StringBuilder();
         countBuffer.append("SELECT COUNT(DISTINCT ").append(SearchTables.MOVEMENT.getTableAlias()).append(") FROM ")
                 .append(SearchTables.MOVEMENT.getTableName())
@@ -136,7 +137,7 @@ public class SearchFieldMapper {
                 .append(SearchTables.MOVEMENT.getTableAlias())
                 .append(" ");
         if (searchFields != null && !searchFields.isEmpty()) {
-            countBuffer.append(createSearchSql(searchFields, isDynamic, false));
+            countBuffer.append(createSearchSql(searchFields, isDynamic, false, false));
             countBuffer.append(" AND ");
         } else {
             countBuffer.append(" WHERE ");
@@ -158,7 +159,7 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    private static String createSearchSql(List<SearchValue> criterias, boolean dynamic, boolean joinFetch) {
+    private static String createSearchSql(List<SearchValue> criterias, boolean dynamic, boolean joinFetch, boolean minimal) {
 
         String OPERATOR = " OR ";
         if (dynamic) {
@@ -169,50 +170,9 @@ public class SearchFieldMapper {
 
         HashMap<SearchField, List<SearchValue>> orderedValues = combineSearchFields(criterias);
 
-        builder.append(buildJoin(orderedValues, joinFetch));
-        if (!orderedValues.isEmpty()) {
+        String joinStr = minimal ? buildMinimalJoin(orderedValues, joinFetch) : buildJoin(orderedValues, joinFetch);
+        builder.append(joinStr);
 
-            builder.append(" WHERE ");
-
-            boolean first = true;
-            boolean containsSpecialConditions = checkValidSingleAttributes(orderedValues);
-
-            for (Entry<SearchField, List<SearchValue>> criteria : orderedValues.entrySet()) {
-                if (!isKeySpecialCondition(criteria.getKey())) {
-                    first = createOperator(first, builder, OPERATOR);
-                    createCriteria(criteria.getValue(), criteria.getKey(), builder);
-                }
-            }
-
-            if (containsSpecialConditions) {
-                builder.append(buildSpecialConditionSql(orderedValues, first, OPERATOR));
-            }
-        }
-        return builder.toString();
-    }
-
-    /**
-     *
-     * Creates the complete search SQL with joins and sets the values based on
-     * the criterias
-     *
-     * @param criterias
-     * @param dynamic
-     * @return
-     * @throws ParseException
-     */
-    private static String createMinimalSearchSql(List<SearchValue> criterias, boolean dynamic, boolean joinFetch) throws ParseException {
-
-        String OPERATOR = " OR ";
-        if (dynamic) {
-            OPERATOR = " AND ";
-        }
-
-        StringBuilder builder = new StringBuilder();
-
-        HashMap<SearchField, List<SearchValue>> orderedValues = combineSearchFields(criterias);
-
-        builder.append(buildMinimalJoin(orderedValues, joinFetch));
         if (!orderedValues.isEmpty()) {
 
             builder.append(" WHERE ");
@@ -478,30 +438,31 @@ public class SearchFieldMapper {
 
         if (entry.isRange()) {
             if (clazz.isAssignableFrom(Instant.class)) {
-                builder.append(" BETWEEN ").append(":fromDate ").append(" AND ").append(":toDate ").toString();
+                builder.append(" BETWEEN ").append(":fromDate ").append(" AND ").append(":toDate ");
             } else if (clazz.isAssignableFrom(Double.class) || clazz.isAssignableFrom(Integer.class)) {
                 builder
                         .append(" ( ").append(buildTableAliasname(type))
                         .append(" >= ").append(entry.getFromValue())
                         .append(" AND ")
                         .append(buildTableAliasname(type))
-                        .append(" <= ").append(entry.getToValue()).append(" ) ").toString();
+                        .append(" <= ").append(entry.getToValue()).append(" ) ");
             } else {
-                throw new IllegalArgumentException("Error when setting value as type: Only Date, Integer and Double are supported when the entry is a range query ( setValueAsType )");
+                throw new IllegalArgumentException("Error when setting value as type: Only Date, " +
+                        "Integer and Double are supported when the entry is a range query ( setValueAsType )");
             }
         } else {
 
             if (entry.getField().getClazz().isEnum()) {
-                builder.append(" = ").append(getOrdinalValueFromEnum(entry)).toString();
+                builder.append(" = ").append(getOrdinalValueFromEnum(entry));
             }
 
             if (clazz.isAssignableFrom(Geometry.class)) {
                 builder.append(" WITHIN( ")
                         .append(buildTableAliasname(entry.getField()))
-                        .append(", ").append(":wkt").append(" ) = true ").toString();
+                        .append(", ").append(":wkt").append(" ) = true ");
             }
 
-            builder.append(" = ").append(buildValueFromClassType(entry)).toString();
+            builder.append(" = ").append(buildValueFromClassType(entry));
         }
 
         return builder.toString();
@@ -605,30 +566,13 @@ public class SearchFieldMapper {
     private static HashMap<SearchField, List<SearchValue>> combineSearchFields(List<SearchValue> searchValues) {
         HashMap<SearchField, List<SearchValue>> values = new HashMap<>();
         for (SearchValue search : searchValues) {
-            if (!checkOnceOccurringFields(values, search.getField())) {
-                if (values.containsKey(search.getField())) {
-                    values.get(search.getField()).add(search);
-                } else {
-                    values.put(search.getField(), new ArrayList<>(Arrays.asList(search)));
-                }
+            if (values.containsKey(search.getField())) {
+                values.get(search.getField()).add(search);
             } else {
-                throw new IllegalArgumentException("TO_DATE and FROM_DATE can only occur once in the search list!");
+                values.put(search.getField(), new ArrayList<>(Collections.singletonList(search)));
             }
         }
         return values;
-    }
-
-    /**
-     * Helper method for validating the special occasions where only one search
-     * criteria type is allowed
-     *
-     * @param values
-     * @param field
-     * @return
-     */
-    // TODO: Unimplemented?
-    private static boolean checkOnceOccurringFields(HashMap<SearchField, List<SearchValue>> values, SearchField field) {
-        return false;
     }
 
     /**
