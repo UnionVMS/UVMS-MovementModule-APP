@@ -25,6 +25,8 @@ import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 
 @Path("/track")
 @Stateless
+@Consumes(value = {MediaType.APPLICATION_JSON})
+@Produces(value = {MediaType.APPLICATION_JSON})
 public class TrackRestResource {
     private static final Logger LOG = LoggerFactory.getLogger(TrackRestResource.class);
 
@@ -32,13 +34,10 @@ public class TrackRestResource {
     private MovementDao movementDao;
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/{id}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getTrack(@PathParam("id") String stringId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
         try {
-
             UUID id = UUID.fromString(stringId);
             Track track = movementDao.getTrackById(id);
             List<Geometry> points = ((track == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(track, maxNbr));
@@ -46,7 +45,6 @@ public class TrackRestResource {
 
             return Response.ok(returnTrack).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
-
         } catch (Exception e) {
             LOG.error("[ Error when getting track. ] {}", e.getMessage(), e);
             return Response.status(500).entity(ExceptionUtils.getRootCause(e)).type(MediaType.APPLICATION_JSON)
@@ -55,13 +53,10 @@ public class TrackRestResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/byMovementGUID/{id}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getWKTTrackByMovement(@PathParam("id") String stringId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
         try {
-
             UUID id = UUID.fromString(stringId);
             Movement movement = movementDao.getMovementByGUID(id);
             List<Geometry> points = ((movement.getTrack() == null) ? new ArrayList<>() : movementDao.getPointsFromTrack(movement.getTrack(), maxNbr));
@@ -78,25 +73,20 @@ public class TrackRestResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path(value = "/microMovement/byMovementGUID/{id}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getMicroMovementTrackByMovement(@PathParam("id") String stringId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
         try {
-
             UUID id = UUID.fromString(stringId);
             Movement movement = movementDao.getMovementByGUID(id);
 
             List<MicroMovementDtoV2> returnList = movementDao.getMicroMovementsDtoByTrack(movement.getTrack(), maxNbr);
             return Response.ok(returnList).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
-
         } catch (Exception e) {
             LOG.error("[ Error when getting track. ] {}", e.getMessage(), e);
             return Response.status(500).entity(ExceptionUtils.getRootCause(e)).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         }
     }
-
 }

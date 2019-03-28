@@ -3,7 +3,6 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentDTO;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.SegmentMapper;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
@@ -35,12 +34,9 @@ public class SegmentRestResource {
     public Response createMovementSearchGroup(@PathParam("destination") String destination) {
         try {
             Movement destinationMovement = movementDao.getMovementByGUID(UUID.fromString(destination));
-
             SegmentDTO returnSeg = SegmentMapper.mapToSegmentDTO(destinationMovement.getFromSegment());
-
             return Response.ok(returnSeg).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
-
         } catch (Exception e) {
             LOG.error("[ Error when getting segment. ] {}", e.getMessage(), e);
             return Response.status(500).entity(ExceptionUtils.getRootCause(e)).type(MediaType.APPLICATION_JSON)

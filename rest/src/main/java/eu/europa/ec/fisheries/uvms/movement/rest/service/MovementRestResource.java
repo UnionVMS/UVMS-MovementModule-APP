@@ -11,12 +11,30 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
+import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
+import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -26,30 +44,15 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import eu.europa.ec.fisheries.uvms.movement.service.dto.*;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
-import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
-import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Path("/movement")
 @Stateless
+@Consumes(value = {MediaType.APPLICATION_JSON})
+@Produces(value = {MediaType.APPLICATION_JSON})
 public class MovementRestResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementRestResource.class);
@@ -63,18 +66,7 @@ public class MovementRestResource {
     @Context 
     private HttpServletRequest request;
 
-    /**
-     *
-     * @responseMessage 200 Movement list successfully retreived
-     * @responseMessage 500 Error when retrieveing the list values for
-     * transponders
-     *
-     * @summary Gets a list of movements filtered by a query
-     *
-     */
     @POST
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<MovementListResponseDto> getListByQuery(MovementQuery query) {
@@ -86,18 +78,7 @@ public class MovementRestResource {
         }
     }
 
-    /**
-     *
-     * @responseMessage 200 Movement list successfully retreived
-     * @responseMessage 500 Error when retrieveing the list values for
-     * transponders
-     *
-     * @summary Gets a list of movements filtered by a query with minimal information
-     *
-     */
     @POST
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/list/minimal")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<MovementListResponseDto> getMinimalListByQuery(MovementQuery query) {
@@ -114,18 +95,7 @@ public class MovementRestResource {
         }
     }
 
-    /**
-     *
-     * @responseMessage 200 Movement list successfully retreived
-     * @responseMessage 500 Error when retrieveing the list values for
-     * transponders
-     *
-     * @summary Gets the latest movements for the selected connectIds
-     *
-     */
     @POST
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<List<MovementDto>> getLatestMovementsByConnectIds(List<String> connectIds) {
@@ -145,18 +115,7 @@ public class MovementRestResource {
         }
     }
 
-    /**
-     *
-     * @responseMessage 200 Movement list successfully retreived
-     * @responseMessage 500 Error when retrieveing the list values for
-     * transponders
-     *
-     * @summary Gets the latest movements for the selected connectIds
-     *
-     */
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/latest/{numberOfMovements}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<List<MovementDto>> getLatestMovements(@PathParam(value = "numberOfMovements") Integer numberOfMovements) {
@@ -179,8 +138,6 @@ public class MovementRestResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/{id}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto getById(@PathParam(value = "id") final String id) {
@@ -204,8 +161,6 @@ public class MovementRestResource {
     }
 
     @POST
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/movementMap")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto<GetMovementMapByQueryResponse> getMapByQuery(MovementQuery query) {
@@ -218,8 +173,6 @@ public class MovementRestResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/microMovementListAfterForAsset/{id}/{timestamp}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getMicroMovementListAfter(@PathParam("id") String uuid ,@PathParam("timestamp") String date) {
@@ -235,8 +188,6 @@ public class MovementRestResource {
     }
 
     @GET
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/lastMicroMovementForAllAssets")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getLastMicroMovementForAllAssets() {

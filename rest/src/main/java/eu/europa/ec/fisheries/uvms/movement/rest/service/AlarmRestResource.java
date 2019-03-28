@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 
 @Path("/alarms")
 @Stateless
+@Consumes(value = { MediaType.APPLICATION_JSON })
+@Produces(value = { MediaType.APPLICATION_JSON })
 public class AlarmRestResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(AlarmRestResource.class);
@@ -46,17 +48,7 @@ public class AlarmRestResource {
     @Context
     private HttpServletRequest request;
 
-    /**
-     *
-     * @responseMessage 200 All alarms matching query fetched
-     * @responseMessage 500 No alarms fetched
-     *
-     * @summary Get a list of all alarms by query
-     *
-     */
     @POST
-    @Consumes(value = { MediaType.APPLICATION_JSON })
-    @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public AlarmListResponseDto getAlarmList(AlarmQuery query) {
@@ -64,17 +56,7 @@ public class AlarmRestResource {
         return validationService.getAlarmList(query);
     }
 
-    /**
-     *
-     * @responseMessage 200 Selected alarm updated
-     * @responseMessage 500 No alarm updated
-     *
-     * @summary Update an alarm status
-     *
-     */
     @PUT
-    @Consumes(value = { MediaType.APPLICATION_JSON })
-    @Produces(value = { MediaType.APPLICATION_JSON })
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
     public AlarmReport updateAlarmStatus(final AlarmReport alarmReport) {
         LOG.info("Update alarm status invoked in rest layer");
@@ -82,8 +64,6 @@ public class AlarmRestResource {
     }
 
     @PUT
-    @Consumes(value = { MediaType.APPLICATION_JSON })
-    @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/incomingMovement")
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
     public IncomingMovement updateIncomingMovement(IncomingMovement movement) {
@@ -91,33 +71,14 @@ public class AlarmRestResource {
         return validationService.updateIncomingMovement(movement);
     }
 
-    /**
-     *
-     * @responseMessage 200 Alarm fetched by GUID
-     * @responseMessage 500 No alarm fetched
-     *
-     * @summary Get an alarm by GUID
-     *
-     */
     @GET
-    @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/{guid}")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public AlarmReport getAlarmReportByGuid(@PathParam("guid") UUID guid) {
         return validationService.getAlarmReportByGuid(guid);
     }
 
-    /**
-     *
-     * @responseMessage 200 Selected alarms processed
-     * @responseMessage 500 Reprocessing of alarms failed
-     *
-     * @summary Reprocess alarms
-     *
-     */
     @POST
-    @Consumes(value = { MediaType.APPLICATION_JSON })
-    @Produces(value = { MediaType.APPLICATION_JSON })
     @Path("/reprocess")
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
     public Response reprocessAlarm(final List<String> alarmGuidList) {
@@ -126,16 +87,7 @@ public class AlarmRestResource {
         return Response.ok().build();
     }
 
-    /**
-     *
-     * @responseMessage 200 Number of open alarms
-     * @responseMessage 500 No result
-     *
-     * @summary Get number of open alarms
-     *
-     */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("/countopen")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public long getNumberOfOpenAlarmReports() {
@@ -144,7 +96,6 @@ public class AlarmRestResource {
 
     @GET
     @Path("/sanityrules")
-    @Produces(MediaType.APPLICATION_JSON)
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public List<String> getSanityRuleNames() {
         return Arrays.stream(SanityRule.values())

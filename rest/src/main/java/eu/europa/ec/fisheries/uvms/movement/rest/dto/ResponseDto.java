@@ -15,9 +15,6 @@ import org.slf4j.MDC;
 
 import java.util.Objects;
 
-/**
- ** @param <T>
- */
 public class ResponseDto<T> {
 
     private T data;
@@ -65,15 +62,11 @@ public class ResponseDto<T> {
         if (!Objects.equals(this.data, other.data)) {
             return false;
         }
-        if (!Objects.equals(this.code, other.code)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.code, other.code);
     }
 
     @Override
     public String toString() {
         return "ResponseDto{" + "data=" + data + ", code=" + code + '}';
     }
-
 }

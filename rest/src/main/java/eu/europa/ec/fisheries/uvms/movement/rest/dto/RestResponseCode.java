@@ -11,17 +11,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.dto;
 
-/**
- **/
 public enum RestResponseCode {
-
     OK("200"),
     ERROR("500"),
     ERROR_DUPLICTAE("409");
 
     private final String code;
 
-    private RestResponseCode(String code) {
+    RestResponseCode(String code) {
         this.code = code;
     }
 
