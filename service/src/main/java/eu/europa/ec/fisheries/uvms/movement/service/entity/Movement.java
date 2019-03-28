@@ -63,7 +63,7 @@ import org.hibernate.annotations.FetchMode;
     @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true"),
     @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.id = :asset AND m.duplicate = false"),
     @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.duplicate = false"),
-    @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_FOR_ASSET_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2(m.location, m.heading, m.id, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.movementConnect.id = :id AND m.duplicate = false"),
+    @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_FOR_ASSET_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2(m.location, m.heading, m.id, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.movementConnect.id = :id AND m.duplicate = false ORDER BY m.timestamp ASC"),
 
         /*
             Native postgres query for finding all positions in the vicinity of a point in space/time:
