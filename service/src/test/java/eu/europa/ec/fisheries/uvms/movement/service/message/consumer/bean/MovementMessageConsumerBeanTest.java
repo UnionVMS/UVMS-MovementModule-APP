@@ -12,6 +12,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.jms.ConnectionFactory;
+import javax.jms.Message;
 import javax.jms.TextMessage;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -654,7 +655,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Test
     @OperateOnDeployment("movementservice")
     public void testMaxRedeliveries() throws Exception {
-        int dlqBefore = jmsHelper.checkQueueSize("DLQ");
+        jmsHelper.clearQueue("DLQ");
         int responseQueueBefore = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
 
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
@@ -665,14 +666,10 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         String json = mapper.writeValueAsString(incomingMovement);
         jmsHelper.sendMovementMessage(json, incomingMovement.getAssetHistoryId(), "CREATE");   //grouping on null.....
 
-
-        // Wait until message have been moved to DQL
-        Thread.sleep(2500);
-        
-        int dlqAfter = jmsHelper.checkQueueSize("DLQ");
+        Message dlqMessage = jmsHelper.listenOnQueue("DLQ");
         int responseQueueAfter = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
         
-        assertThat(dlqAfter, is(dlqBefore + 1));
+        assertThat(dlqMessage, is(notNullValue()));
         assertThat(responseQueueBefore, is(responseQueueAfter));
     }
 
