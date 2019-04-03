@@ -457,11 +457,6 @@
             <column name="move_processed"/>
         </createIndex>
     </changeSet>
-    <changeSet author="thofan (generated)" id="1544002649622-62">
-        <createIndex indexName="movement_timestamp_idx" tableName="movement">
-            <column name="move_timestamp"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-63">
         <createIndex indexName="movement_trac_fk_idx" tableName="movement">
             <column name="move_trac_id"/>

@@ -89,10 +89,6 @@
             <column name="move_processed" type="boolean"/>
         </createIndex>
 
-        <createIndex indexName="movement_timestamp_idx" tableName="movement">
-            <column name="move_timestamp" type="timestamp"/>
-        </createIndex>
-
         <createIndex indexName="movement_duplicate_idx" tableName="movement">
             <column name="move_duplicate" type="boolean"/>
         </createIndex>
