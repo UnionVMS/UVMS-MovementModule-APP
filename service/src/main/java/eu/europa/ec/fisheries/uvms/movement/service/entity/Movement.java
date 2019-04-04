@@ -39,7 +39,6 @@ import org.hibernate.annotations.FetchMode;
         @Index(columnList = "move_duplicate", name = "movement_duplicate_idx", unique = false),
         @Index(columnList = "move_moveconn_id", name = "movement_moveconn_fk_idx", unique = false),
         @Index(columnList = "move_processed", name = "movement_processed_idx", unique = false),
-        @Index(columnList = "move_timestamp", name = "movement_timestamp_idx", unique = false),
         @Index(columnList = "move_trac_id", name = "movement_trac_fk_idx", unique = false),
         @Index(columnList = "move_moveconn_id, move_timestamp, move_duplicate", name = "movement_count_idx", unique = false)
 })
