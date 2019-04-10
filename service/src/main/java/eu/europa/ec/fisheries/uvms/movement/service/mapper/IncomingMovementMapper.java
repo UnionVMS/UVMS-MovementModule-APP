@@ -102,8 +102,8 @@ public abstract class IncomingMovementMapper {
             md.setCalculatedSpeed((double)movement.getFromSegment().getSpeedOverGround());
             md.setSegmentType(movement.getFromSegment().getSegmentCategory().value());
         }
-        md.setReportedCourse((double)movement.getHeading());
-        md.setReportedSpeed((double)movement.getSpeed());
+        md.setReportedCourse(movement.getHeading() != null ? (double)movement.getHeading() : null);
+        md.setReportedSpeed(movement.getSpeed() != null ? (double)movement.getSpeed() : null);
         md.setPositionTime(movement.getTimestamp());
         md.setStatusCode(movement.getStatus());
         md.setTripNumber(movement.getTripNumber());
