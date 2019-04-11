@@ -31,7 +31,6 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
@@ -135,10 +134,10 @@ public class DraftMovementService {
             DraftMovement movement = setDraftMovementState(guid, TempMovementStateEnum.SENT, username);
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
-                    Date.from(DateUtil.nowUTC()), null, PluginType.MANUAL, username, null);
+                    DateUtil.nowUTC(), PluginType.MANUAL, username, null);
             exchangeProducer.sendModuleMessage(exchangeRequest, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value());
             return movement;
-        } catch (ExchangeModelMarshallException | MessageException ex) {
+        } catch (MessageException ex) {
             throw new IllegalArgumentException("Error when marshaling exchange request.", ex);
         }
     }

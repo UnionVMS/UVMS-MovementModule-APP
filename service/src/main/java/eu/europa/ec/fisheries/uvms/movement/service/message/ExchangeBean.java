@@ -12,8 +12,6 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
-import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
@@ -26,7 +24,7 @@ public class ExchangeBean extends AbstractProducer {
     @Resource(mappedName = "java:/jms/queue/UVMSMovement")
     private Queue replyToQueue;
     
-    public void sendAckToExchange(MovementRefTypeType refType, Movement movement, String ackResponseMessageId) throws ExchangeModelMarshallException, MessageException {
+    public void sendAckToExchange(MovementRefTypeType refType, Movement movement, String ackResponseMessageId) throws MessageException {
         if (ackResponseMessageId == null) {
             return;
         }
@@ -43,7 +41,7 @@ public class ExchangeBean extends AbstractProducer {
         send(processedMovementResponse);
     }
     
-    public void send(ProcessedMovementResponse processedMovementResponse) throws ExchangeModelMarshallException, MessageException {
+    public void send(ProcessedMovementResponse processedMovementResponse) throws MessageException {
         String xml = JAXBMarshaller.marshallJaxBObjectToString(processedMovementResponse);
         Map<String, String> propMap = new HashMap<>();
         propMap.put("FUNCTION", processedMovementResponse.getMethod().toString());
