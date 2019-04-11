@@ -15,8 +15,6 @@ import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @Stateless
 public class ExchangeBean extends AbstractProducer {
@@ -43,16 +41,12 @@ public class ExchangeBean extends AbstractProducer {
     
     public void send(ProcessedMovementResponse processedMovementResponse) throws MessageException {
         String xml = JAXBMarshaller.marshallJaxBObjectToString(processedMovementResponse);
-        Map<String, String> propMap = new HashMap<>();
-        propMap.put("FUNCTION", processedMovementResponse.getMethod().toString());
-        sendModuleMessageWithProps(xml, null, propMap);
+        sendMessageToSpecificQueueWithFunction(xml, getDestination(), null, processedMovementResponse.getMethod().toString(), null);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, String function) throws MessageException {
-        Map<String, String> propMap = new HashMap<>();
-        propMap.put("FUNCTION", function);
-        return sendModuleMessage(text, replyToQueue);
+        return sendMessageToSpecificQueueWithFunction(text, getDestination(), replyToQueue, function, null);
     }
     
     @Override
