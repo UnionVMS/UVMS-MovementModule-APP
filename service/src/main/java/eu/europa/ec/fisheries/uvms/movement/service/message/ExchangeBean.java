@@ -12,9 +12,13 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
+import eu.europa.ec.fisheries.uvms.exchange.model.constant.ExchangeModelConstants;
 import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Stateless
 public class ExchangeBean extends AbstractProducer {
@@ -41,11 +45,15 @@ public class ExchangeBean extends AbstractProducer {
     
     public void send(ProcessedMovementResponse processedMovementResponse) throws ExchangeModelMarshallException, MessageException {
         String xml = JAXBMarshaller.marshallJaxBObjectToString(processedMovementResponse);
-        sendModuleMessage(xml, null);
+        Map<String, String> propMap = new HashMap<>();
+        propMap.put("FUNCTION", processedMovementResponse.getMethod().toString());
+        sendModuleMessageWithProps(xml, null, propMap);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessage(String text) throws MessageException {
+    public String sendModuleMessage(String text, String function) throws MessageException {
+        Map<String, String> propMap = new HashMap<>();
+        propMap.put("FUNCTION", function);
         return sendModuleMessage(text, replyToQueue);
     }
     

@@ -21,6 +21,8 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
@@ -134,7 +136,7 @@ public class DraftMovementService {
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
                     Date.from(DateUtil.nowUTC()), null, PluginType.MANUAL, username, null);
-            exchangeProducer.sendModuleMessage(exchangeRequest);
+            exchangeProducer.sendModuleMessage(exchangeRequest, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value());
             return movement;
         } catch (ExchangeModelMarshallException | MessageException ex) {
             throw new IllegalArgumentException("Error when marshaling exchange request.", ex);
