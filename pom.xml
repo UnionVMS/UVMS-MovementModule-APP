@@ -24,7 +24,7 @@
 		<user.model.version>2.0.8</user.model.version>
 		<spatial.model.version>1.0.12</spatial.model.version>
 		<audit.model.version>4.0.8</audit.model.version>
-		<exchange.model.version>4.0.22</exchange.model.version>
+		<exchange.model.version>5.0.0-UVMS</exchange.model.version>
 		<asset.client.version>6.0.41</asset.client.version>
 		<movement-rules.model.version>2.1.0</movement-rules.model.version>
 		<javaee.version>8.0</javaee.version>

@@ -12,9 +12,9 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
-import eu.europa.ec.fisheries.uvms.exchange.model.exception.ExchangeModelMarshallException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+
 
 @Stateless
 public class ExchangeBean extends AbstractProducer {
@@ -22,7 +22,7 @@ public class ExchangeBean extends AbstractProducer {
     @Resource(mappedName = "java:/jms/queue/UVMSMovement")
     private Queue replyToQueue;
     
-    public void sendAckToExchange(MovementRefTypeType refType, Movement movement, String ackResponseMessageId) throws ExchangeModelMarshallException, MessageException {
+    public void sendAckToExchange(MovementRefTypeType refType, Movement movement, String ackResponseMessageId) throws MessageException {
         if (ackResponseMessageId == null) {
             return;
         }
@@ -39,14 +39,14 @@ public class ExchangeBean extends AbstractProducer {
         send(processedMovementResponse);
     }
     
-    public void send(ProcessedMovementResponse processedMovementResponse) throws ExchangeModelMarshallException, MessageException {
+    public void send(ProcessedMovementResponse processedMovementResponse) throws MessageException {
         String xml = JAXBMarshaller.marshallJaxBObjectToString(processedMovementResponse);
-        sendModuleMessage(xml, null);
+        sendMessageToSpecificQueueWithFunction(xml, getDestination(), null, processedMovementResponse.getMethod().toString(), null);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessage(String text) throws MessageException {
-        return sendModuleMessage(text, replyToQueue);
+    public String sendModuleMessage(String text, String function) throws MessageException {
+        return sendMessageToSpecificQueueWithFunction(text, getDestination(), replyToQueue, function, null);
     }
     
     @Override
