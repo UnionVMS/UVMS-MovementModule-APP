@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
@@ -38,11 +39,11 @@ public class IncomingMovementBean {
 
         currentMovement.setDuplicate(false);
 
-        List<Movement> latestMovements = dao.getLatestMovementsByConnectId(connectId, 1);
-        if (latestMovements.isEmpty()) { // First position
+        LatestMovement latest = dao.getLatestMovement(connectId);
+        if (latest == null) { // First position
             //left empty
         } else {
-            Movement latestMovement = latestMovements.get(0);
+            Movement latestMovement = latest.getMovement();
             if (currentMovement.getTimestamp().isAfter(latestMovement.getTimestamp())) {
                 segmentBean.newSegment(latestMovement, currentMovement); // Normal case (latest position)
             } else {
@@ -57,7 +58,7 @@ public class IncomingMovementBean {
                 }
             }
         }
-        dao.upsertLatestMovement(currentMovement, currentMovement.getMovementConnect());
+        dao.upsertLatestMovement(currentMovement, currentMovement.getMovementConnect(), latest);
         currentMovement.setProcessed(true);
     }
     public boolean checkAndSetDuplicate(IncomingMovement movement) {
