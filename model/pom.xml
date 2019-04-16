@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.1.23-UVMS</version>
+        <version>5.1.24-UVMS-SNAPSHOT</version>
     </parent>
 
 	<artifactId>movement-model</artifactId>
