@@ -164,9 +164,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
 
         List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(ORDER_NORMAL, ALL, connectId);
-        for (Movement movement : movementList) {
-            incomingMovementBean.processMovement(movement);
-        }
         assertSegmentMovementIds(movementList);
     }
 
@@ -187,10 +184,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
 
         List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(order, ALL, connectId);
-        for (Movement movement : movementList) {
-            incomingMovementBean.processMovement(movement);
-        }
-        
+
         Movement aMovement = movementList.get(movementList.size() - 1);
         Track track = aMovement.getTrack();
         List<Segment> segmentList = movementDao.getSegmentsByTrack(track);
@@ -223,9 +217,6 @@ public class MovementSegmentIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
 
         List<Movement> movementList = movementHelpers.createFishingTourVarberg(ORDER_NORMAL ,connectId);
-        for (Movement movement : movementList) {
-            incomingMovementBean.processMovement(movement);
-        }
         assertSegmentMovementIds(movementList);
     }
 

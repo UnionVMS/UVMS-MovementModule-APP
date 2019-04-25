@@ -81,8 +81,6 @@ public class MovementModelToEntityMapper {
         }
 
 
-        entity.setProcessed(false);
-
         return entity;
 
     }
@@ -142,8 +140,6 @@ public class MovementModelToEntityMapper {
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setId(UUID.fromString(movement.getConnectId()));
         entity.setMovementConnect(movementConnect);
-
-        entity.setProcessed(false);
 
         return entity;
     }

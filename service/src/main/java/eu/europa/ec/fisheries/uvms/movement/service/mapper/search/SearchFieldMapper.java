@@ -50,13 +50,9 @@ public class SearchFieldMapper {
 
         if (searchFields != null && !searchFields.isEmpty()) {
             selectBuffer.append(createSearchSql(searchFields, isDynamic, true, false));
-            selectBuffer.append(" AND ");
-        } else {
-            selectBuffer.append(" WHERE ");
         }
 
         selectBuffer
-                .append(" m.duplicate = false ")
                 .append(" ORDER BY ")
                 .append(SearchTables.MOVEMENT.getTableAlias())
                 .append(".")
@@ -81,13 +77,9 @@ public class SearchFieldMapper {
 
         if (searchFields != null && !searchFields.isEmpty()) {
             selectBuffer.append(createSearchSql(searchFields, isDynamic, true, true));
-            selectBuffer.append(" AND ");
-        } else {
-            selectBuffer.append(" WHERE ");
         }
 
         selectBuffer
-                .append(" m.duplicate = false ")
                 .append(" ORDER BY ")
                 .append(SearchTables.MINIMAL_MOVEMENT.getTableAlias())
                 .append(".")
@@ -104,7 +96,7 @@ public class SearchFieldMapper {
      * @return
      */
     public static String createInitSearchSql(SearchTables... tables) {
-        StringBuilder selectBuffer = new StringBuilder("SELECT DISTINCT ");     
+        StringBuilder selectBuffer = new StringBuilder("SELECT ");
         for (SearchTables table : tables) {
             selectBuffer.append(" ").append(table.getTableAlias()).append(",");
         }
@@ -131,20 +123,14 @@ public class SearchFieldMapper {
      */
     public static String createCountSearchSql(List<SearchValue> searchFields, boolean isDynamic) {
         StringBuilder countBuffer = new StringBuilder();
-        countBuffer.append("SELECT COUNT(DISTINCT ").append(SearchTables.MOVEMENT.getTableAlias()).append(") FROM ")
+        countBuffer.append("SELECT COUNT( ").append(SearchTables.MOVEMENT.getTableAlias()).append(") FROM ")
                 .append(SearchTables.MOVEMENT.getTableName())
                 .append(" ")
                 .append(SearchTables.MOVEMENT.getTableAlias())
                 .append(" ");
         if (searchFields != null && !searchFields.isEmpty()) {
             countBuffer.append(createSearchSql(searchFields, isDynamic, false, false));
-            countBuffer.append(" AND ");
-        } else {
-            countBuffer.append(" WHERE ");
         }
-
-        countBuffer
-                .append(" m.duplicate = false ");
         LOG.debug("[ COUNT SQL: ] " + countBuffer.toString());
         return countBuffer.toString();
     }

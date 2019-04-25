@@ -29,12 +29,9 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
 
@@ -43,27 +40,7 @@ public class MovementMapper {
     private static final Logger LOG = LoggerFactory.getLogger(MovementMapper.class);
 
     private MovementMapper() {}
-    
-    public static MovementType mapMovementBaseTypeToMovementType(MovementBaseType movementBaseType) {
-        MovementType movementType = new MovementType();
-        movementType.setGuid(movementBaseType.getGuid());
-        movementType.setConnectId(movementBaseType.getConnectId());
-        movementType.setAssetId(movementBaseType.getAssetId());
-        movementType.setPosition(movementBaseType.getPosition());
-        movementType.setPositionTime(movementBaseType.getPositionTime());
-        movementType.setStatus(movementBaseType.getStatus());
-        movementType.setReportedSpeed(movementBaseType.getReportedSpeed());
-        movementType.setReportedCourse(movementBaseType.getReportedCourse());
-        movementType.setMovementType(movementBaseType.getMovementType());
-        movementType.setSource(movementBaseType.getSource());
-        movementType.setActivity(movementBaseType.getActivity());
-        movementType.setTripNumber(movementBaseType.getTripNumber());
-        movementType.setInternalReferenceNumber(movementBaseType.getInternalReferenceNumber());
-        movementType.setProcessed(movementBaseType.isProcessed());
-        movementType.setDuplicate(movementBaseType.isDuplicate());
-        movementType.setDuplicates(movementBaseType.getDuplicates());
-        return movementType;
-    }
+
 
     public static MovementType mapMovementToMovementTypeForSpatial(Movement movement){
         MovementType movementType = new MovementType();
@@ -101,20 +78,6 @@ public class MovementMapper {
         dto.setTime(movement.getPositionTime());
         dto.setConnectId(movement.getConnectId());
         dto.setMovementGUID(movement.getGuid());
-        return dto;
-    }
-
-    public static MovementListResponseDto mapToMovementListDto(GetMovementListByQueryResponse response) {
-        MovementListResponseDto dto = new MovementListResponseDto();
-        dto.setCurrentPage(response.getCurrentPage());
-        dto.setTotalNumberOfPages(response.getTotalNumberOfPages());
-
-        List<MovementDto> movmements = new ArrayList<>();
-        for (MovementBaseType movement : response.getMovement()) {
-            movmements.add(mapTomovementDto((MovementType) movement));
-        }
-
-        dto.setMovement(movmements);
         return dto;
     }
 

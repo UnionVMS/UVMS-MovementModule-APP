@@ -12,13 +12,10 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
@@ -31,7 +28,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.message.ExchangeBean;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementRulesBean;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
-import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 
 @Stateless
 public class MovementCreateBean {
@@ -74,16 +70,14 @@ public class MovementCreateBean {
                         .getUpdatedBy());
                 Movement createdMovement = movementService.createAndProcessMovement(movement);
 
-                // send to MovementRules if it is not a duplicate
-                if(!createdMovement.getDuplicate()) {
-                    MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
-                    int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
-                   // List<VicinityInfoDTO> vicinityOf = dao.getVicinityOfMovement(createdMovement);
-                    movementDetails.setSumPositionReport(sumPositionReport);
-                   // movementDetails.setVicinityOf(vicinityOf);
+                // send to MovementRules
+                MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
+                int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
+               // List<VicinityInfoDTO> vicinityOf = dao.getVicinityOfMovement(createdMovement);
+                movementDetails.setSumPositionReport(sumPositionReport);
+               // movementDetails.setVicinityOf(vicinityOf);
 
-                    movementRulesBean.send(movementDetails);
-                }
+                movementRulesBean.send(movementDetails);
                 // report ok to Exchange...
                 // Tracer Id
                 exchangeBean.sendAckToExchange(MovementRefTypeType.MOVEMENT, createdMovement, incomingMovement.getAckResponseMessageId());

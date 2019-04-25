@@ -35,34 +35,29 @@ import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name = "movement", indexes = {
-        @Index(columnList = "move_act_id", name = "movement_act_fk_idx", unique = false),
-        @Index(columnList = "move_duplicate", name = "movement_duplicate_idx", unique = false),
         @Index(columnList = "move_moveconn_id", name = "movement_moveconn_fk_idx", unique = false),
-        @Index(columnList = "move_processed", name = "movement_processed_idx", unique = false),
         @Index(columnList = "move_trac_id", name = "movement_trac_fk_idx", unique = false),
-        @Index(columnList = "move_moveconn_id, move_timestamp, move_duplicate", name = "movement_count_idx", unique = false)
+        @Index(columnList = "move_moveconn_id, move_timestamp", name = "movement_count_idx", unique = false)
 })
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = Movement.FIND_ALL, query = "SELECT m FROM Movement m WHERE m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2(m.location, m.heading, m.id, m.timestamp, m.speed) FROM Movement m WHERE m.duplicate = false and m.track = :track ORDER BY m.timestamp ASC"),
-    @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.duplicate = false and m.track = :track ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_ALL_BY_MOVEMENTCONNECT, query = "SELECT m FROM Movement m WHERE m.duplicate = false and m.movementConnect = :movementConnect ORDER BY m.timestamp ASC"),
-    @NamedQuery(name = Movement.FIND_UNPROCESSED, query = "SELECT m FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
-    @NamedQuery(name = Movement.FIND_UNPROCESSED_ID, query = "SELECT m.id FROM Movement m WHERE m.processed = false ORDER BY m.timestamp ASC"),
-    @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_BY_SPEED, query = "SELECT m FROM Movement m WHERE m.speed = :speed AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_BY_HEADING, query = "SELECT m FROM Movement m WHERE m.heading = :heading AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_BY_STATUS, query = "SELECT m FROM Movement m WHERE m.status = :status AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_BY_UPDATED, query = "SELECT m FROM Movement m WHERE m.updated = :updated AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_BY_UPDATED_BY, query = "SELECT m FROM Movement m WHERE m.updatedBy = :updatedBy AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_PREVIOUS, query = "SELECT m FROM Movement m  WHERE m.duplicate = false AND m.timestamp = (select max(mm.timestamp) from Movement mm where mm.movementConnect.id = :id and mm.timestamp < :date and mm.processed = true) AND m.movementConnect.id = :id and m.processed = true"),
-    @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m  WHERE m.duplicate = false AND m.timestamp = (select min(mm.timestamp) from Movement mm  where mm.movementConnect.id = :id and mm.duplicate = false and mm.processed = true) AND m.movementConnect.id = :id and m.processed = true"),
-    @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true"),
-    @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.id = :asset AND m.duplicate = false"),
-    @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.duplicate = false"),
-    @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_FOR_ASSET_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2(m.location, m.heading, m.id, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.movementConnect.id = :id AND m.duplicate = false ORDER BY m.timestamp ASC"),
+    @NamedQuery(name = Movement.FIND_ALL, query = "SELECT m FROM Movement m"),
+    @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2(m.location, m.heading, m.id, m.timestamp, m.speed) FROM Movement m WHERE m.track = :track ORDER BY m.timestamp ASC"),
+    @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_ALL_BY_MOVEMENTCONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect = :movementConnect ORDER BY m.timestamp ASC"),
+    @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id"),
+    @NamedQuery(name = Movement.FIND_BY_SPEED, query = "SELECT m FROM Movement m WHERE m.speed = :speed "),
+    @NamedQuery(name = Movement.FIND_BY_HEADING, query = "SELECT m FROM Movement m WHERE m.heading = :heading "),
+    @NamedQuery(name = Movement.FIND_BY_STATUS, query = "SELECT m FROM Movement m WHERE m.status = :status "),
+    @NamedQuery(name = Movement.FIND_BY_UPDATED, query = "SELECT m FROM Movement m WHERE m.updated = :updated "),
+    @NamedQuery(name = Movement.FIND_BY_UPDATED_BY, query = "SELECT m FROM Movement m WHERE m.updatedBy = :updatedBy "),
+    @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :connectId ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_PREVIOUS, query = "SELECT m FROM Movement m  WHERE  m.timestamp = (select max(mm.timestamp) from Movement mm where mm.movementConnect.id = :id and mm.timestamp < :date) AND m.movementConnect.id = :id "),
+    @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m  WHERE m.timestamp = (select min(mm.timestamp) from Movement mm  where mm.movementConnect.id = :id AND mm.timestamp > :date) AND m.movementConnect.id = :id "),
+    @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date "),
+    @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.id = :asset "),
+    @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date "),
+    @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_FOR_ASSET_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2(m.location, m.heading, m.id, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.movementConnect.id = :id ORDER BY m.timestamp ASC"),
 
         /*
             Native postgres query for finding all positions in the vicinity of a point in space/time:
@@ -85,8 +80,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_ALL_BY_TRACK = "Movement.findAllByTrack";
     public static final String FIND_ALL_LOCATIONS_BY_TRACK = "Movement.findAllPointsByTrack";
     public static final String FIND_ALL_BY_MOVEMENTCONNECT = "Movement.findAllByMovementConnect";
-    public static final String FIND_UNPROCESSED = "Movement.findUnprocessed";
-    public static final String FIND_UNPROCESSED_ID = "Movement.findUnprocessedId";
     public static final String FIND_BY_ID = "Movement.findById";
     public static final String FIND_BY_SPEED = "Movement.findBySpeed";
     public static final String FIND_BY_HEADING = "Movement.findByHeading";
@@ -176,14 +169,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_upuser")
     private String updatedBy;
 
-    @Column(name = "move_processed")
-    private Boolean processed;
-
-    @Column(name = "move_duplicate")
-    private Boolean duplicate;
-
-    @Column(columnDefinition = "uuid", name = "move_duplicate_id")
-    private UUID duplicateId;
 
     public UUID getId() {
         return id;
@@ -319,30 +304,6 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setTrack(Track track) {
         this.track = track;
-    }
-
-    public Boolean getDuplicate() {
-        return duplicate;
-    }
-
-    public UUID getDuplicateId() {
-        return duplicateId;
-    }
-
-    public void setDuplicate(Boolean duplicate) {
-        this.duplicate = duplicate;
-    }
-
-    public void setDuplicateId(UUID duplicateId) {
-        this.duplicateId = duplicateId;
-    }
-
-    public Boolean isProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(Boolean processed) {
-        this.processed = processed;
     }
 
     @Override

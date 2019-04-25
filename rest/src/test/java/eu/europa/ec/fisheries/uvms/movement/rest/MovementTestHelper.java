@@ -69,9 +69,6 @@ public class MovementTestHelper {
         movement.setUpdatedBy("Test");
         movement.setUpdated(Instant.now());
 
-        movement.setDuplicate(false);
-        movement.setProcessed(false);
-        
         return movement;
     }
     

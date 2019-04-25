@@ -66,7 +66,6 @@ public abstract class IncomingMovementMapper {
         Activity activity = createActivity(ic);
         entity.setActivity(activity);
 
-        entity.setProcessed(false);
 
         return entity;
     }

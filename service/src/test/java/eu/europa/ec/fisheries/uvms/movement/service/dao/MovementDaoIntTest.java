@@ -102,7 +102,6 @@ public class MovementDaoIntTest extends TransactionalTests {
         Movement movement = createMovementHelper();
         movement.setMovementConnect(createdMovementConnect);
         Movement createdMovement = movementDao.createMovement(movement);
-        createdMovement.setProcessed(true);
         assertNotNull(createdMovement);
 
         UUID createdMovementId = createdMovement.getId();
@@ -113,7 +112,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         assertEquals(fetchedMovement.getId(), createdMovementId);
         MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
-        Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getId());
+        Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getId(), Instant.EPOCH);
         assertNotNull(firstMovement);
     }
 
@@ -554,8 +553,6 @@ public class MovementDaoIntTest extends TransactionalTests {
         movement.setUpdatedBy("Arquillian");
         movement.setTimestamp(timeStamp);
         movement.setUpdated(timeStamp);
-        movement.setDuplicate(Boolean.FALSE);
-        movement.setProcessed(Boolean.FALSE);
         movement.setSpeed(12F);
 
         Coordinate coordinate = new Coordinate(longitude, latitude);

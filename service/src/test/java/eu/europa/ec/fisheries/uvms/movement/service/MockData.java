@@ -74,9 +74,6 @@ public class MockData {
         movement.setTimestamp(latlong.positionTime);
         movement.setTripNumber(0d);
         
-        movement.setDuplicate(false);
-        movement.setProcessed(false);
-        
         return movement;
     }
     

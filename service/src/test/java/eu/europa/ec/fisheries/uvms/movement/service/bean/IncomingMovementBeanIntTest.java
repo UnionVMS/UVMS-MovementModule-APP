@@ -14,6 +14,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
@@ -25,10 +26,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 
 /**
@@ -88,9 +85,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         //Then: Test that the Movement is processed properly.
         Movement actualMovement = movementDao.getMovementById(id);
-        boolean actualProcessedValue = actualMovement.isProcessed();
+        LatestMovement latestMovement = movementDao.getLatestMovement(uuid);
 
-        assertThat(actualProcessedValue, is(true));
+        assertEquals(actualMovement.getId(), latestMovement.getMovement().getId());
         LOG.info(" [ testProcessingMovement: Movement object was successfully processed. ] ");
     }
 
@@ -111,10 +108,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         UUID id = movementList.get(0).getId();
 
         //Then: Test that the Movement is processed properly.
-        Movement actualMovement = movementDao.getMovementById(id);
-        boolean actualDuplicateValue = actualMovement.getDuplicate();
-
-        assertThat(actualDuplicateValue, is(false));
+        Movement actualMovement = movementDao.getMovementById(id);          //this test makes no sense after we removed the duplicate check from process movement
         LOG.info(" [ testProcessingMovement_NoDuplicateMovement: Successful check that there are no duplicate movement entities in the database. ] ");
     }
 
@@ -143,18 +137,18 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         firstMovement.setTimestamp(Instant.ofEpochMilli(1490708331790L));
         // Fields will be null by default in postgres if not set instead of false which means duplicate timestamp Movements
         // will not be found by the processMovement method via the isDateAlreadyInserted method in MovementDaoBean.
-        firstMovement.setDuplicate(false);
+        //firstMovement.setDuplicate(false);
         firstMovement.setMovementType(MovementTypeType.ENT);
 
         movementDao.createMovement(firstMovement);
         firstMovement = movementDao.getMovementById(firstMovementId);
 
         //Then: Expected is that movement processed flag and duplication flag are both set to true and a duplication id has been set.
-        assertThat(firstMovement.isProcessed(), is(true));
-        assertThat(firstMovement.getDuplicate(), is(true));   //nor this
+        /*assertThat(firstMovement.isProcessed(), is(true));
+        assertThat(firstMovement.getDuplicate(), is(true));   //nor this*/
         LOG.info(" [ Duplication flag successfully set when a duplicate movement was found in the database. ] ");
 
-        assertNotNull(firstMovement.getDuplicateId());      //nor this
+        //assertNotNull(firstMovement.getDuplicateId());      //nor this
         LOG.info(" [ Duplication id successfully set when a duplicate movement was found in the database. ] ");
     }
 

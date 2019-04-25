@@ -38,8 +38,6 @@ import org.hibernate.annotations.*;
 @Table(name = "segment", indexes = {
         @Index(columnList = "seg_frommove_id", name = "seg_move_from_to_idx", unique = false),
         @Index(columnList = "seg_tomove_id", name = "seg_move_to_to_idx", unique = false),
-        @Index(columnList = "seg_segcat_id", name = "seg_segcat_fk_idx", unique = false),
-        @Index(columnList = "seg_trac_id", name = "seg_trac_fk_idx", unique = false)
 }, uniqueConstraints = {
         @UniqueConstraint(name = "segment_seg_frommove_id_key", columnNames = "seg_frommove_id"),
         @UniqueConstraint(name = "segment_seg_tomove_id_key", columnNames = "seg_tomove_id")
@@ -77,9 +75,6 @@ public class Segment implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "uuid", name = "seg_id")
     private UUID id;
-
-    @Column(name = "seg_geom", columnDefinition = "Geometry", nullable = true)
-    private LineString location;
 
     @Column(name = "seg_distance")
     private Double distance;
@@ -130,14 +125,6 @@ public class Segment implements Serializable {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public LineString getLocation() {
-        return location;
-    }
-
-    public void setLocation(LineString location) {
-        this.location = location;
     }
 
     public Double getDistance() {
