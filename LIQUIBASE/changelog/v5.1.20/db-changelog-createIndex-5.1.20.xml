@@ -9,7 +9,6 @@
         <createIndex indexName="movement_count_idx" tableName="movement">
             <column name="move_moveconn_id"/>
             <column name="move_timestamp" descending="true"/>
-            <column name="move_duplicate"/>
         </createIndex>
 
     </changeSet>

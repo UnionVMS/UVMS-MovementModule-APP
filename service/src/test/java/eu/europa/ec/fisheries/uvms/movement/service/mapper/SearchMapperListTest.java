@@ -37,9 +37,9 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
 public class SearchMapperListTest extends TransactionalTests {
 
     private static final String GLOBAL_ID = "1";
-    private static final String INITIAL_SELECT = "SELECT DISTINCT  m FROM Movement m ";
-    private static final String ORDER_BY = " ORDER BY m.timestamp DESC ";
-    private static final String NO_DUPLICATE = "WHERE  m.duplicate = false ";
+    private static final String INITIAL_SELECT = "SELECT  m FROM Movement m ";
+    private static final String ORDER_BY = "ORDER BY m.timestamp DESC ";
+    private static final String NO_DUPLICATE = "";
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -88,13 +88,13 @@ public class SearchMapperListTest extends TransactionalTests {
         assertTrue(mapSearchField.size() == 1);
 
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
-        assertEquals("SELECT DISTINCT  m FROM Movement m " +
+        assertEquals("SELECT  m FROM Movement m " +
                 "INNER JOIN FETCH m.movementConnect mc  " +
                 "LEFT JOIN FETCH m.activity act  " +
                 "LEFT JOIN FETCH m.track tra  " +
                 "LEFT JOIN FETCH m.fromSegment fromSeg  " +
                 "LEFT JOIN FETCH m.toSegment toSeg  " +
-                "WHERE  ( toSeg.id = 1 OR fromSeg.id = 1 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
+                "WHERE  ( toSeg.id = 1 OR fromSeg.id = 1 )  ORDER BY m.timestamp DESC ",data);
     }
     
     @Test
@@ -112,13 +112,13 @@ public class SearchMapperListTest extends TransactionalTests {
         assertTrue(mapSearchField.size() == 1);
 
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
-        assertEquals("SELECT DISTINCT  m FROM Movement m " +
+        assertEquals("SELECT  m FROM Movement m " +
                 "INNER JOIN FETCH m.movementConnect mc  " +
                 "LEFT JOIN FETCH m.activity act  " +
                 "LEFT JOIN FETCH m.track tra  " +
                 "LEFT JOIN FETCH m.fromSegment fromSeg  " +
                 "LEFT JOIN FETCH m.toSegment toSeg  " +
-                "WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ",data);
+                "WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  ORDER BY m.timestamp DESC ",data);
     }
     
     @Test
@@ -136,7 +136,7 @@ public class SearchMapperListTest extends TransactionalTests {
         assertTrue(mapSearchField.size() == 1);
 
         String data = SearchFieldMapper.createMinimalSelectSearchSql(mapSearchField, true);
-        assertEquals("SELECT DISTINCT  m FROM MinimalMovement m INNER JOIN FETCH m.movementConnect mc  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ", data);
+        assertEquals("SELECT  m FROM MinimalMovement m INNER JOIN FETCH m.movementConnect mc  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  ORDER BY m.timestamp DESC ", data);
     }
 
     @Test
@@ -160,10 +160,10 @@ public class SearchMapperListTest extends TransactionalTests {
 
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, false);
         System.out.println(data);
-        String correctOutput = "SELECT DISTINCT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra "
+        String correctOutput = "SELECT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra "
         		+ " LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg "
         		+ " WHERE m.movementSource = 3 OR  ( toSeg.segmentCategory = 6 OR"
-        		+ " fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC "; 
+        		+ " fromSeg.segmentCategory = 6 )  ORDER BY m.timestamp DESC ";
         assertEquals(correctOutput, data);
     }
     
@@ -182,9 +182,9 @@ public class SearchMapperListTest extends TransactionalTests {
         assertTrue(mapSearchField.size() == 1);
 
         String data = SearchFieldMapper.createCountSearchSql(mapSearchField, true);
-        String correctOutput = "SELECT COUNT(DISTINCT m) FROM Movement m  INNER JOIN m.movementConnect mc  LEFT JOIN m.activity act  LEFT JOIN m.track tra "
+        String correctOutput = "SELECT COUNT( m) FROM Movement m  INNER JOIN m.movementConnect mc  LEFT JOIN m.activity act  LEFT JOIN m.track tra "
         		+ " LEFT JOIN m.fromSegment fromSeg  LEFT JOIN m.toSegment toSeg "
-        		+ " WHERE m.movementSource = 3 AND  m.duplicate = false ";
+        		+ " WHERE m.movementSource = 3";
         assertEquals(correctOutput, data);
     }
 

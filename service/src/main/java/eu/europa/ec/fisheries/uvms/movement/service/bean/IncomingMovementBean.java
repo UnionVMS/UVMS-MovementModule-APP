@@ -31,13 +31,8 @@ public class IncomingMovementBean {
         if (currentMovement == null) {
             throw new IllegalArgumentException("Movement to process is null!");
         }
-        if (currentMovement.isProcessed()) {
-            return;
-        }
         UUID connectId = currentMovement.getMovementConnect().getId();
         Instant timeStamp = currentMovement.getTimestamp();
-
-        currentMovement.setDuplicate(false);
 
         LatestMovement latest = dao.getLatestMovement(connectId);
         if (latest == null) { // First position
@@ -49,7 +44,7 @@ public class IncomingMovementBean {
             } else {
                 Movement previousMovement = dao.getPreviousMovement(connectId, timeStamp);
                 if (previousMovement == null) { // Before first position
-                    Movement firstMovement = dao.getFirstMovement(connectId);
+                    Movement firstMovement = dao.getFirstMovement(connectId, currentMovement.getTimestamp());
                     segmentBean.addMovementBeforeFirst(firstMovement, currentMovement);
                 } else { // Between two positions
                     Movement nextMovement = previousMovement.getToSegment().getToMovement();
@@ -59,7 +54,6 @@ public class IncomingMovementBean {
             }
         }
         dao.upsertLatestMovement(currentMovement, currentMovement.getMovementConnect(), latest);
-        currentMovement.setProcessed(true);
     }
     public boolean checkAndSetDuplicate(IncomingMovement movement) {
         if(movement.getPositionTime() == null || movement.getAssetHistoryId() == null){     //if these two are null the check cant complete and one of the other sanity rules will get it

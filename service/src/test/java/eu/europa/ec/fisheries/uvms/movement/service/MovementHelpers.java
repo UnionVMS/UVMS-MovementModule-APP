@@ -42,7 +42,7 @@ public class MovementHelpers {
 
             Movement movement = MockData.createMovement(latlong,  connectId, userName);
             movement.setTimestamp(positionTime);
-            return movementService.createMovement(movement);
+            return movementService.createAndProcessMovement(movement);
 
     }
 
@@ -90,6 +90,7 @@ public class MovementHelpers {
         for(LatLong position : positions){
             loopCount++;
             Movement movement = createMovement(position, connectId,userName + "_" + String.valueOf(loopCount), timeStamp);
+
             timeStamp = timeStamp.plusMillis(timeDelta);
             createdRoute.add(movement);
         }

@@ -175,10 +175,11 @@ public class MovementDao {
         return latestMovementQuery.getResultList();
     }
 
-    public Movement getFirstMovement(UUID movementConnectValue) {
+    public Movement getFirstMovement(UUID movementConnectValue, Instant dateOfNewMovement) {
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_FIRST, Movement.class);
             query.setParameter("id", movementConnectValue);
+            query.setParameter("date", dateOfNewMovement);
             return query.getSingleResult();
         } catch (NoResultException e) {
             LOG.debug("Could not get first position, no result of id: {}", movementConnectValue);

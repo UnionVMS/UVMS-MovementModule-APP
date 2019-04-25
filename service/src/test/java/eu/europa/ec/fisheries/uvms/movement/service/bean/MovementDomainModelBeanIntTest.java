@@ -527,9 +527,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     private List<Movement> createAndProcess10MovementsFromVarbergGrena(UUID connectID) {
     	MovementHelpers movementHelpers = new MovementHelpers(movementService);
     	List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectID);
-    	for (Movement movement : varbergGrena) {
-            incomingMovementBean.processMovement(movement);
-        }
     	return varbergGrena;
     }
 

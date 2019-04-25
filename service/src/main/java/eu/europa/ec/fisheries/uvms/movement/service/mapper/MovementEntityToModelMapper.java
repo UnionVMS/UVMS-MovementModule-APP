@@ -129,15 +129,7 @@ public class MovementEntityToModelMapper {
             model.getSegmentIds().add(movement.getToSegment().getId().toString());
         }
 
-        model.setProcessed(movement.isProcessed());
-        if (movement.getDuplicate() != null) {
-            model.setDuplicate(movement.getDuplicate());
-        } else {
-            model.setDuplicate(false);
-        }
-        if (movement.getDuplicateId() != null) {
-            model.setDuplicates(movement.getDuplicateId().toString());
-        }
+        model.setProcessed(true);
 
         model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
         model.setTripNumber(movement.getTripNumber());

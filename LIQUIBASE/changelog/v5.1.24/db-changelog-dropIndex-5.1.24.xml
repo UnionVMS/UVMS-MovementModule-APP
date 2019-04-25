@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+                   logicalFilePath="changelog/v5.1.24\db-changelog-dropIndex-5.1.24.xml">
+
+    <changeSet author="joemat" id="Removed indexes that have not been used during the two-month test run of the prod system">
+
+        <dropIndex indexName="movement_processed_idx" tableName="movement"/>
+        <dropIndex indexName="movement_act_fk_idx" tableName="movement"/>
+        <dropIndex indexName="seg_segcat_fk_idx" tableName="segment"/>
+        <dropIndex indexName="seg_trac_fk_idx" tableName="segment"/>
+    </changeSet>
+
+    <changeSet author="joemat" id="Removal of unused columns">
+
+        <dropColumn  columnName="move_processed" tableName="movement"/>
+        <dropColumn  columnName="move_duplicate" tableName="movement"/>
+        <dropColumn  columnName="move_duplicate_id" tableName="movement"/>
+        <dropColumn  columnName="seg_geom" tableName="segment"/>
+    </changeSet>
+
+    <!--
+    For completnes sake, these are the indexes that are being removed:
+    - Index: movement_processed_idx
+
+    - DROP INDEX movement.movement_processed_idx;
+
+    CREATE INDEX movement_processed_idx
+    ON movement.movement USING btree
+    (move_processed)
+    TABLESPACE pg_default;
+
+    - Index: movement_act_fk_idx
+
+    - DROP INDEX movement.movement_act_fk_idx;
+
+    CREATE INDEX movement_act_fk_idx
+    ON movement.movement USING btree
+    (move_act_id)
+    TABLESPACE pg_default;
+
+    - Index: seg_segcat_fk_idx
+
+    - DROP INDEX movement.seg_segcat_fk_idx;
+
+    CREATE INDEX seg_segcat_fk_idx
+    ON movement.segment USING btree
+    (seg_segcat_id)
+    TABLESPACE pg_default;
+
+    - Index: seg_trac_fk_idx
+
+    - DROP INDEX movement.seg_trac_fk_idx;
+
+    CREATE INDEX seg_trac_fk_idx
+    ON movement.segment USING btree
+    (seg_trac_id)
+    TABLESPACE pg_default;
+
+    -->
+
+
+</databaseChangeLog>

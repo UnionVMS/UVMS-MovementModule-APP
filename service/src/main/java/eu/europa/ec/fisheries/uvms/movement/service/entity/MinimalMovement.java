@@ -54,14 +54,14 @@ import java.util.UUID;
 @Table(name = "movement")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "MinimalMovement.findAll", query = "SELECT m FROM MinimalMovement m WHERE m.duplicate = false"),
-    @NamedQuery(name = "MinimalMovement.findBySpeed", query = "SELECT m FROM MinimalMovement m WHERE m.speed = :speed AND m.duplicate = false"),
-    @NamedQuery(name = "MinimalMovement.findByHeading", query = "SELECT m FROM MinimalMovement m WHERE m.heading = :heading AND m.duplicate = false"),
-    @NamedQuery(name = "MinimalMovement.findByStatus", query = "SELECT m FROM MinimalMovement m WHERE m.status = :status AND m.duplicate = false"),
-    @NamedQuery(name = "MinimalMovement.findLatestByMovementConnect", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.id = :connectId AND m.duplicate = false ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = "MinimalMovement.findLatest", query = "SELECT m FROM MinimalMovement m  WHERE m.timestamp = (select max(mm.timestamp) from MinimalMovement mm  where mm.movementConnect.id = :id and mm.timestamp < :date ) AND m.duplicate = false AND m.movementConnect.id = :id"),
-    @NamedQuery(name = "MinimalMovement.findFirst", query = "SELECT m FROM MinimalMovement m WHERE m.timestamp = (select min(mm.timestamp) from MinimalMovement mm where mm.movementConnect.id = :id ) AND m.duplicate = false AND m.movementConnect.id = :id"),
-    @NamedQuery(name = "MinimalMovement.findExistingDate", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.id = :id AND m.timestamp = :date AND m.duplicate = false")
+    @NamedQuery(name = "MinimalMovement.findAll", query = "SELECT m FROM MinimalMovement m "),
+    @NamedQuery(name = "MinimalMovement.findBySpeed", query = "SELECT m FROM MinimalMovement m WHERE m.speed = :speed "),
+    @NamedQuery(name = "MinimalMovement.findByHeading", query = "SELECT m FROM MinimalMovement m WHERE m.heading = :heading "),
+    @NamedQuery(name = "MinimalMovement.findByStatus", query = "SELECT m FROM MinimalMovement m WHERE m.status = :status "),
+    @NamedQuery(name = "MinimalMovement.findLatestByMovementConnect", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.id = :connectId  ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = "MinimalMovement.findLatest", query = "SELECT m FROM MinimalMovement m  WHERE m.timestamp = (select max(mm.timestamp) from MinimalMovement mm  where mm.movementConnect.id = :id and mm.timestamp < :date ) AND m.movementConnect.id = :id"),
+    @NamedQuery(name = "MinimalMovement.findFirst", query = "SELECT m FROM MinimalMovement m WHERE m.timestamp = (select min(mm.timestamp) from MinimalMovement mm where mm.movementConnect.id = :id ) AND m.movementConnect.id = :id"),
+    @NamedQuery(name = "MinimalMovement.findExistingDate", query = "SELECT m FROM MinimalMovement m WHERE m.movementConnect.id = :id AND m.timestamp = :date ")
 })
 @DynamicUpdate
 @DynamicInsert
@@ -111,14 +111,6 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
     @Column(name = "move_timestamp")
     private Instant timestamp;
 
-    @Column(name = "move_processed")
-    private Boolean processed;
-
-    @Column(name = "move_duplicate")
-    private Boolean duplicate;
-
-    @Column(name = "move_duplicate_id")
-    private String duplicateId;
 
     public UUID getId() {
         return id;
@@ -190,30 +182,6 @@ public class MinimalMovement implements Serializable, Comparable<MinimalMovement
 
     public void setMovementSource(MovementSourceType movementSource) {
         this.movementSource = movementSource;
-    }
-
-    public Boolean getProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(Boolean processed) {
-        this.processed = processed;
-    }
-
-    public Boolean getDuplicate() {
-        return duplicate;
-    }
-
-    public String getDuplicateId() {
-        return duplicateId;
-    }
-
-    public void setDuplicate(Boolean duplicate) {
-        this.duplicate = duplicate;
-    }
-
-    public void setDuplicateId(String duplicateId) {
-        this.duplicateId = duplicateId;
     }
 
     public Instant getTimestamp() {

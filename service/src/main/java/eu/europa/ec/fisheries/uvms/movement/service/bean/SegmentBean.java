@@ -95,9 +95,7 @@ public class SegmentBean {
         segment.setUpdated(DateUtil.nowUTC());
         segment.setUpdatedBy("UVMS");
 
-        LineString segmentLineString = GeometryUtil.getLineStringFromMovements(fromMovement, toMovement);
-        segment.setLocation(segmentLineString);
-        
+
         fromMovement.setToSegment(segment);
         toMovement.setFromSegment(segment);
     }

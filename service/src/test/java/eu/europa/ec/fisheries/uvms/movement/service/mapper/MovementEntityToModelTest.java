@@ -307,14 +307,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));
-		for (Movement movement : movementList) {
-            incomingMovementBean.processMovement(movement);
-        }
-		
-		for(Movement move : movementList) {
-			assertTrue(move.isProcessed());
-		}
-		
+
 		List<Segment> input = new ArrayList<>(MovementEntityToModelMapper.extractSegments(movementList, true));
 		List<Track> output = MovementEntityToModelMapper.extractTracks(input);
 		
