@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
+import java.util.UUID;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -13,7 +14,6 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
 
 @Stateless
@@ -22,7 +22,7 @@ public class ExchangeBean extends AbstractProducer {
     @Resource(mappedName = "java:/jms/queue/UVMSMovement")
     private Queue replyToQueue;
     
-    public void sendAckToExchange(MovementRefTypeType refType, String refGuid, String ackResponseMessageId) throws MessageException {
+    public void sendAckToExchange(MovementRefTypeType refType, UUID refGuid, String ackResponseMessageId) throws MessageException {
         if (ackResponseMessageId == null) {
             return;
         }
@@ -32,7 +32,7 @@ public class ExchangeBean extends AbstractProducer {
         MovementRefType movementRefType = new MovementRefType();
         movementRefType.setAckResponseMessageID(ackResponseMessageId);
         movementRefType.setType(refType);
-        movementRefType.setMovementRefGuid(refGuid);
+        movementRefType.setMovementRefGuid(refGuid.toString());
         processedMovementResponse.setMovementRefType(movementRefType);
         send(processedMovementResponse);
     }

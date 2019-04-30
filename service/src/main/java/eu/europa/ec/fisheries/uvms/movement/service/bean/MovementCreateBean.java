@@ -64,7 +64,7 @@ public class MovementCreateBean {
             enrichIncomingMovement(incomingMovement, response);
 
             incomingMovementBean.checkAndSetDuplicate(incomingMovement);
-            String reportId = movementSanityValidatorBean.evaluateSanity(incomingMovement);
+            UUID reportId = movementSanityValidatorBean.evaluateSanity(incomingMovement);
             if (reportId != null) {
                 exchangeBean.sendAckToExchange(MovementRefTypeType.ALARM, reportId, incomingMovement.getAckResponseMessageId());
                 return;
@@ -84,7 +84,7 @@ public class MovementCreateBean {
             movementRulesBean.send(movementDetails);
             // report ok to Exchange...
             // Tracer Id
-            exchangeBean.sendAckToExchange(MovementRefTypeType.MOVEMENT, createdMovement.getId().toString(), incomingMovement.getAckResponseMessageId());
+            exchangeBean.sendAckToExchange(MovementRefTypeType.MOVEMENT, createdMovement.getId(), incomingMovement.getAckResponseMessageId());
         } catch (Exception e) {
             throw new IllegalStateException("Could not process incoming movement", e);
         }
