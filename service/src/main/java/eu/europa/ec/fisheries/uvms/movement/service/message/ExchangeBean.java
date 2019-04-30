@@ -22,7 +22,7 @@ public class ExchangeBean extends AbstractProducer {
     @Resource(mappedName = "java:/jms/queue/UVMSMovement")
     private Queue replyToQueue;
     
-    public void sendAckToExchange(MovementRefTypeType refType, Movement movement, String ackResponseMessageId) throws MessageException {
+    public void sendAckToExchange(MovementRefTypeType refType, String refGuid, String ackResponseMessageId) throws MessageException {
         if (ackResponseMessageId == null) {
             return;
         }
@@ -32,9 +32,7 @@ public class ExchangeBean extends AbstractProducer {
         MovementRefType movementRefType = new MovementRefType();
         movementRefType.setAckResponseMessageID(ackResponseMessageId);
         movementRefType.setType(refType);
-        if (refType.equals(MovementRefTypeType.MOVEMENT) && movement != null) {
-            movementRefType.setMovementRefGuid(movement.getId().toString());
-        }
+        movementRefType.setMovementRefGuid(refGuid);
         processedMovementResponse.setMovementRefType(movementRefType);
         send(processedMovementResponse);
     }

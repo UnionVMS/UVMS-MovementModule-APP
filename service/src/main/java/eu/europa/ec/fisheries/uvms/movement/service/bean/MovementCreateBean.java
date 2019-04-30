@@ -64,26 +64,27 @@ public class MovementCreateBean {
             enrichIncomingMovement(incomingMovement, response);
 
             incomingMovementBean.checkAndSetDuplicate(incomingMovement);
-            boolean isOk = movementSanityValidatorBean.evaluateSanity(incomingMovement);
-            if (isOk) {
-                Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement
-                        .getUpdatedBy());
-                Movement createdMovement = movementService.createAndProcessMovement(movement);
-
-                // send to MovementRules
-                MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
-                int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
-               // List<VicinityInfoDTO> vicinityOf = dao.getVicinityOfMovement(createdMovement);
-                movementDetails.setSumPositionReport(sumPositionReport);
-               // movementDetails.setVicinityOf(vicinityOf);
-
-                movementRulesBean.send(movementDetails);
-                // report ok to Exchange...
-                // Tracer Id
-                exchangeBean.sendAckToExchange(MovementRefTypeType.MOVEMENT, createdMovement, incomingMovement.getAckResponseMessageId());
-            } else {
-                exchangeBean.sendAckToExchange(MovementRefTypeType.ALARM, null, incomingMovement.getAckResponseMessageId());
+            String reportId = movementSanityValidatorBean.evaluateSanity(incomingMovement);
+            if (reportId != null) {
+                exchangeBean.sendAckToExchange(MovementRefTypeType.ALARM, reportId, incomingMovement.getAckResponseMessageId());
+                return;
             }
+
+            Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement
+                    .getUpdatedBy());
+            Movement createdMovement = movementService.createAndProcessMovement(movement);
+
+            // send to MovementRules
+            MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
+            int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetHistoryId(), incomingMovement.getPositionTime());
+            // List<VicinityInfoDTO> vicinityOf = dao.getVicinityOfMovement(createdMovement);
+            movementDetails.setSumPositionReport(sumPositionReport);
+            // movementDetails.setVicinityOf(vicinityOf);
+
+            movementRulesBean.send(movementDetails);
+            // report ok to Exchange...
+            // Tracer Id
+            exchangeBean.sendAckToExchange(MovementRefTypeType.MOVEMENT, createdMovement.getId().toString(), incomingMovement.getAckResponseMessageId());
         } catch (Exception e) {
             throw new IllegalStateException("Could not process incoming movement", e);
         }

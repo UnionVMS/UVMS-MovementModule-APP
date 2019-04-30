@@ -53,22 +53,21 @@ public class MovementSanityValidatorBean {
     @AlarmReportCountEvent
     private Event<NotificationMessage> alarmReportCountEvent;
 
-    public boolean evaluateSanity(IncomingMovement movement) {
+    public String evaluateSanity(IncomingMovement movement) {
 
-        boolean isOk = true;
-        
+        String reportId = null;
+
         for (SanityRule sanityRule : SanityRule.values()) {
             if (sanityRule.evaluate(movement)) {
                 LOG.info("\t==> Executing RULE {}", sanityRule.getRuleName());
-                createAlarmReport(sanityRule.getRuleName(), movement);
-                isOk = false;
+                reportId = createAlarmReport(sanityRule.getRuleName(), movement);
             }
         }
-        
-        return isOk;
+
+        return reportId;
     }
 
-    public void createAlarmReport(String ruleName, IncomingMovement movement) {
+    public String createAlarmReport(String ruleName, IncomingMovement movement) {
 
         LOG.info("Create alarm invoked in validation service, rule: {}", ruleName);
 
@@ -105,6 +104,8 @@ public class MovementSanityValidatorBean {
         alarmReportCountEvent.fire(new NotificationMessage("alarmCount", null));
             
         auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.CREATE, alarmReport.getId().toString(), null, alarmReport.getUpdatedBy());
+
+        return alarmReport.getId().toString();
     }
 
     public AlarmListResponseDto getAlarmList(AlarmQuery query) {
