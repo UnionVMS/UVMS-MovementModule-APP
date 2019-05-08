@@ -88,9 +88,9 @@ public class TrackRestResourceTest extends BuildMovementRestDeployment {
         assertNotNull(response);
 
         assertFalse(response.isEmpty());
-        assertEquals(movement.getId().toString(), response.get(1).getGuid());
-        assertEquals(movement.getLocation().getX(), response.get(1).getLocation().getLongitude(), 0);
-        assertEquals(movement.getLocation().getY(), response.get(1).getLocation().getLatitude(), 0);
+        assertEquals(movement.getId().toString(), response.get(0).getGuid());
+        assertEquals(movement.getLocation().getX(), response.get(0).getLocation().getLongitude(), 0);
+        assertEquals(movement.getLocation().getY(), response.get(0).getLocation().getLatitude(), 0);
     }
 
     @Test
