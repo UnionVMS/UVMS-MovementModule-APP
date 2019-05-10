@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
 
 import com.vividsolutions.jts.geom.Geometry;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 
 import java.time.Instant;
@@ -24,8 +25,8 @@ public class MicroMovementDtoV2Extended {  //TODO: find better name for this
 
     }
 
-    public MicroMovementDtoV2Extended(Geometry geo, Float heading, UUID guid, MovementConnect asset, Instant timestamp, Float speed) {
-        microMove = new MicroMovementDtoV2(geo, heading, guid, timestamp, speed);
+    public MicroMovementDtoV2Extended(Geometry geo, Float heading, UUID guid, MovementConnect asset, Instant timestamp, Float speed, MovementSourceType source) {
+        microMove = new MicroMovementDtoV2(geo, heading, guid, timestamp, speed, source);
         this.asset = asset.getId().toString();
         flagstate = asset.getFlagState();
         assetName = asset.getName();
