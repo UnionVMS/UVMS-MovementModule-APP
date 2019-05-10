@@ -45,7 +45,7 @@ public class NewSSEResource {
         try {
             if (move != null) {
                 MicroMovementDtoV2Extended micro = new MicroMovementDtoV2Extended(move.getLocation(),
-                        move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
+                        move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed(), move.getMovementSource());
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")
                         .id("" + System.currentTimeMillis())
