@@ -38,6 +38,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         OffsetDateTime timestamp = createdMovement.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
         List<MicroMovementDtoV2> latestMovements = getWebTarget()
                 .path("micro")
+                .path("track")
                 .path("asset")
                 .path(createdMovement.getMovementConnect().getId().toString())
                 .path(timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
