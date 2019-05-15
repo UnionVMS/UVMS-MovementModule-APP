@@ -41,7 +41,7 @@ import java.util.UUID;
 @NamedQueries({
     @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM LatestMovement m WHERE m.movementConnect.id in :connectId"),
-    @NamedQuery(name = LatestMovement.FIND_LATEST, query = "SELECT m FROM LatestMovement m ORDER BY m.timestamp"),
+    @NamedQuery(name = LatestMovement.FIND_LATEST, query = "SELECT m FROM LatestMovement m ORDER BY m.timestamp DESC"),
     @NamedQuery(name = LatestMovement.FIND_NEAREST, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(m.movementConnect.id, m.movement.id, function ('distance', m.location, :point))" +              //the function should probably be ST_Distance_Sphere instead, but right now we dont have access to that one through our postgres dialect
                                                                 "FROM LatestMovement m " +
                                                                 "WHERE function ('dwithin', m.location, :point, cast((SELECT value FROM Parameter WHERE id = 'maxDistance') as int)) = TRUE " +
