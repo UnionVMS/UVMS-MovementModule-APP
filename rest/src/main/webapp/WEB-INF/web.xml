@@ -59,6 +59,7 @@
 		<url-pattern>/rest/track/*</url-pattern>
 		<url-pattern>/rest/sse/*</url-pattern>
 		<url-pattern>/rest/sseV2/*</url-pattern>
+		<url-pattern>/rest/micro/*</url-pattern>
 	</filter-mapping>
 
 	<filter>

@@ -58,6 +58,7 @@ import org.hibernate.annotations.FetchMode;
     @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.id = :asset "),
     @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date "),
     @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_FOR_ASSET_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date AND m.movementConnect.id = :id ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT m FROM Movement m JOIN LatestMovement lm ON m.id = lm.movement.id WHERE lm.timestamp > :date")
 
         /*
             Native postgres query for finding all positions in the vicinity of a point in space/time:
@@ -91,6 +92,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_FIRST = "Movement.findFirst";
     public static final String FIND_EXISTING_DATE = "Movement.findExistingDate";
     public static final String NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN = "Movement.nrOfMovementsForAssetInTimespan";
+    public static final String FIND_LATEST = "Movement.findLatest";
 
     
     private static final long serialVersionUID = 1L;

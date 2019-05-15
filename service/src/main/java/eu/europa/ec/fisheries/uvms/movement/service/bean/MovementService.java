@@ -231,4 +231,12 @@ public class MovementService {
         return (int) movementDao.countNrOfMovementsForAssetBetween(UUID.fromString(asset), positionTime.minus(1,
                 ChronoUnit.DAYS), positionTime);
     }
+
+    public List<Movement> getLatestMovementsLast8Hours() {
+        return getLatestMovementsAfter(Instant.now().minus(8, ChronoUnit.HOURS));
+    }
+
+    public List<Movement> getLatestMovementsAfter(Instant date) {
+        return movementDao.getLatestWithLimit(date);
+    }
 }
