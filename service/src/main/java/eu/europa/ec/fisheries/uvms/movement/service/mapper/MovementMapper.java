@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;  //leave be for now
 import java.util.List;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,22 +132,5 @@ public class MovementMapper {
         exchangeMovementBaseType.setComChannelType(MovementComChannelType.MANUAL);
         report.setMovement(exchangeMovementBaseType);
         return report;
-    }
-
-
-    public static MicroMovementDto mapToMicroMovement(MicroMovement mm) {
-        MicroMovementDto dto = new MicroMovementDto();
-        dto.setAsset(mm.getMovementConnect().getId().toString());
-        dto.setGuid(mm.getGuid());
-        dto.setHeading(mm.getHeading());
-        eu.europa.ec.fisheries.schema.movement.v1.MovementPoint mp = new eu.europa.ec.fisheries.schema.movement.v1.MovementPoint();
-        mp.setLatitude(mm.getLocation().getY());
-        mp.setLongitude(mm.getLocation().getX());
-        dto.setLocation(mp);
-        dto.setTimestamp(mm.getTimestamp());
-        dto.setSpeed(mm.getSpeed());
-        dto.setFlagstate(mm.getFlagstate());
-        dto.setAssetName(mm.getAssetName());
-        return dto;
     }
 }

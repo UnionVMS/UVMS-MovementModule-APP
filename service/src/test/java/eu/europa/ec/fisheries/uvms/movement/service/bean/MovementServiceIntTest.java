@@ -135,53 +135,6 @@ public class MovementServiceIntTest extends TransactionalTests {
             fail(e.getMessage());
         }
     }
-    
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getListByAssetIdQuery() {
-        UUID assetId = UUID.randomUUID();
-        UUID connectId = UUID.randomUUID();
-        
-        Movement movement1 = MockData.createMovement(1d, 1d, connectId);
-        movement1.getMovementConnect().setAssetId(assetId);
-        Movement createdMovement1 = movementService.createAndProcessMovement(movement1);
-        
-        Movement movement2 = MockData.createMovement(2d, 2d, connectId);
-        movement2.getMovementConnect().setAssetId(assetId);
-        Movement createdMovement2 = movementService.createAndProcessMovement(movement2);
-        
-        // new connect id
-        connectId = UUID.randomUUID();
-        Movement movement3 = MockData.createMovement(3d, 3d, connectId);
-        movement3.getMovementConnect().setAssetId(assetId);
-        Movement createdMovement3 = movementService.createAndProcessMovement(movement3);
-
-        MovementQuery query = createMovementQuery(true);
-        ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.ASSET_ID);
-        criteria.setValue(assetId.toString());
-        query.getMovementSearchCriteria().add(criteria);
-
-        GetMovementListByQueryResponse list = movementService.getList(query);
-        List<MovementType> movementList = list.getMovement();
-        assertThat(movementList.size(), CoreMatchers.is(3));
-        
-        Map<String, MovementType> movementMap = new HashMap<>();
-        for (MovementType movementType : movementList) {
-            movementMap.put(movementType.getGuid(), movementType);
-        }
-        MovementType m1 = movementMap.get(createdMovement1.getId().toString());
-        assertThat(m1.getConnectId(), CoreMatchers.is(createdMovement1.getMovementConnect().getId().toString()));
-        assertThat(m1.getAssetId().getValue(), CoreMatchers.is(createdMovement1.getMovementConnect().getAssetId().toString()));
-        
-        MovementType m2 = movementMap.get(createdMovement2.getId().toString());
-        assertThat(m2.getConnectId(), CoreMatchers.is(createdMovement2.getMovementConnect().getId().toString()));
-        assertThat(m2.getAssetId().getValue(), CoreMatchers.is(createdMovement2.getMovementConnect().getAssetId().toString()));
-        
-        MovementType m3 = movementMap.get(createdMovement3.getId().toString());
-        assertThat(m3.getConnectId(), CoreMatchers.is(createdMovement3.getMovementConnect().getId().toString()));
-        assertThat(m3.getAssetId().getValue(), CoreMatchers.is(createdMovement3.getMovementConnect().getAssetId().toString()));
-    }
 
     @Test
     @OperateOnDeployment("movementservice")

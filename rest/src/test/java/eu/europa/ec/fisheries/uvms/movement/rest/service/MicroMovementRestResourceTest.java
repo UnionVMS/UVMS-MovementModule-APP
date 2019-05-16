@@ -19,8 +19,8 @@ import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
 @RunWith(Arquillian.class)
@@ -36,14 +36,14 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
         OffsetDateTime timestamp = createdMovement.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
-        List<MicroMovementDtoV2> latestMovements = getWebTarget()
+        List<MicroMovement> latestMovements = getWebTarget()
                 .path("micro")
                 .path("track")
                 .path("asset")
                 .path(createdMovement.getMovementConnect().getId().toString())
                 .path(timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
                 .request(MediaType.APPLICATION_JSON)
-                .get(new GenericType<List<MicroMovementDtoV2>>() {});
+                .get(new GenericType<List<MicroMovement>>() {});
 
         assertTrue(latestMovements
                 .stream()
@@ -61,13 +61,13 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         movementBaseType2.getMovementConnect().setId(connectId);
         Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
 
-        List<MicroMovementDtoV2> track = getWebTarget()
+        List<MicroMovement> track = getWebTarget()
                 .path("micro")
                 .path("track")
                 .path("movement")
                 .path(createdMovement.getId().toString())
                 .request(MediaType.APPLICATION_JSON)
-                .get(new GenericType<List<MicroMovementDtoV2>>() {});
+                .get(new GenericType<List<MicroMovement>>() {});
 
         assertThat(track.size(), CoreMatchers.is(2));
         assertTrue(track
@@ -84,11 +84,11 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
-        List<MicroMovementDtoV2Extended> latestMovements = getWebTarget()
+        List<MicroMovementExtended> latestMovements = getWebTarget()
                 .path("micro")
                 .path("latest")
                 .request(MediaType.APPLICATION_JSON)
-                .get(new GenericType<List<MicroMovementDtoV2Extended>>() {});
+                .get(new GenericType<List<MicroMovementExtended>>() {});
         assertTrue(latestMovements
                 .stream()
                 .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));

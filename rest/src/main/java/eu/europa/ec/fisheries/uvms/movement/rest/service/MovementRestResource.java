@@ -14,26 +14,20 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -43,8 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -169,39 +161,6 @@ public class MovementRestResource {
         } catch (Exception ex) {
             LOG.error("[ Error when getting movement map. ]", ex);
             return new ResponseDto(ex, RestResponseCode.ERROR);
-        }
-    }
-
-    @GET
-    @Path("/microMovementListAfterForAsset/{id}/{timestamp}")
-    @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementListAfter(@PathParam("id") String uuid ,@PathParam("timestamp") String date) {
-        try {
-            UUID connectID = UUID.fromString(uuid);
-            List<MicroMovementDtoV2> microList = movementDao.getMicroMovementsForAssetAfterDate(connectID,DateUtil.getDateFromString(date));
-            return Response.ok().entity(microList).type(MediaType.APPLICATION_JSON)
-                    .header("MDC", MDC.get("requestId")).build();
-        } catch (Exception e) {
-            LOG.error("[ Error when getting Micro Movement. ]", e);
-            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
-        }
-    }
-
-    @GET
-    @Path("/lastMicroMovementForAllAssets")
-    @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getLastMicroMovementForAllAssets() {
-        try {
-            List<MicroMovement> microList = movementDao.getLastMicroMovementForAllAssets();
-            List<MicroMovementDto> returnList = new ArrayList<>();
-            for (MicroMovement mm : microList) {
-                returnList.add(MovementMapper.mapToMicroMovement(mm));
-            }
-            return Response.ok().entity(returnList).type(MediaType.APPLICATION_JSON)
-                    .header("MDC", MDC.get("requestId")).build();
-        } catch (Exception e) {
-            LOG.error("[ Error when getting Micro Movement. ]", e);
-            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
 }

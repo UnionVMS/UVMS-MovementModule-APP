@@ -51,10 +51,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
 
     @Id
     @Column(columnDefinition = "uuid", name = "moveconn_id")
-    private UUID id;    //this is the asset history ID
-
-    @Column(name = "moveconn_asset_id")
-    private UUID assetId;
+    private UUID id;    //this is the asset ID
 
     @Column(name = "moveconn_flagstate")
     private String flagState;
@@ -97,14 +94,6 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         this.id = id;
     }
     
-    public UUID getAssetId() {
-        return assetId;
-    }
-
-    public void setAssetId(UUID assetId) {
-        this.assetId = assetId;
-    }
-
     public Instant getUpdated() {
         return updated;
     }
