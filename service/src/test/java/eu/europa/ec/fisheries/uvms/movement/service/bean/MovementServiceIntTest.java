@@ -1,6 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -10,6 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import java.math.BigInteger;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -546,6 +548,60 @@ public class MovementServiceIntTest extends TransactionalTests {
 
         assertTrue(movementMapType.getMovements().stream().anyMatch(m -> m.getGuid().equals(createdMovementType.getId().toString())));
         assertTrue(movementMapType.getMovements().stream().anyMatch(m -> m.getGuid().equals(createdMovementType2.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void findLastestTest() {
+
+        UUID connectId = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
+        movementType.setTimestamp(Instant.now().minus(5, ChronoUnit.MINUTES));
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        Movement movementType2 = MockData.createMovement(57.715303, 11.973323, connectId);
+        movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        List<Movement> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
+        assertFalse(latest.contains(createdMovement));
+        assertTrue(latest.contains(createdMovement2));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void findLastestMultipleConnectIdsTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
+        movementType.setTimestamp(Instant.now().minus(5, ChronoUnit.MINUTES));
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        UUID connectId2 = UUID.randomUUID();
+        Movement movementType2 = MockData.createMovement(57.715303, 11.973323, connectId2);
+        movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        List<Movement> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
+        assertTrue(latest.contains(createdMovement));
+        assertTrue(latest.contains(createdMovement2));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void findLastestMultipleConnectIdsWithOldTimestampTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
+        movementType.setTimestamp(Instant.now().minus(15, ChronoUnit.MINUTES));
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        UUID connectId2 = UUID.randomUUID();
+        Movement movementType2 = MockData.createMovement(57.715303, 11.973323, connectId2);
+        movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        List<Movement> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
+        assertFalse(latest.contains(createdMovement));
+        assertTrue(latest.contains(createdMovement2));
     }
 
     /******************************************************************************************************************

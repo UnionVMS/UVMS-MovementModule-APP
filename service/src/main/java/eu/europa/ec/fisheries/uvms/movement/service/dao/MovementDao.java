@@ -325,4 +325,10 @@ public class MovementDao {
             return new ArrayList<>();
         }
     }
+
+    public List<Movement> getLatestWithLimit(Instant date) {
+        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST, Movement.class);
+        query.setParameter("date", date);
+        return query.getResultList();
+    }
 }
