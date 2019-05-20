@@ -119,7 +119,7 @@ public abstract class IncomingMovementMapper {
         md.setAssetStatus(response.getAssetStatus());
         md.setMmsi(response.getMmsi());
         md.setAssetGroups(response.getAssetGroupList());
-        md.setConnectId(response.getAssetHistoryId());
+        md.setConnectId(response.getAssetUUID());
         // TODO: missing
         //md.setAssetType();
 
