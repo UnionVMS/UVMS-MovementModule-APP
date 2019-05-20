@@ -24,7 +24,7 @@ import javax.ws.rs.sse.SseEventSink;
 /* New version of sseResource, using a new data structure when sending data to the new version of the real-time map.
  At some point in the future this version will replace the old version */
 @ApplicationScoped
-@Path("sseV2")
+@Path("sse")
 @RequiresFeature(UnionVMSFeature.viewMovements)
 public class SSEResource {
 
