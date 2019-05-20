@@ -633,7 +633,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement.setPluginType(null);
         incomingMovement.setMovementSourceType(null);
         String json = mapper.writeValueAsString(incomingMovement);
-        jmsHelper.sendMovementMessage(json, incomingMovement.getAssetHistoryId(), "CREATE");   //grouping on null.....
+        jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");   //grouping on null.....
 
         Message dlqMessage = jmsHelper.listenOnQueue("DLQ");
         int responseQueueAfter = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
@@ -730,7 +730,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
 
     private MovementDetails sendIncomingMovementAndWaitForResponse(IncomingMovement incomingMovement) throws Exception {
-        return sendIncomingMovementAndWaitForResponse(incomingMovement, incomingMovement.getAssetHistoryId());
+        return sendIncomingMovementAndWaitForResponse(incomingMovement, incomingMovement.getAssetGuid());
     }
 
     private MovementDetails sendIncomingMovementAndWaitForResponse(IncomingMovement incomingMovement, String groupId) throws Exception {

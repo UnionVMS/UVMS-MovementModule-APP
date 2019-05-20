@@ -281,7 +281,7 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
 
     private ProcessedMovementResponse sendIncomingMovementAndReturnAlarmResponse(IncomingMovement incomingMovement) throws Exception{
         String json = mapper.writeValueAsString(incomingMovement);
-        jmsHelper.sendMovementMessage(json, incomingMovement.getAssetHistoryId(), "CREATE");   //grouping on null.....
+        jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");   //grouping on null.....
 
         Message response = jmsHelper.listenOnQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
         ProcessedMovementResponse movementResponse = JAXBMarshaller.unmarshallTextMessage((TextMessage) response, ProcessedMovementResponse.class);

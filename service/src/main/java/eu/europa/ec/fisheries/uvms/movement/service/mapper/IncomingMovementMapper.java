@@ -32,7 +32,7 @@ public abstract class IncomingMovementMapper {
 
         //MovementConnect (aka asset)
         MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setId(UUID.fromString(ic.getAssetHistoryId()));
+        movementConnect.setId(UUID.fromString(ic.getAssetGuid()));
         movementConnect.setFlagState(ic.getFlagState());
         movementConnect.setName(ic.getAssetName());
         movementConnect.setUpdated(Instant.now());

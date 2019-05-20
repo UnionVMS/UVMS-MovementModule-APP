@@ -56,10 +56,10 @@ public class IncomingMovementBean {
         dao.upsertLatestMovement(currentMovement, currentMovement.getMovementConnect(), latest);
     }
     public boolean checkAndSetDuplicate(IncomingMovement movement) {
-        if(movement.getPositionTime() == null || movement.getAssetHistoryId() == null){     //if these two are null the check cant complete and one of the other sanity rules will get it
+        if(movement.getPositionTime() == null || movement.getAssetGuid() == null){     //if these two are null the check cant complete and one of the other sanity rules will get it
             return false;
         }
-        UUID connectId = UUID.fromString(movement.getAssetHistoryId());
+        UUID connectId = UUID.fromString(movement.getAssetGuid());
         Instant timeStamp = movement.getPositionTime();
 
         List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
