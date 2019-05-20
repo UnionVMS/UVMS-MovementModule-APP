@@ -223,13 +223,13 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         String uuid = UUID.randomUUID().toString();
 
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
-        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetGuid(uuid);
         incomingMovement.setAssetHistoryId(uuid);
         incomingMovement.setAssetIRCS("TestIrcs:" + uuid);                                                  //I set the asset mocker up so that TestIrcs returns the id behind the :
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
 
         IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
-        incomingMovement2.setAssetGuid(null);
+        incomingMovement2.setAssetGuid(uuid);
         incomingMovement2.setAssetHistoryId(uuid);
         incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);
         MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2);
