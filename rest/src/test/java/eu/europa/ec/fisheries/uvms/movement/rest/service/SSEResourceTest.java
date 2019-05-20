@@ -43,10 +43,10 @@ public class SSEResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void SSEBroadcastV2Test() throws Exception{
+    public void SSEBroadcastTest() throws Exception{
 
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/test/rest/sseV2/subscribe");
+        WebTarget target = client.target("http://localhost:8080/test/rest/sse/subscribe");
 
         try (SseEventSource source = SseEventSource.target(target).reconnectingEvery(1, TimeUnit.SECONDS).build()) {
             source.register(onEvent, onError, onComplete);
