@@ -106,6 +106,14 @@ public class MovementService {
             LOG.info("Creating new MovementConnect");
             return movementDao.createMovementConnect(connect);
         }
+
+        if (connect.getName() != null && !connect.getName().equals(movementConnect.getName())) {
+            movementConnect.setName(connect.getName());
+        }
+        if (connect.getFlagState() != null && !connect.getFlagState().equals(movementConnect.getFlagState())) {
+            movementConnect.setFlagState(connect.getFlagState());
+        }
+
         return movementConnect;
     }
 
