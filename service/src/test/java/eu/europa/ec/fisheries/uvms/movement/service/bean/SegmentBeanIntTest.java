@@ -11,7 +11,7 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.persistence.TypedQuery;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
@@ -71,9 +71,9 @@ public class SegmentBeanIntTest extends TransactionalTests {
         querySegment.setParameter("fromMovement", fetchedFromMovement);
         querySegment.setParameter("toMovement", fetchedToMovement);
         Segment fetchedSegment = querySegment.getSingleResult();
-        List<MicroMovementDtoV2> movements = movementDao.getMicroMovementsDtoByTrack(fetchedSegment.getTrack(),2000);
-        MicroMovementDtoV2 movement1FromList = movements.get(0);
-        MicroMovementDtoV2 movement2FromList = movements.get(1);
+        List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(fetchedSegment.getTrack(),2000);
+        MicroMovement movement1FromList = movements.get(0);
+        MicroMovement movement2FromList = movements.get(1);
 
         // verify that the id:s are different
         assertNotEquals(movement1FromList.getGuid(), movement2FromList.getGuid());
@@ -113,9 +113,9 @@ public class SegmentBeanIntTest extends TransactionalTests {
         querySegment.setParameter("fromMovement", fetchedFromMovement);
         querySegment.setParameter("toMovement", fetchedToMovement);
         Segment fetchedSegment = querySegment.getSingleResult();
-        List<MicroMovementDtoV2> movements = movementDao.getMicroMovementsDtoByTrack(fetchedSegment.getTrack(),2000);
-        MicroMovementDtoV2 movement1FromList = movements.get(0);
-        MicroMovementDtoV2 movement2FromList = movements.get(1);
+        List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(fetchedSegment.getTrack(),2000);
+        MicroMovement movement1FromList = movements.get(0);
+        MicroMovement movement2FromList = movements.get(1);
 
         // verify that the id:s are same
         assertEquals(movement1FromList.getGuid(), movement2FromList.getGuid());
@@ -148,7 +148,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         List<Segment> segments = movementDao.getSegmentsByTrack(toMovement.getTrack());
         assertEquals(1, segments.size());
 
-        List<MicroMovementDtoV2> movements = movementDao.getMicroMovementsDtoByTrack(toMovement.getTrack(),2000);
+        List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(toMovement.getTrack(),2000);
         assertEquals(2, movements.size());
 
 //--------------------------------------------------------------------------
@@ -211,7 +211,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         assertNotNull(track);
         List<Segment> segments = movementDao.getSegmentsByTrack(track);
         assertEquals(1, segments.size());
-        List<MicroMovementDtoV2> movements = movementDao.getMicroMovementsDtoByTrack(track,2000);
+        List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track,2000);
         assertEquals(2, movements.size());
 
         // get movement from db
@@ -423,7 +423,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         assertNotNull(secondMovement.getTrack());
         List<Segment> segments = movementDao.getSegmentsByTrack(track);
         assertEquals(1, segments.size());
-        List<MicroMovementDtoV2> movements = movementDao.getMicroMovementsDtoByTrack(track,2000);
+        List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track,2000);
         assertEquals(2, movements.size());
 
         Movement beforeFirstMovement = movementHelpers.createMovement(1d, 1d, connectId, "BEFORE_ONE", date_before);

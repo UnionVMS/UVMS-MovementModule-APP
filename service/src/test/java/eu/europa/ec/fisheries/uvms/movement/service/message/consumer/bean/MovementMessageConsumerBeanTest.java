@@ -405,37 +405,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
     }
-    
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getMovementListByAssetId() throws Exception {
-        JMSHelper jmsHelper = new JMSHelper(connectionFactory);
-        String uuid = UUID.randomUUID().toString();
-        Instant timestamp = Instant.now();
-
-        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
-        incomingMovement.setAssetGuid(null);
-        incomingMovement.setAssetHistoryId(uuid);
-        incomingMovement.setAssetIRCS("TestIrcs:" + uuid);
-        incomingMovement.setPositionTime(timestamp.minusSeconds(10));
-        sendIncomingMovementAndWaitForResponse(incomingMovement);
-
-        IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
-        incomingMovement2.setAssetGuid(null);
-        incomingMovement2.setAssetHistoryId(uuid);
-        incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);                                              //I set the asset mocker up so that TestIrcs returns the id behind the :
-        sendIncomingMovementAndWaitForResponse(incomingMovement2);
-
-        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.ASSET_ID);
-        criteria.setValue(uuid);
-        query.getMovementSearchCriteria().add(criteria);
-
-        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, uuid);
-        List<MovementType> movements = listByQueryResponse.getMovement();
-        assertThat(movements.size(), is(2));
-    }
 
     @Test
     @OperateOnDeployment("movementservice")

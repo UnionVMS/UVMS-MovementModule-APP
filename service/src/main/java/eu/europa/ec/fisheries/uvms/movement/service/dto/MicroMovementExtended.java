@@ -8,12 +8,12 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import java.time.Instant;
 import java.util.UUID;
 
-public class MicroMovementDtoV2Extended {  //TODO: find better name for this
+public class MicroMovementExtended {
 
-    public static final String FIND_ALL_AFTER_DATE = "MicroMovementDtoV2Extended.findAllAfterDate";
-    public static final String FIND_ALL_FOR_ASSET_AFTER_DATE = "MicroMovementDtoV2Extended.findAllForAssetAfterDate";
+    public static final String FIND_ALL_AFTER_DATE = "MicroMovementExtended.findAllAfterDate";
+    public static final String FIND_ALL_FOR_ASSET_AFTER_DATE = "MicroMovementExtended.findAllForAssetAfterDate";
 
-    private MicroMovementDtoV2 microMove;
+    private MicroMovement microMove;
 
     private String asset;
 
@@ -21,22 +21,22 @@ public class MicroMovementDtoV2Extended {  //TODO: find better name for this
 
     private String assetName;
 
-    public MicroMovementDtoV2Extended() {
+    public MicroMovementExtended() {
 
     }
 
-    public MicroMovementDtoV2Extended(Geometry geo, Float heading, UUID guid, MovementConnect asset, Instant timestamp, Float speed, MovementSourceType source) {
-        microMove = new MicroMovementDtoV2(geo, heading, guid, timestamp, speed, source);
+    public MicroMovementExtended(Geometry geo, Float heading, UUID guid, MovementConnect asset, Instant timestamp, Float speed, MovementSourceType source) {
+        microMove = new MicroMovement(geo, heading, guid, timestamp, speed, source);
         this.asset = asset.getId().toString();
         flagstate = asset.getFlagState();
         assetName = asset.getName();
     }
 
-    public MicroMovementDtoV2 getMicroMove() {
+    public MicroMovement getMicroMove() {
         return microMove;
     }
 
-    public void setMicroMove(MicroMovementDtoV2 microMove) {
+    public void setMicroMove(MicroMovement microMove) {
         this.microMove = microMove;
     }
 

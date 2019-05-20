@@ -40,10 +40,6 @@ public enum SearchField implements SearchFieldType {
      */
     CONNECT_ID("movementConnect", SearchTables.MOVEMENT, String.class),
     /**
-     * The value of asset id in MovementConnect
-     */
-    ASSET_ID("assetId", SearchTables.MOVEMENT_CONNECT, String.class),
-    /**
      * The Type of movement
      */
     MOVMENT_TYPE("movementType", SearchTables.MOVEMENT, MovementTypeType.class),

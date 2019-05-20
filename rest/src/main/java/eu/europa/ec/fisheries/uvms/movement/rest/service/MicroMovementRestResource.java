@@ -32,8 +32,8 @@ import org.slf4j.MDC;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
@@ -57,7 +57,7 @@ public class MicroMovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getMicroMovementTrackForAsset(@PathParam("id") UUID connectId, @PathParam("timestamp") String date) {
         try {
-            List<MicroMovementDtoV2> microList = movementDao.getMicroMovementsForAssetAfterDate(connectId, DateUtil.getDateFromString(date));
+            List<MicroMovement> microList = movementDao.getMicroMovementsForAssetAfterDate(connectId, DateUtil.getDateFromString(date));
             return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Micro Movement for connectId: {}", connectId, e);
@@ -71,7 +71,7 @@ public class MicroMovementRestResource {
     public Response getMicroMovementTrackByMovement(@PathParam("id") UUID id, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
         try {
             Movement movement = movementDao.getMovementByGUID(id);
-            List<MicroMovementDtoV2> returnList = movementDao.getMicroMovementsDtoByTrack(movement.getTrack(), maxNbr);
+            List<MicroMovement> returnList = movementDao.getMicroMovementsDtoByTrack(movement.getTrack(), maxNbr);
             return Response.ok(returnList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting track by movement id: {}", id, e);
@@ -86,8 +86,8 @@ public class MicroMovementRestResource {
         try {
             List<Movement> latest = movementService.getLatestMovementsLast8Hours();
             
-            List<MicroMovementDtoV2Extended> microMovements = latest.stream()
-                    .map(movement -> new MicroMovementDtoV2Extended(movement.getLocation(), movement.getHeading(), 
+            List<MicroMovementExtended> microMovements = latest.stream()
+                    .map(movement -> new MicroMovementExtended(movement.getLocation(), movement.getHeading(), 
                                             movement.getId(), movement.getMovementConnect(), movement.getTimestamp(), 
                                             movement.getSpeed(), movement.getMovementSource()))
                     .collect(Collectors.toList());

@@ -13,7 +13,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import java.time.Instant;
 import java.util.UUID;
 
-public class MicroMovementDtoV2 {       //Using two versions of this class to keep the old version of the realtime map running until we are ready to deploy the new one. When that happens the old version of this class will be removed and only this one will remain
+public class MicroMovement {
 
     public static final String FIND_ALL_AFTER_DATE = "MicroMovementDtoV2.findAllAfterDate";
 
@@ -31,11 +31,11 @@ public class MicroMovementDtoV2 {       //Using two versions of this class to ke
 
     private MovementSourceType source;
 
-    public MicroMovementDtoV2() {
+    public MicroMovement() {
 
     }
 
-    public MicroMovementDtoV2(Movement movement) {
+    public MicroMovement(Movement movement) {
         Point point = movement.getLocation();
         location = new MovementPoint();
         location.setLatitude(point.getY());
@@ -46,7 +46,7 @@ public class MicroMovementDtoV2 {       //Using two versions of this class to ke
         speed = movement.getSpeed().doubleValue();
     }
 
-    public MicroMovementDtoV2(Geometry geo, Float heading, UUID guid, Instant timestamp, Float speed, MovementSourceType source) {
+    public MicroMovement(Geometry geo, Float heading, UUID guid, Instant timestamp, Float speed, MovementSourceType source) {
         Point point = (Point)geo;
         location = new MovementPoint();
         location.setLatitude(point.getY());

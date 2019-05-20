@@ -2,22 +2,18 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -58,35 +54,6 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         assertThat(movements.size(), is(1));
         
         assertThat(movements.get(0).getGuid(), is(createdMovement.getId().toString()));
-    }
-    
-    @Test
-    @OperateOnDeployment("movement")
-    public void getListByQueryByAssetId() throws Exception {
-        UUID assetId = UUID.randomUUID();
-        Movement movementBaseType = MovementTestHelper.createMovement();
-        movementBaseType.getMovementConnect().setAssetId(assetId);
-        movementService.createAndProcessMovement(movementBaseType);
-        
-        Movement movementBaseType2 = MovementTestHelper.createMovement();
-        movementBaseType2.getMovementConnect().setId(UUID.randomUUID());
-        movementBaseType2.getMovementConnect().setAssetId(assetId);
-        movementService.createAndProcessMovement(movementBaseType2);
-        
-        MovementQuery query = MovementTestHelper.createMovementQuery();
-        ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.ASSET_ID);
-        criteria.setValue(assetId.toString());
-        query.getMovementSearchCriteria().add(criteria);
-        
-        GetMovementListByQueryResponse queryResponse = getListByQuery(query);
-        
-        assertThat(queryResponse, is(notNullValue()));
-        List<MovementType> movements = queryResponse.getMovement();
-        assertThat(movements.size(), is(2));
-        
-        assertThat(movements.get(0).getAssetId().getValue(), is(assetId.toString()));
-        assertThat(movements.get(1).getAssetId().getValue(), is(assetId.toString()));
     }
     
     @Test
@@ -183,49 +150,6 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         assertThat(fetchedMovement.getGuid(), is(createdMovement.getId().toString()));
     }
 
-    @Test
-    @OperateOnDeployment("movement")
-    public void getMicroMovementsForAssetAfterTest() throws Exception {
-        Instant time = Instant.now().minusSeconds(61);
-        UUID connectId = UUID.randomUUID();
-        Movement movementBaseType = MovementTestHelper.createMovement();
-        movementBaseType.getMovementConnect().setId(connectId);
-        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
-
-        Movement movementBaseType2 = MovementTestHelper.createMovement();
-        movementBaseType2.getMovementConnect().setId(connectId);
-        movementBaseType2.setTimestamp(Instant.now().minusSeconds(60));
-        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
-
-        String response = getWebTarget()
-                .path("movement")
-                .path("microMovementListAfterForAsset/")
-                .path(connectId.toString())
-                .path(DateUtil.parseUTCDateToString(time))
-                .request(MediaType.APPLICATION_JSON)
-                .get(String.class);
-
-        assertTrue(response.contains(createdMovement.getId().toString()));
-        assertTrue(response.contains(createdMovement2.getId().toString()));
-
-    }
-
-    @Test
-    @OperateOnDeployment("movement")
-    public void getLastMicroMovementForAllAssetsTest() throws Exception {
-        Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
-
-        List<MicroMovementDto> response = getWebTarget()
-                .path("movement")
-                .path("lastMicroMovementForAllAssets")
-                .request(MediaType.APPLICATION_JSON)
-                .get(new GenericType<List<MicroMovementDto>>() {});
-
-
-        assertFalse(response.isEmpty());
-
-    }
     /*
      * Helper functions for REST calls
      */

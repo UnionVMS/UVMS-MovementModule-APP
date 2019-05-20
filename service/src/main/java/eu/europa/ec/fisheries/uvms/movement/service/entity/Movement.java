@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 import java.io.Serializable;
 import java.time.Instant;
@@ -42,7 +42,7 @@ import org.hibernate.annotations.FetchMode;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = Movement.FIND_ALL, query = "SELECT m FROM Movement m"),
-    @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_ALL_BY_MOVEMENTCONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect = :movementConnect ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id"),
@@ -56,8 +56,8 @@ import org.hibernate.annotations.FetchMode;
     @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m  WHERE m.timestamp = (select min(mm.timestamp) from Movement mm  where mm.movementConnect.id = :id AND mm.timestamp > :date) AND m.movementConnect.id = :id "),
     @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date "),
     @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.id = :asset "),
-    @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2Extended(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date "),
-    @NamedQuery(name = MicroMovementDtoV2Extended.FIND_ALL_FOR_ASSET_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDtoV2(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date AND m.movementConnect.id = :id ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = MicroMovementExtended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date "),
+    @NamedQuery(name = MicroMovementExtended.FIND_ALL_FOR_ASSET_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date AND m.movementConnect.id = :id ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT m FROM Movement m JOIN LatestMovement lm ON m.id = lm.movement.id WHERE lm.timestamp > :date")
 
         /*

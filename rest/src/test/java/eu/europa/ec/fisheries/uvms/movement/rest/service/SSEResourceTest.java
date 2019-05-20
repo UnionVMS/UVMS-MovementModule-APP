@@ -43,38 +43,6 @@ public class SSEResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void SSEBroadcastTest() throws Exception{
-
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/test/rest/sse/subscribe");
-
-        try (SseEventSource source = SseEventSource.target(target).reconnectingEvery(1, TimeUnit.SECONDS).build()) {
-            source.register(onEvent, onError, onComplete);
-            source.open();
-            assertTrue(source.isOpen());
-
-            Movement movementBaseType = MovementTestHelper.createMovement();
-            Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
-
-            movementBaseType = MovementTestHelper.createMovement();
-            createdMovement = movementService.createAndProcessMovement(movementBaseType);
-
-            movementBaseType = MovementTestHelper.createMovement();
-            createdMovement = movementService.createAndProcessMovement(movementBaseType);
-
-
-
-            Thread.sleep(1000 * 1 * 1);
-            assertTrue(source.isOpen());
-            assertTrue(errorString,errorString.isEmpty());
-            assertEquals(dataString,3 ,dataString.split("\\}\\{").length);
-        }
-
-
-    }
-
-    @Test
-    @OperateOnDeployment("movement")
     public void SSEBroadcastV2Test() throws Exception{
 
         Client client = ClientBuilder.newClient();

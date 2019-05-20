@@ -657,8 +657,6 @@ public class SearchFieldMapper {
                 return SearchField.TRACK_ID;
             case CONNECT_ID:
                 return SearchField.CONNECT_ID;
-            case ASSET_ID:
-                return SearchField.ASSET_ID;
             case MOVEMENT_TYPE:
                 return SearchField.MOVMENT_TYPE;
             case AREA:

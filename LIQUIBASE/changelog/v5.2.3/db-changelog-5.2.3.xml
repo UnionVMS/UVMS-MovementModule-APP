@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="changelog/v5.2.3/db-changelog-5.2.3.xml">
+    
+    <changeSet id="drop_view" author="peerik">
+    	<dropView viewName="LATEST_POS_VIEW"/>
+    </changeSet>
+    
+    <changeSet id="drop_asset_id_column" author="peerik">
+    	<dropColumn tableName="movementconnect">
+    		<column name="moveconn_asset_id"/>
+    	</dropColumn>
+    </changeSet>
+    
+</databaseChangeLog>

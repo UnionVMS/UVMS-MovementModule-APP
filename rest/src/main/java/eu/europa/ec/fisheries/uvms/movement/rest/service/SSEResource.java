@@ -1,6 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -20,9 +21,10 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
-/* Old version of sseResource, kept around to keep the old version of the real-time map running */
+/* New version of sseResource, using a new data structure when sending data to the new version of the real-time map.
+ At some point in the future this version will replace the old version */
 @ApplicationScoped
-@Path("sse")
+@Path("sseV2")
 @RequiresFeature(UnionVMSFeature.viewMovements)
 public class SSEResource {
 
@@ -39,16 +41,16 @@ public class SSEResource {
         this.sseBroadcaster = sse.newBroadcaster();
     }
 
-    public void createdMovement(@Observes @CreatedMovement Movement move){
+    public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement move){
         try {
             if (move != null) {
-                MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(),
-                        move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());
+                MicroMovementExtended micro = new MicroMovementExtended(move.getLocation(),
+                        move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed(), move.getMovementSource());
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")
                         .id("" + System.currentTimeMillis())
                         .mediaType(MediaType.APPLICATION_JSON_PATCH_JSON_TYPE)
-                        .data(MicroMovementDto.class, micro)
+                        .data(MicroMovementExtended.class, micro)
                         //.reconnectDelay(3000) //this one is optional and governs how long the client should wait b4 attempting to reconnect to this server
                         .comment("New Movement")
                         .build();
@@ -64,9 +66,8 @@ public class SSEResource {
     @Path("subscribe")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     public void listen(@Context SseEventSink sseEventSink) {
-        sseEventSink.send(sse.newEvent("Welcome to UVMS SSE notifications."));
+        sseEventSink.send(sse.newEvent("Welcome to UVMS SSE notifications. Version 2"));
         sseBroadcaster.register(sseEventSink);
         sseEventSink.send(sse.newEvent("You are now registered for receiving new movements."));
     }
-
 }
