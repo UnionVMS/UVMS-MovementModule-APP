@@ -7,9 +7,7 @@ import java.util.UUID;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
@@ -34,27 +32,26 @@ public class IncomingMovementBean {
         UUID connectId = currentMovement.getMovementConnect().getId();
         Instant timeStamp = currentMovement.getTimestamp();
 
-        LatestMovement latest = dao.getLatestMovement(connectId);
-        if (latest == null) { // First position
-            //left empty
+        Movement latestMovement = currentMovement.getMovementConnect().getLatestMovement();
+        if (latestMovement == null) { // First position
+            currentMovement.getMovementConnect().setLatestMovement(currentMovement);
         } else {
-            Movement latestMovement = latest.getMovement();
             if (currentMovement.getTimestamp().isAfter(latestMovement.getTimestamp())) {
                 segmentBean.newSegment(latestMovement, currentMovement); // Normal case (latest position)
+                currentMovement.getMovementConnect().setLatestMovement(currentMovement);
             } else {
                 Movement previousMovement = dao.getPreviousMovement(connectId, timeStamp);
                 if (previousMovement == null) { // Before first position
                     Movement firstMovement = dao.getFirstMovement(connectId, currentMovement.getTimestamp());
                     segmentBean.addMovementBeforeFirst(firstMovement, currentMovement);
                 } else { // Between two positions
-                    Movement nextMovement = previousMovement.getToSegment().getToMovement();
                     segmentBean.splitSegment(previousMovement, currentMovement);
 
                 }
             }
         }
-        dao.upsertLatestMovement(currentMovement, currentMovement.getMovementConnect(), latest);
     }
+    
     public boolean checkAndSetDuplicate(IncomingMovement movement) {
         if(movement.getPositionTime() == null || movement.getAssetGuid() == null){     //if these two are null the check cant complete and one of the other sanity rules will get it
             return false;

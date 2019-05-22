@@ -12,6 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -20,7 +21,6 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.IncomingMovementMapper;
@@ -28,6 +28,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.message.ExchangeBean;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementRulesBean;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
+import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 
 @Stateless
 public class MovementCreateBean {
@@ -40,9 +41,6 @@ public class MovementCreateBean {
 
     @Inject
     private IncomingMovementBean incomingMovementBean;
-
-    @Inject
-    private MovementDao dao;
     
     @EJB
     private AssetClient assetClient;
@@ -77,9 +75,9 @@ public class MovementCreateBean {
             // send to MovementRules
             MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
             int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetGuid(), incomingMovement.getPositionTime());
-            // List<VicinityInfoDTO> vicinityOf = dao.getVicinityOfMovement(createdMovement);
             movementDetails.setSumPositionReport(sumPositionReport);
-            // movementDetails.setVicinityOf(vicinityOf);
+//            List<VicinityInfoDTO> vicinityOf = movementService.getVicinityOf(createdMovement);
+//            movementDetails.setVicinityOf(vicinityOf);
 
             movementRulesBean.send(movementDetails);
             // report ok to Exchange...

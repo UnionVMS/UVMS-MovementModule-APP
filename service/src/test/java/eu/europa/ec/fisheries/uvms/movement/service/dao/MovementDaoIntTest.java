@@ -27,7 +27,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
@@ -183,7 +182,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements() {
-        List<LatestMovement> all = movementDao.getLatestMovements(10);
+        List<Movement> all = movementDao.getLatestMovements(10);
         assertNotNull(all);
     }
 
@@ -470,53 +469,6 @@ public class MovementDaoIntTest extends TransactionalTests {
         String sql = SearchFieldMapper.createCountSearchSql(null, true);
         movementDao.getMovementListSearchCount(sql,null);
     }
-    
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void upsertLatestMovementOnExisting() {
-
-        MovementConnect movementConnect = createMovementConnectHelper();
-        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-
-        Movement movement = createMovementHelper();
-        movement.setMovementConnect(createdMovementConnect);
-        Movement createdMovement = movementDao.createMovement(movement);
-
-        UUID createdMovementId = createdMovement.getId();
-
-        // the upsert creates one if it is not there
-        movementDao.upsertLatestMovement(createdMovement, createdMovementConnect);
-
-        List<LatestMovement> all = movementDao.getLatestMovements(10000);
-        Boolean found = findLatestMovements(createdMovementId, all);
-        assertTrue(found);
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void upsertLatestMovementOnNonExisting() {
-
-        MovementConnect movementConnect = createMovementConnectHelper();
-        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-
-        Movement DOES_NOT_EXIST_IN_DB = createMovementHelper();
-        DOES_NOT_EXIST_IN_DB.setMovementConnect(createdMovementConnect);
-
-        UUID createdMovementId = DOES_NOT_EXIST_IN_DB.getId();
-
-        List<LatestMovement> listBefore = movementDao.getLatestMovements(10000);
-
-        // the upsert creates one if it is not there
-        movementDao.upsertLatestMovement(DOES_NOT_EXIST_IN_DB, createdMovementConnect);
-
-        List<LatestMovement> listAfter = movementDao.getLatestMovements(10000);
-
-        assertNotEquals(listBefore.size(), listAfter.size());
-
-        Boolean found = findLatestMovements(createdMovementId, listAfter);
-        assertFalse(found);
-    }
-
 
     /******************************************************************************************************************
      *   HELPER FUNCTIONS
@@ -583,10 +535,9 @@ public class MovementDaoIntTest extends TransactionalTests {
         return new ArrayList<>();
     }
 
-    private Boolean findLatestMovements(UUID createdMovementId, List<LatestMovement> all) {
-        for (LatestMovement latestMovement : all) {
-            Movement movementFromLatestMovement = latestMovement.getMovement();
-            UUID movementFromLatestMovementId = movementFromLatestMovement.getId();
+    private Boolean findLatestMovements(UUID createdMovementId, List<Movement> all) {
+        for (Movement latestMovement : all) {
+            UUID movementFromLatestMovementId = latestMovement.getId();
             if (movementFromLatestMovementId.equals(createdMovementId)) {
                 return true;
             }

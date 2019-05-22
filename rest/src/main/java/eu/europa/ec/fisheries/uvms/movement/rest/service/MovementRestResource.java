@@ -20,7 +20,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
@@ -118,8 +117,8 @@ public class MovementRestResource {
             return new ResponseDto("numberOfMovements cannot be null and must be greater than 0" , RestResponseCode.ERROR);
         }
         try {
-            List<LatestMovement> movements = serviceLayer.getLatestMovements(numberOfMovements);
-            List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(movements);
+            List<Movement> movements = serviceLayer.getLatestMovements(numberOfMovements);
+            List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementType(movements);
             List<MovementDto> response = MovementMapper.mapToMovementDtoList(latestMovements);
             LOG.debug("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
             return new ResponseDto<>(response, RestResponseCode.OK);
