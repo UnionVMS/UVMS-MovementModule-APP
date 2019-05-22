@@ -26,7 +26,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
-import eu.europa.ec.fisheries.uvms.spatial.model.schemas.GeometryType;
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
