@@ -55,9 +55,9 @@ import org.hibernate.annotations.FetchMode;
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"),
     @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_NEAREST, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(m.movementConnect.id, m.id, distance(transform(m.location, 3857), transform(:point, 3857)))" +              //the function should probably be ST_Distance_Sphere instead, but right now we dont have access to that one through our postgres dialect
+    @NamedQuery(name = Movement.FIND_NEAREST, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(m.movementConnect.id, m.id, distance(m.location, :point))" +              //the function should probably be ST_Distance_Sphere instead, but right now we dont have access to that one through our postgres dialect
                                                                 "FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id " +
-                                                                "WHERE distance(transform(m.location, 3857), transform(:point, 3857)) < :maxDistance " +
+                                                                "WHERE distance(m.location, :point) < :maxDistance " +
                                                                 "AND m.movementConnect.id <> :excludedID")
 })
 @DynamicUpdate
