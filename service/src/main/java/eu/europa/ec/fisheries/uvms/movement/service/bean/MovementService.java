@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigServiceException;
 import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
@@ -69,8 +70,8 @@ public class MovementService {
     public Movement createAndProcessMovement(Movement movement) {
         createMovement(movement);
         incomingMovementBean.processMovement(movement);
-        if(movement != null){
-            fireMovementEvent(movement);
+        fireMovementEvent(movement);
+        if (!movement.getMovementSource().equals(MovementSourceType.AIS)) {
             auditService.sendMovementCreatedAudit(movement, movement.getUpdatedBy());
         }
         return movement;
