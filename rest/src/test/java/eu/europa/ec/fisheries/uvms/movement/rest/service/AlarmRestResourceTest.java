@@ -9,8 +9,8 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.UUID;
 import javax.inject.Inject;
-import javax.transaction.UserTransaction;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -69,6 +69,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("alarms/list")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(basicAlarmQuery), String.class);
 
         AlarmListResponseDto alarmList = deserialize(response, AlarmListResponseDto.class);
@@ -84,6 +85,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         response = getWebTarget()
                 .path("alarms/list")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(basicAlarmQuery), String.class);
 
         alarmList = deserialize(response, AlarmListResponseDto.class);
@@ -100,6 +102,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         Response response = getWebTarget()
                 .path("alarms/list")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(new AlarmQuery()));
 
         assertEquals(500, response.getStatus());
@@ -116,6 +119,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("alarms")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .put(Entity.json(alarmReport), String.class);
 
         assertThat(response, is(notNullValue()));
@@ -132,6 +136,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         Response response = getWebTarget()
                 .path("alarms")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .put(Entity.json(new AlarmReport()));
 
         assertEquals(500, response.getStatus());
@@ -146,6 +151,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("alarms/" + alarmReport.getId())
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
 
         AlarmReport responseAlarmReportType = deserialize(response, AlarmReport.class);
@@ -161,6 +167,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         Response response = getWebTarget()
                 .path("alarms/" + "test guid")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get();
 
         assertEquals(500, response.getStatus());
@@ -172,6 +179,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         Response response = getWebTarget()
                 .path("alarms/reprocess")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(Collections.singletonList(UUID.randomUUID())));      //previsouly "NULL_GUID"
 
         assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
@@ -190,6 +198,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         response = getWebTarget()
                 .path("alarms/reprocess")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(Collections.singletonList(alarmReport.getId())));
 
         assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
@@ -197,15 +206,13 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         String response2 = getWebTarget()
                 .path("alarms/" + alarmReport.getId())
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
 
         AlarmReport responseAlarmReportType = deserialize(response2, AlarmReport.class);
         assertNotNull(responseAlarmReportType);
         assertEquals(AlarmStatusType.REPROCESSED.value(), responseAlarmReportType.getStatus());
     }
-
-    @Inject
-    private UserTransaction userTransaction;
 
     @Test
     @OperateOnDeployment("movement")
@@ -228,6 +235,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         String response2 = getWebTarget()
                 .path("alarms/" + alarmReport.getId())
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
 
         AlarmReport responseAlarmReportType = deserialize(response2, AlarmReport.class);
@@ -241,6 +249,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         Response response = getWebTarget()
                 .path("alarms/incomingMovement")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .put(Entity.json(savedMovement));
 
         assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
@@ -248,6 +257,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         response2 = getWebTarget()
                 .path("alarms/" + alarmReport.getId())
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
 
         responseAlarmReportType = deserialize(response2, AlarmReport.class);
@@ -261,6 +271,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         response = getWebTarget()
                 .path("alarms/incomingMovement")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .put(Entity.json(savedMovement));
 
         assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
@@ -268,6 +279,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         response2 = getWebTarget()
                 .path("alarms/" + alarmReport.getId())
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
 
         responseAlarmReportType = deserialize(response2, AlarmReport.class);
@@ -282,6 +294,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("alarms/countopen")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
 
         Integer openAlarmReports = deserialize(response, Integer.class);
@@ -292,10 +305,10 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         AlarmReport alarmReport = getBasicAlarmReport();
         alarmDao.save(alarmReport);
 
-        //hmm, is it a good idea to have tests that depend on there not being crap in teh DB?
         response = getWebTarget()
                 .path("alarms/countopen")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
 
         openAlarmReports = deserialize(response, Integer.class);
@@ -307,6 +320,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         response = getWebTarget()
                 .path("alarms/countopen")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
 
         openAlarmReports = deserialize(response, Integer.class);

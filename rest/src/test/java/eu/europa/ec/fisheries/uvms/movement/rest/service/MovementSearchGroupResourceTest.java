@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -98,6 +99,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
                 .path("search")
                 .path("group")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(searchGroup), String.class);
             
         return RestHelper.readResponseDto(response, MovementSearchGroup.class);
@@ -109,6 +111,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
                 .path("group")
                 .path(id)
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
         
         return RestHelper.readResponseDto(response, MovementSearchGroup.class);
@@ -119,6 +122,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
                 .path("search")
                 .path("group")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .put(Entity.json(searchGroup), String.class);
             
         return RestHelper.readResponseDto(response, MovementSearchGroup.class);
@@ -130,6 +134,7 @@ public class MovementSearchGroupResourceTest extends BuildMovementRestDeployment
                 .path("groups")
                 .queryParam("user", user)
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
             
         return RestHelper.readResponseDtoList(response, MovementSearchGroup.class);

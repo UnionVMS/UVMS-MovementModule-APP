@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -158,6 +158,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("movement")
                 .path("list")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(query), String.class);
             
         return RestHelper.readResponseDto(response, GetMovementListByQueryResponse.class);
@@ -169,6 +170,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("list")
                 .path("minimal")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(query), String.class);
             
         return RestHelper.readResponseDto(response, GetMovementListByQueryResponse.class);
@@ -179,6 +181,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("movement")
                 .path("latest")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(connectIds), String.class);
             
         return RestHelper.readResponseDtoList(response, MovementDto.class);
@@ -189,6 +192,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("movement")
                 .path("latest/" + numberOfMovements)
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
             
         return RestHelper.readResponseDtoList(response, MovementDto.class);
@@ -199,6 +203,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("movement")
                 .path(id)
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
         
         return RestHelper.readResponseDto(response, MovementType.class);

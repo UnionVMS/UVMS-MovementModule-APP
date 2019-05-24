@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import java.math.BigInteger;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -86,6 +87,7 @@ public class DraftMovementResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("tempmovement")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(tempMovement), String.class);
         
         return RestHelper.readResponseDto(response, TempMovementType.class);
@@ -95,6 +97,7 @@ public class DraftMovementResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("tempmovement")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .put(Entity.json(tempMovement), String.class);
         
         return RestHelper.readResponseDto(response, TempMovementType.class);
@@ -105,6 +108,7 @@ public class DraftMovementResourceTest extends BuildMovementRestDeployment {
                 .path("tempmovement")
                 .path(guid)
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(String.class);
         
         return RestHelper.readResponseDto(response, TempMovementType.class);
@@ -115,6 +119,7 @@ public class DraftMovementResourceTest extends BuildMovementRestDeployment {
                 .path("tempmovement")
                 .path("list")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(query), String.class);
 
         return RestHelper.readResponseDto(response, GetTempMovementListResponse.class);
