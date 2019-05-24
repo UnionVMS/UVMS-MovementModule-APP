@@ -394,7 +394,7 @@ public class SearchFieldMapper {
                 builder.append(" = ").append(getOrdinalValueFromEnum(entry));
             } else if (clazz.isAssignableFrom(Geometry.class)) {
                 builder.append(" WITHIN( ")
-                        .append(buildTableAliasname(entry.getField()))
+                        .append("geometry(").append(buildTableAliasname(entry.getField())).append(")")
                         .append(", ").append(":wkt").append(" ) = true ");
             } else {
                 builder.append(" = ").append(buildValueFromClassType(entry));

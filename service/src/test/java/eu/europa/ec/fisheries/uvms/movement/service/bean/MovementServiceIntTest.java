@@ -650,6 +650,46 @@ public class MovementServiceIntTest extends TransactionalTests {
         assertFalse(vicinity.stream().anyMatch(v -> v.getMovementID().equals(createdMovement2.getId().toString())));
     }
 
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getListWktQueryShouldFindTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        String areaInWKT = "POLYGON((57.712731 11.970115, 57.716316 11.978271, 57.718409 11.968293, 57.712731 11.970115))";
+
+        MovementQuery query = createMovementQuery(true);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.AREA);
+        criteria.setValue(areaInWKT);
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse response = movementService.getList(query);
+        List<MovementType> movements = response.getMovement();
+        assertTrue(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getListWktQueryShouldNotFindTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(57.714106, 11.976209, connectId);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        String areaInWKT = "POLYGON((57.712731 11.970115, 57.716316 11.978271, 57.718409 11.968293, 57.712731 11.970115))";
+
+        MovementQuery query = createMovementQuery(true);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.AREA);
+        criteria.setValue(areaInWKT);
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse response = movementService.getList(query);
+        List<MovementType> movements = response.getMovement();
+        assertFalse(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+    }
+
     /******************************************************************************************************************
      *   HELPER FUNCTIONS
      ******************************************************************************************************************/
