@@ -27,7 +27,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
@@ -188,30 +187,30 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getMinimalMovementListPaginated()  {
+    public void getMovementListPaginatedListSize()  {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
         Integer page = 1;
         Integer listSize = 10;
-        String sql = "select distinct m  from  MinimalMovement m";
+        String sql = "select distinct m from Movement m";
 
-        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues, MinimalMovement.class);
-        assertNotNull(minimalMovementList);
-        assertTrue(minimalMovementList.size() <= 10);
+        List<Movement> movementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
+        assertNotNull(movementList);
+        assertTrue(movementList.size() <= 10);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getMinimalMovementListPaginated_NegativeSpeed()  {
+    public void getMovementListPaginated_NegativeSpeed()  {
 
         List<SearchValue> searchKeyValues = new ArrayList<>();
         Integer page = 1;
         Integer listSize = 10;
-        String sql = "select distinct m  from  MinimalMovement m where m.speed < 0";
+        String sql = "select distinct m  from  Movement m where m.speed < 0";
 
-        List<MinimalMovement> minimalMovementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues, MinimalMovement.class);
-        assertNotNull(minimalMovementList);
-        assertEquals(0, minimalMovementList.size());
+        List<Movement> movementList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
+        assertNotNull(movementList);
+        assertEquals(0, movementList.size());
     }
 
     @Test
@@ -446,7 +445,7 @@ public class MovementDaoIntTest extends TransactionalTests {
             listSize = allMovements.size();
 
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
-        List<Movement> movementList = movementDao.getMovementListPaginated(page, listSize, sql, searchValues, Movement.class);
+        List<Movement> movementList = movementDao.getMovementListPaginated(page, listSize, sql, searchValues);
         assertNotNull(movementList);
     }
 

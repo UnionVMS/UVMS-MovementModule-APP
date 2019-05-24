@@ -20,7 +20,6 @@ import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
@@ -128,13 +127,21 @@ public class MovementService {
     }
 
     public GetMovementListByQueryResponse getList(MovementQuery query){
+        return getList(query, false);
+    }
+
+    public GetMovementListByQueryResponse getMinimalList(MovementQuery query){
+        return getList(query, true);
+    }
+
+    private GetMovementListByQueryResponse getList(MovementQuery query, boolean minimalResponseType){
         if (query == null) {
             throw new IllegalArgumentException("Movement list query is null");
         }
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
             throw new IllegalArgumentException("Pagination in movementlist query is null");
         }
-        if (query.getMovementSearchCriteria().isEmpty()) {
+        if (query.getMovementSearchCriteria().isEmpty() && query.getMovementRangeSearchCriteria().isEmpty()) {
             throw new IllegalArgumentException("No search criterias in MovementList query");
         }
         try {
@@ -155,9 +162,13 @@ public class MovementService {
             String sql = SearchFieldMapper.createSelectSearchSql(searchKeyValues, true);
 
             Long numberMatches = movementDao.getMovementListSearchCount(countSql, searchKeyValues);
-            List<Movement> movementEntityList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues, Movement.class);
+            List<Movement> movementEntityList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
 
-            movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMovementType(movement)));
+            if (minimalResponseType) {
+                movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMinimalMovementType(movement)));
+            } else {
+                movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMovementType(movement)));
+            }
 
             response.setCurrentPage(BigInteger.valueOf(page));
             response.setMovementList(movementList);
@@ -165,50 +176,7 @@ public class MovementService {
 
             return MovementResponseMapper.createMovementListResponse(response);
         } catch (Exception e) {
-            throw new RuntimeException("Error when getting movement list by query: ParseException", e);
-        }
-    }
-
-    public GetMovementListByQueryResponse getMinimalList(MovementQuery query) {
-        if (query == null) {
-            throw new IllegalArgumentException("Movement list query is null");
-        }
-        if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
-            throw new IllegalArgumentException("Pagination in movementList query is null");
-        }
-        if (query.getMovementSearchCriteria() == null) {
-            throw new IllegalArgumentException("No search criterias in MovementList query");
-        }
-        try {
-            ListResponseDto response = new ListResponseDto();
-            List<MovementType> movementList = new ArrayList<>();
-
-            int page = query.getPagination().getPage().intValue();
-            int listSize = query.getPagination().getListSize().intValue();
-
-            List<SearchValue> searchKeyValues = new ArrayList<>();
-            List<SearchValue> searchKeyValuesList = SearchFieldMapper.mapListCriteriaToSearchValue(query.getMovementSearchCriteria());
-            List<SearchValue> searchKeyValuesRange = SearchFieldMapper.mapRangeCriteriaToSearchField(query.getMovementRangeSearchCriteria());
-
-            searchKeyValues.addAll(searchKeyValuesList);
-            searchKeyValues.addAll(searchKeyValuesRange);
-
-            String countSql = SearchFieldMapper.createCountSearchSql(searchKeyValues, true);
-            String sql = SearchFieldMapper.createMinimalSelectSearchSql(searchKeyValues, true);
-
-            Long numberMatches = movementDao.getMovementListSearchCount(countSql, searchKeyValues);
-            LOG.debug("Count found {} matches", numberMatches);
-            List<MinimalMovement> movementEntityList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues, MinimalMovement.class);
-            LOG.debug("Get got {} matches", movementEntityList.size());
-
-            movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMovementType(movement)));
-
-            response.setCurrentPage(BigInteger.valueOf(page));
-            response.setMovementList(movementList);
-            response.setTotalNumberOfPages(BigInteger.valueOf(getNumberOfPages(numberMatches, listSize)));
-            return MovementResponseMapper.createMovementListResponse(response);
-        } catch (Exception ex) {
-            throw new RuntimeException("Error when getting movement list by query", ex);
+            throw new IllegalArgumentException("Error when getting movement list by query: ParseException", e);
         }
     }
 

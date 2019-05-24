@@ -30,7 +30,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
@@ -81,7 +80,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		UUID connectId = UUID.randomUUID();
 		double lon = 11.641982;
 		double lat = 57.632304;
-		MinimalMovement movement = new MinimalMovement();
+		Movement movement = new Movement();
 		GeometryFactory gf = new GeometryFactory();
 		movement.setLocation(gf.createPoint(new Coordinate(lon, lat)));
 		movement.setMovementSource(MovementSourceType.IRIDIUM);
@@ -92,7 +91,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
         movement.setTimestamp(Instant.now());
         movement.setId(UUID.randomUUID());
 		//movement.setStatus(status);
-		MovementType movementType = MovementEntityToModelMapper.mapToMovementType(movement);
+		MovementType movementType = MovementEntityToModelMapper.mapToMinimalMovementType(movement);
 		assertEquals(movement.getId().toString(), movementType.getGuid());
         assertEquals(lat, movementType.getPosition().getLatitude(), 0D);
         assertEquals(lon, movementType.getPosition().getLongitude(), 0D);

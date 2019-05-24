@@ -284,7 +284,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
 	public void testGetMinimalMovementListByQuery_WillFailNoPaginationSet() {
     	thrown.expect(EJBTransactionRolledbackException.class);
-		expectedMessage("Pagination in movementList query is null");
+		expectedMessage("Pagination in movementlist query is null");
 
 		MovementQuery input = new MovementQuery();
 		input.setExcludeFirstAndLastSegment(true);
