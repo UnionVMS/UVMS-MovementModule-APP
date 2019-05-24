@@ -20,7 +20,6 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 
@@ -68,10 +67,6 @@ public class WKTUtil {
     }
 
     public static String getWktPointFromMovement(Movement movement) {
-        return getWktPointString(movement.getLocation());
-    }
-
-    public static String getWktPointFromMovement(MinimalMovement movement) {
         return getWktPointString(movement.getLocation());
     }
 

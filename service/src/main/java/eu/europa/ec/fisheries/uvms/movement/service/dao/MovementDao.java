@@ -179,16 +179,15 @@ public class MovementDao {
         }
     }
 
-    public <T> List<T> getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues, Class<T> clazz){
-        TypedQuery<T> query = getMovementQuery(sql, searchKeyValues, clazz);
+    public List<Movement> getMovementListPaginated(Integer page, Integer listSize, String sql, List<SearchValue> searchKeyValues){
+        TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues);
         query.setFirstResult(listSize * (page - 1));
         query.setMaxResults(listSize);
         return query.getResultList();
-
     }
 
-    private <T> TypedQuery<T> getMovementQuery(String sql, List<SearchValue> searchKeyValues, Class<T> clazz) {
-        TypedQuery<T> query = em.createQuery(sql, clazz);
+    private TypedQuery<Movement> getMovementQuery(String sql, List<SearchValue> searchKeyValues) {
+        TypedQuery<Movement> query = em.createQuery(sql, Movement.class);
         setTypedQueryMovementParams(searchKeyValues, query);
         return query;
     }
@@ -218,7 +217,7 @@ public class MovementDao {
     public List<Movement> getMovementList(String sql, List<SearchValue> searchKeyValues){
         try {
             LOG.debug("SQL QUERY IN LIST PAGINATED: {}", sql);
-            TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues, Movement.class);
+            TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues);
             return query.getResultList();
         } catch (Exception e) {
             throw new HibernateException("Error when getting list", e);
@@ -238,7 +237,7 @@ public class MovementDao {
             }
         } else {
             LOG.debug("Searchvalues is NOT empty, getting latest reports for the query ( TOP( {} ) )", numberOfReports);
-            TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues, Movement.class);
+            TypedQuery<Movement> query = getMovementQuery(sql, searchKeyValues);
             query.setMaxResults(numberOfReports);
             movements = query.getResultList();
         }

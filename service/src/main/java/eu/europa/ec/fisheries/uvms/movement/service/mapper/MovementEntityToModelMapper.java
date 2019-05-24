@@ -22,8 +22,6 @@ import java.util.Set;
 import java.util.UUID;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
-import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
@@ -31,7 +29,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
@@ -62,13 +59,13 @@ public class MovementEntityToModelMapper {
         return model;
     }
 
-    public static MovementType mapToMovementType(MinimalMovement movement) {
+    public static MovementType mapToMinimalMovementType(Movement movement) {
 
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
-        model.setReportedSpeed(movement.getSpeed());
+        model.setReportedSpeed(movement.getSpeed() != null ? movement.getSpeed().doubleValue() : null);
         model.setGuid(movement.getId().toString());
-        model.setReportedCourse(movement.getHeading());
+        model.setReportedCourse(movement.getHeading() != null ? movement.getHeading().doubleValue() : null);
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
