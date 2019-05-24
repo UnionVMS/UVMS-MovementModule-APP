@@ -204,9 +204,6 @@ public class SegmentBeanIntTest extends TransactionalTests {
         fromMovement.setTrack(track);
         toMovement.setTrack(track);
 
-        movementDao.upsertLatestMovement(fromMovement, fromMovement.getMovementConnect());
-        movementDao.upsertLatestMovement(toMovement, toMovement.getMovementConnect());
-
         em.flush();
         assertNotNull(track);
         List<Segment> segments = movementDao.getSegmentsByTrack(track);

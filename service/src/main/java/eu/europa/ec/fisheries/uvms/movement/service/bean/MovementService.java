@@ -15,9 +15,11 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.config.exception.ConfigServiceException;
+import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
@@ -26,9 +28,10 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModel
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
+import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -56,6 +59,9 @@ public class MovementService {
 
     @Inject
     private MovementMapResponseHelper movementMapResponseHelper;
+
+    @EJB
+    private ParameterService parameterService;
 
     @Inject
     @CreatedMovement
@@ -223,7 +229,7 @@ public class MovementService {
         return movementDao.getLatestMovementsByConnectIdList(connectIds);
     }
 
-    public List<LatestMovement> getLatestMovements(Integer numberOfMovements) {
+    public List<Movement> getLatestMovements(Integer numberOfMovements) {
         return movementDao.getLatestMovements(numberOfMovements);
     }
 	
@@ -246,5 +252,15 @@ public class MovementService {
 
     public List<Movement> getLatestMovementsAfter(Instant date) {
         return movementDao.getLatestWithLimit(date);
+    }
+    
+    public List<VicinityInfoDTO> getVicinityOf(Movement movement) {
+        try {
+            String maxDistance = parameterService.getStringValue(ParameterKey.MAX_DISTANCE.getKey());
+            return movementDao.getVicinityOfMovement(movement, Double.parseDouble(maxDistance));
+        } catch (ConfigServiceException | NullPointerException | NumberFormatException e) {
+            LOG.error("Could not parse maxDistance parameter!");
+            return new ArrayList<>();
+        }
     }
 }

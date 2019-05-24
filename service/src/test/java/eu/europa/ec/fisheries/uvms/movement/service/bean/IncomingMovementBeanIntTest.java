@@ -85,9 +85,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         //Then: Test that the Movement is processed properly.
         Movement actualMovement = movementDao.getMovementById(id);
-        LatestMovement latestMovement = movementDao.getLatestMovement(uuid);
+        Movement latestMovement = movementDao.getLatestMovement(uuid);
 
-        assertEquals(actualMovement.getId(), latestMovement.getMovement().getId());
+        assertEquals(actualMovement.getId(), latestMovement.getId());
         LOG.info(" [ testProcessingMovement: Movement object was successfully processed. ] ");
     }
 

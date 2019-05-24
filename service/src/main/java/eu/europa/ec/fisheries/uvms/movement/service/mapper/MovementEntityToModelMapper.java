@@ -31,7 +31,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
@@ -151,14 +150,6 @@ public class MovementEntityToModelMapper {
         List<MovementType> mappedMovements = new ArrayList<>();
         for (Movement movement : movements) {
             mappedMovements.add(mapToMovementType(movement));
-        }
-        return mappedMovements;
-    }
-
-    public static List<MovementType> mapToMovementTypeFromLatestMovement(List<LatestMovement> movements) {
-        List<MovementType> mappedMovements = new ArrayList<>();
-        for (LatestMovement movement : movements) {
-            mappedMovements.add(mapToMovementType(movement.getMovement()));
         }
         return mappedMovements;
     }

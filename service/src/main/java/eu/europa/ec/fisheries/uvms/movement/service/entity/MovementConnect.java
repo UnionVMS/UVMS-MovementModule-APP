@@ -17,22 +17,18 @@ import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 
 @Entity
@@ -46,7 +42,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 public class MovementConnect implements Serializable, Comparable<MovementConnect> {
 
     public static final String MOVEMENT_CONNECT_GET_ALL = "MovementConnect.findAll";
-    
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -58,9 +54,11 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
 
     @Column(name = "moveconn_name")
     private String name;
+    
+    @JoinColumn(name = "moveconn_latest_move", referencedColumnName = "move_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    private Movement latestMovement;
 
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "moveconn_updattim")
     private Instant updated;
@@ -72,10 +70,6 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     private String updatedBy;
 
     public MovementConnect() {
-    }
-
-    public MovementConnect(UUID id) {
-        this.id = id;
     }
 
     public MovementConnect(UUID id, String flagState, String name, Instant updated, String updatedBy) {
@@ -124,6 +118,14 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Movement getLatestMovement() {
+        return latestMovement;
+    }
+
+    public void setLatestMovement(Movement latestMovement) {
+        this.latestMovement = latestMovement;
     }
 
     @Override

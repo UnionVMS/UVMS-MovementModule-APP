@@ -13,7 +13,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.util;
 
 import java.util.Comparator;
 import org.apache.commons.lang3.ObjectUtils;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
@@ -40,17 +39,6 @@ public class MovementComparator {
         		return ObjectUtils.compare(m1, m2);
         	} else {
         		return ObjectUtils.compare(m1.getId(),m2.getId());
-        	}
-        }
-    };
-
-    public static final Comparator<LatestMovement> LATEST_MOVEMENT = new Comparator<LatestMovement>() {
-        @Override
-        public int compare(LatestMovement m1, LatestMovement m2) {
-        	if (m1 == null || m2 ==null) {
-        		return ObjectUtils.compare(m1, m2);
-        	} else {
-        		return MOVEMENT_CONNECT.compare(m1.getMovementConnect(), m2.getMovementConnect());
         	}
         }
     };

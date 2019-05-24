@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+	logicalFilePath="changelog/v5.2.4/db-changelog-5.2.4.xml">
+    
+    <changeSet id="update_location_to_geography" author="joemat">
+    	<modifyDataType tableName="movement" columnName="move_location" newDataType="GEOGRAPHY"/>
+    </changeSet>
+    
+    <changeSet id="drop_latest_movement" author="peerik">
+    	<dropTable tableName="latestmovement"/>
+    </changeSet>
+    
+    <changeSet id="latest_movement_on_movementconnect" author="peerik">
+    	<addColumn tableName="movementconnect">
+    		<column name="moveconn_latest_move" type="UUID"/>
+    	</addColumn>
+    </changeSet>
+    
+</databaseChangeLog>

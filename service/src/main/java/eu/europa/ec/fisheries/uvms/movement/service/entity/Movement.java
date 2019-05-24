@@ -41,16 +41,9 @@ import org.hibernate.annotations.FetchMode;
 })
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = Movement.FIND_ALL, query = "SELECT m FROM Movement m"),
     @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_ALL_BY_MOVEMENTCONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect = :movementConnect ORDER BY m.timestamp ASC"),
-    @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id"),
-    @NamedQuery(name = Movement.FIND_BY_SPEED, query = "SELECT m FROM Movement m WHERE m.speed = :speed "),
-    @NamedQuery(name = Movement.FIND_BY_HEADING, query = "SELECT m FROM Movement m WHERE m.heading = :heading "),
-    @NamedQuery(name = Movement.FIND_BY_STATUS, query = "SELECT m FROM Movement m WHERE m.status = :status "),
-    @NamedQuery(name = Movement.FIND_BY_UPDATED, query = "SELECT m FROM Movement m WHERE m.updated = :updated "),
-    @NamedQuery(name = Movement.FIND_BY_UPDATED_BY, query = "SELECT m FROM Movement m WHERE m.updatedBy = :updatedBy "),
     @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :connectId ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_PREVIOUS, query = "SELECT m FROM Movement m  WHERE  m.timestamp = (select max(mm.timestamp) from Movement mm where mm.movementConnect.id = :id and mm.timestamp < :date) AND m.movementConnect.id = :id "),
     @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m  WHERE m.timestamp = (select min(mm.timestamp) from Movement mm  where mm.movementConnect.id = :id AND mm.timestamp > :date) AND m.movementConnect.id = :id "),
@@ -58,41 +51,32 @@ import org.hibernate.annotations.FetchMode;
     @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.id = :asset "),
     @NamedQuery(name = MicroMovementExtended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date "),
     @NamedQuery(name = MicroMovementExtended.FIND_ALL_FOR_ASSET_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date AND m.movementConnect.id = :id ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT m FROM Movement m JOIN LatestMovement lm ON m.id = lm.movement.id WHERE lm.timestamp > :date")
-
-        /*
-            Native postgres query for finding all positions in the vicinity of a point in space/time:
-                select *, _ST_DistanceUnCached(m.move_location, ST_MakePoint(11.952357,57.704903)::geography)
-		            from movement.movement m
-				    where m.move_timestamp < (TIMESTAMP '2019-01-23 12:00' + INTERVAL '1 hour')
-				   	and m.move_timestamp > (TIMESTAMP '2019-01-23 12:00' - INTERVAL '1 hour')
-				    and ST_DWithin(m.move_location, ST_MakePoint(11.952357,57.704903)::geography, 500);
-
-            This query might require modification so that it understands that it is dealing with geography rather then geometries
-		    To implement this in HQL requires changing location from a geom to a geog and modifying/replacing hibernate-spatial-4x-to-5x-wrapper in Docker such that a number of nativ postgres functions are available in HQL.
-         */
-
+    @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.timestamp > :date"),
+    @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
+    @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"),
+    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_NEAREST, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(m.movementConnect.id, m.id, distance(m.location, :point))" +              //the function should probably be ST_Distance_Sphere instead, but right now we dont have access to that one through our postgres dialect
+                                                                "FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id " +
+                                                                "WHERE distance(m.location, :point) < :maxDistance " +
+                                                                "AND m.movementConnect.id <> :excludedID")
 })
 @DynamicUpdate
 @DynamicInsert
 public class Movement implements Serializable, Comparable<Movement> {
 
-    public static final String FIND_ALL = "Movement.findAll";
     public static final String FIND_ALL_BY_TRACK = "Movement.findAllByTrack";
     public static final String FIND_ALL_LOCATIONS_BY_TRACK = "Movement.findAllPointsByTrack";
     public static final String FIND_ALL_BY_MOVEMENTCONNECT = "Movement.findAllByMovementConnect";
-    public static final String FIND_BY_ID = "Movement.findById";
-    public static final String FIND_BY_SPEED = "Movement.findBySpeed";
-    public static final String FIND_BY_HEADING = "Movement.findByHeading";
-    public static final String FIND_BY_STATUS = "Movement.findByStatus";
-    public static final String FIND_BY_UPDATED = "Movement.findByUpdated";
-    public static final String FIND_BY_UPDATED_BY = "Movement.findByUpdatedBy";
     public static final String FIND_LATEST_BY_MOVEMENT_CONNECT = "Movement.findLatestByMovementConnect";
     public static final String FIND_PREVIOUS = "Movement.findPrevious";
     public static final String FIND_FIRST = "Movement.findFirst";
     public static final String FIND_EXISTING_DATE = "Movement.findExistingDate";
     public static final String NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN = "Movement.nrOfMovementsForAssetInTimespan";
+    public static final String FIND_LATEST_SINCE = "Movement.findLatestSince";
+    public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT = "Movement.findLatestMovementByMovementConnect";
+    public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST = "Movement.findLatestMovementByMovementConnectList";
     public static final String FIND_LATEST = "Movement.findLatest";
+    public static final String FIND_NEAREST = "Movement.findVicinity";
 
     
     private static final long serialVersionUID = 1L;

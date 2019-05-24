@@ -30,7 +30,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
@@ -158,35 +157,6 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		input = null;
 		try {
 			output = MovementEntityToModelMapper.mapToMovementType(input);
-			fail("Null as input");
-		} catch (Exception e) {
-			assertTrue(true);
-		}
-	}
-	
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testMapToMovementTypeWithAListOfLatestMovements() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementService);
-		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = DateUtil.nowUTC();
-		
-		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
-		List<LatestMovement> input = new ArrayList();
-		LatestMovement lm;
-		for(Movement mov : movementList) {
-			lm = new LatestMovement();
-			lm.setMovement(mov);
-			input.add(lm);
-		}
-		
-		List<MovementType> output = MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(input);
-		
-		assertEquals(input.size(),output.size());
-		
-		input = null;
-		try {
-			output = MovementEntityToModelMapper.mapToMovementTypeFromLatestMovement(input);
 			fail("Null as input");
 		} catch (Exception e) {
 			assertTrue(true);

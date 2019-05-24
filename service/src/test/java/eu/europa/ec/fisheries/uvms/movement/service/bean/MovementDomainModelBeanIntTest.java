@@ -9,7 +9,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -75,21 +74,21 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements_0() {
-        List<LatestMovement> movements = movementService.getLatestMovements(0);
+        List<Movement> movements = movementService.getLatestMovements(0);
         assertNotNull(movements);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements_5() {
-        List<LatestMovement> movements = movementService.getLatestMovements(5);
+        List<Movement> movements = movementService.getLatestMovements(5);
         assertNotNull(movements);
     }
 
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements_5000000() {
-        List<LatestMovement> movements = movementService.getLatestMovements(5000000);
+        List<Movement> movements = movementService.getLatestMovements(5000000);
         assertNotNull(movements);
     }
 

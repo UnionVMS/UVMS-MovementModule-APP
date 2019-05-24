@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +40,9 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 
 @RunWith(Arquillian.class)
 public class MovementServiceIntTest extends TransactionalTests {
@@ -79,6 +80,43 @@ public class MovementServiceIntTest extends TransactionalTests {
         List<UUID> connectionIds = new ArrayList<>();
         List<Movement> movements =  movementService.getLatestMovementsByConnectIds(connectionIds);
         assertThat(movements.size(), CoreMatchers.is(0));
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getLatestMovementsByConnectIds() {
+        UUID connectId1 = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(1d, 1d, connectId1);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+        
+        UUID connectId2 = UUID.randomUUID();
+        Movement movementType2 = MockData.createMovement(2d, 2d, connectId2);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        List<Movement> movements =  movementService.getLatestMovementsByConnectIds(Arrays.asList(connectId1, connectId2));
+        assertThat(movements.size(), CoreMatchers.is(2));
+        assertTrue(movements.contains(createdMovement));
+        assertTrue(movements.contains(createdMovement2));
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getLatestMovementsByConnectIdsTwoPositions() {
+        UUID connectId1 = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(1d, 1d, connectId1);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+        
+        UUID connectId2 = UUID.randomUUID();
+        Movement movementType2 = MockData.createMovement(2d, 2d, connectId2);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+        Movement movementType3 = MockData.createMovement(2d, 2d, connectId2);
+        Movement createdMovement3 = movementService.createAndProcessMovement(movementType3);
+
+        List<Movement> movements =  movementService.getLatestMovementsByConnectIds(Arrays.asList(connectId1, connectId2));
+        assertThat(movements.size(), CoreMatchers.is(2));
+        assertTrue(movements.contains(createdMovement));
+        assertFalse(movements.contains(createdMovement2));
+        assertTrue(movements.contains(createdMovement3));
     }
 
     @Test
@@ -267,8 +305,31 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovements() {
-        List<LatestMovement> movements = movementService.getLatestMovements(5);
+        Movement movementType = MockData.createMovement(1d, 1d, UUID.randomUUID());
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+        
+        Movement movementType2 = MockData.createMovement(2d, 2d, UUID.randomUUID());
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+        
+        List<Movement> movements = movementService.getLatestMovements(5);
         assertNotNull(movements);
+        assertTrue(movements.contains(createdMovement));
+        assertTrue(movements.contains(createdMovement2));
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getLatestMovementOnlyOne() {
+        Movement movementType = MockData.createMovement(1d, 1d, UUID.randomUUID());
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+        
+        Movement movementType2 = MockData.createMovement(2d, 2d, UUID.randomUUID());
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+        
+        List<Movement> movements = movementService.getLatestMovements(1);
+        assertNotNull(movements);
+        assertFalse(movements.contains(createdMovement));
+        assertTrue(movements.contains(createdMovement2));
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
@@ -505,7 +566,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void findLastestTest() {
+    public void findLatestTest() {
 
         UUID connectId = UUID.randomUUID();
         Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
@@ -523,7 +584,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void findLastestMultipleConnectIdsTest() {
+    public void findLatestMultipleConnectIdsTest() {
         UUID connectId = UUID.randomUUID();
         Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
         movementType.setTimestamp(Instant.now().minus(5, ChronoUnit.MINUTES));
@@ -541,7 +602,7 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void findLastestMultipleConnectIdsWithOldTimestampTest() {
+    public void findLatestMultipleConnectIdsWithOldTimestampTest() {
         UUID connectId = UUID.randomUUID();
         Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
         movementType.setTimestamp(Instant.now().minus(15, ChronoUnit.MINUTES));
@@ -549,12 +610,84 @@ public class MovementServiceIntTest extends TransactionalTests {
 
         UUID connectId2 = UUID.randomUUID();
         Movement movementType2 = MockData.createMovement(57.715303, 11.973323, connectId2);
-        movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
+        movementType2.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
         List<Movement> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
         assertFalse(latest.contains(createdMovement));
         assertTrue(latest.contains(createdMovement2));
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getVicinityOfShouldFindTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(57.716409, 11.973539, connectId);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        UUID connectId2 = UUID.randomUUID();
+        Movement movementType2 = MockData.createMovement(57.717635, 11.971415, connectId2);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        List<VicinityInfoDTO> vicinity = movementService.getVicinityOf(createdMovement2);
+        assertTrue(vicinity.stream().anyMatch(v -> v.getMovementID().equals(createdMovement.getId().toString())));
+        assertFalse(vicinity.stream().anyMatch(v -> v.getMovementID().equals(createdMovement2.getId().toString())));
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getVicinityOfShouldNotFindTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        UUID connectId2 = UUID.randomUUID();
+        Movement movementType2 = MockData.createMovement(57.712700, 11.965437, connectId2);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        List<VicinityInfoDTO> vicinity = movementService.getVicinityOf(createdMovement2);
+        assertFalse(vicinity.stream().anyMatch(v -> v.getMovementID().equals(createdMovement.getId().toString())));
+        assertFalse(vicinity.stream().anyMatch(v -> v.getMovementID().equals(createdMovement2.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getListWktQueryShouldFindTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        String areaInWKT = "POLYGON((57.712731 11.970115, 57.716316 11.978271, 57.718409 11.968293, 57.712731 11.970115))";
+
+        MovementQuery query = createMovementQuery(true);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.AREA);
+        criteria.setValue(areaInWKT);
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse response = movementService.getList(query);
+        List<MovementType> movements = response.getMovement();
+        assertTrue(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getListWktQueryShouldNotFindTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(57.714106, 11.976209, connectId);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        String areaInWKT = "POLYGON((57.712731 11.970115, 57.716316 11.978271, 57.718409 11.968293, 57.712731 11.970115))";
+
+        MovementQuery query = createMovementQuery(true);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.AREA);
+        criteria.setValue(areaInWKT);
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse response = movementService.getList(query);
+        List<MovementType> movements = response.getMovement();
+        assertFalse(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
     }
 
     /******************************************************************************************************************

@@ -82,26 +82,22 @@ public class MovementDao {
     }
 
     public List<Movement> getLatestMovementsByConnectIdList(List<UUID> connectIds) {
-        List<Movement> resultList = new ArrayList<>();
         if (connectIds == null || connectIds.isEmpty()) {
-            return resultList;
+            return new ArrayList<>();
         }
-        TypedQuery<LatestMovement> latestMovementQuery =
-                em.createNamedQuery(LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT_LIST, LatestMovement.class);
+        TypedQuery<Movement> latestMovementQuery =
+                em.createNamedQuery(Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, Movement.class);
         latestMovementQuery.setParameter("connectId", connectIds);
-        for (LatestMovement lm : latestMovementQuery.getResultList()) {
-            resultList.add(lm.getMovement());
-        }
-        return resultList;
+        return latestMovementQuery.getResultList();
     }
 
     public List<Movement> getLatestMovementsByConnectId(UUID connectId, Integer amount) {
         if(amount < 1) {
             throw new IllegalArgumentException("Amount can't have 0 or negative value.");
         } else if (amount == 1) {
-            LatestMovement latestMovement = getLatestMovement(connectId);
-            if(latestMovement != null && latestMovement.getMovement() != null)
-                return Collections.singletonList(latestMovement.getMovement());
+            Movement latestMovement = getLatestMovement(connectId);
+            if(latestMovement != null)
+                return Collections.singletonList(latestMovement);
             else
                 return Collections.emptyList();
         } else {
@@ -119,8 +115,8 @@ public class MovementDao {
         return query.getResultList();
     }
 
-    public List<LatestMovement> getLatestMovements(Integer numberOfMovements) {
-        TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery(LatestMovement.FIND_LATEST, LatestMovement.class);
+    public List<Movement> getLatestMovements(Integer numberOfMovements) {
+        TypedQuery<Movement> latestMovementQuery = em.createNamedQuery(Movement.FIND_LATEST, Movement.class);
         latestMovementQuery.setMaxResults(numberOfMovements);
         return latestMovementQuery.getResultList();
     }
@@ -138,29 +134,9 @@ public class MovementDao {
         return singleResult;
     }
 
-    public void upsertLatestMovement(Movement movement, MovementConnect movementConnect){
-        LatestMovement latestMovement = getLatestMovement(movementConnect.getId());
-        upsertLatestMovement(movement, movementConnect, latestMovement);
-    }
-
-    public void upsertLatestMovement(Movement movement, MovementConnect movementConnect, LatestMovement latestMovement) {
-        if (latestMovement == null) {
-            latestMovement = new LatestMovement();
-            latestMovement.setMovementConnect(movementConnect);
-            latestMovement.setMovement(movement);
-            latestMovement.setLocation(movement.getLocation());
-            latestMovement.setTimestamp(movement.getTimestamp());
-            em.persist(latestMovement);
-        } else if (latestMovement.getTimestamp().isBefore(movement.getTimestamp())) {
-            latestMovement.setMovement(movement);
-            latestMovement.setTimestamp(movement.getTimestamp());
-            latestMovement.setLocation(movement.getLocation());
-        }
-    }
-
-    public LatestMovement getLatestMovement(UUID connectId) {
+    public Movement getLatestMovement(UUID connectId) {
         try {
-            TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery(LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, LatestMovement.class);
+            TypedQuery<Movement> latestMovementQuery = em.createNamedQuery(Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, Movement.class);
             latestMovementQuery.setParameter("connectId", connectId);
             return latestMovementQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -168,10 +144,11 @@ public class MovementDao {
         }
     }
 
-    public List<VicinityInfoDTO> getVicinityOfMovement(Movement move){
-        TypedQuery<VicinityInfoDTO> latestMovementQuery = em.createNamedQuery(LatestMovement.FIND_NEAREST, VicinityInfoDTO.class);
+    public List<VicinityInfoDTO> getVicinityOfMovement(Movement move, double maxDistance){
+        TypedQuery<VicinityInfoDTO> latestMovementQuery = em.createNamedQuery(Movement.FIND_NEAREST, VicinityInfoDTO.class);
         latestMovementQuery.setParameter("excludedID", move.getMovementConnect().getId());
         latestMovementQuery.setParameter("point", move.getLocation());
+        latestMovementQuery.setParameter("maxDistance", maxDistance);
         return latestMovementQuery.getResultList();
     }
 
@@ -317,7 +294,7 @@ public class MovementDao {
     }
 
     public List<Movement> getLatestWithLimit(Instant date) {
-        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST, Movement.class);
+        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, Movement.class);
         query.setParameter("date", date);
         return query.getResultList();
     }
