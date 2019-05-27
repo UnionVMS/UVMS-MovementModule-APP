@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -43,6 +44,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .path(createdMovement.getMovementConnect().getId().toString())
                 .path(timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(new GenericType<List<MicroMovement>>() {});
 
         assertTrue(latestMovements
@@ -67,6 +69,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("movement")
                 .path(createdMovement.getId().toString())
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(new GenericType<List<MicroMovement>>() {});
 
         assertThat(track.size(), CoreMatchers.is(2));
@@ -88,6 +91,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("micro")
                 .path("latest")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(new GenericType<List<MicroMovementExtended>>() {});
         assertTrue(latestMovements
                 .stream()

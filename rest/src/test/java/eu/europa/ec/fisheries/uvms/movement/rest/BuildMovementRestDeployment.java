@@ -12,6 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.rest;
 
 import java.io.File;
+import java.util.Arrays;
+import javax.ejb.EJB;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -23,9 +25,17 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
 
 @ArquillianSuiteDeployment
 public abstract class BuildMovementRestDeployment {
+
+    @EJB
+    private JwtTokenHandler tokenHandler;
+
+    private String token;
+
     @Deployment(name = "movement", order = 2)
     public static Archive<?> createDeployment() {
 
@@ -57,6 +67,7 @@ public abstract class BuildMovementRestDeployment {
                         "eu.europa.ec.fisheries.uvms.asset:asset-model",
                         "eu.europa.ec.fisheries.uvms.spatial:spatial-model",
                         "eu.europa.ec.fisheries.uvms.movement:movement-model",
+                        "eu.europa.ec.fisheries.uvms:usm4uvms",
                         "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message")
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
@@ -75,5 +86,17 @@ public abstract class BuildMovementRestDeployment {
         client.register(new JacksonJaxbJsonProvider(objectMapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
         //return client.target("http://localhost:28080/test/rest");
         return client.target("http://localhost:8080/test/rest");
+    }
+
+    protected String getToken() {
+        if (token == null) {
+            token = tokenHandler.createToken("user", 
+                    Arrays.asList(UnionVMSFeature.manageManualMovements.getFeatureId(), 
+                            UnionVMSFeature.viewMovements.getFeatureId(),
+                            UnionVMSFeature.viewManualMovements.getFeatureId(),
+                            UnionVMSFeature.manageAlarmsHoldingTable.getFeatureId(),
+                            UnionVMSFeature.viewAlarmsHoldingTable.getFeatureId()));
+        }
+        return token;
     }
 }
