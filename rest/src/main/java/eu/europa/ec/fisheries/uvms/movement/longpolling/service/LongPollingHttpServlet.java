@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.servlet.AsyncContext;
@@ -58,21 +59,21 @@ public class LongPollingHttpServlet extends HttpServlet {
         asyncContexts.add(ctx, req.getServletPath());
     }
 
-    public void createdMovement(@Observes @CreatedMovement Movement movement) throws IOException {
+    public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement movement) throws IOException {
         completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(movement.getId().toString()));
     }
 
-    public void createdManualMovement(@Observes @CreatedManualMovement NotificationMessage message) throws IOException {
+    public void createdManualMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedManualMovement NotificationMessage message) throws IOException {
         UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
         completePoll(LongPollingConstants.MANUAL_MOVEMENT_PATH, createJsonMessage(guid.toString()));
     }
     
-    public void observeAlarmCreated(@Observes @AlarmReportEvent NotificationMessage message) throws IOException {
+    public void observeAlarmCreated(@Observes(during = TransactionPhase.AFTER_SUCCESS) @AlarmReportEvent NotificationMessage message) throws IOException {
         UUID guid = (UUID) message.getProperties().get(LongPollingConstants.PROPERTY_GUID);
         completePoll(LongPollingConstants.ALARM_REPORT_PATH, createJsonMessage(guid.toString()));
     }
     
-    public void observeTicketCount(@Observes @AlarmReportCountEvent NotificationMessage message) throws IOException {
+    public void observeTicketCount(@Observes(during = TransactionPhase.AFTER_SUCCESS) @AlarmReportCountEvent NotificationMessage message) throws IOException {
         completePoll(LongPollingConstants.ALARM_REPORT_COUNT_PATH, createJsonMessageCount(true));
     }
 
