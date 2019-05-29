@@ -21,8 +21,6 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 
-/* New version of sseResource, using a new data structure when sending data to the new version of the real-time map.
- At some point in the future this version will replace the old version */
 @ApplicationScoped
 @Path("sse")
 @RequiresFeature(UnionVMSFeature.viewMovements)
@@ -45,7 +43,7 @@ public class SSEResource {
         try {
             if (move != null) {
                 MicroMovementExtended micro = new MicroMovementExtended(move.getLocation(),
-                        move.getHeading(), move.getId(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed(), move.getMovementSource());
+                        move.getHeading(), move.getId(), move.getMovementConnect().getId(), move.getTimestamp(), move.getSpeed(), move.getMovementSource());
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")
                         .id("" + System.currentTimeMillis())

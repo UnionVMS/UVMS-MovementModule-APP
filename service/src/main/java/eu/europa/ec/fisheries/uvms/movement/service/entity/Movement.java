@@ -49,9 +49,12 @@ import org.hibernate.annotations.FetchMode;
     @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m  WHERE m.timestamp = (select min(mm.timestamp) from Movement mm  where mm.movementConnect.id = :id AND mm.timestamp > :date) AND m.movementConnect.id = :id "),
     @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date "),
     @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.id = :asset "),
-    @NamedQuery(name = MicroMovementExtended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date "),
+
+    @NamedQuery(name = MicroMovementExtended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date "),
     @NamedQuery(name = MicroMovementExtended.FIND_ALL_FOR_ASSET_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.timestamp > :date AND m.movementConnect.id = :id ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.timestamp > :date"),
+    @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect.id, m.timestamp, m.speed, m.movementSource) FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.timestamp > :date"),
+
+
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"),
     @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id ORDER BY m.timestamp DESC"),

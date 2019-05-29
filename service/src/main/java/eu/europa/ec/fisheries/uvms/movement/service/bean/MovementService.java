@@ -16,11 +16,13 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryRe
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigServiceException;
 import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
@@ -60,8 +62,13 @@ public class MovementService {
     @Inject
     private MovementMapResponseHelper movementMapResponseHelper;
 
+    @Inject
+    private AssetClient assetClient;
+
     @EJB
     private ParameterService parameterService;
+
+
 
     @Inject
     @CreatedMovement
@@ -215,11 +222,11 @@ public class MovementService {
                 ChronoUnit.DAYS), positionTime);
     }
 
-    public List<Movement> getLatestMovementsLast8Hours() {
+    public List<MicroMovementExtended> getLatestMovementsLast8Hours() {
         return getLatestMovementsAfter(Instant.now().minus(8, ChronoUnit.HOURS));
     }
 
-    public List<Movement> getLatestMovementsAfter(Instant date) {
+    public List<MicroMovementExtended> getLatestMovementsAfter(Instant date) {
         return movementDao.getLatestWithLimit(date);
     }
     
@@ -231,5 +238,9 @@ public class MovementService {
             LOG.error("Could not parse maxDistance parameter!");
             return new ArrayList<>();
         }
+    }
+
+    public String getMicroAssets(List<String> assetIds){
+        return assetClient.getMicroAssetList(assetIds);
     }
 }

@@ -21,6 +21,8 @@ import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -577,9 +579,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        List<Movement> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
-        assertFalse(latest.contains(createdMovement));
-        assertTrue(latest.contains(createdMovement2));
+        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
+        assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
+        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
     }
 
     @Test
@@ -595,9 +597,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        List<Movement> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
-        assertTrue(latest.contains(createdMovement));
-        assertTrue(latest.contains(createdMovement2));
+        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
+        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
+        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
     }
 
     @Test
@@ -613,9 +615,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType2.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        List<Movement> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
-        assertFalse(latest.contains(createdMovement));
-        assertTrue(latest.contains(createdMovement2));
+        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
+        assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
+        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
     }
     
     @Test
