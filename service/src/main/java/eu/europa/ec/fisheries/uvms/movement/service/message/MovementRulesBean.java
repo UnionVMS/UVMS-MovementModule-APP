@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
+import eu.europa.ec.fisheries.uvms.commons.message2.impl.AbstractProducer2;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
 import javax.annotation.PostConstruct;
@@ -16,10 +16,13 @@ import javax.ejb.Stateless;
 import javax.jms.*;
 
 @Stateless
-public class MovementRulesBean extends AbstractProducer {
+public class MovementRulesBean extends AbstractProducer2 {
 
     @Resource(mappedName = "java:/ConnectionFactory")
     private ConnectionFactory connectionFactory;
+
+    @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENTRULES_EVENT)
+    private Destination  destination;
 
 
     private ObjectMapper mapper = new ObjectMapper();
@@ -57,7 +60,7 @@ public class MovementRulesBean extends AbstractProducer {
 
 
     @Override
-    public String getDestinationName() {
-        return MessageConstants.QUEUE_MOVEMENTRULES_EVENT;
+    public Destination getDestination() {
+        return destination;
     }
 }

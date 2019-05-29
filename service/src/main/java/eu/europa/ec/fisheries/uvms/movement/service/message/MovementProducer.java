@@ -11,15 +11,22 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
+import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.jms.Destination;
+
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
+import eu.europa.ec.fisheries.uvms.commons.message2.impl.AbstractProducer2;
 
 @Stateless
-public class MovementProducer extends AbstractProducer {
+public class MovementProducer extends AbstractProducer2 {
+
+    @Resource(mappedName =  MessageConstants.QUEUE_MOVEMENT)
+    private Destination destination;
+
 
     @Override
-    public String getDestinationName() {
-        return MessageConstants.QUEUE_MOVEMENT;
+    public Destination getDestination() {
+        return destination;
     }
 }

@@ -11,40 +11,45 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message2.impl.AbstractProducer2;
+import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
+import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Destination;
+import javax.jms.JMSException;
 import javax.jms.Queue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
-import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
-import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
 
 @Stateless
-public class ConfigProducer extends AbstractProducer implements ConfigMessageProducer {
+public class ConfigProducer extends AbstractProducer2 implements ConfigMessageProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigProducer.class);
 
     @Resource(mappedName = "java:/jms/queue/UVMSMovement")
     private Queue replyToQueue;
-    
+
+    @Resource(mappedName =  "java:/" + MessageConstants.QUEUE_CONFIG)
+    private Destination destination;
+
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendConfigMessage(String text) throws ConfigMessageException {
         try {
             return sendModuleMessage(text, replyToQueue);
-        } catch (RuntimeException | MessageException e) {
+        } catch (RuntimeException | JMSException e) {
             LOG.error("[ Error when sending config message. ] {}", e);
             throw new ConfigMessageException("[ Error when sending config message. ]");
         }
     }
 
     @Override
-    public String getDestinationName() {
-        return MessageConstants.QUEUE_CONFIG;
+    public Destination getDestination() {
+        return destination;
     }
 }
