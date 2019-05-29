@@ -292,8 +292,8 @@ public class MovementDao {
         }
     }
 
-    public List<Movement> getLatestWithLimit(Instant date) {
-        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, Movement.class);
+    public List<MicroMovementExtended> getLatestWithLimit(Instant date) {
+        TypedQuery<MicroMovementExtended> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, MicroMovementExtended.class);
         query.setParameter("date", date);
         return query.getResultList();
     }

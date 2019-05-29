@@ -1,7 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +10,8 @@ import javax.inject.Inject;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -23,6 +23,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
@@ -92,9 +94,30 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("latest")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .get(new GenericType<List<MicroMovementExtended>>() {});
+                .get(RealTimeMapInitialData.class).getMicroMovements();
         assertTrue(latestMovements
                 .stream()
                 .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getLastMicroMovementForAllAssetsTest() throws Exception {
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
+
+        RealTimeMapInitialData output = getWebTarget()
+                .path("micro")
+                .path("latest")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .get(RealTimeMapInitialData.class);
+
+
+        assertTrue(output.getMicroMovements().size() > 0);
+        assertTrue(output.getMicroMovements()
+                .stream()
+                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
+        assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
     }
 }

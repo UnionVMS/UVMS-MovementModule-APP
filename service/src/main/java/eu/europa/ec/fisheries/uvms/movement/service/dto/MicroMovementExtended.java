@@ -17,19 +17,13 @@ public class MicroMovementExtended {
 
     private String asset;
 
-    private String flagstate;
-
-    private String assetName;
-
     public MicroMovementExtended() {
 
     }
 
-    public MicroMovementExtended(Geometry geo, Float heading, UUID guid, MovementConnect asset, Instant timestamp, Float speed, MovementSourceType source) {
+    public MicroMovementExtended(Geometry geo, Float heading, UUID guid, UUID assetGuid, Instant timestamp, Float speed, MovementSourceType source) {
         microMove = new MicroMovement(geo, heading, guid, timestamp, speed, source);
-        this.asset = asset.getId().toString();
-        flagstate = asset.getFlagState();
-        assetName = asset.getName();
+        this.asset = assetGuid.toString();
     }
 
     public MicroMovement getMicroMove() {
@@ -48,19 +42,4 @@ public class MicroMovementExtended {
         this.asset = asset;
     }
 
-    public String getFlagstate() {
-        return flagstate;
-    }
-
-    public void setFlagstate(String flagstate) {
-        this.flagstate = flagstate;
-    }
-
-    public String getAssetName() {
-        return assetName;
-    }
-
-    public void setAssetName(String assetName) {
-        this.assetName = assetName;
-    }
 }
