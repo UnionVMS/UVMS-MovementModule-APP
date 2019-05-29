@@ -9,7 +9,7 @@
 
 	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
 	<artifactId>movement</artifactId>
-	<version>5.2.7-UVMS-SNAPSHOT</version>
+	<version>5.2.8-UVMS-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Maven projekt-archetype for UnionVms modules</description>
 
@@ -31,7 +31,7 @@
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
-		<uvms.common.version>3.0.30</uvms.common.version>
+		<uvms.common.version>3.2</uvms.common.version>
 		<usm4uvms.version>4.0.18</usm4uvms.version>
 		<uvms.config.version>4.0.3</uvms.config.version>
 	</properties>

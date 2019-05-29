@@ -11,28 +11,33 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message2.impl.AbstractProducer2;
+
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.jms.Destination;
+import javax.jms.JMSException;
 import javax.jms.Queue;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
-import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 
 @Stateless
-public class AuditProducer extends AbstractProducer {
+public class AuditProducer extends AbstractProducer2 {
 
     @Resource(mappedName = "java:/jms/queue/UVMSMovement")
     private Queue replyToQueue;
-    
+
+    @Resource(mappedName =  "java:/" + MessageConstants.QUEUE_AUDIT_EVENT)
+    private Destination destination;
+
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public String sendModuleMessage(String text) throws MessageException {
+    public String sendModuleMessage(String text) throws JMSException {
         return sendModuleMessage(text, replyToQueue);
     }
     
     @Override
-    public String getDestinationName() {
-        return MessageConstants.QUEUE_AUDIT_EVENT;
+    public Destination getDestination() {
+        return destination;
     }
 }
