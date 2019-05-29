@@ -21,7 +21,7 @@ import eu.europa.ec.fisheries.uvms.commons.message2.impl.AbstractProducer2;
 @Stateless
 public class MovementProducer extends AbstractProducer2 {
 
-    @Resource(mappedName =  MessageConstants.QUEUE_MOVEMENT)
+    @Resource(mappedName =  "java:/" + MessageConstants.QUEUE_MOVEMENT)
     private Destination destination;
 
 
