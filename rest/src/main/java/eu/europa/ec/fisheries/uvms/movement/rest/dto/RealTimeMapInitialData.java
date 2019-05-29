@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.dto;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 public class RealTimeMapInitialData {
 
     List<MicroMovementExtended> microMovements;
-
+    @JsonRawValue
     String assetList;
 
     public RealTimeMapInitialData(List<MicroMovementExtended> microMovements, String assetList) {
