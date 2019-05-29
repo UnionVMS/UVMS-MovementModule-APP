@@ -14,13 +14,13 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.jms.JMSException;
 
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
 import org.slf4j.Logger;
@@ -30,7 +30,6 @@ import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
@@ -137,7 +136,7 @@ public class DraftMovementService {
                     DateUtil.nowUTC(), PluginType.MANUAL, username, null);
             exchangeProducer.sendModuleMessage(exchangeRequest, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value());
             return movement;
-        } catch (MessageException ex) {
+        } catch (JMSException ex) {
             throw new IllegalArgumentException("Error when marshaling exchange request.", ex);
         }
     }

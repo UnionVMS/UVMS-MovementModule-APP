@@ -14,6 +14,7 @@ import java.util.Arrays;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
@@ -41,7 +42,7 @@ public class ConfigServiceMock implements MessageListener {
             mockSetting.setDescription("Set in ConfigServiceMock.java");
             String response = ModuleResponseMapper.toPullSettingsResponse(Arrays.asList(mockSetting), PullSettingsStatus.OK);
             messageProducer.sendResponseMessageToSender((TextMessage) message, response);
-        } catch (ModelMarshallException | MessageException e) {
+        } catch (ModelMarshallException | JMSException e) {
         }
     }
 }
