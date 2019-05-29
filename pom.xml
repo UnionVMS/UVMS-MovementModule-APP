@@ -9,7 +9,7 @@
 
 	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
 	<artifactId>movement</artifactId>
-	<version>5.2.6-UVMS-SNAPSHOT</version>
+	<version>5.2.7-UVMS-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Maven projekt-archetype for UnionVms modules</description>
 
@@ -25,14 +25,14 @@
 		<spatial.model.version>1.0.12</spatial.model.version>
 		<audit.model.version>4.0.8</audit.model.version>
 		<exchange.model.version>5.0.0-UVMS</exchange.model.version>
-		<asset.client.version>6.0.41</asset.client.version>
+		<asset.client.version>6.0.50</asset.client.version>
 		<movement-rules.model.version>2.1.0</movement-rules.model.version>
 		<javaee.version>8.0</javaee.version>
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
 		<uvms.common.version>3.2</uvms.common.version>
-		<usm4uvms.version>4.0.17</usm4uvms.version>
+		<usm4uvms.version>4.0.18</usm4uvms.version>
 		<uvms.config.version>4.0.3</uvms.config.version>
 	</properties>
 

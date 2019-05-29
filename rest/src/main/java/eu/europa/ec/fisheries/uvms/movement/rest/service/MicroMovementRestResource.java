@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,6 +26,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,18 +87,23 @@ public class MicroMovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getLastMicroMovementForAllAssets() {
         try {
-            List<Movement> latest = movementService.getLatestMovementsLast8Hours();
-            
-            List<MicroMovementExtended> microMovements = latest.stream()
-                    .map(movement -> new MicroMovementExtended(movement.getLocation(), movement.getHeading(), 
-                                            movement.getId(), movement.getMovementConnect(), movement.getTimestamp(), 
-                                            movement.getSpeed(), movement.getMovementSource()))
-                    .collect(Collectors.toList());
-           
-            return Response.ok(microMovements).header("MDC", MDC.get("requestId")).build();
+            List<MicroMovementExtended> microMovements = movementService.getLatestMovementsLast8Hours();
+
+            List<String> assetIdList = new ArrayList<>(microMovements.size());
+            for (MicroMovementExtended micro: microMovements) {
+                assetIdList.add(micro.getAsset());
+            }
+
+            String assetInfo = movementService.getMicroAssets(assetIdList);
+            RealTimeMapInitialData retVal = new RealTimeMapInitialData(microMovements, assetInfo);
+
+            return Response.ok(retVal).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting latest Micro Movements", e);
             return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
+
+
+
 }

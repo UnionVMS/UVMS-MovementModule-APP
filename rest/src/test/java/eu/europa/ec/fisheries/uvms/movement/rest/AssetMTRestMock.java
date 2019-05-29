@@ -61,6 +61,14 @@ public class AssetMTRestMock {
         }
     }
 
+    @POST
+    @Path("microAssets")
+    @Consumes(value = {MediaType.APPLICATION_JSON})
+    @Produces(value = {MediaType.APPLICATION_JSON})
+    public Response getMicroAssets(List<String> assetIdList){
+        return Response.ok("AssetMT rest mock in movement rest module").build();
+    }
+
     private MobileTerminalType getBasicMobileTerminalType() {
         MobileTerminalType mobileTerminal = new MobileTerminalType();
         mobileTerminal.setConnectId(UUID.randomUUID().toString());
