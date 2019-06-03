@@ -2,8 +2,24 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
 	logicalFilePath="changelog/v5.2.4/db-changelog-5.2.4.xml">
     
-    <changeSet id="update_location_to_geography" author="joemat">
-    	<modifyDataType tableName="movement" columnName="move_location" newDataType="GEOGRAPHY"/>
+    <changeSet id="update_location_to_geography" author="peerik">
+        <addColumn tableName="movement">
+            <column name="temp_geog" type="GEOGRAPHY" />
+        </addColumn>
+
+        <sql splitStatements="false"
+             stripComments="false">
+            UPDATE movement.movement SET temp_geog = move_location::GEOGRAPHY;
+        </sql>
+
+        <dropColumn columnName="move_location"
+                    tableName="movement"/>
+
+        <renameColumn newColumnName="move_location"
+                      oldColumnName="temp_geog"
+                      tableName="movement"/>
+
+    	<!--modifyDataType tableName="movement" columnName="move_location" newDataType="GEOGRAPHY"/-->
     </changeSet>
     
     <changeSet id="drop_latest_movement" author="peerik">

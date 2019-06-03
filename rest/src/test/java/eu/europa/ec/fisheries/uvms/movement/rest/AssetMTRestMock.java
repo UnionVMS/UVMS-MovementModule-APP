@@ -66,7 +66,7 @@ public class AssetMTRestMock {
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response getMicroAssets(List<String> assetIdList){
-        return Response.ok("AssetMT rest mock in movement rest module").build();
+        return Response.ok("\"AssetMT rest mock in movement rest module\"").build();    //"" to make it deserialize properly in the tests
     }
 
     private MobileTerminalType getBasicMobileTerminalType() {
