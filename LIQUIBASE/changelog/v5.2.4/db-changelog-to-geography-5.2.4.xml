@@ -2,14 +2,20 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
 	logicalFilePath="changelog/v5.2.4/db-changelog-5.2.4.xml">
     
-    <changeSet id="update_location_to_geography" author="peerik">
+    <changeSet id="update_location_to_geography" author="peerik" runInTransaction="false">
         <addColumn tableName="movement">
             <column name="temp_geog" type="GEOGRAPHY" />
         </addColumn>
 
+
+        <!-- query_progress is to be able to monitor the progress of the update-->
         <sql splitStatements="false"
              stripComments="false">
-            UPDATE movement.movement SET temp_geog = move_location::GEOGRAPHY;
+            CREATE SEQUENCE query_progress START 1;
+
+            UPDATE movement.movement SET temp_geog = move_location::GEOGRAPHY where NEXTVAL('query_progress')!=0;
+
+            DROP SEQUENCE query_progress;
         </sql>
 
         <dropColumn columnName="move_location"
