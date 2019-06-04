@@ -19,6 +19,6 @@
     
     <include file="v5.2.3\db-changelog-5.2.3.xml" relativeToChangelogFile="true"/>
 
-    <include file="v5.2.4\db-changelog-5.2.4.xml" relativeToChangelogFile="true"/>
+    <include file="v5.2.4\db-changelog-to-geography-5.2.4.xml" relativeToChangelogFile="true"/>
         
 </databaseChangeLog>
