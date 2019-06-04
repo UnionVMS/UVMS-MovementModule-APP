@@ -3,13 +3,13 @@
 	logicalFilePath="changelog/v5.2.4/db-changelog-5.2.4.xml">
     
     <changeSet id="update_location_to_geography" author="peerik" runInTransaction="false">
-        <addColumn tableName="movement">
+        <!--addColumn tableName="movement">
             <column name="temp_geog" type="GEOGRAPHY" />
-        </addColumn>
+        </addColumn-->
 
 
         <!-- query_progress is to be able to monitor the progress of the update-->
-        <sql splitStatements="false"
+        <!--sql splitStatements="false"
              stripComments="false">
             CREATE SEQUENCE query_progress START 1;
 
@@ -23,9 +23,9 @@
 
         <renameColumn newColumnName="move_location"
                       oldColumnName="temp_geog"
-                      tableName="movement"/>
+                      tableName="movement"/-->
 
-    	<!--modifyDataType tableName="movement" columnName="move_location" newDataType="GEOGRAPHY"/-->
+    	<modifyDataType tableName="movement" columnName="move_location" newDataType="GEOGRAPHY"/>
     </changeSet>
     
     <changeSet id="drop_latest_movement" author="peerik">
