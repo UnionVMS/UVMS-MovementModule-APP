@@ -14,16 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -78,6 +69,11 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         this.name = name;
         this.updated = updated;
         this.updatedBy = updatedBy;
+    }
+
+    @PreUpdate
+    public void preUpdate(){
+        updated = Instant.now();
     }
 
     public UUID getId() {
