@@ -62,7 +62,7 @@ public class MovementService {
     @Inject
     private MovementMapResponseHelper movementMapResponseHelper;
 
-    @Inject
+    @EJB
     private AssetClient assetClient;
 
     @EJB
