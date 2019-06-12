@@ -279,6 +279,19 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
     }
 
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportMissingCourseSanityRuleTest() throws Exception {
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setReportedCourse(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
     private ProcessedMovementResponse sendIncomingMovementAndReturnAlarmResponse(IncomingMovement incomingMovement) throws Exception{
         String json = mapper.writeValueAsString(incomingMovement);
         jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");   //grouping on null.....

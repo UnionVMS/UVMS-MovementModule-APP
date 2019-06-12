@@ -43,7 +43,7 @@ public class MicroMovement {
         heading = movement.getHeading().doubleValue();
         guid = movement.getId().toString();
         timestamp = movement.getTimestamp();
-        speed = movement.getSpeed().doubleValue();
+        speed = (movement.getSpeed() == null ? null : movement.getSpeed().doubleValue());
     }
 
     public MicroMovement(Geometry geo, Float heading, UUID guid, Instant timestamp, Float speed, MovementSourceType source) {
@@ -54,7 +54,7 @@ public class MicroMovement {
         this.heading = heading.doubleValue();
         this.guid = guid.toString();
         this.timestamp = timestamp;
-        this.speed = speed.doubleValue();
+        this.speed = (speed == null ? null : speed.doubleValue());
         this.source = source;
     }
 

@@ -48,6 +48,12 @@ public enum SanityRule {
             return (movement.getLongitude() == null) ? false : Math.abs(movement.getLongitude()) > 180d;
         }
     },
+    COURSE_MISSING("Course is missing") {
+        @Override
+        public boolean evaluate(IncomingMovement movement) {
+            return movement.getReportedCourse() == null;
+        }
+    },
     TIME_IN_FUTURE("Time in future") {
         @Override
         public boolean evaluate(IncomingMovement movement) {
