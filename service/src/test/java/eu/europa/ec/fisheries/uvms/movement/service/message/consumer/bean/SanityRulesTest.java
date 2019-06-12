@@ -22,6 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -275,6 +276,20 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.MOVEMENT));
 
         response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @Ignore
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportMissingCourseSanityRuleTest() throws Exception {
+
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setReportedCourse(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
     }

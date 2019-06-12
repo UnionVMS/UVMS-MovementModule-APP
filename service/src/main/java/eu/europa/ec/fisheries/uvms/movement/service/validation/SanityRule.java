@@ -48,6 +48,12 @@ public enum SanityRule {
             return (movement.getLongitude() == null) ? false : Math.abs(movement.getLongitude()) > 180d;
         }
     },
+    /*COURSE_MISSING("Course is missing") {         //is a position that is missing its course worthy of beeing entered into the db or should we have a sanity rule that stops it and raises an alarm about it?
+        @Override
+        public boolean evaluate(IncomingMovement movement) {
+            return movement.getReportedCourse() == null;
+        }
+    },*/
     TIME_IN_FUTURE("Time in future") {
         @Override
         public boolean evaluate(IncomingMovement movement) {

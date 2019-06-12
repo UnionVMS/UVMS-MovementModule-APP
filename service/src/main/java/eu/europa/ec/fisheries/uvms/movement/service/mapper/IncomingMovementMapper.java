@@ -21,9 +21,7 @@ public abstract class IncomingMovementMapper {
         if (ic.getReportedSpeed() != null) {
             entity.setSpeed(ic.getReportedSpeed().floatValue());
         }
-        if (ic.getReportedCourse() != null) {
-            entity.setHeading(ic.getReportedCourse().floatValue());
-        }
+        entity.setHeading( ic.getReportedCourse() == null ? -1f : ic.getReportedCourse().floatValue());
         entity.setInternalReferenceNumber(ic.getInternalReferenceNumber());
         entity.setTripNumber(ic.getTripNumber());
         entity.setStatus(ic.getStatus());
