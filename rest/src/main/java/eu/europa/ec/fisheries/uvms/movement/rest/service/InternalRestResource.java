@@ -116,9 +116,9 @@ public class InternalRestResource {
         }
     }
 
-    @POST
+    @PUT
     @Path("/remapMovementConnectInMovement")
-    public Response remapMovementConnectInMovement(@QueryParam(value = "MovementConnectFrom") String movementConnectFrom, @QueryParam(value = "MovementConnectTo") String movementConnectTo) {   //yyyy-MM-dd HH:mm:ss Z
+    public Response remapMovementConnectInMovement(@QueryParam(value = "MovementConnectFrom") String movementConnectFrom, @QueryParam(value = "MovementConnectTo") String movementConnectTo) { 
         try {
 
             movementService.remapMovementConnectInMovement(movementConnectFrom, movementConnectTo);
