@@ -76,8 +76,8 @@ public class MovementCreateBean {
             MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
             int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetGuid(), incomingMovement.getPositionTime());
             movementDetails.setSumPositionReport(sumPositionReport);
-//            List<VicinityInfoDTO> vicinityOf = movementService.getVicinityOf(createdMovement);
-//            movementDetails.setVicinityOf(vicinityOf);
+            List<VicinityInfoDTO> vicinityOf = movementService.getVicinityOf(createdMovement);
+            movementDetails.setVicinityOf(vicinityOf);
 
             movementRulesBean.send(movementDetails);
             // report ok to Exchange...

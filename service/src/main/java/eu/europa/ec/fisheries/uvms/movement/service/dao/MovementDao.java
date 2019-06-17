@@ -11,6 +11,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -145,10 +147,20 @@ public class MovementDao {
     }
 
     public List<VicinityInfoDTO> getVicinityOfMovement(Movement move, double maxDistance){
-        TypedQuery<VicinityInfoDTO> latestMovementQuery = em.createNamedQuery(Movement.FIND_NEAREST, VicinityInfoDTO.class);
+        TypedQuery<VicinityInfoDTO> latestMovementQuery = em.createNamedQuery(Movement.FIND_NEAREST_AFTER, VicinityInfoDTO.class);
         latestMovementQuery.setParameter("excludedID", move.getMovementConnect().getId());
         latestMovementQuery.setParameter("point", move.getLocation());
         latestMovementQuery.setParameter("maxDistance", maxDistance);
+        latestMovementQuery.setParameter("time", Instant.now().minus(8, ChronoUnit.HOURS));
+        return latestMovementQuery.getResultList();
+    }
+
+    public List<VicinityInfoDTO> getVicinityOfMovementV2(Movement move, double maxDistance){
+        TypedQuery<VicinityInfoDTO> latestMovementQuery = em.createNamedQuery(Movement.FIND_NEAREST_AFTER_V2, VicinityInfoDTO.class);
+        latestMovementQuery.setParameter("excludedID", move.getMovementConnect().getId());
+        latestMovementQuery.setParameter("point", move.getLocation());
+        latestMovementQuery.setParameter("maxDistance", maxDistance);
+        latestMovementQuery.setParameter("time", Instant.now().minus(8, ChronoUnit.HOURS));
         return latestMovementQuery.getResultList();
     }
 

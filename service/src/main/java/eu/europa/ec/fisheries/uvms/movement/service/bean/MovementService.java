@@ -233,6 +233,7 @@ public class MovementService {
     public List<VicinityInfoDTO> getVicinityOf(Movement movement) {
         try {
             String maxDistance = parameterService.getStringValue(ParameterKey.MAX_DISTANCE.getKey());
+            movementDao.getVicinityOfMovementV2(movement, Double.parseDouble(maxDistance));
             return movementDao.getVicinityOfMovement(movement, Double.parseDouble(maxDistance));
         } catch (ConfigServiceException | NullPointerException | NumberFormatException e) {
             LOG.error("Could not parse maxDistance parameter!");

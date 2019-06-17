@@ -58,10 +58,14 @@ import org.hibernate.annotations.FetchMode;
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"),
     @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_NEAREST, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(m.movementConnect.id, m.id, distance(m.location, :point))" +              //the function should probably be ST_Distance_Sphere instead, but right now we dont have access to that one through our postgres dialect
+    @NamedQuery(name = Movement.FIND_NEAREST_AFTER, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(m.movementConnect.id, m.id, distance(m.location, :point))" +
                                                                 "FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id " +
                                                                 "WHERE distance(m.location, :point) < :maxDistance " +
-                                                                "AND m.movementConnect.id <> :excludedID")
+                                                                "AND mc.updated > :time AND m.movementConnect.id <> :excludedID"),
+    @NamedQuery(name = Movement.FIND_NEAREST_AFTER_V2, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(m.movementConnect.id, m.id, distance(m.location, :point))" +
+                "FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id " +
+                "WHERE DWithin(m.location, :point, :maxDistance, false) = true " +
+                "AND mc.updated > :time AND m.movementConnect.id <> :excludedID")
 })
 @DynamicUpdate
 @DynamicInsert
@@ -79,9 +83,10 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT = "Movement.findLatestMovementByMovementConnect";
     public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST = "Movement.findLatestMovementByMovementConnectList";
     public static final String FIND_LATEST = "Movement.findLatest";
-    public static final String FIND_NEAREST = "Movement.findVicinity";
+    public static final String FIND_NEAREST_AFTER = "Movement.findVicinityAfter";
+    public static final String FIND_NEAREST_AFTER_V2 = "Movement.findVicinityAfterV2";
 
-    
+
     private static final long serialVersionUID = 1L;
 
     @Id
