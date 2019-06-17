@@ -243,4 +243,15 @@ public class MovementService {
     public String getMicroAssets(List<String> assetIds){
         return assetClient.getMicroAssetList(assetIds);
     }
+
+    public void remapMovementConnectInMovement(String oldMovementConnectString, String newMovementConnectString){
+        MovementConnect oldMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(oldMovementConnectString));
+        MovementConnect newMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(newMovementConnectString));
+
+        List<Movement> movements = movementDao.getMovementListByMovementConnect(oldMovementConnect);
+        for (Movement move : movements) {
+            move.setMovementConnect(newMovementConnect);
+        }
+        movementDao.deleteMovementConnect(oldMovementConnect);
+    }
 }

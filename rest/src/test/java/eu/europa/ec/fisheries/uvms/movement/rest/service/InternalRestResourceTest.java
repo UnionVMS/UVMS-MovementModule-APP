@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.time.Instant;
@@ -141,6 +142,43 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         assertEquals(1, movMap.getMovementMap().size());
     }
 
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void remapMovementConnectInMovementTest() throws IOException {
+        Movement movementBaseType1 = MovementTestHelper.createMovement();
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
+
+
+        Response remapResponse = getWebTarget()
+                .path("internal/remapMovementConnectInMovement")
+                .queryParam("MovementConnectFrom", createdMovement1.getMovementConnect().getId().toString())
+                .queryParam("MovementConnectTo", createdMovement2.getMovementConnect().getId().toString())
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(""), Response.class);
+        assertEquals(200, remapResponse.getStatus());
+
+        MovementQuery movementQuery = createMovementQuery(null);
+        movementQuery.getMovementSearchCriteria().clear();
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(createdMovement2.getMovementConnect().getId().toString());
+        movementQuery.getMovementSearchCriteria().add(criteria);
+
+        String response = getWebTarget()
+                .path("internal/list")
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(movementQuery), String.class);
+        assertNotNull(response);
+
+        GetMovementListByQueryResponse movList =
+                mapper.readValue(response, GetMovementListByQueryResponse.class);
+        assertEquals(2, movList.getMovement().size());
+        assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement1.getId().toString())));
+        assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement2.getId().toString())));
+    }
 
 
     private MovementQuery createMovementQuery(Movement createdMovement) {

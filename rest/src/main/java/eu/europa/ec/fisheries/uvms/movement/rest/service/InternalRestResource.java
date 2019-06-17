@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import javax.ejb.Stateless;
+import javax.faces.push.Push;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -114,4 +115,20 @@ public class InternalRestResource {
             return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
+
+    @POST
+    @Path("/remapMovementConnectInMovement")
+    public Response remapMovementConnectInMovement(@QueryParam(value = "MovementConnectFrom") String movementConnectFrom, @QueryParam(value = "MovementConnectTo") String movementConnectTo) {   //yyyy-MM-dd HH:mm:ss Z
+        try {
+
+            movementService.remapMovementConnectInMovement(movementConnectFrom, movementConnectTo);
+            return Response.ok()
+                    .header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when counting movements. ]", e);
+            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+
+
 }

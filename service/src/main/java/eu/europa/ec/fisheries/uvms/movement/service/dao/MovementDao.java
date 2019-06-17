@@ -269,6 +269,10 @@ public class MovementDao {
         return movementConnect;
     }
 
+    public void deleteMovementConnect(MovementConnect movementConnect){
+        em.remove(movementConnect);
+    }
+
     public List<MicroMovementExtended> getMicroMovementsAfterDate(Instant date) {
         try {
             TypedQuery<MicroMovementExtended> query = em.createNamedQuery(MicroMovementExtended.FIND_ALL_AFTER_DATE, MicroMovementExtended.class);

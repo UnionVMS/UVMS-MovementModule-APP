@@ -21,7 +21,9 @@ import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+import javax.inject.Inject;
 
+import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -54,6 +56,9 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @EJB
     MovementService movementService;
+
+    @Inject
+    private MovementDao movementDao;
 
 
     @Test
@@ -690,6 +695,28 @@ public class MovementServiceIntTest extends TransactionalTests {
         GetMovementListByQueryResponse response = movementService.getList(query);
         List<MovementType> movements = response.getMovement();
         assertFalse(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void remapMovementConnectInMovementTest() {
+        UUID connectIdOld = UUID.randomUUID();
+        UUID connectIdNew = UUID.randomUUID();
+        Movement movementType1 = MockData.createMovement(57.714106, 11.976209, connectIdOld);
+        Movement movementType2 = MockData.createMovement(57.714106, 11.976209, connectIdNew);
+        Movement createdMovement1 = movementService.createAndProcessMovement(movementType1);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        movementService.remapMovementConnectInMovement(connectIdOld.toString(), connectIdNew.toString());
+
+        MovementConnect getTheRightMovementConnect = new MovementConnect();
+        getTheRightMovementConnect.setId(connectIdNew);
+        MovementConnect remainingMovementConnect = movementService.getOrCreateMovementConnectByConnectId(getTheRightMovementConnect);
+        List<Movement> movements = movementDao.getMovementListByMovementConnect(remainingMovementConnect);
+
+        assertEquals(2, movements.size());
+        assertTrue(movements.stream().anyMatch(m -> m.getId().equals(createdMovement1.getId())));
+        assertTrue(movements.stream().anyMatch(m -> m.getId().equals(createdMovement2.getId())));
     }
 
     /******************************************************************************************************************
