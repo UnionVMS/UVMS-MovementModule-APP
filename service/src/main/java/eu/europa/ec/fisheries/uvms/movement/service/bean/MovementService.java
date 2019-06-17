@@ -245,6 +245,14 @@ public class MovementService {
     }
 
     public void remapMovementConnectInMovement(String oldMovementConnectString, String newMovementConnectString){
+        if(oldMovementConnectString == null || oldMovementConnectString.isEmpty()){
+            throw new IllegalArgumentException("OldMovementConnectString is null or empty");
+        }
+
+        if(newMovementConnectString == null || newMovementConnectString.isEmpty()){
+            throw new IllegalArgumentException("NewMovementConnectString is null or empty");
+        }
+
         MovementConnect oldMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(oldMovementConnectString));
         MovementConnect newMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(newMovementConnectString));
 
