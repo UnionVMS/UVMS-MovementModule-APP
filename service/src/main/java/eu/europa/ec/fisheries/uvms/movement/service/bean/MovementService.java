@@ -244,17 +244,17 @@ public class MovementService {
         return assetClient.getMicroAssetList(assetIds);
     }
 
-    public void remapMovementConnectInMovement(String oldMovementConnectString, String newMovementConnectString){
-        if(oldMovementConnectString == null || oldMovementConnectString.isEmpty()){
+    public void remapMovementConnectInMovement(String oldMovementConnectId, String newMovementConnectId){
+        if(oldMovementConnectId == null || oldMovementConnectId.isEmpty()){
             throw new IllegalArgumentException("OldMovementConnectString is null or empty");
         }
 
-        if(newMovementConnectString == null || newMovementConnectString.isEmpty()){
+        if(newMovementConnectId == null || newMovementConnectId.isEmpty()){
             throw new IllegalArgumentException("NewMovementConnectString is null or empty");
         }
 
-        MovementConnect oldMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(oldMovementConnectString));
-        MovementConnect newMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(newMovementConnectString));
+        MovementConnect oldMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(oldMovementConnectId));
+        MovementConnect newMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(newMovementConnectId));
 
         List<Movement> movements = movementDao.getMovementListByMovementConnect(oldMovementConnect);
         for (Movement move : movements) {
