@@ -157,7 +157,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .queryParam("MovementConnectFrom", createdMovement1.getMovementConnect().getId().toString())
                 .queryParam("MovementConnectTo", createdMovement2.getMovementConnect().getId().toString())
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(""), Response.class);
+                .put(Entity.json(""), Response.class);
         assertEquals(200, remapResponse.getStatus());
 
         MovementQuery movementQuery = createMovementQuery(null);
