@@ -18,6 +18,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.vividsolutions.jts.geom.Point;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
@@ -26,13 +28,18 @@ import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 @Table(name = "movementconnect")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_GET_ALL, query = "SELECT m FROM MovementConnect m")
+    @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_GET_ALL, query = "SELECT m FROM MovementConnect m"),
+    @NamedQuery(name = MovementConnect.FIND_NEAREST_AFTER, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(mc.id, mc.latestMovement.id, distance(mc.latestLocation, :point))" +
+                "FROM MovementConnect mc " +
+                "WHERE DWithin(mc.latestLocation, :point, :maxDistance, false) = true " +
+                "AND mc.updated > :time AND mc.id <> :excludedID")
 })
 @DynamicUpdate
 @DynamicInsert
 public class MovementConnect implements Serializable, Comparable<MovementConnect> {
 
     public static final String MOVEMENT_CONNECT_GET_ALL = "MovementConnect.findAll";
+    public static final String FIND_NEAREST_AFTER = "MovementConnect.findVicinityAfter";
 
     private static final long serialVersionUID = 1L;
 
@@ -60,15 +67,19 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     @Column(name = "moveconn_upuser")
     private String updatedBy;
 
+    @Column(name = "moveconn_latest_location")
+    private Point latestLocation;
+
     public MovementConnect() {
     }
 
-    public MovementConnect(UUID id, String flagState, String name, Instant updated, String updatedBy) {
+    public MovementConnect(UUID id, String flagState, String name, Instant updated, String updatedBy, Point latestLocation) {
         this.id = id;
         this.flagState = flagState;
         this.name = name;
         this.updated = updated;
         this.updatedBy = updatedBy;
+        this.latestLocation = latestLocation;
     }
 
     @PreUpdate
@@ -122,6 +133,14 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
 
     public void setLatestMovement(Movement latestMovement) {
         this.latestMovement = latestMovement;
+    }
+
+    public Point getLatestLocation() {
+        return latestLocation;
+    }
+
+    public void setLatestLocation(Point latestLocation) {
+        this.latestLocation = latestLocation;
     }
 
     @Override

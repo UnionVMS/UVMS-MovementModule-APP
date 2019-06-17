@@ -657,7 +657,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
 
 
-    @Ignore //commented out the parts this tests in the flow, so this will not function
     @Test
     @OperateOnDeployment("movementservice")
     public void vicinityOfBasicTest() throws Exception {
@@ -683,7 +682,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertTrue(movementDetails.getVicinityOf().isEmpty());
     }
 
-    @Ignore  //see above
     @Test
     @OperateOnDeployment("movementservice")
     public void vicinityOfSeveralBoatsTest() throws Exception {
@@ -705,6 +703,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertNotNull(movementDetails1.getVicinityOf());
         assertTrue("" + movementDetails1.getVicinityOf().size(), movementDetails1.getVicinityOf().isEmpty());
 
+        Thread.sleep(1000);
         incomingMovement.setLongitude(lon + 0.0001);
         incomingMovement.setLatitude(lat + 0.0001);
         incomingMovement.setAssetIRCS(null);
@@ -717,6 +716,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertEquals(movementDetails1.getAssetGuid(), movementDetails2.getVicinityOf().get(0).getAsset().toString());
         assertTrue(movementDetails2.getVicinityOf().get(0).getDistance() > 0);
 
+        Thread.sleep(1000);
         incomingMovement.setLongitude(lon - 0.0002);
         incomingMovement.setLatitude(lat - 0.0002);
         incomingMovement.setPositionTime(Instant.now().minusSeconds(15));

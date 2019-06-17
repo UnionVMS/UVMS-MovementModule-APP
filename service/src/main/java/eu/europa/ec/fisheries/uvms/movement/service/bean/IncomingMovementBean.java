@@ -35,10 +35,12 @@ public class IncomingMovementBean {
         Movement latestMovement = currentMovement.getMovementConnect().getLatestMovement();
         if (latestMovement == null) { // First position
             currentMovement.getMovementConnect().setLatestMovement(currentMovement);
+            currentMovement.getMovementConnect().setLatestLocation(currentMovement.getLocation());
         } else {
             if (currentMovement.getTimestamp().isAfter(latestMovement.getTimestamp())) {
                 segmentBean.newSegment(latestMovement, currentMovement); // Normal case (latest position)
                 currentMovement.getMovementConnect().setLatestMovement(currentMovement);
+                currentMovement.getMovementConnect().setLatestLocation(currentMovement.getLocation());
             } else {
                 Movement previousMovement = dao.getPreviousMovement(connectId, timeStamp);
                 if (previousMovement == null) { // Before first position

@@ -147,16 +147,7 @@ public class MovementDao {
     }
 
     public List<VicinityInfoDTO> getVicinityOfMovement(Movement move, double maxDistance){
-        TypedQuery<VicinityInfoDTO> latestMovementQuery = em.createNamedQuery(Movement.FIND_NEAREST_AFTER, VicinityInfoDTO.class);
-        latestMovementQuery.setParameter("excludedID", move.getMovementConnect().getId());
-        latestMovementQuery.setParameter("point", move.getLocation());
-        latestMovementQuery.setParameter("maxDistance", maxDistance);
-        latestMovementQuery.setParameter("time", Instant.now().minus(8, ChronoUnit.HOURS));
-        return latestMovementQuery.getResultList();
-    }
-
-    public List<VicinityInfoDTO> getVicinityOfMovementV2(Movement move, double maxDistance){
-        TypedQuery<VicinityInfoDTO> latestMovementQuery = em.createNamedQuery(Movement.FIND_NEAREST_AFTER_V2, VicinityInfoDTO.class);
+        TypedQuery<VicinityInfoDTO> latestMovementQuery = em.createNamedQuery(MovementConnect.FIND_NEAREST_AFTER, VicinityInfoDTO.class);
         latestMovementQuery.setParameter("excludedID", move.getMovementConnect().getId());
         latestMovementQuery.setParameter("point", move.getLocation());
         latestMovementQuery.setParameter("maxDistance", maxDistance);
