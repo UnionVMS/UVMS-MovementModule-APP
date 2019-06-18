@@ -256,6 +256,17 @@ public class MovementService {
         MovementConnect oldMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(oldMovementConnectId));
         MovementConnect newMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(newMovementConnectId));
 
+        if(newMovementConnect == null){
+            newMovementConnect = new MovementConnect();
+            newMovementConnect.setUpdated(Instant.now());
+            newMovementConnect.setUpdatedBy("UVMS");
+            newMovementConnect.setId(UUID.fromString(newMovementConnectId));
+            newMovementConnect.setFlagState(oldMovementConnect == null ? null : oldMovementConnect.getFlagState());
+            newMovementConnect.setName(oldMovementConnect == null ? null : oldMovementConnect.getName());
+
+            newMovementConnect = movementDao.createMovementConnect(newMovementConnect);
+        }
+
         List<Movement> movements = movementDao.getMovementListByMovementConnect(oldMovementConnect);
         for (Movement move : movements) {
             move.setMovementConnect(newMovementConnect);
