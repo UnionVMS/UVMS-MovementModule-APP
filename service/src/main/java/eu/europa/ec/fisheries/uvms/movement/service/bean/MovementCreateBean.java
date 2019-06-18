@@ -76,8 +76,8 @@ public class MovementCreateBean {
             MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
             int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetGuid(), incomingMovement.getPositionTime());
             movementDetails.setSumPositionReport(sumPositionReport);
-//            List<VicinityInfoDTO> vicinityOf = movementService.getVicinityOf(createdMovement);
-//            movementDetails.setVicinityOf(vicinityOf);
+            //List<VicinityInfoDTO> vicinityOf = movementService.getVicinityOf(createdMovement);    //this query takes 32 ms per witch is more then our system can afford right now, so these two lines are commented out
+            //movementDetails.setVicinityOf(vicinityOf);
 
             movementRulesBean.send(movementDetails);
             // report ok to Exchange...
