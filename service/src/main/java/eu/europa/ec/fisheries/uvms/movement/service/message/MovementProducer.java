@@ -16,14 +16,13 @@ import javax.ejb.Stateless;
 import javax.jms.Destination;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message2.impl.AbstractProducer2;
+import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 
 @Stateless
-public class MovementProducer extends AbstractProducer2 {
+public class MovementProducer extends AbstractProducer {
 
     @Resource(mappedName =  "java:/" + MessageConstants.QUEUE_MOVEMENT)
     private Destination destination;
-
 
     @Override
     public Destination getDestination() {

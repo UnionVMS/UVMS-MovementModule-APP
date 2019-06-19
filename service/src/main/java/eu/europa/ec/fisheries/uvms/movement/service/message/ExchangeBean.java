@@ -3,8 +3,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.message;
 import java.util.UUID;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -13,12 +11,11 @@ import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementRespons
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message2.impl.AbstractProducer2;
+import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.JAXBMarshaller;
 
-
 @Stateless
-public class ExchangeBean extends AbstractProducer2 {
+public class ExchangeBean extends AbstractProducer {
 
     @Resource(mappedName = "java:/jms/queue/UVMSMovement")
     private Queue replyToQueue;
@@ -46,7 +43,6 @@ public class ExchangeBean extends AbstractProducer2 {
         sendMessageToSpecificQueueWithFunction(xml, getDestination(), null, processedMovementResponse.getMethod().toString(), null);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public String sendModuleMessage(String text, String function) throws JMSException {
         return sendMessageToSpecificQueueWithFunction(text, getDestination(), replyToQueue, function, null);
     }

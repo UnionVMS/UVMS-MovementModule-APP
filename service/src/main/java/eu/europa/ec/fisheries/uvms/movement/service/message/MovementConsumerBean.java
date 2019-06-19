@@ -12,12 +12,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractConsumer;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
 import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageConsumer;
+import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.jms.Destination;
+import javax.jms.JMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,21 +27,26 @@ import org.slf4j.LoggerFactory;
 @Stateless
 public class MovementConsumerBean extends AbstractConsumer implements ConfigMessageConsumer {
 
+    private static final long CONFIG_TIMEOUT = 600000L;
+
     private static final Logger LOG = LoggerFactory.getLogger(MovementConsumerBean.class);
 
+    @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENT)
+    private Destination destination;
+
     @Override
-    public <T> T getConfigMessage(String correlationId, Class type) throws ConfigMessageException {
+    public <T> T getConfigMessage(String correlationId, Class<T> type) throws ConfigMessageException {
         try {
-            return getMessage(correlationId, type);
-        } catch (MessageException e) {
+            return getMessage(correlationId, type, CONFIG_TIMEOUT);
+        } catch (JMSException e) {
             LOG.error("[ Error when getting message ] {}", e.getMessage());
             throw new ConfigMessageException("Error when retrieving message: ");
         } 
     }
 
     @Override
-    public String getDestinationName() {
-        return MessageConstants.QUEUE_MOVEMENT;
+    public Destination getDestination() {
+        return destination;
     }
 
 }

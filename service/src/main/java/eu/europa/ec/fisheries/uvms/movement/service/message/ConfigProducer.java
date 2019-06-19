@@ -12,7 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message2.impl.AbstractProducer2;
+import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigMessageException;
 import eu.europa.ec.fisheries.uvms.config.message.ConfigMessageProducer;
 import org.slf4j.Logger;
@@ -27,15 +27,15 @@ import javax.jms.JMSException;
 import javax.jms.Queue;
 
 @Stateless
-public class ConfigProducer extends AbstractProducer2 implements ConfigMessageProducer {
+public class ConfigProducer extends AbstractProducer implements ConfigMessageProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigProducer.class);
 
-    @Resource(mappedName = "java:/jms/queue/UVMSMovement")
-    private Queue replyToQueue;
-
     @Resource(mappedName =  "java:/" + MessageConstants.QUEUE_CONFIG)
     private Destination destination;
+
+    @Resource(mappedName = "java:/jms/queue/UVMSMovement")
+    private Queue replyToQueue;
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

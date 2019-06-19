@@ -94,11 +94,6 @@
             <artifactId>uvms-pom-monitoring-deps</artifactId>
             <type>pom</type>
         </dependency>
-        <dependency>
-        <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
-        <artifactId>uvms-commons-message2</artifactId>
-        <version>${uvms.common.version}</version>
-        </dependency>
 		<dependency>
             <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
             <artifactId>uvms-commons-message</artifactId>

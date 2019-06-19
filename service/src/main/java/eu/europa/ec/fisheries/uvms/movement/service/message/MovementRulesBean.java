@@ -6,8 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import eu.europa.ec.fisheries.uvms.commons.message2.impl.AbstractProducer2;
+import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
 import javax.annotation.PostConstruct;
@@ -16,14 +15,10 @@ import javax.ejb.Stateless;
 import javax.jms.*;
 
 @Stateless
-public class MovementRulesBean extends AbstractProducer2 {
-
-    @Resource(mappedName = "java:/ConnectionFactory")
-    private ConnectionFactory connectionFactory;
+public class MovementRulesBean extends AbstractProducer {
 
     @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENTRULES_EVENT)
     private Destination  destination;
-
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -36,28 +31,8 @@ public class MovementRulesBean extends AbstractProducer2 {
 
     public void send(MovementDetails movementDetails) throws JsonProcessingException, JMSException {
         String movementDetailJson = mapper.writeValueAsString(movementDetails);
-        sendMessageToSpecificQueueWithFunction(movementDetailJson, getDestination(), null, "EVALUATE_RULES");
+        sendMessageToSpecificQueueWithFunction(movementDetailJson, getDestination(), null, "EVALUATE_RULES", null);
     }
-
-
-    public String sendMessageToSpecificQueueWithFunction(String messageToSend, Destination destination, Destination replyTo, String function) throws JMSException {
-
-        try (Connection connection = connectionFactory.createConnection();
-             Session session = connection.createSession(false, 1);
-             MessageProducer producer = session.createProducer(destination);
-        ) {
-            final TextMessage message = session.createTextMessage(messageToSend);
-            message.setJMSReplyTo(replyTo);
-            message.setStringProperty(MessageConstants.JMS_FUNCTION_PROPERTY, function);
-            producer.setTimeToLive(Message.DEFAULT_TIME_TO_LIVE);
-            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
-            producer.send(message);
-            return message.getJMSMessageID();
-        }
-    }
-
-
-
 
     @Override
     public Destination getDestination() {
