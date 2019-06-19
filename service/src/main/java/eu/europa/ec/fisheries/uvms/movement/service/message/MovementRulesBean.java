@@ -18,7 +18,7 @@ import javax.jms.*;
 public class MovementRulesBean extends AbstractProducer {
 
     @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENTRULES_EVENT)
-    private Destination  destination;
+    private Queue destination;
 
     private ObjectMapper mapper = new ObjectMapper();
 

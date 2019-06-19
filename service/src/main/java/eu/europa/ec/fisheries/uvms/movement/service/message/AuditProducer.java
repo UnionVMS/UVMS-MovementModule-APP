@@ -27,7 +27,7 @@ public class AuditProducer extends AbstractProducer {
     private Queue replyToQueue;
 
     @Resource(mappedName =  "java:/" + MessageConstants.QUEUE_AUDIT_EVENT)
-    private Destination destination;
+    private Queue destination;
 
     public String sendModuleMessage(String text) throws JMSException {
         return sendModuleMessage(text, replyToQueue);

@@ -32,7 +32,7 @@ public class ConfigProducer extends AbstractProducer implements ConfigMessagePro
     private static final Logger LOG = LoggerFactory.getLogger(ConfigProducer.class);
 
     @Resource(mappedName =  "java:/" + MessageConstants.QUEUE_CONFIG)
-    private Destination destination;
+    private Queue destination;
 
     @Resource(mappedName = "java:/jms/queue/UVMSMovement")
     private Queue replyToQueue;

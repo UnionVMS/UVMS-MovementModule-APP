@@ -20,6 +20,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Queue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ public class MovementConsumerBean extends AbstractConsumer implements ConfigMess
     private static final Logger LOG = LoggerFactory.getLogger(MovementConsumerBean.class);
 
     @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENT)
-    private Destination destination;
+    private Queue destination;
 
     @Override
     public <T> T getConfigMessage(String correlationId, Class<T> type) throws ConfigMessageException {
