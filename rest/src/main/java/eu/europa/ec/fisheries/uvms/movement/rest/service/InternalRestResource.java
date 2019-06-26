@@ -15,11 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import javax.ejb.Stateless;
-import javax.faces.push.Push;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -44,7 +44,7 @@ public class InternalRestResource {
             GetMovementListByQueryResponse list = movementService.getList(query);
             return Response.ok(list).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
 
@@ -55,7 +55,7 @@ public class InternalRestResource {
             GetMovementListByQueryResponse minimalList = movementService.getMinimalList(query);
             return Response.ok(minimalList).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
 
@@ -63,28 +63,14 @@ public class InternalRestResource {
     @Path("/latest")
     public Response getLatestMovementsByConnectIds(List<UUID> connectIds) {
         if (connectIds == null || connectIds.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("No connectIds found").build();
+            return Response.status(Status.BAD_REQUEST).entity("No connectIds found").build();
         }
         try {
             List<Movement> latestMovements = movementService.getLatestMovementsByConnectIds(connectIds);
             List<MovementType> movementTypeList = MovementEntityToModelMapper.mapToMovementType(latestMovements);
             return Response.ok(movementTypeList).build();
         } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(ex)).build();
-        }
-    }
-
-
-    @POST
-    @Path("/movementListByAreaAndTimeInterval")
-    public Response getMovementListByQuery(MovementQuery query) {
-        try {
-            GetMovementListByQueryResponse response = movementService.getList(query);
-            return Response.ok(response).build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("No MovementQuery found").build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(ex)).build();
         }
     }
 
@@ -95,40 +81,39 @@ public class InternalRestResource {
             GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
             return Response.ok(response).build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("No MovementQuery found").build();
+            return Response.status(Status.BAD_REQUEST).entity("No MovementQuery found").build();
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
 
     @GET
     @Path("/countMovementsInDateAndTheDayBeforeForAsset/{id}")
-    public Response countMovementsInDateAndTheDayBeforeForAsset(@PathParam("id") String id, @QueryParam("after") String after) {   //yyyy-MM-dd HH:mm:ss Z
+    public Response countMovementsInDateAndTheDayBeforeForAsset(@PathParam("id") String id,
+                                                                @QueryParam("after") String after) { // yyyy-MM-dd HH:mm:ss Z
         try {
             Instant afterInstant = DateUtil.convertDateTimeInUTC(after);
-            Instant yesterday = afterInstant.minusSeconds(60L * 60L * 24L);   //one day in seconds
+            Instant yesterday = afterInstant.minusSeconds(60L * 60L * 24L); // 1 day in seconds
             long count = movementDao.countNrOfMovementsForAssetBetween(UUID.fromString(id),yesterday, afterInstant);
             return Response.ok().entity(count).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when counting movements. ]", e);
-            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
 
     @PUT
     @Path("/remapMovementConnectInMovement")
-    public Response remapMovementConnectInMovement(@QueryParam(value = "MovementConnectFrom") String movementConnectFrom, @QueryParam(value = "MovementConnectTo") String movementConnectTo) {
+    public Response remapMovementConnectInMovement(@QueryParam(value = "MovementConnectFrom") String movementConnectFrom,
+                                                   @QueryParam(value = "MovementConnectTo") String movementConnectTo) {
         try {
-
             movementService.remapMovementConnectInMovement(movementConnectFrom, movementConnectTo);
             return Response.ok()
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when counting movements. ]", e);
-            return Response.status(500).entity(ExceptionUtils.getRootCause(e)).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
-
-
 }

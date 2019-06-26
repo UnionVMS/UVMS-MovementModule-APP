@@ -12,14 +12,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
@@ -30,12 +27,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -51,102 +49,101 @@ public class MovementRestResource {
     @EJB
     private MovementService serviceLayer;
 
-    @Inject
-    private MovementDao movementDao;
-
     @Context 
     private HttpServletRequest request;
 
     @POST
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto<MovementListResponseDto> getListByQuery(MovementQuery query) {
+    public Response getListByQuery(MovementQuery query) {
         try {
-            return new ResponseDto(serviceLayer.getList(query), RestResponseCode.OK);
+            GetMovementListByQueryResponse list = serviceLayer.getList(query);
+            return Response.ok(list).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex, RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
     }
 
     @POST
     @Path("/list/minimal")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto<MovementListResponseDto> getMinimalListByQuery(MovementQuery query) {
+    public Response getMinimalListByQuery(MovementQuery query) {
         LOG.debug("Get list invoked in rest layer");
         try {
             long start = System.currentTimeMillis();
-            ResponseDto response = new ResponseDto(serviceLayer.getMinimalList(query), RestResponseCode.OK);
+            GetMovementListByQueryResponse minimalList = serviceLayer.getMinimalList(query);
             long end = System.currentTimeMillis();
             LOG.debug("GET MINIMAL MOVEMENT: {} ms", (end - start));
-            return response;
+            return Response.ok(minimalList).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex, RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
     }
 
     @POST
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto<List<MovementDto>> getLatestMovementsByConnectIds(List<String> connectIds) {
+    public Response getLatestMovementsByConnectIds(List<String> connectIds) {
         LOG.debug("GetLatestMovementsByConnectIds invoked in rest layer");
         if (connectIds == null || connectIds.isEmpty()) {
-            return new ResponseDto("ConnectIds cannot be empty" , RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("ConnectIds cannot be empty").build();
         }
         try {
             List<UUID> uuids = connectIds.stream().map(UUID::fromString).collect(Collectors.toList());
             List<Movement> latestMovements = serviceLayer.getLatestMovementsByConnectIds(uuids);
             List<MovementType> movementTypeList = MovementEntityToModelMapper.mapToMovementType(latestMovements);
             List<MovementDto> movementDtoList = MovementMapper.mapToMovementDtoList(movementTypeList);
-            return new ResponseDto<>(movementDtoList, RestResponseCode.OK);
+            return Response.ok(movementDtoList).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex, RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
     }
 
     @GET
     @Path("/latest/{numberOfMovements}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto<List<MovementDto>> getLatestMovements(@PathParam(value = "numberOfMovements") Integer numberOfMovements) {
+    public Response getLatestMovements(@PathParam(value = "numberOfMovements") Integer numberOfMovements) {
         LOG.debug("getLatestMovements invoked in rest layer");
         long start = System.currentTimeMillis();
         // TODO why not default to 1 ?
         if (numberOfMovements == null || numberOfMovements < 1) {
-            return new ResponseDto("numberOfMovements cannot be null and must be greater than 0" , RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("numberOfMovements cannot be null and must be greater than 0").build();
         }
         try {
             List<Movement> movements = serviceLayer.getLatestMovements(numberOfMovements);
             List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementType(movements);
             List<MovementDto> response = MovementMapper.mapToMovementDtoList(latestMovements);
             LOG.debug("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
-            return new ResponseDto<>(response, RestResponseCode.OK);
+            return Response.ok(response).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return new ResponseDto(ex, RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
     }
 
     @GET
     @Path("/{id}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto getById(@PathParam(value = "id") final String id) {
+    public Response getById(@PathParam(value = "id") final String id) {
         LOG.debug("Get by id invoked in rest layer");
         try {
             Movement movement = serviceLayer.getById(UUID.fromString(id));
             if (movement == null) {
-                return new ResponseDto("No movement with ID " + id, RestResponseCode.ERROR);
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("No movement with ID " + id).build();
             }
             MovementType response = MovementEntityToModelMapper.mapToMovementType(movement);
 
-            return new ResponseDto<>(response, RestResponseCode.OK);
+            return Response.ok(response).build();
         } catch (NonUniqueResultException ex) {
             LOG.error("[ Error when getting by id. ]", ex);
-            return new ResponseDto(ex, RestResponseCode.ERROR_DUPLICTAE);
+            return Response.status(Status.CONFLICT).entity(ex).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting by id. ] ", ex);
-            return new ResponseDto(ex, RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
 
     }
@@ -154,12 +151,13 @@ public class MovementRestResource {
     @POST
     @Path("/movementMap")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto<GetMovementMapByQueryResponse> getMapByQuery(MovementQuery query) {
+    public Response getMapByQuery(MovementQuery query) {
         try {
-            return new ResponseDto(serviceLayer.getMapByQuery(query), RestResponseCode.OK);
+            GetMovementMapByQueryResponse mapByQuery = serviceLayer.getMapByQuery(query);
+            return Response.ok(mapByQuery).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting movement map. ]", ex);
-            return new ResponseDto(ex, RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
         }
     }
 }

@@ -1,31 +1,31 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import java.math.BigInteger;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import java.math.BigInteger;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class DraftMovementResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void createTempMovement() throws Exception {
+    public void createTempMovement() {
         TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
         TempMovementType createdTempMovement = createTempMovement(tempMovement);
         
@@ -36,7 +36,7 @@ public class DraftMovementResourceTest extends BuildMovementRestDeployment {
     
     @Test
     @OperateOnDeployment("movement")
-    public void getTempMovementById() throws Exception {
+    public void getTempMovementById() {
         TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
         TempMovementType createdTempMovement = createTempMovement(tempMovement);
         
@@ -46,7 +46,7 @@ public class DraftMovementResourceTest extends BuildMovementRestDeployment {
     
     @Test
     @OperateOnDeployment("movement")
-    public void updateTempMovement() throws Exception {
+    public void updateTempMovement() {
         TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
         TempMovementType createdTempMovement = createTempMovement(tempMovement);
         
@@ -60,8 +60,7 @@ public class DraftMovementResourceTest extends BuildMovementRestDeployment {
    
     @Test
     @OperateOnDeployment("movement")
-    public void getTempMovements() throws Exception {
-
+    public void getTempMovements() {
         TempMovementType tempMovement = MovementTestHelper.createTempMovementType();
         TempMovementType createdTempMovement = createTempMovement(tempMovement);
 
@@ -83,45 +82,37 @@ public class DraftMovementResourceTest extends BuildMovementRestDeployment {
     /*
      * Helper functions for REST calls
      */
-    private TempMovementType createTempMovement(TempMovementType tempMovement) throws Exception {
-        String response = getWebTarget()
+    private TempMovementType createTempMovement(TempMovementType tempMovement) {
+        return getWebTarget()
                 .path("tempmovement")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(tempMovement), String.class);
-        
-        return RestHelper.readResponseDto(response, TempMovementType.class);
+                .post(Entity.json(tempMovement), TempMovementType.class);
     }
     
-    private TempMovementType updateTempMovement(TempMovementType tempMovement) throws Exception {
-        String response = getWebTarget()
+    private TempMovementType updateTempMovement(TempMovementType tempMovement) {
+        return getWebTarget()
                 .path("tempmovement")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .put(Entity.json(tempMovement), String.class);
-        
-        return RestHelper.readResponseDto(response, TempMovementType.class);
+                .put(Entity.json(tempMovement), TempMovementType.class);
     }
     
-    private TempMovementType getTempMovement(String guid) throws Exception {
-        String response = getWebTarget()
+    private TempMovementType getTempMovement(String guid) {
+        return getWebTarget()
                 .path("tempmovement")
                 .path(guid)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .get(String.class);
-        
-        return RestHelper.readResponseDto(response, TempMovementType.class);
+                .get(TempMovementType.class);
     }
 
-    private GetTempMovementListResponse getTempMovements(MovementQuery query) throws Exception {
-        String response = getWebTarget()
+    private GetTempMovementListResponse getTempMovements(MovementQuery query) {
+        return getWebTarget()
                 .path("tempmovement")
                 .path("list")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(query), String.class);
-
-        return RestHelper.readResponseDto(response, GetTempMovementListResponse.class);
+                .post(Entity.json(query), GetTempMovementListResponse.class);
     }
 }
