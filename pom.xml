@@ -31,7 +31,7 @@
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
-		<uvms.common.version>4.0.1</uvms.common.version>
+		<uvms.common.version>4.0.2</uvms.common.version>
 		<usm4uvms.version>4.0.19</usm4uvms.version>
 		<uvms.config.version>4.0.4</uvms.config.version>
 	</properties>
