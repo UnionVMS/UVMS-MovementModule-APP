@@ -93,9 +93,13 @@ public class MovementEntityToModelMapper {
 
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
-        model.setReportedSpeed((double)movement.getSpeed());
+        if (movement.getSpeed() != null) {
+            model.setReportedSpeed((double)movement.getSpeed());
+        }
         model.setGuid(movement.getId().toString());
-        model.setReportedCourse((double)movement.getHeading());
+        if (movement.getHeading() != null) {
+            model.setReportedCourse((double)movement.getHeading());
+        }
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setActivity(mapToActivityType(movement.getActivity()));
         model.setStatus(movement.getStatus());

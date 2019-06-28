@@ -1,28 +1,28 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import org.hamcrest.CoreMatchers;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import javax.inject.Inject;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
-import javax.inject.Inject;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
-import org.hamcrest.CoreMatchers;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
-import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
 import static org.junit.Assert.*;
 
@@ -34,7 +34,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void getTrackForAssetTest() throws Exception {
+    public void getTrackForAssetTest() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -56,7 +56,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void getTrackForMovementTest() throws Exception {
+    public void getTrackForMovementTest() {
         UUID connectId = UUID.randomUUID();
         Movement movementBaseType = MovementTestHelper.createMovement();
         movementBaseType.getMovementConnect().setId(connectId);
@@ -85,7 +85,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void getLatestMovementsTest() throws Exception {
+    public void getLatestMovementsTest() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -102,7 +102,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void getLastMicroMovementForAllAssetsTest() throws Exception {
+    public void getLastMicroMovementForAllAssetsTest() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -112,7 +112,6 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get(RealTimeMapInitialData.class);
-
 
         assertTrue(output.getMicroMovements().size() > 0);
         assertTrue(output.getMicroMovements()

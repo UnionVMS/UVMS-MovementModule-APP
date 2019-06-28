@@ -17,21 +17,20 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementMockConfig;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
+import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
+import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
-import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
-import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 @Path("/config")
 @Stateless
@@ -44,78 +43,77 @@ public class ConfigResource {
 
     @GET
     @Path(value = "/movementTypes")
-    public ResponseDto getMovementTypes() {
+    public Response getMovementTypes() {
         try {
-            return new ResponseDto<>(MovementTypeType.values(), RestResponseCode.OK);
+            return Response.ok(MovementTypeType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
     @GET
     @Path(value = "/segmentCategoryTypes")
-    public ResponseDto getSegmentTypes() {
+    public Response getSegmentTypes() {
         try {
-            return new ResponseDto<>(SegmentCategoryType.values(), RestResponseCode.OK);
+            return Response.ok(SegmentCategoryType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
     @GET
     @Path(value = "/searchKeys")
-    public ResponseDto getMovementSearchKeys() {
+    public Response getMovementSearchKeys() {
         try {
-            return new ResponseDto<>(SearchKeyType.values(), RestResponseCode.OK);
+            return Response.ok(SearchKeyType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
     @GET
     @Path(value = "/movementSourceTypes")
-    public ResponseDto getMovementSourceTypes() {
+    public Response getMovementSourceTypes() {
         try {
-            return new ResponseDto<>(MovementSourceType.values(), RestResponseCode.OK);
+            return Response.ok(MovementSourceType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
     @GET
     @Path(value = "/activityTypes")
-    public ResponseDto getActivityTypes() {
+    public Response getActivityTypes() {
         try {
-            return new ResponseDto(MovementActivityTypeType.values(), RestResponseCode.OK);
+            return Response.ok(MovementActivityTypeType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 
     @GET
-    public ResponseDto getConfiguration() {
+    public Response getConfiguration() {
         try {
-            return new ResponseDto(MovementMockConfig.getValues(), RestResponseCode.OK);
+            return Response.ok(MovementMockConfig.getValues()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return new ResponseDto(e.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
-    
 
     @GET
     @Path(value = "/alarmstatus")
-    public ResponseDto getAlarmStatuses() {
+    public Response getAlarmStatuses() {
         try {
-            return new ResponseDto(AlarmStatusType.values(), RestResponseCode.OK);
-        } catch (Exception ex) {
-            LOG.error("[ Error when getting alarm statuses. ] {} ", ex.getMessage());
-            return new ResponseDto(ex.getMessage(), RestResponseCode.ERROR);
+            return Response.ok(AlarmStatusType.values()).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when getting alarm statuses. ] {} ", e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
     }
 }

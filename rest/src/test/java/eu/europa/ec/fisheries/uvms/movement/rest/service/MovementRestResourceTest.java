@@ -1,23 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import javax.inject.Inject;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
@@ -28,6 +10,24 @@ import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import javax.inject.Inject;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class MovementRestResourceTest extends BuildMovementRestDeployment {
@@ -37,7 +37,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     @OperateOnDeployment("movement")
-    public void getListByQueryByConnectId() throws Exception {
+    public void getListByQueryByConnectId() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
         
@@ -58,7 +58,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     @OperateOnDeployment("movement")
-    public void getMinimalListByQueryByConnectId() throws Exception {
+    public void getMinimalListByQueryByConnectId() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
         
@@ -79,18 +79,19 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     @OperateOnDeployment("movement")
-    public void getLatestMovementsByConnectIds() throws Exception {
+    public void getLatestMovementsByConnectIds() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
         
-        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement.getMovementConnect().getId().toString()));
+        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(
+                Collections.singletonList(createdMovement.getMovementConnect().getId().toString()));
         assertThat(latestMovements.size(), is(1));
         assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement.getId().toString()));
     }
     
     @Test
     @OperateOnDeployment("movement")
-    public void getLatestMovementsByConnectIdsTwoPositions() throws Exception {
+    public void getLatestMovementsByConnectIdsTwoPositions() {
         UUID connectId = UUID.randomUUID();
         
         Movement movementBaseType1 = MovementTestHelper.createMovement();
@@ -102,14 +103,15 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         movementBaseType1.getMovementConnect().setId(connectId);
         Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
         
-        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement2.getMovementConnect().getId().toString()));
+        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(
+                Collections.singletonList(createdMovement2.getMovementConnect().getId().toString()));
         assertThat(latestMovements.size(), is(1));
         assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement2.getId().toString()));
     }
     
     @Test
     @OperateOnDeployment("movement")
-    public void getLatestMovementsByConnectIdsTwoPositionsUnordered() throws Exception {
+    public void getLatestMovementsByConnectIdsTwoPositionsUnordered() {
         UUID connectId = UUID.randomUUID();
         
         Movement movementBaseType1 = MovementTestHelper.createMovement();
@@ -121,14 +123,15 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         movementBaseType2.setTimestamp(Instant.now().minusSeconds(60));
         movementService.createAndProcessMovement(movementBaseType2);
         
-        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(Arrays.asList(createdMovement1.getMovementConnect().getId().toString()));
+        List<MovementDto> latestMovements = getLatestMovementsByConnectIds(
+                Collections.singletonList(createdMovement1.getMovementConnect().getId().toString()));
         assertThat(latestMovements.size(), is(1));
         assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement1.getId().toString()));
     }
     
     @Test
     @OperateOnDeployment("movement")
-    public void getLatestMovements() throws Exception {
+    public void getLatestMovements() {
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         movementService.createAndProcessMovement(movementBaseType1);
         
@@ -141,7 +144,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     @OperateOnDeployment("movement")
-    public void getMovementById() throws Exception {
+    public void getMovementById() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -153,59 +156,49 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     /*
      * Helper functions for REST calls
      */
-    private GetMovementListByQueryResponse getListByQuery(MovementQuery query) throws Exception {
-        String response = getWebTarget()
+    private GetMovementListByQueryResponse getListByQuery(MovementQuery query) {
+        return getWebTarget()
                 .path("movement")
                 .path("list")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(query), String.class);
-            
-        return RestHelper.readResponseDto(response, GetMovementListByQueryResponse.class);
+                .post(Entity.json(query), GetMovementListByQueryResponse.class);
     }
     
-    private GetMovementListByQueryResponse getMinimalListByQuery(MovementQuery query) throws Exception {
-        String response = getWebTarget()
+    private GetMovementListByQueryResponse getMinimalListByQuery(MovementQuery query) {
+        return getWebTarget()
                 .path("movement")
                 .path("list")
                 .path("minimal")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(query), String.class);
-            
-        return RestHelper.readResponseDto(response, GetMovementListByQueryResponse.class);
+                .post(Entity.json(query), GetMovementListByQueryResponse.class);
     }
     
-    private List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) throws Exception {
-        String response = getWebTarget()
+    private List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) {
+         return getWebTarget()
                 .path("movement")
                 .path("latest")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(connectIds), String.class);
-            
-        return RestHelper.readResponseDtoList(response, MovementDto.class);
+                .post(Entity.json(connectIds), new GenericType<List<MovementDto>>(){});
     }
     
-    private List<MovementDto> getLatestMovements(int numberOfMovements) throws Exception {
-        String response = getWebTarget()
+    private List<MovementDto> getLatestMovements(int numberOfMovements) {
+        return getWebTarget()
                 .path("movement")
                 .path("latest/" + numberOfMovements)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .get(String.class);
-            
-        return RestHelper.readResponseDtoList(response, MovementDto.class);
+                .get(new GenericType<List<MovementDto>>(){});
     }
     
-    private MovementType getMovementById(String id) throws Exception {
-        String response = getWebTarget()
+    private MovementType getMovementById(String id) {
+        return getWebTarget()
                 .path("movement")
                 .path(id)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .get(String.class);
-        
-        return RestHelper.readResponseDto(response, MovementType.class);
+                .get(MovementType.class);
     }
 }

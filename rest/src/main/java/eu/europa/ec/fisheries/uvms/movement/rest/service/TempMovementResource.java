@@ -12,9 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetTempMovementListResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.ResponseDto;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.RestResponseCode;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.DraftMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.DraftMovementMapper;
@@ -29,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.util.UUID;
 
 @Path("/tempmovement")
@@ -47,107 +48,104 @@ public class TempMovementResource {
 
     @POST
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto<?> create(final TempMovementType data) {
+    public Response create(final TempMovementType data) {
         LOG.debug("Create temp movement invoked in rest layer");
         try {
             DraftMovement draftMovement = DraftMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
             draftMovement = service.createDraftMovement(draftMovement, request.getRemoteUser());
             TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
-            return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
+            return Response.ok(tempMovementType).build();
         } catch (Throwable throwable) {
             LOG.error("[ Error when creating. ] {} ", throwable);
-            return new ResponseDto<>(throwable.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(throwable.getMessage()).build();
         }
     }
 
     @GET
     @Path("/{guid}")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public ResponseDto<?> get(@PathParam("guid") String guid) {
+    public Response get(@PathParam("guid") String guid) {
         try {
             DraftMovement draftMovement = service.getDraftMovement(UUID.fromString(guid));
             TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
-            return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
+            return Response.ok(tempMovementType).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting temp movement with GUID. ] {} ", ex);
-            return new ResponseDto<>(ex.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
     @PUT
     @Path("/remove/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto<?> remove(@PathParam("guid") String guid) {
+    public Response remove(@PathParam("guid") String guid) {
         LOG.debug("Archive(remove) temp movement invoked in rest layer");
         try {
             DraftMovement draftMovement = service.archiveDraftMovement(UUID.fromString(guid), request.getRemoteUser());
             TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
-            return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
+            return Response.ok(tempMovementType).build();
         } catch (Exception ex) {
             LOG.error("[ Error when archiving temp movement ] {} ", ex);
-            return new ResponseDto<>(ex.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
     @PUT
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto<?> update(final TempMovementType data) {
+    public Response update(final TempMovementType data) {
         LOG.debug("Update temp movement invoked in rest layer");
         try {
             DraftMovement draftMovement = DraftMovementMapper.toTempMovementEntity(data, request.getRemoteUser());
             draftMovement = service.updateDraftMovement(draftMovement, request.getRemoteUser());
             TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
-            return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
+            return Response.ok(tempMovementType).build();
         } catch (Exception ex) {
             LOG.error("[ Error while updating temp movement. ] {} ", ex);
-            return new ResponseDto<>(ex.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
     @POST
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewManualMovements)
-    public ResponseDto<?> getDraftMovements(MovementQuery query) {
+    public Response getDraftMovements(MovementQuery query) {
         LOG.debug("List all active temp movement invoked in rest layer");
         try {
-            return new ResponseDto<>(service.getDraftMovements(query), RestResponseCode.OK);
+            GetTempMovementListResponse draftMovements = service.getDraftMovements(query);
+            return Response.ok(draftMovements).build();
         } catch (Exception ex) {
             LOG.error("[ Error while getting list. ] {} ", ex);
-            return new ResponseDto<>(ex.getMessage(), RestResponseCode.ERROR);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
     @PUT
-    @Consumes(value = {MediaType.APPLICATION_JSON})
-    @Produces(value = {MediaType.APPLICATION_JSON})
     @Path("/send/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto<?> send(@PathParam("guid") String guid) {
+    public Response send(@PathParam("guid") String guid) {
         LOG.debug("Send temp movement invoked in rest layer");
         try {
             DraftMovement draftMovement = service.sendDraftMovement(UUID.fromString(guid), request.getRemoteUser());
             TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
-            return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
-        } catch (Exception e) {
-            LOG.error("[ Error while sending temp movement] {} ", e);
-            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
+            return Response.ok(tempMovementType).build();
+        } catch (Exception ex) {
+            LOG.error("[ Error while sending temp movement] {} ", ex);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
     @GET
     @Path("/archive/{guid}")
     @RequiresFeature(UnionVMSFeature.manageManualMovements)
-    public ResponseDto<?> archiveDraftMovement(@PathParam("guid") String guid) {
+    public Response archiveDraftMovement(@PathParam("guid") String guid) {
         LOG.debug("Archive movement");
         try {
             DraftMovement draftMovement = service.archiveDraftMovement(UUID.fromString(guid), request.getRemoteUser());
             TempMovementType tempMovementType = DraftMovementMapper.toTempMovement(draftMovement);
-            return new ResponseDto<>(tempMovementType, RestResponseCode.OK);
-        } catch (Exception e) {
-            LOG.error("[ Error while creating temp movement ] {} ", e);
-            return new ResponseDto<>(e.getMessage(), RestResponseCode.ERROR);
+            return Response.ok(tempMovementType).build();
+        } catch (Exception ex) {
+            LOG.error("[ Error while creating temp movement ] {} ", ex);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 }

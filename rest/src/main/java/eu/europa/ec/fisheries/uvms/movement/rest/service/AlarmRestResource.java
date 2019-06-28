@@ -51,31 +51,35 @@ public class AlarmRestResource {
     @POST
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
-    public AlarmListResponseDto getAlarmList(AlarmQuery query) {
+    public Response getAlarmList(AlarmQuery query) {
         LOG.info("Get alarm list invoked in rest layer");
-        return validationService.getAlarmList(query);
+        AlarmListResponseDto alarmList = validationService.getAlarmList(query);
+        return Response.ok(alarmList).build();
     }
 
     @PUT
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
-    public AlarmReport updateAlarmStatus(final AlarmReport alarmReport) {
+    public Response updateAlarmStatus(final AlarmReport alarmReport) {
         LOG.info("Update alarm status invoked in rest layer");
-        return validationService.updateAlarmStatus(alarmReport);
+        AlarmReport updated = validationService.updateAlarmStatus(alarmReport);
+        return Response.ok(updated).build();
     }
 
     @PUT
     @Path("/incomingMovement")
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
-    public IncomingMovement updateIncomingMovement(IncomingMovement movement) {
+    public Response updateIncomingMovement(IncomingMovement movement) {
         LOG.info("Update incomingMovement in holding table");
-        return validationService.updateIncomingMovement(movement);
+        IncomingMovement updated = validationService.updateIncomingMovement(movement);
+        return Response.ok(updated).build();
     }
 
     @GET
     @Path("/{guid}")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
-    public AlarmReport getAlarmReportByGuid(@PathParam("guid") UUID guid) {
-        return validationService.getAlarmReportByGuid(guid);
+    public Response getAlarmReportByGuid(@PathParam("guid") UUID guid) {
+        AlarmReport byGuid = validationService.getAlarmReportByGuid(guid);
+        return Response.ok(byGuid).build();
     }
 
     @POST
@@ -90,16 +94,18 @@ public class AlarmRestResource {
     @GET
     @Path("/countopen")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
-    public long getNumberOfOpenAlarmReports() {
-        return validationService.getNumberOfOpenAlarmReports();
+    public Response getNumberOfOpenAlarmReports() {
+        long count = validationService.getNumberOfOpenAlarmReports();
+        return Response.ok(count).build();
     }
 
     @GET
     @Path("/sanityrules")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
-    public List<String> getSanityRuleNames() {
-        return Arrays.stream(SanityRule.values())
+    public Response getSanityRuleNames() {
+        List<String> sanityRuleNames = Arrays.stream(SanityRule.values())
                 .map(SanityRule::getRuleName)
                 .collect(Collectors.toList());
+        return Response.ok(sanityRuleNames).build();
     }
 }
