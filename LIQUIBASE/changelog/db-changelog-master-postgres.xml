@@ -22,5 +22,9 @@
     <include file="v5.2.4\db-changelog-to-geography-5.2.4.xml" relativeToChangelogFile="true"/>
 
     <include file="v5.2.12\db-changelog-location-in-movement-connect-5.2.12.xml" relativeToChangelogFile="true"/>
+
+    <include file="v5.2.17\db-changelog-spatial-index-on-latest-location-5.2.17.xml" relativeToChangelogFile="true"/>
+
+
         
 </databaseChangeLog>
