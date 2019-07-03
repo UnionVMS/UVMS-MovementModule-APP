@@ -657,7 +657,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
 
 
-    @Ignore  //the query that enables vicinity takes 32 ms, with is more then we can afford right now, so the command for activating vicinity is commented out
     @Test
     @OperateOnDeployment("movementservice")
     public void vicinityOfBasicTest() throws Exception {
@@ -683,7 +682,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertTrue(movementDetails.getVicinityOf().isEmpty());
     }
 
-    @Ignore  //the query that enables vicinity takes 32 ms, with is more then we can afford right now, so the command for activating vicinity is commented out
     @Test
     @OperateOnDeployment("movementservice")
     public void vicinityOfSeveralBoatsTest() throws Exception {
