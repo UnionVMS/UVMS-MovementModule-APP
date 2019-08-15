@@ -25,14 +25,14 @@
 		<spatial.model.version>1.0.12</spatial.model.version>
 		<audit.model.version>4.0.8</audit.model.version>
 		<exchange.model.version>5.0.0-UVMS</exchange.model.version>
-		<asset.client.version>6.0.55</asset.client.version>
+		<asset.client.version>6.0.58</asset.client.version>
 		<movement-rules.model.version>2.1.0</movement-rules.model.version>
 		<javaee.version>8.0</javaee.version>
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
 		<uvms.common.version>4.0.2</uvms.common.version>
-		<usm4uvms.version>4.0.19</usm4uvms.version>
+		<usm4uvms.version>4.0.20</usm4uvms.version>
 		<uvms.config.version>4.0.4</uvms.config.version>
 	</properties>
 
