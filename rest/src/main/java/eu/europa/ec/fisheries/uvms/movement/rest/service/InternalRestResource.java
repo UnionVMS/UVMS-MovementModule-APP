@@ -9,6 +9,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
+import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,7 @@ public class InternalRestResource {
 
     @POST
     @Path("/list")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getListByQuery(MovementQuery query) {
         try {
             GetMovementListByQueryResponse list = movementService.getList(query);
@@ -50,6 +53,7 @@ public class InternalRestResource {
 
     @POST
     @Path("/list/minimal")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getMinimalListByQuery(MovementQuery query) {
         try {
             GetMovementListByQueryResponse minimalList = movementService.getMinimalList(query);
@@ -61,6 +65,7 @@ public class InternalRestResource {
 
     @POST
     @Path("/latest")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getLatestMovementsByConnectIds(List<UUID> connectIds) {
         if (connectIds == null || connectIds.isEmpty()) {
             return Response.status(Status.BAD_REQUEST).entity("No connectIds found").build();
@@ -76,6 +81,7 @@ public class InternalRestResource {
 
     @POST
     @Path("/movementMapByQuery")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getMovementMapByQuery(MovementQuery query) {
         try {
             GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
@@ -89,6 +95,7 @@ public class InternalRestResource {
 
     @GET
     @Path("/countMovementsInDateAndTheDayBeforeForAsset/{id}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response countMovementsInDateAndTheDayBeforeForAsset(@PathParam("id") String id,
                                                                 @QueryParam("after") String after) { // yyyy-MM-dd HH:mm:ss Z
         try {
@@ -105,6 +112,7 @@ public class InternalRestResource {
 
     @PUT
     @Path("/remapMovementConnectInMovement")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response remapMovementConnectInMovement(@QueryParam(value = "MovementConnectFrom") String movementConnectFrom,
                                                    @QueryParam(value = "MovementConnectTo") String movementConnectTo) {
         try {

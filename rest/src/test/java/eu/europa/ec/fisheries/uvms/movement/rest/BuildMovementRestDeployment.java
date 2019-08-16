@@ -14,9 +14,15 @@ package eu.europa.ec.fisheries.uvms.movement.rest;
 import java.io.File;
 import java.util.Arrays;
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,6 +39,9 @@ public abstract class BuildMovementRestDeployment {
 
     @EJB
     private JwtTokenHandler tokenHandler;
+
+    @Inject
+    private InternalRestTokenHandler internalRestTokenHandler;
 
     private String token;
 
@@ -82,6 +91,9 @@ public abstract class BuildMovementRestDeployment {
     protected WebTarget getWebTarget() {
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Client client = ClientBuilder.newClient();
         client.register(new JacksonJaxbJsonProvider(objectMapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
         //return client.target("http://localhost:28080/test/rest");
@@ -98,5 +110,9 @@ public abstract class BuildMovementRestDeployment {
                             UnionVMSFeature.viewAlarmsHoldingTable.getFeatureId()));
         }
         return token;
+    }
+
+    protected String getTokenInternalRest() {
+        return internalRestTokenHandler.createAndFetchToken("user");
     }
 }

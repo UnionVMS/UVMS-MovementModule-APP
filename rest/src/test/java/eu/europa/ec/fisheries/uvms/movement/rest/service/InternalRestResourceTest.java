@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -57,6 +58,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("internal/list")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .post(Entity.json(query), String.class);
         assertNotNull(response);
 
@@ -79,6 +81,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("internal/list/minimal")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .post(Entity.json(query), String.class);
         assertNotNull(response);
 
@@ -101,6 +104,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("internal/latest")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .post(Entity.json(Collections.singletonList(movConnectId)), String.class);
         assertNotNull(response);
 
@@ -110,7 +114,6 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         assertEquals(1, movements.size());
     }
 
-
     @Test
     @OperateOnDeployment("movement")
     public void countMovementsInTheLastDayForAssetTest() {
@@ -119,9 +122,11 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         Instant now = Instant.now().plusSeconds(60);
 
         long response = getWebTarget()
-                .path("internal/countMovementsInDateAndTheDayBeforeForAsset/" + createdMovement.getMovementConnect().getId().toString())
-                .queryParam("after", DateUtil.parseUTCDateToString(now))    //yyyy-MM-dd HH:mm:ss Z
+                .path("internal/countMovementsInDateAndTheDayBeforeForAsset/")
+                .path(createdMovement.getMovementConnect().getId().toString())
+                .queryParam("after", DateUtil.parseUTCDateToString(now)) //yyyy-MM-dd HH:mm:ss Z
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .get(long.class);
 
         assertEquals(1, response);
@@ -138,6 +143,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("internal/movementMapByQuery")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .post(Entity.json(query), String.class);
         assertNotNull(response);
 
@@ -145,7 +151,6 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         assertNotNull(movMap);
         assertEquals(1, movMap.getMovementMap().size());
     }
-
 
     @Test
     @OperateOnDeployment("movement")
@@ -155,12 +160,12 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
         Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
 
-
         Response remapResponse = getWebTarget()
                 .path("internal/remapMovementConnectInMovement")
                 .queryParam("MovementConnectFrom", createdMovement1.getMovementConnect().getId().toString())
                 .queryParam("MovementConnectTo", createdMovement2.getMovementConnect().getId().toString())
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .put(Entity.json(""), Response.class);
         assertEquals(200, remapResponse.getStatus());
 
@@ -174,6 +179,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         String response = getWebTarget()
                 .path("internal/list")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .post(Entity.json(movementQuery), String.class);
         assertNotNull(response);
 
