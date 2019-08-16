@@ -271,6 +271,10 @@ public class MovementService {
         for (Movement move : movements) {
             move.setMovementConnect(newMovementConnect);
         }
-        movementDao.deleteMovementConnect(oldMovementConnect);
+    }
+
+    public void removeMovementConnect(String movementConnectId){
+        MovementConnect toBeDeleted = movementDao.getMovementConnectByConnectId(UUID.fromString(movementConnectId));
+        movementDao.deleteMovementConnect(toBeDeleted);
     }
 }

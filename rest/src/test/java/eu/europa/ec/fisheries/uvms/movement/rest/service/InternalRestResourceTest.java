@@ -12,6 +12,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -37,6 +38,9 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Inject
     private MovementService movementService;
+
+    @Inject
+    private MovementDao movementDao;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -178,6 +182,33 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         assertEquals(2, movList.getMovement().size());
         assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement1.getId().toString())));
         assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement2.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void remapMovementConnectInMovementAndDeleteOldMovementConnectTest() throws IOException {
+        Movement movementBaseType1 = MovementTestHelper.createMovement();
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
+
+
+        Response remapResponse = getWebTarget()
+                .path("internal/remapMovementConnectInMovement")
+                .queryParam("MovementConnectFrom", createdMovement1.getMovementConnect().getId().toString())
+                .queryParam("MovementConnectTo", createdMovement2.getMovementConnect().getId().toString())
+                .request(MediaType.APPLICATION_JSON)
+                .put(Entity.json(""), Response.class);
+        assertEquals(200, remapResponse.getStatus());
+
+        Response deleteResponse = getWebTarget()
+                .path("internal/removeMovementConnect")
+                .queryParam("MovementConnectId", createdMovement1.getMovementConnect().getId().toString())
+                .request(MediaType.APPLICATION_JSON)
+                .delete(Response.class);
+        assertEquals(200, deleteResponse.getStatus());
+
+        assertNull(movementDao.getMovementConnectByConnectId(createdMovement1.getMovementConnect().getId()));
     }
 
 

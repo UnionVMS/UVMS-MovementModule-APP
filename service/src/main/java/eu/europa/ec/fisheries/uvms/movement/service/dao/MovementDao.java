@@ -10,32 +10,30 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-
+import com.vividsolutions.jts.geom.Geometry;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
+import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.vividsolutions.jts.geom.Geometry;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
-import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
+
+import javax.ejb.Stateless;
+import javax.persistence.*;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 @Stateless
 public class MovementDao {
