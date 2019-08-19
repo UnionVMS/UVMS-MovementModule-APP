@@ -14,12 +14,11 @@ import java.util.Arrays;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import javax.jms.*;
+
 import eu.europa.ec.fisheries.schema.config.types.v1.PullSettingsStatus;
 import eu.europa.ec.fisheries.schema.config.types.v1.SettingType;
+import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import eu.europa.ec.fisheries.uvms.config.model.exception.ModelMarshallException;
 import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleResponseMapper;
 
@@ -30,8 +29,9 @@ import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleResponseMapper;
 public class ConfigServiceMock implements MessageListener {
     
     @Inject
-    MovementProducer messageProducer;
-
+    @JMSConnectionFactory("java:/JmsXA")
+    private JMSContext context;
+    
     @Override
     public void onMessage(Message message) {
         try {
@@ -40,7 +40,11 @@ public class ConfigServiceMock implements MessageListener {
             mockSetting.setValue("500");
             mockSetting.setDescription("Set in ConfigServiceMock.java");
             String response = ModuleResponseMapper.toPullSettingsResponse(Arrays.asList(mockSetting), PullSettingsStatus.OK);
-            messageProducer.sendResponseMessageToSender((TextMessage) message, response);
+
+            TextMessage responseMessage = this.context.createTextMessage(response);
+            responseMessage.setJMSCorrelationID(message.getJMSMessageID());
+            MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(responseMessage);
+            this.context.createProducer().send(message.getJMSReplyTo(), responseMessage);
         } catch (ModelMarshallException | JMSException e) {
         }
     }
