@@ -120,7 +120,20 @@ public class InternalRestResource {
             return Response.ok()
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
-            LOG.error("[ Error when counting movements. ]", e);
+            LOG.error("[ Error when remapping movements. ]", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+
+    @DELETE
+    @Path("/removeMovementConnect")
+    public Response removeMovementConnect(@QueryParam(value = "MovementConnectId") String movementConnectId) {
+        try {
+            movementService.removeMovementConnect(movementConnectId);
+            return Response.ok()
+                    .header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when removing movement connect. ]", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
