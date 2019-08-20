@@ -204,6 +204,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .queryParam("MovementConnectFrom", createdMovement1.getMovementConnect().getId().toString())
                 .queryParam("MovementConnectTo", createdMovement2.getMovementConnect().getId().toString())
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .put(Entity.json(""), Response.class);
         assertEquals(200, remapResponse.getStatus());
 
@@ -211,6 +212,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .path("internal/removeMovementConnect")
                 .queryParam("MovementConnectId", createdMovement1.getMovementConnect().getId().toString())
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .delete(Response.class);
         assertEquals(200, deleteResponse.getStatus());
 
