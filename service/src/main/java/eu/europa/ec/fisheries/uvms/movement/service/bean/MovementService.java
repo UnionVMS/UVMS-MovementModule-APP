@@ -275,6 +275,8 @@ public class MovementService {
 
     public void removeMovementConnect(String movementConnectId){
         MovementConnect toBeDeleted = movementDao.getMovementConnectByConnectId(UUID.fromString(movementConnectId));
-        movementDao.deleteMovementConnect(toBeDeleted);
+        if(toBeDeleted != null) {
+            movementDao.deleteMovementConnect(toBeDeleted);
+        }
     }
 }

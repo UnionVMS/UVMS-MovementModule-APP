@@ -192,7 +192,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void remapMovementConnectInMovementAndDeleteOldMovementConnectTest() throws IOException {
+    public void remapMovementConnectInMovementAndDeleteOldMovementConnectTest() {
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         Movement movementBaseType2 = MovementTestHelper.createMovement();
         Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
@@ -217,6 +217,18 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         assertEquals(200, deleteResponse.getStatus());
 
         assertNull(movementDao.getMovementConnectByConnectId(createdMovement1.getMovementConnect().getId()));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void removeNonExistantMCTest() {
+        Response deleteResponse = getWebTarget()
+                .path("internal/removeMovementConnect")
+                .queryParam("MovementConnectId", UUID.randomUUID().toString())
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
+                .delete(Response.class);
+        assertEquals(200, deleteResponse.getStatus());
     }
 
 
