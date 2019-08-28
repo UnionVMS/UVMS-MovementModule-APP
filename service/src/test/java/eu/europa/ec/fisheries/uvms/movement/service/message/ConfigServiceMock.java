@@ -10,7 +10,10 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
-import java.util.Arrays;
+import eu.europa.ec.fisheries.schema.config.types.v1.PullSettingsStatus;
+import eu.europa.ec.fisheries.schema.config.types.v1.SettingType;
+import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleResponseMapper;
+
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.inject.Inject;
@@ -18,10 +21,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import eu.europa.ec.fisheries.schema.config.types.v1.PullSettingsStatus;
-import eu.europa.ec.fisheries.schema.config.types.v1.SettingType;
-import eu.europa.ec.fisheries.uvms.config.model.exception.ModelMarshallException;
-import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleResponseMapper;
+import java.util.Arrays;
 
 @MessageDriven(mappedName = "jms/queue/UVMSConfigEvent", activationConfig = {
         @ActivationConfigProperty(propertyName = "messagingType", propertyValue = "javax.jms.MessageListener"), 
@@ -41,7 +41,7 @@ public class ConfigServiceMock implements MessageListener {
             mockSetting.setDescription("Set in ConfigServiceMock.java");
             String response = ModuleResponseMapper.toPullSettingsResponse(Arrays.asList(mockSetting), PullSettingsStatus.OK);
             messageProducer.sendResponseMessageToSender((TextMessage) message, response);
-        } catch (ModelMarshallException | JMSException e) {
+        } catch (JMSException e) {
         }
     }
 }

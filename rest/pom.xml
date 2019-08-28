@@ -87,12 +87,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>eu.europa.ec.fisheries.uvms.spatial</groupId>
-			<artifactId>spatial-model</artifactId>
-			<version>${spatial.model.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
 			<artifactId>uvms-commons-message</artifactId>
 			<version>${uvms.common.version}</version>
@@ -101,14 +95,14 @@
 		<dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.9.5</version>
+            <version>2.9.9</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
             <artifactId>uvms-commons-rest</artifactId>
-            <version>3.0.32</version>
+            <version>${uvms.common.version}</version>
         </dependency>
 
     </dependencies>

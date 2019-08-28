@@ -12,8 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.audit.model.exception.AuditModelMarshallException;
-import eu.europa.ec.fisheries.uvms.audit.model.mapper.AuditLogMapper;
+import eu.europa.ec.fisheries.uvms.audit.model.mapper.AuditLogModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -46,7 +45,7 @@ public class AuditService {
                 auditData = AuditModuleRequestMapper.mapAuditLogMovementCreated(movement.getId(), username);
             }
             producer.sendModuleMessage(auditData);
-        } catch (AuditModelMarshallException | JMSException e) {
+        } catch (JMSException e) {
             LOG.error("Failed to send audit log message! Movement with guid {} was created ", movement.getId(), e);
         }
     }
@@ -56,7 +55,7 @@ public class AuditService {
         try {
             String auditData = AuditModuleRequestMapper.mapAuditLogMovementBatchCreated(guid, username);
             producer.sendModuleMessage(auditData);
-        } catch (AuditModelMarshallException | JMSException e) {
+        } catch (JMSException e) {
             LOG.error("Failed to send audit log message! Movement batch with guid {} was created ", guid, e);
         }
     }
@@ -67,7 +66,7 @@ public class AuditService {
             String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(draftMovement.getId().toString(),
                     username);
             producer.sendModuleMessage(auditRequest);
-        } catch (AuditModelMarshallException | JMSException e) {
+        } catch (JMSException e) {
             LOG.error("Failed to send audit log message! DraftMovement with guid {} was created ", draftMovement.getId().toString(), e);
         }
     }
@@ -75,9 +74,9 @@ public class AuditService {
     @Asynchronous
     public void sendAuditMessage(AuditObjectTypeEnum type, AuditOperationEnum operation, String affectedObject, String comment, String username) {
         try {
-            String message = AuditLogMapper.mapToAuditLog(type.getValue(), operation.getValue(), affectedObject, comment, username);
+            String message = AuditLogModelMapper.mapToAuditLog(type.getValue(), operation.getValue(), affectedObject, comment, username);
             producer.sendModuleMessage(message);
-        } catch (AuditModelMarshallException | JMSException e) {
+        } catch (JMSException e) {
             LOG.error("[ERROR] Error when sending message to Audit. ] {}", e.getMessage());
         }
     }

@@ -16,7 +16,6 @@
 		<wsdl.contract.name>MovementModuleService</wsdl.contract.name>
 		<wsdl.source.name>MovementDataSourceService</wsdl.source.name>
 		<binding.xml>binding-date.xml</binding.xml>
-		<jaxb2-basics.version>0.9.5</jaxb2-basics.version>
 	</properties>
 
 	<dependencies>

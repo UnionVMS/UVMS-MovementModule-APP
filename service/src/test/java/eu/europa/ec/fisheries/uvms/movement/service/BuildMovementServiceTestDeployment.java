@@ -45,9 +45,9 @@ public abstract class BuildMovementServiceTestDeployment {
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "unionvms.war");
 
         File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
-                .resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12",
-                        "eu.europa.ec.fisheries.uvms.movement:movement-model",
+                .resolve("eu.europa.ec.fisheries.uvms.movement:movement-model",
                         "eu.europa.ec.fisheries.uvms.asset:asset-model",
+                        "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message",
                         "eu.europa.ec.fisheries.uvms.asset:asset-client")
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
