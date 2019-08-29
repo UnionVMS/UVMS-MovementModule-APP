@@ -48,7 +48,8 @@ public abstract class BuildMovementServiceTestDeployment {
                 .resolve("eu.europa.ec.fisheries.uvms.movement:movement-model",
                         "eu.europa.ec.fisheries.uvms.asset:asset-model",
                         "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message",
-                        "eu.europa.ec.fisheries.uvms.asset:asset-client")
+                        "eu.europa.ec.fisheries.uvms.asset:asset-client",
+                        "eu.europa.ec.fisheries.uvms:usm4uvms")
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
