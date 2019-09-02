@@ -22,20 +22,32 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ForbiddenException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @WebFilter(asyncSupported = true, urlPatterns = {"/*"})
 public class RequestFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestFilter.class);
 
-    @Resource(lookup = "java:global/corsAllowedOriginList")
-    private String corsOriginList;
+    /**
+     * {@code corsOriginRegex} is valid for given host names/IPs and any range of sub domains.
+     *
+     * localhost:28080
+     * localhost:8080
+     * 127.0.0.1:28080
+     * 127.0.0.1:8080
+     * 192.168.***.***:28080
+     * 192.168.***.***:8080
+     * *.hav.havochvatten.se:8080
+     * *.hav.havochvatten.se:28080
+     */
+    @Resource(lookup = "java:global/cors_allowed_host_regex")
+    private String corsOriginRegex;
 
     @Override
     public void init(FilterConfig filterConfig) {
-        LOG.info("Requstfilter starting up!");
+        LOG.info("RequestFilter starting up!");
     }
 
     @Override
@@ -44,7 +56,9 @@ public class RequestFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         final String HOST = httpServletRequest.getHeader("HOST");
 
-        if(!getAllowedOriginList().contains(HOST))
+        boolean isValid = validateHost(HOST);
+
+        if (!isValid)
             throw new ForbiddenException("You are not allowed to make any request from an external domain. Your Host: " + HOST);
 
         HttpServletResponse response = (HttpServletResponse) res;
@@ -54,13 +68,15 @@ public class RequestFilter implements Filter {
         chain.doFilter(request, res);
     }
 
-    private List<String> getAllowedOriginList() {
-        return Arrays.asList(corsOriginList.split(","));
+
+    private boolean validateHost(String host) {
+        Pattern pattern = Pattern.compile(corsOriginRegex);
+        Matcher matcher = pattern.matcher(host);
+        return matcher.matches();
     }
 
     @Override
     public void destroy() {
         LOG.info("RequestFilter shutting down!");
     }
-
 }
