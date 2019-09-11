@@ -10,6 +10,7 @@
     <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
     <artifactId>liquibase</artifactId>
     <name>liquibase</name>
+    <packaging>pom</packaging>
 
     <properties>
         <project.scm.id>github</project.scm.id>
