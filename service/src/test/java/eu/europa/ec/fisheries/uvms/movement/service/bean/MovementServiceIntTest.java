@@ -609,18 +609,20 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void findLatestMultipleConnectIdsWithOldTimestampTest() {
+    public void findLatestMultipleConnectIdsWithOldTimestampTest() throws Exception {
         UUID connectId = UUID.randomUUID();
         Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
         movementType.setTimestamp(Instant.now().minus(15, ChronoUnit.MINUTES));
         Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        movementDao.flush();        //needed to force db to update the updated column
 
         UUID connectId2 = UUID.randomUUID();
         Movement movementType2 = MockData.createMovement(57.715303, 11.973323, connectId2);
         movementType2.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(movementType2.getMovementConnect().getUpdated());
+        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(createdMovement2.getMovementConnect().getUpdated());
         assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
         assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
     }
