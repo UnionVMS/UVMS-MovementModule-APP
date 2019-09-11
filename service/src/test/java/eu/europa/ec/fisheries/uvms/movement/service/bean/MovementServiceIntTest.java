@@ -620,7 +620,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType2.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES));
+        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(movementType2.getMovementConnect().getUpdated());
         assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
         assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
     }

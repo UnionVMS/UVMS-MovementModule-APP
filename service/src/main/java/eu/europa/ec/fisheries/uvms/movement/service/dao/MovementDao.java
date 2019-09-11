@@ -270,6 +270,14 @@ public class MovementDao {
         return movementConnect;
     }
 
+    public void flush(){
+        em.flush();
+    }
+
+    public MovementConnect mergeMovementConnect(MovementConnect mc){
+        return em.merge(mc);
+    }
+
     public void deleteMovementConnect(MovementConnect movementConnect){
         em.remove(movementConnect);
     }
