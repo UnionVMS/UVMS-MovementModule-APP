@@ -25,6 +25,8 @@
 
     <include file="v5.2.17\db-changelog-spatial-index-on-latest-location-5.2.17.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.2.23\db-changelog-index-on-moveconn-updatetime-5.2.17.xml" relativeToChangelogFile="true"/>
+
 
         
 </databaseChangeLog>
