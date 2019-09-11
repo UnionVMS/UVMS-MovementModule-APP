@@ -52,12 +52,12 @@
             <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
             <artifactId>asset-client</artifactId>
             <version>${asset.client.version}</version>
-            <exclusions>
+            <!--exclusions>
                 <exclusion>
                     <groupId>eu.europa.ec.fisheries.uvms</groupId>
                     <artifactId>usm4uvms</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions-->
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement-rules</groupId>
