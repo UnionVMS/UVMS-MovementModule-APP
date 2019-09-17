@@ -48,7 +48,7 @@ public class WKTUtil {
     }
 
     public static String getWktLineStringFromSegment(Segment segment) {
-        return WKTWriter.toLineString(GeometryUtil.getLineStringFromMovements(segment.getFromMovement(), segment.getFromMovement()).getCoordinateSequence());
+        return WKTWriter.toLineString(GeometryUtil.getLineStringFromMovements(segment.getFromMovement(), segment.getToMovement()).getCoordinateSequence());
     }
 
     public static Geometry getGeometryFromWKTSrring(String wkt) {
