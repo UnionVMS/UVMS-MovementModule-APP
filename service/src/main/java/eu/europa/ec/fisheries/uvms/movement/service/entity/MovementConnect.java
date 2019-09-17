@@ -20,9 +20,9 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.vividsolutions.jts.geom.Point;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 
 @Entity
 @Table(name = "movementconnect")
@@ -144,8 +144,11 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     }
 
     @Override
-	public int compareTo(MovementConnect o2) {
-		return MovementComparator.MOVEMENT_CONNECT.compare(this, o2);
+	public int compareTo(MovementConnect o) {
+        if (o == null) {
+            return ObjectUtils.compare(this, null);
+        } else {
+            return ObjectUtils.compare(this.getId(), o.getId());
+        }
 	}
-
 }

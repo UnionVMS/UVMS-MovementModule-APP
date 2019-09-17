@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
@@ -26,7 +27,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 
 /**
  * Created by andreasw on 2017-03-09.
@@ -582,7 +582,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
      * Validate segments and track for movements with same connectId
      */
     private void assertSegmentsAndTrack(List<Movement> movements) {
-        movements.sort(MovementComparator.MOVEMENT);
+        Collections.sort(movements);
 
         Movement firstMovement = movements.get(0);
         // Tracks
