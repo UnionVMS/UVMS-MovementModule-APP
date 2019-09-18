@@ -9,7 +9,7 @@
 
 	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
 	<artifactId>movement</artifactId>
-	<version>5.1.6-SNAPSHOT</version>
+	<version>5.1.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Maven projekt-archetype for UnionVms modules</description>
 
@@ -23,16 +23,15 @@
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.0.8</user.model.version>
 		<spatial.model.version>1.0.12</spatial.model.version>
-		<audit.model.version>4.0.8</audit.model.version>
+    <audit.model.version>4.0.10</audit.model.version>
 		<exchange.model.version>4.0.22</exchange.model.version>
 		<javaee.version>8.0</javaee.version>
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
-		<uvms.common.version>3.3-W14J8</uvms.common.version>
-		<usm4uvms.version>4.0.14-W14-J8</usm4uvms.version>
-		<uvms.config.version>4.1-W14J8</uvms.config.version>
-
+    <uvms.common.version>3.4-SNAPSHOT</uvms.common.version>
+    <usm4uvms.version>4.0.15.1-SNAPSHOT</usm4uvms.version>
+    <uvms.config.version>4.2-SNAPSHOT</uvms.config.version>
 		<hibernate.version>5.1.9.Final</hibernate.version>
 	</properties>
 

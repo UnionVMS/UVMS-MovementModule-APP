@@ -9,14 +9,14 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.1.6-SNAPSHOT</version>
+        <version>5.1.8-SNAPSHOT</version>
     </parent>
     
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
             <artifactId>movement-message</artifactId>
-            <version>5.1.6-SNAPSHOT</version>
+            <version>5.1.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
