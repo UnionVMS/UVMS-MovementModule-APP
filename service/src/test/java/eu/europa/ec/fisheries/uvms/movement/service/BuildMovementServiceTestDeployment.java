@@ -21,9 +21,10 @@ public abstract class BuildMovementServiceTestDeployment {
         // Embedding war package which contains the test class is needed
         // So that Arquillian can invoke test class through its servlet test runner
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "movementsearch.war");
-
+        
         File[] files = Maven.resolver().loadPomFromFile("pom.xml")
-                .importRuntimeAndTestDependencies().resolve().withTransitivity().asFile();
+        		.importCompileAndRuntimeDependencies().importTestDependencies()
+                .resolve().withTransitivity().asFile();
         testWar.addAsLibraries(files);
         
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service");
