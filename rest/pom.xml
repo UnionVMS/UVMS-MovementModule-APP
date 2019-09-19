@@ -148,7 +148,23 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<wildfly_host>${arquillian.wildfly.host}</wildfly_host>
+						<rest_port>${arquillian.wildfly.port}</rest_port>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
         </plugins>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
     </build>
 
     <!-- USE following command to run this profile: mvn clean install -P generate-rest-doc -Dhostname=127.0.0.1 -Dport=8080  -->

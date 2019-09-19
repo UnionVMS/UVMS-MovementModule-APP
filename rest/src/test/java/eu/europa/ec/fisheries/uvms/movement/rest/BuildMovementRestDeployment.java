@@ -26,6 +26,10 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 @ArquillianSuiteDeployment
 public abstract class BuildMovementRestDeployment {
+
+    private static final String HOST = System.getProperty("wildfly_host","localhost");
+    private static final String REST_PORT = System.getProperty("rest_port","8080");
+	
     @Deployment(name = "movement", order = 2)
     public static Archive<?> createDeployment() {
 
@@ -70,7 +74,6 @@ public abstract class BuildMovementRestDeployment {
         ObjectMapper objectMapper = new ObjectMapper();
         Client client = ClientBuilder.newClient();
         client.register(new JacksonJaxbJsonProvider(objectMapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
-        //return client.target("http://localhost:28080/test/rest");
-        return client.target("http://localhost:8080/test/rest");
+        return client.target("http://"+HOST+":"+REST_PORT+"/test/rest");
     }
 }

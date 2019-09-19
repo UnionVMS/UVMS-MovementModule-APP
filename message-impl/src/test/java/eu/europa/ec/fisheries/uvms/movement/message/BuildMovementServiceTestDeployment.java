@@ -16,7 +16,9 @@ public abstract class BuildMovementServiceTestDeployment {
 
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "test.war");
 
-        File[] files = Maven.resolver().loadPomFromFile("pom.xml").importRuntimeAndTestDependencies().resolve()
+        File[] files = Maven.resolver().loadPomFromFile("pom.xml")
+        		.importCompileAndRuntimeDependencies().importTestDependencies()
+                .resolve()
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
         
@@ -43,8 +45,8 @@ public abstract class BuildMovementServiceTestDeployment {
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "unionvms.war");
 
         File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
-                .resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12")
-                .withTransitivity().asFile();
+        		.resolve("eu.europa.ec.fisheries.uvms.spatial:spatial-model:1.0.12")
+        		 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
         testWar.addClass(UnionVMSMock.class);

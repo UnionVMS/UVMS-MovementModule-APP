@@ -107,7 +107,22 @@
                     <ejbVersion>3.1</ejbVersion>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<activemq_host>${arquillian.wildfly.host}</activemq_host>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
         </plugins>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
     </build>
     
 </project>

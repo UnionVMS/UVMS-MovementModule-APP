@@ -20,6 +20,9 @@ import javax.jms.QueueBrowser;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
@@ -30,12 +33,15 @@ import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 
 public class JMSHelper {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JMSHelper.class);
 
     private static final long TIMEOUT = 20000;
     private static final String MOVEMENT_QUEUE = "UVMSMovementEvent";
+    private static final String AMQ_HOST = System.getProperty("activemq_host","localhost");
     public static final String RESPONSE_QUEUE = "MovementTestQueue";
 
-    private ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+    private ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+AMQ_HOST+":61616");
 
     public PingResponse pingMovement() throws Exception {
         String pingRequest = MovementModuleRequestMapper.mapToPingRequest(null);
@@ -94,6 +100,9 @@ public class JMSHelper {
 
             return session.createConsumer(responseQueue, "JMSCorrelationID='" + correlationId + "'")
                           .receive(TIMEOUT);
+        } catch(Exception e) {
+            LOG.error("Failed listening to response",e);
+            return null;
         } finally {
             connection.close();
         }

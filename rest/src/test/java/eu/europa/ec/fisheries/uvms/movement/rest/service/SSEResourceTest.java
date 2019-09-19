@@ -33,13 +33,15 @@ public class SSEResourceTest extends BuildMovementRestDeployment {
 
     private static String dataString = "";
     private static String errorString = "";
+    private static String HOST = System.getProperty("wildfly_host","localhost");
+    private static String REST_PORT = System.getProperty("rest_port","8080");
 
     @Test
     @OperateOnDeployment("movement")
     public void SSEBroadcastTest() throws Exception{
 
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/test/rest/sse/subscribe");
+        WebTarget target = client.target("http://"+HOST+":"+REST_PORT+"/test/rest/sse/subscribe");
 
         try (SseEventSource source = SseEventSource.target(target).reconnectingEvery(1, TimeUnit.SECONDS).build()) {
             source.register(onEvent, onError, onComplete);
