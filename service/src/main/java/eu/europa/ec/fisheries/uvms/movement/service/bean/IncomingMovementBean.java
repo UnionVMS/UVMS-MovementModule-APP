@@ -70,6 +70,7 @@ public class IncomingMovementBean {
                 movement.setPositionTime(newDate);
             } else if (!Objects.equals(movement.getMovementSourceType(), MovementSourceType.AIS.value()) &&
                     !Objects.equals(movement.getMovementSourceType(), duplicateMovements.get(0).getMovementSource().value())) {
+                // Don't modify NAF/Inmarsat timestamp, add second to AIS position instead 
                 duplicateMovements.get(0).setTimestamp(DateUtil.addSecondsToDate(timeStamp, 1));
             } else {
                 LOG.info("Got a duplicate movement for Asset {}. Marking it as such.", movement.getAssetGuid());
