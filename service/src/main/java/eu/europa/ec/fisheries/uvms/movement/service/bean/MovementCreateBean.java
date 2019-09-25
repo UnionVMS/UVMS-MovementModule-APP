@@ -18,6 +18,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
@@ -62,6 +63,10 @@ public class MovementCreateBean {
             enrichIncomingMovement(incomingMovement, response);
 
             incomingMovementBean.checkAndSetDuplicate(incomingMovement);
+            if (incomingMovement.isDuplicate() && 
+                    incomingMovement.getMovementSourceType().equals(MovementSourceType.AIS.value())) {
+                return;
+            }
             UUID reportId = movementSanityValidatorBean.evaluateSanity(incomingMovement);
             if (reportId != null) {
                 exchangeBean.sendAckToExchange(MovementRefTypeType.ALARM, reportId, incomingMovement.getAckResponseMessageId());
