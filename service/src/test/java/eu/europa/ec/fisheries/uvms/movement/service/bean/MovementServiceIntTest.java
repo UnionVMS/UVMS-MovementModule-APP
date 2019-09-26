@@ -329,7 +329,9 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void getLatestMovementOnlyOne() {
         Movement movementType = MockData.createMovement(1d, 1d, UUID.randomUUID());
         Movement createdMovement = movementService.createAndProcessMovement(movementType);
-        
+
+        movementDao.flush();
+
         Movement movementType2 = MockData.createMovement(2d, 2d, UUID.randomUUID());
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
         
