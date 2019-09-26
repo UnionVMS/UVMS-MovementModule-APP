@@ -1,10 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.search.v1.*;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
@@ -240,19 +237,19 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
         assertNotNull(createdMovement.getId());
 
-        List<String> vesselIds = new ArrayList<>();
-        vesselIds.add(movementBaseType.getMovementConnect().getId().toString());
+        List<String> connectIds = new ArrayList<>();
+        connectIds.add(movementBaseType.getMovementConnect().getId().toString());
 
         Instant now = Instant.now();
         Instant dayBefore = now.minus(1, ChronoUnit.DAYS);
 
-        MicroMovementsForConnectIdsBetweenDatesRequest microMovementsForConnectIdsBetweenDatesRequest = new MicroMovementsForConnectIdsBetweenDatesRequest(vesselIds, dayBefore, now);
+        MicroMovementsForConnectIdsBetweenDatesRequest request = new MicroMovementsForConnectIdsBetweenDatesRequest(connectIds, dayBefore, now);
 
         Response response = getWebTarget()
                 .path("internal/microMovementsForConnectIdsBetweenDates")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
-                .post(Entity.entity(microMovementsForConnectIdsBetweenDatesRequest, MediaType.APPLICATION_JSON_TYPE), Response.class);
+                .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE), Response.class);
 
         List<MicroMovementExtended> microMovementExtendedList = response.readEntity(new GenericType<List<MicroMovementExtended>>() {});
 
