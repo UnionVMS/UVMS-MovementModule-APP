@@ -379,23 +379,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movements3.size(), is(1));
         assertThat(movements3.get(0).getPositionTime(), is(Date.from(movement.getPositionTime().plus(1, ChronoUnit.SECONDS))));
     }
-    
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void createDuplicateMovementDifferentSourceCreateAlarm() throws Exception {
-        UUID assetHistoryId = UUID.randomUUID();
-        IncomingMovement movement = MovementTestHelper.createIncomingMovementType();
-        movement.setAssetIRCS("TestIrcs:" + assetHistoryId);
-        movement.setPositionTime(Instant.now().minus(2, ChronoUnit.DAYS));
-        movement.setMovementSourceType(MovementSourceType.INMARSAT_C.value());
-        sendIncomingMovementAndWaitForResponse(movement);
-        
-        movement.setMovementSourceType(MovementSourceType.AIS.value());
-        jmsHelper.clearQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
-        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(movement);
-        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
-        
-    }
 
     @Test
     @OperateOnDeployment("movementservice")
