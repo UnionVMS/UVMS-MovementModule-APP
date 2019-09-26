@@ -15,6 +15,7 @@ import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementsForVesselIdsReques
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementsForVesselIdsResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -233,7 +234,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void getMovementsForVessels() throws IOException {
+    public void getMovementsForVessels() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -247,18 +248,13 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
         MovementsForVesselIdsRequest movementsForVesselIdsRequest = new MovementsForVesselIdsRequest(vesselIds, dayBefore, now);
 
-        Entity<MovementsForVesselIdsRequest> json = Entity.json(movementsForVesselIdsRequest);
-        String s = json.toString();
-
-        String response = getWebTarget()
+        MovementsForVesselIdsResponse response = getWebTarget()
                 .path("internal/positionsOfVessels")
                 .request(MediaType.APPLICATION_JSON)
-                .post(json, String.class);
-        assertNotNull(response);
+                .post(Entity.entity(movementsForVesselIdsRequest, MediaType.APPLICATION_JSON_TYPE), MovementsForVesselIdsResponse.class);
 
-        MovementsForVesselIdsResponse movementsForVesselIdsResponse = mapper.readValue(response, MovementsForVesselIdsResponse.class);
-        assertNotNull(movementsForVesselIdsResponse);
-        assertEquals(1, movementsForVesselIdsResponse.getMicroMovementExtendedList().size());
+        List<MicroMovementExtended> microMovementExtendedList = response.getMicroMovementExtendedList();
+        assertEquals(1, microMovementExtendedList.size());
     }
 
     private MovementQuery createMovementQuery(Movement createdMovement) {

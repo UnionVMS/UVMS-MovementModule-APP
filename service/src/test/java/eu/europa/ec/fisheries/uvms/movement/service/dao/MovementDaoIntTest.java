@@ -330,6 +330,7 @@ public class MovementDaoIntTest extends TransactionalTests {
     public void getMovementList_NumberOfReports_0_NoSearchValue()  {
 
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
+        // TODO query has returned more than one result in test at least once
 
         List<SearchValue> searchValues = new ArrayList<>();
         String sql = "SELECT m FROM Movement m WHERE m.speed < -42";
