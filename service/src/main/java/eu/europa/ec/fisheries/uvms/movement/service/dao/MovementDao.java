@@ -306,4 +306,12 @@ public class MovementDao {
         query.setParameter("date", date);
         return query.getResultList();
     }
+
+    public List<MicroMovementExtended> getMicroMovementsForConnectIdsBetweenDates(List<UUID> connectIds, Instant fromDate, Instant toDate) {
+        TypedQuery<MicroMovementExtended> query = em.createNamedQuery(MicroMovementExtended.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, MicroMovementExtended.class);
+        query.setParameter("connectIds", connectIds);
+        query.setParameter("fromDate", fromDate);
+        query.setParameter("toDate", toDate);
+        return query.getResultList();
+    }
 }

@@ -10,10 +10,11 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
-public class MicroMovement {
+public class MicroMovement implements Serializable {
 
     public static final String FIND_ALL_AFTER_DATE = "MicroMovementDtoV2.findAllAfterDate";
 
