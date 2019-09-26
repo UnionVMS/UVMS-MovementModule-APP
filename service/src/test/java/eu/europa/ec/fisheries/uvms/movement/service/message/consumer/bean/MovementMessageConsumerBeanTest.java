@@ -25,6 +25,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -32,6 +34,7 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
@@ -40,6 +43,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
+import eu.europa.ec.fisheries.uvms.movementrules.model.mapper.JAXBMarshaller;
 
 @RunWith(Arquillian.class)
 public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDeployment {
@@ -320,7 +324,78 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
         assertThat(secondMovementDetails.getSumPositionReport(), is(1));
     }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createDuplicateMovement() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        IncomingMovement movement = MovementTestHelper.createIncomingMovementType();
+        movement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        movement.setPositionTime(Instant.now().minus(2, ChronoUnit.DAYS));
+        sendIncomingMovementAndWaitForResponse(movement);
+        
+        jmsHelper.clearQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(movement);
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
 
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createDuplicateMovementDifferentSource() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        IncomingMovement movement = MovementTestHelper.createIncomingMovementType();
+        movement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        movement.setPositionTime(Instant.now().minus(2, ChronoUnit.DAYS));
+        movement.setMovementSourceType(MovementSourceType.AIS.value());
+        sendIncomingMovementAndWaitForResponse(movement);
+        
+        movement.setMovementSourceType(MovementSourceType.INMARSAT_C.value());
+        sendIncomingMovementAndWaitForResponse(movement);
+        
+        MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
+        ListCriteria criteria = new ListCriteria();
+        criteria.setKey(SearchKey.CONNECT_ID);
+        criteria.setValue(assetHistoryId.toString());
+        query.getMovementSearchCriteria().add(criteria);
+
+        GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movement.getAssetGuid());
+        List<MovementType> movements = listByQueryResponse.getMovement();
+        assertThat(movements.size(), is(2));
+        
+        ListCriteria criteria2 = new ListCriteria();
+        criteria2.setKey(SearchKey.SOURCE);
+        criteria2.setValue(MovementSourceType.INMARSAT_C.value());
+        query.getMovementSearchCriteria().add(criteria2);
+        
+        GetMovementListByQueryResponse listByQueryResponse2 = jmsHelper.getMovementListByQuery(query, movement.getAssetGuid());
+        List<MovementType> movements2 = listByQueryResponse2.getMovement();
+        assertThat(movements2.size(), is(1));
+        assertThat(movements2.get(0).getPositionTime(), is(Date.from(movement.getPositionTime())));
+        
+        criteria2.setValue(MovementSourceType.AIS.value());
+        
+        GetMovementListByQueryResponse listByQueryResponse3 = jmsHelper.getMovementListByQuery(query, movement.getAssetGuid());
+        List<MovementType> movements3 = listByQueryResponse3.getMovement();
+        assertThat(movements3.size(), is(1));
+        assertThat(movements3.get(0).getPositionTime(), is(Date.from(movement.getPositionTime().plus(1, ChronoUnit.SECONDS))));
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createDuplicateMovementDifferentSourceCreateAlarm() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        IncomingMovement movement = MovementTestHelper.createIncomingMovementType();
+        movement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        movement.setPositionTime(Instant.now().minus(2, ChronoUnit.DAYS));
+        movement.setMovementSourceType(MovementSourceType.INMARSAT_C.value());
+        sendIncomingMovementAndWaitForResponse(movement);
+        
+        movement.setMovementSourceType(MovementSourceType.AIS.value());
+        jmsHelper.clearQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(movement);
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+        
+    }
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -741,5 +816,14 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         String jsonResponse = response.getText();
         MovementDetails movementDetails = mapper.readValue(jsonResponse, MovementDetails.class);
         return movementDetails;
+    }
+    
+    private ProcessedMovementResponse sendIncomingMovementAndReturnAlarmResponse(IncomingMovement incomingMovement) throws Exception{
+        String json = mapper.writeValueAsString(incomingMovement);
+        jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");
+
+        Message response = jmsHelper.listenOnQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
+        ProcessedMovementResponse movementResponse = JAXBMarshaller.unmarshallTextMessage((TextMessage) response, ProcessedMovementResponse.class);
+        return movementResponse;
     }
 }

@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -63,10 +64,14 @@ public class IncomingMovementBean {
 
         List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
         if (!duplicateMovements.isEmpty()) {
-            // If they have different movement types
+            // If they have different movement types or different source
             if (!Objects.equals(movement.getMovementType(), duplicateMovements.get(0).getMovementType().value())) {
                 Instant newDate = DateUtil.addSecondsToDate(timeStamp, 1);
                 movement.setPositionTime(newDate);
+            } else if (!Objects.equals(movement.getMovementSourceType(), MovementSourceType.AIS.value()) &&
+                    !Objects.equals(movement.getMovementSourceType(), duplicateMovements.get(0).getMovementSource().value())) {
+                // Don't modify NAF/Inmarsat timestamp, add second to AIS position instead 
+                duplicateMovements.get(0).setTimestamp(DateUtil.addSecondsToDate(timeStamp, 1));
             } else {
                 LOG.info("Got a duplicate movement for Asset {}. Marking it as such.", movement.getAssetGuid());
                 movement.setDuplicate(true);
