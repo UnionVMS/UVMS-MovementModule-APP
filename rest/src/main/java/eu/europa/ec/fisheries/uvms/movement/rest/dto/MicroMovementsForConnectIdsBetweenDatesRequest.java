@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public class MovementsForVesselIdsRequest implements Serializable {
+public class MicroMovementsForConnectIdsBetweenDatesRequest implements Serializable {
 
-    private List<String> vesselIds;
+    private List<String> connectIds;
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
@@ -23,21 +23,21 @@ public class MovementsForVesselIdsRequest implements Serializable {
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     private Instant toDate;
 
-    public MovementsForVesselIdsRequest() {
+    public MicroMovementsForConnectIdsBetweenDatesRequest() {
     }
 
-    public MovementsForVesselIdsRequest(List<String> vesselIds, Instant fromDate, Instant toDate) {
-        this.vesselIds = vesselIds;
+    public MicroMovementsForConnectIdsBetweenDatesRequest(List<String> connectIds, Instant fromDate, Instant toDate) {
+        this.connectIds = connectIds;
         this.fromDate = fromDate;
         this.toDate = toDate;
     }
 
-    public List<String> getVesselIds() {
-        return vesselIds;
+    public List<String> getConnectIds() {
+        return connectIds;
     }
 
-    public void setVesselIds(List<String> vesselIds) {
-        this.vesselIds = vesselIds;
+    public void setConnectIds(List<String> connectIds) {
+        this.connectIds = connectIds;
     }
 
     public Instant getFromDate() {

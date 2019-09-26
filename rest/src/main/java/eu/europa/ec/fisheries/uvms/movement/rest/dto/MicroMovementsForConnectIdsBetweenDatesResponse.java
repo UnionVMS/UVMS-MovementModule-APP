@@ -6,10 +6,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovementsForVesselIdsResponse implements Serializable {
+public class MicroMovementsForConnectIdsBetweenDatesResponse implements Serializable {
     private List<MicroMovementExtended> microMovementExtendedList = new ArrayList<>();
 
-    public MovementsForVesselIdsResponse() {
+    public MicroMovementsForConnectIdsBetweenDatesResponse() {
     }
 
     public List<MicroMovementExtended> getMicroMovementExtendedList() {

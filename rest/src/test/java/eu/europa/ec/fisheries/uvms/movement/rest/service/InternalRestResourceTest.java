@@ -11,8 +11,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementsForVesselIdsRequest;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementsForVesselIdsResponse;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.MicroMovementsForConnectIdsBetweenDatesResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
@@ -246,14 +246,16 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         Instant now = Instant.now();
         Instant dayBefore = now.minus(1, ChronoUnit.DAYS);
 
-        MovementsForVesselIdsRequest movementsForVesselIdsRequest = new MovementsForVesselIdsRequest(vesselIds, dayBefore, now);
+        MicroMovementsForConnectIdsBetweenDatesRequest microMovementsForConnectIdsBetweenDatesRequest = new MicroMovementsForConnectIdsBetweenDatesRequest(vesselIds, dayBefore, now);
 
-        MovementsForVesselIdsResponse response = getWebTarget()
-                .path("internal/positionsOfVessels")
+        Response response = getWebTarget()
+                .path("internal/microMovementsForConnectIdsBetweenDates")
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.entity(movementsForVesselIdsRequest, MediaType.APPLICATION_JSON_TYPE), MovementsForVesselIdsResponse.class);
+                .post(Entity.entity(microMovementsForConnectIdsBetweenDatesRequest, MediaType.APPLICATION_JSON_TYPE), Response.class);
 
-        List<MicroMovementExtended> microMovementExtendedList = response.getMicroMovementExtendedList();
+        MicroMovementsForConnectIdsBetweenDatesResponse microMovementsForConnectIdsBetweenDatesResponse = response.readEntity(MicroMovementsForConnectIdsBetweenDatesResponse.class);
+
+        List<MicroMovementExtended> microMovementExtendedList = microMovementsForConnectIdsBetweenDatesResponse.getMicroMovementExtendedList();
         assertEquals(1, microMovementExtendedList.size());
     }
 

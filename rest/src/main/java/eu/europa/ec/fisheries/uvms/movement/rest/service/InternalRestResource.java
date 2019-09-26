@@ -5,8 +5,8 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryRe
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementsForVesselIdsRequest;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementsForVesselIdsResponse;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.MicroMovementsForConnectIdsBetweenDatesResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
@@ -143,14 +143,14 @@ public class InternalRestResource {
     }
 
     @POST
-    @Path("/positionsOfVessels")
-    public Response getMovementsForVessels(MovementsForVesselIdsRequest request) {
-        List<String> vesselIds = request.getVesselIds();
+    @Path("/microMovementsForConnectIdsBetweenDates")
+    public Response getMicroMovementsForConnectIdsBetweenDates(MicroMovementsForConnectIdsBetweenDatesRequest request) {
+        List<String> vesselIds = request.getConnectIds();
         Instant fromDate = request.getFromDate();
         Instant toDate = request.getToDate();
 
         if (vesselIds.isEmpty()) {
-            return Response.ok(new MovementsForVesselIdsResponse()).header("MDC", MDC.get("requestId")).build();
+            return Response.ok(new MicroMovementsForConnectIdsBetweenDatesResponse()).header("MDC", MDC.get("requestId")).build();
         }
 
         try {
@@ -159,12 +159,12 @@ public class InternalRestResource {
                     .map(UUID::fromString)
                     .collect(Collectors.toList());
 
-            List<MicroMovementExtended> microMovements = movementDao.getMicroMovementsBetweenDatesForConnectIds(uuids, fromDate, toDate);
+            List<MicroMovementExtended> microMovements = movementDao.getMicroMovementsForConnectIdsBetweenDates(uuids, fromDate, toDate);
 
-            MovementsForVesselIdsResponse movementsForVesselIdsResponse = new MovementsForVesselIdsResponse();
-            movementsForVesselIdsResponse.setMicroMovementExtendedList(microMovements);
+            MicroMovementsForConnectIdsBetweenDatesResponse microMovementsForConnectIdsBetweenDatesResponse = new MicroMovementsForConnectIdsBetweenDatesResponse();
+            microMovementsForConnectIdsBetweenDatesResponse.setMicroMovementExtendedList(microMovements);
 
-            Response.ResponseBuilder ok = Response.ok(movementsForVesselIdsResponse);
+            Response.ResponseBuilder ok = Response.ok(microMovementsForConnectIdsBetweenDatesResponse);
             return ok.header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting micro movements for vessel ids ]", e);
