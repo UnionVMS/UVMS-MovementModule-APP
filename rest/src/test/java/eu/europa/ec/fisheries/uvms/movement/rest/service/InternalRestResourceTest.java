@@ -251,6 +251,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         Response response = getWebTarget()
                 .path("internal/microMovementsForConnectIdsBetweenDates")
                 .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .post(Entity.entity(microMovementsForConnectIdsBetweenDatesRequest, MediaType.APPLICATION_JSON_TYPE), Response.class);
 
         List<MicroMovementExtended> microMovementExtendedList = response.readEntity(new GenericType<List<MicroMovementExtended>>() {});

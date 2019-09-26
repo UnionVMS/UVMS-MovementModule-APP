@@ -144,6 +144,7 @@ public class InternalRestResource {
 
     @POST
     @Path("/microMovementsForConnectIdsBetweenDates")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getMicroMovementsForConnectIdsBetweenDates(MicroMovementsForConnectIdsBetweenDatesRequest request) {
         List<String> vesselIds = request.getConnectIds();
         Instant fromDate = request.getFromDate();
