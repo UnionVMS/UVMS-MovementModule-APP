@@ -289,14 +289,15 @@ public class MovementDao {
         }
     }
 
-    public List<MicroMovement> getMicroMovementsForAssetAfterDate(UUID id, Instant date){
+    public List<MicroMovement> getMicroMovementsForAssetAfterDate(UUID id, Instant startDate, Instant endDate){
         try {
             TypedQuery<MicroMovement> query = em.createNamedQuery(MicroMovementExtended.FIND_ALL_FOR_ASSET_AFTER_DATE, MicroMovement.class);
             query.setParameter("id", id);
-            query.setParameter("date", date);
+            query.setParameter("startDate", startDate);
+            query.setParameter("endDate", endDate);
             return query.getResultList();
         } catch (NoResultException e) {
-            LOG.debug("No positions found for asset after date: {}", date);
+            LOG.debug("No positions found for asset after date: {}", startDate);
             return new ArrayList<>();
         }
     }
