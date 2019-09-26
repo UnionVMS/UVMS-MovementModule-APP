@@ -25,10 +25,6 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>movement-service</artifactId>
                         </ejbModule>
-                        <ejbModule>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>movement-client</artifactId>
-                        </ejbModule>
                         <jarModule>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>movement-model</artifactId>
@@ -50,12 +46,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>movement-service</artifactId>
-            <version>${project.parent.version}</version>
-            <type>ejb</type>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>movement-client</artifactId>
             <version>${project.parent.version}</version>
             <type>ejb</type>
         </dependency>
