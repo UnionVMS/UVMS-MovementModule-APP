@@ -1,0 +1,63 @@
+package eu.europa.ec.fisheries.uvms.movement.rest.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.List;
+
+public class MovementsForVesselIdsRequest implements Serializable {
+
+    private List<String> vesselIds;
+
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    private Instant fromDate;
+
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    private Instant toDate;
+
+    public MovementsForVesselIdsRequest() {
+    }
+
+    public MovementsForVesselIdsRequest(List<String> vesselIds, Instant fromDate, Instant toDate) {
+        this.vesselIds = vesselIds;
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+    }
+
+    public List<String> getVesselIds() {
+        return vesselIds;
+    }
+
+    public void setVesselIds(List<String> vesselIds) {
+        this.vesselIds = vesselIds;
+    }
+
+    public Instant getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Instant fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Instant getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Instant toDate) {
+        this.toDate = toDate;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+}

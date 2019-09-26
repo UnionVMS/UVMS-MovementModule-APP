@@ -11,6 +11,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementsForVesselIdsRequest;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.MovementsForVesselIdsResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -27,10 +29,8 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -231,6 +231,35 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         assertEquals(200, deleteResponse.getStatus());
     }
 
+    @Test
+    @OperateOnDeployment("movement")
+    public void getMovementsForVessels() throws IOException {
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
+
+        assertNotNull(createdMovement.getId());
+
+        List<String> vesselIds = new ArrayList<>();
+        vesselIds.add(movementBaseType.getMovementConnect().getId().toString());
+
+        Instant now = Instant.now();
+        Instant dayBefore = now.minus(1, ChronoUnit.DAYS);
+
+        MovementsForVesselIdsRequest movementsForVesselIdsRequest = new MovementsForVesselIdsRequest(vesselIds, dayBefore, now);
+
+        Entity<MovementsForVesselIdsRequest> json = Entity.json(movementsForVesselIdsRequest);
+        String s = json.toString();
+
+        String response = getWebTarget()
+                .path("internal/positionsOfVessels")
+                .request(MediaType.APPLICATION_JSON)
+                .post(json, String.class);
+        assertNotNull(response);
+
+        MovementsForVesselIdsResponse movementsForVesselIdsResponse = mapper.readValue(response, MovementsForVesselIdsResponse.class);
+        assertNotNull(movementsForVesselIdsResponse);
+        assertEquals(1, movementsForVesselIdsResponse.getMicroMovementExtendedList().size());
+    }
 
     private MovementQuery createMovementQuery(Movement createdMovement) {
         MovementQuery query = new MovementQuery();

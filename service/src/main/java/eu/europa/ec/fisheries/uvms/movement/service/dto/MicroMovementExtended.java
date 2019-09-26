@@ -3,15 +3,16 @@ package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
 import com.vividsolutions.jts.geom.Geometry;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
-public class MicroMovementExtended {
+public class MicroMovementExtended implements Serializable {
 
     public static final String FIND_ALL_AFTER_DATE = "MicroMovementExtended.findAllAfterDate";
     public static final String FIND_ALL_FOR_ASSET_AFTER_DATE = "MicroMovementExtended.findAllForAssetAfterDate";
+    public static final String FIND_ALL_BETWEEN_DATES_FOR_CONNECT_IDS = "MicroMovementExtended.findAllBetweenDatesForConnectIds";
 
     private MicroMovement microMove;
 
