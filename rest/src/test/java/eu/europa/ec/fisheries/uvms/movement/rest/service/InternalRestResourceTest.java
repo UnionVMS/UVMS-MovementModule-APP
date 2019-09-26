@@ -12,7 +12,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
-import eu.europa.ec.fisheries.uvms.movement.rest.dto.MicroMovementsForConnectIdsBetweenDatesResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
@@ -24,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -234,7 +234,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void getMovementsForVessels() {
+    public void microMovementsForConnectIdsBetweenDates() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -253,9 +253,8 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(microMovementsForConnectIdsBetweenDatesRequest, MediaType.APPLICATION_JSON_TYPE), Response.class);
 
-        MicroMovementsForConnectIdsBetweenDatesResponse microMovementsForConnectIdsBetweenDatesResponse = response.readEntity(MicroMovementsForConnectIdsBetweenDatesResponse.class);
+        List<MicroMovementExtended> microMovementExtendedList = response.readEntity(new GenericType<List<MicroMovementExtended>>() {});
 
-        List<MicroMovementExtended> microMovementExtendedList = microMovementsForConnectIdsBetweenDatesResponse.getMicroMovementExtendedList();
         assertEquals(1, microMovementExtendedList.size());
     }
 
