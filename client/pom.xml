@@ -14,6 +14,11 @@
     <packaging>jar</packaging>
     <description>This module has classes for communicating with the movement module over REST</description>
 
+    <properties>
+        <docker.dev.stop.phase>verify</docker.dev.stop.phase>
+        <docker.dev.prestop.phase>install</docker.dev.prestop.phase>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
