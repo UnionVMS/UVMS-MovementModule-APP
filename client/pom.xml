@@ -2,12 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>movement</artifactId>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
+        <artifactId>movement</artifactId>
         <version>5.2.26-UVMS-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>movement-client</artifactId>
     <name>movement-client</name>
@@ -15,8 +16,9 @@
     <description>This module has classes for communicating with the movement module over REST</description>
 
     <properties>
-        <docker.dev.stop.phase>verify</docker.dev.stop.phase>
-        <docker.dev.prestop.phase>install</docker.dev.prestop.phase>
+        <docker.dev.start.phase>test-compile</docker.dev.start.phase>
+        <docker.liquibase.phase>test-compile</docker.liquibase.phase>
+        <docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
     </properties>
 
     <dependencies>
