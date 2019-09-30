@@ -25,6 +25,7 @@ public abstract class IncomingMovementMapper {
         entity.setInternalReferenceNumber(ic.getInternalReferenceNumber());
         entity.setTripNumber(ic.getTripNumber());
         entity.setStatus(ic.getStatus());
+        entity.setLesreporttime(ic.getLesReportTime());
         //entity.setAltitude(ic.getAltitude());
         //entity.setMoveAltitude(ic.getAltitude());
 

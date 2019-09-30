@@ -32,6 +32,7 @@ public class MovementHelpers {
 
             Movement movement = MockData.createMovement(longitude, latitude, connectId, 0, userName);
             movement.setTimestamp(positionTime);
+            movement.setLesreporttime(positionTime);
             movement = movementService.createMovement(movement);
             return movement;
 
