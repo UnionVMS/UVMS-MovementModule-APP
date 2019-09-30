@@ -53,6 +53,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
+		Instant lesTime = dateStartMovement;
 		double lon = 11.641982;
 		double lat = 57.632304;
 		Movement movement =  movementHelpers.createMovement(lon, lat, connectId, "ONE", dateStartMovement);
@@ -65,7 +66,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId.toString(), output.getConnectId());
-		
+		assertEquals(lesTime, output.getLesReportTime().toInstant());
 		try {
 			output = MovementEntityToModelMapper.mapToMovementBaseType(null);
 			fail("null input should result in a nullpointer");

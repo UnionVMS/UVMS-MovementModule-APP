@@ -24,7 +24,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IncomingMovement {
 
-    @Id
+	@Id
     @GeneratedValue
     @Column(columnDefinition = "uuid", name = "id")
     private UUID id;
@@ -37,6 +37,10 @@ public class IncomingMovement {
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     private Instant positionTime;
+    @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    private Instant lesReportTime;
+    
     private String status;
     private Double reportedSpeed;
     private Double reportedCourse;
@@ -129,6 +133,14 @@ public class IncomingMovement {
     public void setPositionTime(Instant positionTime) {
         this.positionTime = positionTime;
     }
+    
+    public Instant getLesReportTime() {
+  		return lesReportTime;
+  	}
+
+  	public void setLesReportTime(Instant lesReportTime) {
+  		this.lesReportTime = lesReportTime;
+  	}
 
     public String getStatus() {
         return status;

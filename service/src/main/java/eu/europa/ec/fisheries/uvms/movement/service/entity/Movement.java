@@ -144,8 +144,13 @@ public class Movement implements Serializable, Comparable<Movement> {
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     @Column(name = "move_timestamp")
     private Instant timestamp;
-
+    
     @JsonSerialize(using = InstantSerializer.class)
+    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    @Column(name = "move_lesreporttime")
+    private Instant lesreporttime;
+
+	@JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "move_updattim")
@@ -292,6 +297,14 @@ public class Movement implements Serializable, Comparable<Movement> {
     public void setTrack(Track track) {
         this.track = track;
     }
+
+    public Instant getLesreporttime() {
+		return lesreporttime;
+	}
+
+	public void setLesreporttime(Instant lesreporttime) {
+		this.lesreporttime = lesreporttime;
+	}
 
     @Override
     public int compareTo(Movement o) {
