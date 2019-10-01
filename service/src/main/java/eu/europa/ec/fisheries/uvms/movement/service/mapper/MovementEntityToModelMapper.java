@@ -33,7 +33,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
-import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
 import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 
 public class MovementEntityToModelMapper {
@@ -228,7 +227,7 @@ public class MovementEntityToModelMapper {
             return new ArrayList<>(segments);
         }
 
-        movements.sort(MovementComparator.MOVEMENT);
+        Collections.sort(movements);
 
         for (int i = 0; i < movements.size(); i++) {
 

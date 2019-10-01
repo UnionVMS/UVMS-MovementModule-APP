@@ -15,23 +15,23 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.vividsolutions.jts.geom.Point;
-
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
-import eu.europa.ec.fisheries.uvms.movement.service.util.MovementComparator;
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.UUID;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "movement", indexes = {
@@ -308,7 +308,11 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     @Override
     public int compareTo(Movement o) {
-        return MovementComparator.MOVEMENT.compare(this, o);
+        if (o == null) {
+            return ObjectUtils.compare(this, null);
+        } else {
+            return ObjectUtils.compare(this.getTimestamp(), o.getTimestamp());
+        }
     }
 
 }

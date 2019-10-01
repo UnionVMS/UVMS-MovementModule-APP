@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.util;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class GeometryUtil {
      */
     public static LineString getLineStringFromMovements(List<Movement> movements) {
 
-        movements.sort(MovementComparator.MOVEMENT);
+        Collections.sort(movements);
 
         LinkedList<Coordinate> coordinates = new LinkedList<>();
         for (Movement movement : movements) {

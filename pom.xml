@@ -33,6 +33,9 @@
 		<uvms.common.version>4.0.4</uvms.common.version>
 		<usm4uvms.version>4.0.23</usm4uvms.version>
 		<uvms.config.version>4.0.5</uvms.config.version>
+
+		<!-- 3rd-party dependencies -->
+		<jackson.version>2.9.9</jackson.version>
 	</properties>
 
 	<dependencies>
@@ -79,8 +82,24 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.datatype</groupId>
 				<artifactId>jackson-datatype-jsr310</artifactId>
-				<version>2.9.9</version>
+				<version>${jackson.version}</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-jaxb-annotations</artifactId>
+				<version>${jackson.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -179,5 +198,6 @@
 		<module>rest</module>
 		<module>service</module>
 		<module>module</module>
-	</modules>
+        <module>client</module>
+    </modules>
 </project>
