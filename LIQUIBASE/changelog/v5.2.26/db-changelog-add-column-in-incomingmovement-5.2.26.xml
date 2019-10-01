@@ -4,7 +4,7 @@
     
     <changeSet id="update_incomingmovement_with_lesReportTime" author="johsod" runInTransaction="false">   
 	    <addColumn tableName="incomingmovement">
-	        <column name="lesReportTime" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Time when inmarsat sends position."/>
+	        <column name="lesreporttime" type="TIMESTAMP(6) WITH TIME ZONE" remarks="Time when inmarsat sends position."/>
 	    </addColumn>
 	</changeSet>
 	
