@@ -16,16 +16,16 @@
 	<properties>
 		<movement.api.check.against.version>4.0.0</movement.api.check.against.version>
 
-		<docker.dev.version>3.39.4.w17</docker.dev.version>
+		<docker.dev.version>3.39.10.w17</docker.dev.version>
 		<docker.liquibase.changeLogFile>LIQUIBASE/changelog/db-changelog-master-postgres.xml</docker.liquibase.changeLogFile>
         <docker.liquibase.db.user>movement</docker.liquibase.db.user>
         <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
 		<longpolling.version>2.0.13</longpolling.version>
-		<user.model.version>2.0.23</user.model.version>
-		<audit.model.version>4.1.3</audit.model.version>
-		<exchange.model.version>5.0.13-UVMS</exchange.model.version>
-		<asset.client.version>6.0.65</asset.client.version>
-		<movement-rules.model.version>2.1.21</movement-rules.model.version>
+		<user.model.version>2.0.24</user.model.version>
+		<audit.model.version>4.1.4</audit.model.version>
+		<exchange.model.version>5.0.15-UVMS</exchange.model.version>
+		<asset.client.version>6.0.72</asset.client.version>
+		<movement-rules.model.version>2.1.26</movement-rules.model.version>
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
