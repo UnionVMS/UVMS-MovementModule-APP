@@ -5,7 +5,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.2.29-UVMS</version>
+        <version>5.2.30-UVMS-SNAPSHOT</version>
     </parent>
 
     <artifactId>movement-client</artifactId>
