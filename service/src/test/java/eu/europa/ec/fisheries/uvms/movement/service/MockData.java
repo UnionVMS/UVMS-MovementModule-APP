@@ -23,9 +23,9 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.UUID;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 public class MockData {
 

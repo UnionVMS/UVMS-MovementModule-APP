@@ -14,7 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import com.vividsolutions.jts.geom.LineString;
+import org.locationtech.jts.geom.LineString;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;

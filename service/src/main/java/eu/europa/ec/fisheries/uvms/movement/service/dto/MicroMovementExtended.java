@@ -1,7 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 
 import java.io.Serializable;
