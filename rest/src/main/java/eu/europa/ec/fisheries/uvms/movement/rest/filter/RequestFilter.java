@@ -31,7 +31,7 @@ public class RequestFilter implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(RequestFilter.class);
 
     /**
-     * {@code corsOriginRegex} is valid for given host names/IPs and any range of sub domains.
+     * {@code corsOriginRegex} is valid for given host/origin names/IPs and any range of sub domains.
      *
      * localhost:[2]8080
      * 127.0.0.1:[2]8080
@@ -51,7 +51,7 @@ public class RequestFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        final String HOST = httpServletRequest.getHeader("HOST");
+        final String HOST = httpServletRequest.getHeader("ORIGIN");
 
         boolean isValid = validateHost(HOST);
 
@@ -61,7 +61,7 @@ public class RequestFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         response.setHeader(RestConstants.ACCESS_CONTROL_ALLOW_ORIGIN, HOST);
         response.setHeader(RestConstants.ACCESS_CONTROL_ALLOW_METHODS, RestConstants.ACCESS_CONTROL_ALLOWED_METHODS);
-        response.setHeader(RestConstants.ACCESS_CONTROL_ALLOW_HEADERS, httpServletRequest.getHeader("Access-Control-Request-Headers"));
+        response.setHeader(RestConstants.ACCESS_CONTROL_ALLOW_HEADERS, RestConstants.ACCESS_CONTROL_ALLOW_HEADERS_ALL);
 
         if (httpServletRequest.getMethod().equals("OPTIONS")) {
             response.setStatus(200);
