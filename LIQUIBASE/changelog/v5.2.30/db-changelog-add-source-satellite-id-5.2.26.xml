@@ -4,7 +4,7 @@
     
     <changeSet id="update_incomingmovement_with_source_satellite_id" author="joemat" runInTransaction="false">
 	    <addColumn tableName="incomingmovement">
-	        <column name="sourceSatelliteId" type="smallint" remarks="The satellite used for communication."/>
+	        <column name="sourcesatelliteid" type="smallint" remarks="The satellite used for communication."/>
 	    </addColumn>
 	</changeSet>
 	
