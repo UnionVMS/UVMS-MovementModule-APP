@@ -150,7 +150,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_lesreporttime")
     private Instant lesreporttime;
 
-    @Column(name = "move_satelite_id")
+    @Column(name = "move_satellite_id")
     private short sourceSatelliteId;
 
 	@JsonSerialize(using = InstantSerializer.class)
