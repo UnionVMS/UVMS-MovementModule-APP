@@ -19,8 +19,6 @@ import java.util.UUID;
         @Index(columnList = "alarmreport_id", name = "incomingmovement_alarmreport_fk_inx", unique = false)
 })
 @XmlRootElement
-//@DynamicUpdate
-//@DynamicInsert
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IncomingMovement {
 
@@ -78,6 +76,7 @@ public class IncomingMovement {
     private String mobileTerminalLES;
     private String mobileTerminalDNID;
     private String mobileTerminalMemberNumber;
+    private short sourceSatelliteId;
 
     private String pluginType;
     private boolean active;
@@ -380,6 +379,14 @@ public class IncomingMovement {
 
     public void setMobileTerminalMemberNumber(String mobileTerminalMemberNumber) {
         this.mobileTerminalMemberNumber = mobileTerminalMemberNumber;
+    }
+
+    public short getSourceSatelliteId() {
+        return sourceSatelliteId;
+    }
+
+    public void setSourceSatelliteId(short sourceSatelliteId) {
+        this.sourceSatelliteId = sourceSatelliteId;
     }
 
     public String getPluginType() {

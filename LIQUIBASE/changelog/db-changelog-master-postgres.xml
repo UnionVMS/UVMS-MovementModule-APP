@@ -29,5 +29,7 @@
     
     <include file="v5.2.26\db-changelog-add-column-in-incomingmovement-5.2.26.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.2.30\db-changelog-add-source-satellite-id-5.2.26.xml" relativeToChangelogFile="true"/>
+
         
 </databaseChangeLog>

@@ -11,10 +11,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
@@ -50,6 +53,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
     @Resource(mappedName = "java:/ConnectionFactory")
     private ConnectionFactory connectionFactory;
+
+    @Inject
+    MovementService movementService;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -140,6 +146,20 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movementDetails.getLongitude(), is(incomingMovement.getLongitude()));
         assertThat(movementDetails.getLatitude(), is(incomingMovement.getLatitude()));
         assertEquals(movementDetails.getPositionTime().toEpochMilli(), incomingMovement.getPositionTime().toEpochMilli());
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createMovementVerifySatelliteTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        short satelliteId = 42;
+        incomingMovement.setSourceSatelliteId(satelliteId);
+        MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
+
+        Movement createdMovement = movementService.getById(UUID.fromString(movementDetails.getMovementGuid()));
+        assertEquals(satelliteId, createdMovement.getSourceSatelliteId());
     }
     
 
