@@ -150,6 +150,9 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_lesreporttime")
     private Instant lesreporttime;
 
+    @Column(name = "move_satelite_id")
+    private short sourceSatelliteId;
+
 	@JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
@@ -305,6 +308,14 @@ public class Movement implements Serializable, Comparable<Movement> {
 	public void setLesreporttime(Instant lesreporttime) {
 		this.lesreporttime = lesreporttime;
 	}
+
+    public short getSourceSatelliteId() {
+        return sourceSatelliteId;
+    }
+
+    public void setSourceSatelliteId(short sourceSatelliteId) {
+        this.sourceSatelliteId = sourceSatelliteId;
+    }
 
     @Override
     public int compareTo(Movement o) {

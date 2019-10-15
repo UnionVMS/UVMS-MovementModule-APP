@@ -26,8 +26,7 @@ public abstract class IncomingMovementMapper {
         entity.setTripNumber(ic.getTripNumber());
         entity.setStatus(ic.getStatus());
         entity.setLesreporttime(ic.getLesReportTime());
-        //entity.setAltitude(ic.getAltitude());
-        //entity.setMoveAltitude(ic.getAltitude());
+        entity.setSourceSatelliteId(ic.getSourceSatelliteId());
 
         //MovementConnect (aka asset)
         MovementConnect movementConnect = new MovementConnect();
