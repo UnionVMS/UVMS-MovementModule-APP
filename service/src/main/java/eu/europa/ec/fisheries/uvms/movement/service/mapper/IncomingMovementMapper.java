@@ -25,7 +25,7 @@ public abstract class IncomingMovementMapper {
         entity.setInternalReferenceNumber(ic.getInternalReferenceNumber());
         entity.setTripNumber(ic.getTripNumber());
         entity.setStatus(ic.getStatus());
-        entity.setLesreporttime(ic.getLesReportTime());
+        entity.setLesReportTime(ic.getLesReportTime());
         entity.setSourceSatelliteId(ic.getSourceSatelliteId());
 
         //MovementConnect (aka asset)
