@@ -154,7 +154,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
-        short satelliteId = 42;
+        Short satelliteId = 42;
         incomingMovement.setSourceSatelliteId(satelliteId);
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
 
