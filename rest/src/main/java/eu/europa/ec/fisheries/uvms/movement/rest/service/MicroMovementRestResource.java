@@ -87,9 +87,10 @@ public class MicroMovementRestResource {
     @GET
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getLastMicroMovementForAllAssets() {
+    public Response getLastMicroMovementForAllAssets(@QueryParam("sources") List<String> sources) {
         try {
-            List<MicroMovementExtended> microMovements = movementService.getLatestMovementsLast8Hours();
+            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
+            List<MicroMovementExtended> microMovements = movementService.getLatestMovementsLast8Hours(sourceTypes);
 
             List<String> assetIdList = new ArrayList<>(microMovements.size());
             for (MicroMovementExtended micro: microMovements) {

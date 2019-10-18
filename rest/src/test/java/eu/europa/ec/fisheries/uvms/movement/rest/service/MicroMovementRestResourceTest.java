@@ -1,7 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
@@ -26,7 +24,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -245,4 +242,35 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
         assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
     }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getLastMicroMovementFromOnlyOneSourceTest() {
+        Movement nafBaseType = MovementTestHelper.createMovement();
+        nafBaseType.setMovementSource(MovementSourceType.NAF);
+        Movement nafMovement = movementService.createAndProcessMovement(nafBaseType);
+
+        Movement manualBaseType = MovementTestHelper.createMovement();
+        manualBaseType.setMovementSource(MovementSourceType.MANUAL);
+        Movement manualMovement = movementService.createAndProcessMovement(manualBaseType);
+
+        RealTimeMapInitialData output = getWebTarget()
+                .path("micro")
+                .path("latest")
+                .queryParam("sources", MovementSourceType.NAF.value())
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .get(RealTimeMapInitialData.class);
+
+        assertTrue(output.getMicroMovements().size() > 0);
+        assertTrue(output.getMicroMovements()
+                .stream()
+                .anyMatch(m -> m.getMicroMove().getGuid().equals(nafMovement.getId().toString())));
+        assertFalse(output.getMicroMovements()
+                .stream()
+                .anyMatch(m -> m.getMicroMove().getGuid().equals(manualMovement.getId().toString())));
+        assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
+    }
+
+
 }
