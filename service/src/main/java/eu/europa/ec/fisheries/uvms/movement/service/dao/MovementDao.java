@@ -10,7 +10,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
-import org.locationtech.jts.geom.Geometry;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
@@ -23,6 +23,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 import org.hibernate.HibernateException;
+import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -289,12 +290,13 @@ public class MovementDao {
         }
     }
 
-    public List<MicroMovement> getMicroMovementsForAssetAfterDate(UUID id, Instant startDate, Instant endDate){
+    public List<MicroMovement> getMicroMovementsForAssetAfterDate(UUID id, Instant startDate, Instant endDate, List<MovementSourceType> sources){
         try {
             TypedQuery<MicroMovement> query = em.createNamedQuery(MicroMovementExtended.FIND_ALL_FOR_ASSET_AFTER_DATE, MicroMovement.class);
             query.setParameter("id", id);
             query.setParameter("startDate", startDate);
             query.setParameter("endDate", endDate);
+            query.setParameter("sources", sources);
             return query.getResultList();
         } catch (NoResultException e) {
             LOG.debug("No positions found for asset after date: {}", startDate);
@@ -302,9 +304,10 @@ public class MovementDao {
         }
     }
 
-    public List<MicroMovementExtended> getLatestWithLimit(Instant date) {
+    public List<MicroMovementExtended> getLatestWithLimit(Instant date, List<MovementSourceType> sources) {
         TypedQuery<MicroMovementExtended> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, MicroMovementExtended.class);
         query.setParameter("date", date);
+        query.setParameter("sources", sources);
         return query.getResultList();
     }
 

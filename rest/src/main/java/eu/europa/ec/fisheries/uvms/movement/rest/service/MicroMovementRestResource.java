@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
@@ -55,11 +56,13 @@ public class MicroMovementRestResource {
     @GET
     @Path("/track/asset/{id}/")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackForAsset(@PathParam("id") UUID connectId, @DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate) {
+    public Response getMicroMovementTrackForAsset(@PathParam("id") UUID connectId, @DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, @QueryParam("sources") List<String> sources) {
         try {
+
+            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
             Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtil.getDateFromString(startDate));
             Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtil.getDateFromString(endDate));
-            List<MicroMovement> microList = movementDao.getMicroMovementsForAssetAfterDate(connectId, startInstant, endInstant);
+            List<MicroMovement> microList = movementDao.getMicroMovementsForAssetAfterDate(connectId, startInstant, endInstant, sourceTypes);
             return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Micro Movement for connectId: {}", connectId, e);
@@ -84,9 +87,10 @@ public class MicroMovementRestResource {
     @GET
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getLastMicroMovementForAllAssets() {
+    public Response getLastMicroMovementForAllAssets(@QueryParam("sources") List<String> sources) {
         try {
-            List<MicroMovementExtended> microMovements = movementService.getLatestMovementsLast8Hours();
+            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
+            List<MicroMovementExtended> microMovements = movementService.getLatestMovementsLast8Hours(sourceTypes);
 
             List<String> assetIdList = new ArrayList<>(microMovements.size());
             for (MicroMovementExtended micro: microMovements) {
@@ -101,5 +105,17 @@ public class MicroMovementRestResource {
             LOG.error("Error when getting latest Micro Movements", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
+    }
+
+    private List<MovementSourceType> convertToMovementSourceTypes (List<String> sources) {
+        List<MovementSourceType> sourceTypes = new ArrayList<>();
+        if (sources == null || sources.isEmpty()) {
+            sourceTypes = Arrays.asList(MovementSourceType.values());
+        } else {
+            for (String source : sources) {
+                sourceTypes.add(MovementSourceType.fromValue(source));
+            }
+        }
+        return sourceTypes;
     }
 }

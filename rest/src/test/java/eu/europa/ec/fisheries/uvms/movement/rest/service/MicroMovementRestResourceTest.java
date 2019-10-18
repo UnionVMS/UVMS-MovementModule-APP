@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
@@ -54,6 +55,85 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         assertTrue(latestMovements
                 .stream()
                 .anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getTrackForOnlyOneSourceTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement nafMovement = MovementTestHelper.createMovement();
+        nafMovement.getMovementConnect().setId(connectId);
+        nafMovement.setMovementSource(MovementSourceType.NAF);
+        Movement nafCreated = movementService.createAndProcessMovement(nafMovement);
+
+        Movement aisMovement = MovementTestHelper.createMovement();
+        aisMovement.getMovementConnect().setId(connectId);
+        aisMovement.setMovementSource(MovementSourceType.AIS);
+        Movement aisCreated = movementService.createAndProcessMovement(aisMovement);
+
+        OffsetDateTime timestamp = aisCreated.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
+        List<MicroMovement> latestMovements = getWebTarget()
+                .path("micro")
+                .path("track")
+                .path("asset")
+                .path(connectId.toString())
+                .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
+                .queryParam("sources", MovementSourceType.AIS.value())
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .get(new GenericType<List<MicroMovement>>() {});
+
+        assertTrue(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(aisCreated.getId().toString())));
+
+        assertFalse(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(nafCreated.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getTrackForTwoOutOfThreeSourcesTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement nafMovement = MovementTestHelper.createMovement();
+        nafMovement.getMovementConnect().setId(connectId);
+        nafMovement.setMovementSource(MovementSourceType.NAF);
+        Movement nafCreated = movementService.createAndProcessMovement(nafMovement);
+
+        Movement aisMovement = MovementTestHelper.createMovement();
+        aisMovement.getMovementConnect().setId(connectId);
+        aisMovement.setMovementSource(MovementSourceType.AIS);
+        Movement aisCreated = movementService.createAndProcessMovement(aisMovement);
+
+        Movement iridiumMovement = MovementTestHelper.createMovement();
+        iridiumMovement.getMovementConnect().setId(connectId);
+        iridiumMovement.setMovementSource(MovementSourceType.IRIDIUM);
+        Movement iridiumCreated = movementService.createAndProcessMovement(iridiumMovement);
+
+        OffsetDateTime timestamp = aisCreated.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
+        List<MicroMovement> latestMovements = getWebTarget()
+                .path("micro")
+                .path("track")
+                .path("asset")
+                .path(connectId.toString())
+                .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
+                .queryParam("sources", MovementSourceType.NAF.value(), MovementSourceType.IRIDIUM)
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .get(new GenericType<List<MicroMovement>>() {});
+
+        assertFalse(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(aisCreated.getId().toString())));
+
+        assertTrue(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(nafCreated.getId().toString())));
+
+        assertTrue(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(iridiumCreated.getId().toString())));
     }
 
     @Test
@@ -162,4 +242,35 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
         assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
     }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getLastMicroMovementFromOnlyOneSourceTest() {
+        Movement nafBaseType = MovementTestHelper.createMovement();
+        nafBaseType.setMovementSource(MovementSourceType.NAF);
+        Movement nafMovement = movementService.createAndProcessMovement(nafBaseType);
+
+        Movement manualBaseType = MovementTestHelper.createMovement();
+        manualBaseType.setMovementSource(MovementSourceType.MANUAL);
+        Movement manualMovement = movementService.createAndProcessMovement(manualBaseType);
+
+        RealTimeMapInitialData output = getWebTarget()
+                .path("micro")
+                .path("latest")
+                .queryParam("sources", MovementSourceType.NAF.value())
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .get(RealTimeMapInitialData.class);
+
+        assertTrue(output.getMicroMovements().size() > 0);
+        assertTrue(output.getMicroMovements()
+                .stream()
+                .anyMatch(m -> m.getMicroMove().getGuid().equals(nafMovement.getId().toString())));
+        assertFalse(output.getMicroMovements()
+                .stream()
+                .anyMatch(m -> m.getMicroMove().getGuid().equals(manualMovement.getId().toString())));
+        assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
+    }
+
+
 }

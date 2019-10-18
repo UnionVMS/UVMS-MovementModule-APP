@@ -33,6 +33,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
@@ -222,12 +223,12 @@ public class MovementService {
                 ChronoUnit.DAYS), positionTime);
     }
 
-    public List<MicroMovementExtended> getLatestMovementsLast8Hours() {
-        return getLatestMovementsAfter(Instant.now().minus(8, ChronoUnit.HOURS));
+    public List<MicroMovementExtended> getLatestMovementsLast8Hours(List<MovementSourceType> sources) {
+        return getLatestMovementsAfter(Instant.now().minus(8, ChronoUnit.HOURS), sources);
     }
 
-    public List<MicroMovementExtended> getLatestMovementsAfter(Instant date) {
-        return movementDao.getLatestWithLimit(date);
+    public List<MicroMovementExtended> getLatestMovementsAfter(Instant date, List<MovementSourceType> sources) {
+        return movementDao.getLatestWithLimit(date, sources);
     }
     
     public List<VicinityInfoDTO> getVicinityOf(Movement movement) {
