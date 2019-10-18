@@ -28,13 +28,6 @@ import static org.junit.Assert.*;
 @RunWith(Arquillian.class)
 public class MovementSearchGroupServiceIntTest extends TransactionalTests {
 
-    /** TODO TODO TODO
-     *   OBS in this artifact , there is confusion in the datatype of the Id
-     *   It returns BigInteger  , as input the methods takes Long
-     *
-     *   This is an error an should be corrected to Long as in the rest of the application
-     */
-    
     private final static String TEST_USER_NAME = "MovementSearchGroupServiceIntTestUser";
 
     @EJB

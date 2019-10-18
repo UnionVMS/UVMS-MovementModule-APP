@@ -1,5 +1,8 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
@@ -23,6 +26,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +58,85 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         assertTrue(latestMovements
                 .stream()
                 .anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getTrackForOnlyOneSourceTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement nafMovement = MovementTestHelper.createMovement();
+        nafMovement.getMovementConnect().setId(connectId);
+        nafMovement.setMovementSource(MovementSourceType.NAF);
+        Movement nafCreated = movementService.createAndProcessMovement(nafMovement);
+
+        Movement aisMovement = MovementTestHelper.createMovement();
+        aisMovement.getMovementConnect().setId(connectId);
+        aisMovement.setMovementSource(MovementSourceType.AIS);
+        Movement aisCreated = movementService.createAndProcessMovement(aisMovement);
+
+        OffsetDateTime timestamp = aisCreated.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
+        List<MicroMovement> latestMovements = getWebTarget()
+                .path("micro")
+                .path("track")
+                .path("asset")
+                .path(connectId.toString())
+                .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
+                .queryParam("sources", MovementSourceType.AIS.value())
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .get(new GenericType<List<MicroMovement>>() {});
+
+        assertTrue(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(aisCreated.getId().toString())));
+
+        assertFalse(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(nafCreated.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getTrackForTwoOutOfThreeSourcesTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement nafMovement = MovementTestHelper.createMovement();
+        nafMovement.getMovementConnect().setId(connectId);
+        nafMovement.setMovementSource(MovementSourceType.NAF);
+        Movement nafCreated = movementService.createAndProcessMovement(nafMovement);
+
+        Movement aisMovement = MovementTestHelper.createMovement();
+        aisMovement.getMovementConnect().setId(connectId);
+        aisMovement.setMovementSource(MovementSourceType.AIS);
+        Movement aisCreated = movementService.createAndProcessMovement(aisMovement);
+
+        Movement iridiumMovement = MovementTestHelper.createMovement();
+        iridiumMovement.getMovementConnect().setId(connectId);
+        iridiumMovement.setMovementSource(MovementSourceType.IRIDIUM);
+        Movement iridiumCreated = movementService.createAndProcessMovement(iridiumMovement);
+
+        OffsetDateTime timestamp = aisCreated.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
+        List<MicroMovement> latestMovements = getWebTarget()
+                .path("micro")
+                .path("track")
+                .path("asset")
+                .path(connectId.toString())
+                .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
+                .queryParam("sources", MovementSourceType.NAF.value(), MovementSourceType.IRIDIUM)
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .get(new GenericType<List<MicroMovement>>() {});
+
+        assertFalse(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(aisCreated.getId().toString())));
+
+        assertTrue(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(nafCreated.getId().toString())));
+
+        assertTrue(latestMovements
+                .stream()
+                .anyMatch(m -> m.getGuid().equals(iridiumCreated.getId().toString())));
     }
 
     @Test
