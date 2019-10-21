@@ -3,12 +3,12 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.1.8-SNAPSHOT</version>
+        <version>${uvms.movement.module.version}</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-    <artifactId>liquibase</artifactId>
+    <artifactId>movement-liquibase</artifactId>
     <name>liquibase</name>
 
     <properties>
