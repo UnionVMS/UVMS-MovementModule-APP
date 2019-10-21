@@ -1,207 +1,211 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>fish.focus.uvms.maven</groupId>
-		<artifactId>uvms-pom</artifactId>
-		<version>1.21</version>
-	</parent>
+  <parent>
+    <groupId>eu.europa.ec.fisheries.uvms</groupId>
+    <artifactId>mare-pom</artifactId>
+    <version>1.6.0-MARE</version>
+    <relativePath />
+  </parent>
 
-	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-	<artifactId>movement</artifactId>
-	<version>5.1.8-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<description>Maven projekt-archetype for UnionVms modules</description>
+  <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
+  <artifactId>movement</artifactId>
+  <version>${uvms.movement.module.version}</version>
+  <packaging>pom</packaging>
+  <description>Maven projekt-archetype for UnionVms modules</description>
 
-	<properties>
-		<movement.api.check.against.version>4.0.0</movement.api.check.against.version>
+  <properties>
+    <movement.api.check.against.version>4.0.0</movement.api.check.against.version>
 
-		<docker.dev.version>3.28.1.w14</docker.dev.version>
-		<docker.liquibase.changeLogFile>LIQUIBASE/changelog/db-changelog-master-postgres.xml</docker.liquibase.changeLogFile>
-        <docker.liquibase.db.user>movement</docker.liquibase.db.user>
-        <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
-		<longpolling.version>2.0.13</longpolling.version>
-		<user.model.version>2.0.8</user.model.version>
-		<spatial.model.version>1.0.12</spatial.model.version>
-		<audit.model.version>4.0.10</audit.model.version>
-		<exchange.model.version>4.0.22</exchange.model.version>
-		<javaee.version>8.0</javaee.version>
-		<installAtEnd>false</installAtEnd>
+    <docker.dev.version>3.28.1.w14</docker.dev.version>
+    <docker.liquibase.changeLogFile>LIQUIBASE/changelog/db-changelog-master-postgres.xml</docker.liquibase.changeLogFile>
+    <docker.liquibase.db.user>movement</docker.liquibase.db.user>
+    <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
+    <longpolling.version>2.0.13</longpolling.version>
+    <user.model.version>${uvms.user.module.version}</user.model.version>
+    <spatial.model.version>${uvms.spatial.model.version}</spatial.model.version>
+    <audit.model.version>${uvms.audit.module.version}</audit.model.version>
+    <exchange.model.version>${uvms.exchange.model.version}</exchange.model.version>
+    <javaee.version>8.0</javaee.version>
+    <installAtEnd>false</installAtEnd>
 
-		<!-- UVMS Libraries -->
-		<uvms.common.version>3.4-SNAPSHOT</uvms.common.version>
-		<usm4uvms.version>4.0.15.1-SNAPSHOT</usm4uvms.version>
-		<uvms.config.version>4.2-SNAPSHOT</uvms.config.version>
-		<hibernate.version>5.1.9.Final</hibernate.version>
-		
-		<!-- Host for arquillian test -->
-		<arquillian.wildfly.host>localhost</arquillian.wildfly.host>
-		<arquillian.wildfly.port>28080</arquillian.wildfly.port>
-		<arquillian.wildfly.admin.port>9990</arquillian.wildfly.admin.port>
-		<arquillian.wildfly.admin.user>admin</arquillian.wildfly.admin.user>
-		<arquillian.wildfly.admin.pwd>Wildfly4ever!</arquillian.wildfly.admin.pwd>
-	</properties>
+    <!-- UVMS Libraries -->
+    <uvms.commons.version>${uvms.commonsLibrary.version}</uvms.commons.version>
+    <usm4uvms.version>${uvms.uvms4usm.version}</usm4uvms.version>
+    <uvms.config.version>${uvms.config.module.version}</uvms.config.version>
+    <hibernate.version>5.1.9.Final</hibernate.version>
 
-	<dependencies>
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>${javaee.version}</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+    <!-- Host for arquillian test -->
+    <arquillian.wildfly.host>localhost</arquillian.wildfly.host>
+    <arquillian.wildfly.port>28080</arquillian.wildfly.port>
+    <arquillian.wildfly.admin.port>9990</arquillian.wildfly.admin.port>
+    <arquillian.wildfly.admin.user>admin</arquillian.wildfly.admin.user>
+    <arquillian.wildfly.admin.pwd>Wildfly4ever!</arquillian.wildfly.admin.pwd>
+  </properties>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>fish.focus.uvms.maven</groupId>
-				<artifactId>uvms-pom-gis-deps</artifactId>
-				<version>1.21</version>
-				<type>pom</type>
-				<exclusions>
-					<exclusion>
-						<groupId>org.hibernate</groupId>
-						<artifactId>hibernate-core</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.hibernate</groupId>
-						<artifactId>hibernate-entitymanager</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-core</artifactId>
-				<version>${hibernate.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-entitymanager</artifactId>
-				<version>${hibernate.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>fish.focus.uvms.maven</groupId>
-				<artifactId>uvms-pom-logging-deps</artifactId>
-				<version>1.21</version>
-				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>fish.focus.uvms.maven</groupId>
-				<artifactId>uvms-pom-monitoring-deps</artifactId>
-				<version>1.21</version>
-				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>fish.focus.uvms.maven</groupId>
-				<artifactId>uvms-pom-test-deps</artifactId>
-				<version>1.21</version>
-				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>fish.focus.uvms.maven</groupId>
-				<artifactId>uvms-pom-arquillian-deps</artifactId>
-				<version>1.25</version>
-				<type>pom</type>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>${javaee.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
-	<repositories>
-		<repository>
-			<id>focus-repo</id>
-			<name>Focus nexus repository</name>
-			<url>http://nexus.focus.fish/nexus/repository/public/</url>
-		</repository>
-		<repository>
-			<id>OSGEO GeoTools repo</id>
-			<url>http://download.osgeo.org/webdav/geotools</url>
-		</repository>
-		<repository>
-			<id>Hibernate Spatial repo</id>
-			<url>http://www.hibernatespatial.org/repository</url>
-		</repository>
-	</repositories>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>fish.focus.uvms.maven</groupId>
+        <artifactId>uvms-pom-gis-deps</artifactId>
+        <version>1.21</version>
+        <type>pom</type>
+        <exclusions>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${hibernate.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fish.focus.uvms.maven</groupId>
+        <artifactId>uvms-pom-logging-deps</artifactId>
+        <version>1.21</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>fish.focus.uvms.maven</groupId>
+        <artifactId>uvms-pom-monitoring-deps</artifactId>
+        <version>1.21</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>fish.focus.uvms.maven</groupId>
+        <artifactId>uvms-pom-test-deps</artifactId>
+        <version>1.21</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>fish.focus.uvms.maven</groupId>
+        <artifactId>uvms-pom-arquillian-deps</artifactId>
+        <version>1.25</version>
+        <type>pom</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-	<distributionManagement>
-		<repository>
-			<id>focus-releases</id>
-			<name>UnionVms Repository</name>
-			<url>http://nexus.focus.fish/nexus/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>focus-snapshots</id>
-			<name>UnionVms Snapshot Repository</name>
-			<url>http://nexus.focus.fish/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+  <repositories>
+    <repository>
+      <id>focus-repo</id>
+      <name>Focus nexus repository</name>
+      <url>http://nexus.focus.fish/nexus/repository/public/</url>
+    </repository>
+    <repository>
+      <id>OSGEO GeoTools repo</id>
+      <url>http://download.osgeo.org/webdav/geotools</url>
+    </repository>
+    <repository>
+      <id>Hibernate Spatial repo</id>
+      <url>http://www.hibernatespatial.org/repository</url>
+    </repository>
+  </repositories>
 
-	<scm>
-		<connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-APP.git</connection>
-		<tag>HEAD</tag>
-	</scm>
+  <distributionManagement>
+    <repository>
+      <id>focus-releases</id>
+      <name>UnionVms Repository</name>
+      <url>http://nexus.focus.fish/nexus/content/repositories/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>focus-snapshots</id>
+      <name>UnionVms Snapshot Repository</name>
+      <url>http://nexus.focus.fish/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
-	<profiles>
-		<profile>
-			<id>enforce-jdk-version</id>
-			<activation>
-				<!-- To disable profile, define property -Dfocus-pom.enforce.jdk.version.disabled=true -->
-				<property>
-					<name>!focus-pom.enforce.jdk.version.disabled</name>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-enforcer-plugin</artifactId>
-						<inherited>false</inherited>
-						<executions>
-							<execution>
-								<id>enforce-jdk-version</id>
-								<goals>
-									<goal>enforce</goal>
-								</goals>
-								<configuration>
-									<rules>
-										<enforceBytecodeVersion>
-											<maxJdkVersion>${focus-pom.java.version}</maxJdkVersion>
-											<!-- NOTE: xstream do contain support for multiple jdk:s -->
-											<excludes>
-												<exclude>com.thoughtworks.xstream:xstream</exclude>
-											</excludes>
-										</enforceBytecodeVersion>
-									</rules>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+  <scm>
+    <connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-APP.git</connection>
+    <tag>HEAD</tag>
+  </scm>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-plugin-plugin</artifactId>
-				<version>3.4</version>
-				<configuration>
-					<goalPrefix>plugin</goalPrefix>
-					<outputDirectory>target/dir</outputDirectory>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <profiles>
+    <profile>
+      <id>enforce-jdk-version</id>
+      <activation>
+        <!-- To disable profile, define property -Dfocus-pom.enforce.jdk.version.disabled=true -->
+        <property>
+          <name>!focus-pom.enforce.jdk.version.disabled</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <inherited>false</inherited>
+            <executions>
+              <execution>
+                <id>enforce-jdk-version</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <enforceBytecodeVersion>
+                      <maxJdkVersion>${focus-pom.java.version}</maxJdkVersion>
+                      <!-- NOTE: xstream do contain support for multiple 
+                        jdk:s -->
+                      <excludes>
+                        <exclude>com.thoughtworks.xstream:xstream</exclude>
+                      </excludes>
+                    </enforceBytecodeVersion>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
-	<modules>
-		<module>model</module>
-		<module>LIQUIBASE</module>
-		<module>rest</module>
-		<module>service</module>
-		<module>message</module>
-		<module>message-impl</module>
-		<module>message-mock</module>
-		<module>module</module>
-	</modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>3.4</version>
+        <configuration>
+          <goalPrefix>plugin</goalPrefix>
+          <outputDirectory>target/dir</outputDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <modules>
+    <module>model</module>
+    <module>LIQUIBASE</module>
+    <module>rest</module>
+    <module>service</module>
+    <module>message</module>
+    <module>message-impl</module>
+    <module>message-mock</module>
+    <module>module</module>
+  </modules>
 </project>
