@@ -2,12 +2,12 @@ pipeline {
   agent any
   tools {
     maven 'Maven3'
-    jdk 'JDK7'
+    jdk 'JDK8'
   }
   stages {
     stage ('Build') {
       steps {
-        sh 'mvn clean package' 
+        sh 'clean install -Pgenerate-rest-doc,docker,jacoco,postgres,publish-sql -U' 
       }
     }
     stage('Results') {
