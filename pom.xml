@@ -34,7 +34,7 @@
     <!-- UVMS Libraries -->
     <uvms.commons.version>${uvms.commonsLibrary.version}</uvms.commons.version>
     <usm4uvms.version>${uvms.uvms4usm.version}</usm4uvms.version>
-    <uvms.config.version>${uvms.config.module.version}</uvms.config.version>
+    <uvms.config.version>${uvms.config.library.version}</uvms.config.version>
     <hibernate.version>5.1.9.Final</hibernate.version>
 
     <!-- Host for arquillian test -->
