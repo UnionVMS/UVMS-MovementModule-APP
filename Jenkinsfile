@@ -7,7 +7,7 @@ pipeline {
   stages {
     stage ('Build') {
       steps {
-        lock(label: 'Docker') {
+        lock(resource: 'Docker', label: 'Docker') {
           sh 'mvn clean install -Pgenerate-rest-doc,docker,jacoco,postgres,publish-sql -U' 
         }
       }
