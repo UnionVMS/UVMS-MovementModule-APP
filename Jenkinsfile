@@ -12,9 +12,10 @@ pipeline {
         }
       }
     }
-    stage('Results') {
-      steps {
-        archive 'target/*.ear'
+    post {
+      always {
+        archiveArtifacts artifacts: '**/target/*.ear'
+        junit '**/target/surefire-reports/*.xml'
       }
     }
     stage('SonarQube analysis') {
