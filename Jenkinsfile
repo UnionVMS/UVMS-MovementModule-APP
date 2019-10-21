@@ -19,11 +19,11 @@ pipeline {
         }
       }
     }
-    post {
-      always {
-        archiveArtifacts artifacts: '**/target/*.ear'
-        junit '**/target/surefire-reports/*.xml'
-      }
+  }
+  post {
+    always {
+      archiveArtifacts artifacts: '**/target/*.ear'
+      junit '**/target/surefire-reports/*.xml'
     }
   }
 }
