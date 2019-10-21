@@ -7,7 +7,9 @@ pipeline {
   stages {
     stage ('Build') {
       steps {
-        sh 'mvn clean install -Pgenerate-rest-doc,docker,jacoco,postgres,publish-sql -U' 
+        lock(label: 'Docker') {
+          sh 'mvn clean install -Pgenerate-rest-doc,docker,jacoco,postgres,publish-sql -U' 
+        }
       }
     }
     stage('Results') {
@@ -17,7 +19,7 @@ pipeline {
     }
     stage('SonarQube analysis') {
       steps{ 
-        withSonarQubeEnv('sonarqube') {
+        withSonarQubeEnv('Sonarqube.com') {
           sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
         }
       }
