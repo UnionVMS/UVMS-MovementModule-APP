@@ -12,17 +12,17 @@ pipeline {
         }
       }
     }
-    post {
-      always {
-        archiveArtifacts artifacts: '**/target/*.ear'
-        junit '**/target/surefire-reports/*.xml'
-      }
-    }
     stage('SonarQube analysis') {
       steps{ 
         withSonarQubeEnv('Sonarqube.com') {
           sh 'mvn $SONAR_MAVEN_GOAL -Dsonar.dynamicAnalysis=reuseReports -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_AUTH_TOKEN $SONAR_EXTRA_PROPS'
         }
+      }
+    }
+    post {
+      always {
+        archiveArtifacts artifacts: '**/target/*.ear'
+        junit '**/target/surefire-reports/*.xml'
       }
     }
   }
