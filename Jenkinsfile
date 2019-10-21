@@ -7,7 +7,7 @@ pipeline {
   stages {
     stage ('Build') {
       steps {
-        sh 'clean install -Pgenerate-rest-doc,docker,jacoco,postgres,publish-sql -U' 
+        sh 'mvn clean install -Pgenerate-rest-doc,docker,jacoco,postgres,publish-sql -U' 
       }
     }
     stage('Results') {
