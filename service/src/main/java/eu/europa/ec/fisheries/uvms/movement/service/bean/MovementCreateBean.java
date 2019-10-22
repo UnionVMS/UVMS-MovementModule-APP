@@ -17,6 +17,8 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
@@ -33,6 +35,8 @@ import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 
 @Stateless
 public class MovementCreateBean {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MovementCreateBean.class);
 
     @Inject
     private MovementSanityValidatorBean movementSanityValidatorBean;
@@ -65,6 +69,8 @@ public class MovementCreateBean {
             incomingMovementBean.checkAndSetDuplicate(incomingMovement);
             if (incomingMovement.isDuplicate() && 
                     incomingMovement.getMovementSourceType().equals(MovementSourceType.AIS.value())) {
+                LOG.warn("Ignoring duplicate AIS position for {} ({}) with timestamp {}",
+                        incomingMovement.getAssetName(), incomingMovement.getAssetMMSI(), incomingMovement.getPositionTime());
                 return;
             }
             UUID reportId = movementSanityValidatorBean.evaluateSanity(incomingMovement);
