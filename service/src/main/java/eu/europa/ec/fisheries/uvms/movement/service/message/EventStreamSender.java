@@ -23,7 +23,7 @@ import javax.jms.*;
 import javax.transaction.Transactional;
 
 @Stateless
-public class EventStreamSender /*extends AbstractTopicProducer*/ {
+public class EventStreamSender {
 
     private final static Logger LOG = LoggerFactory.getLogger(EventStreamSender.class);
 
@@ -50,8 +50,8 @@ public class EventStreamSender /*extends AbstractTopicProducer*/ {
                 String outgoingJson = om.writeValueAsString(micro);
 
                 TextMessage message = this.context.createTextMessage(outgoingJson);
-                message.setStringProperty("event", "Movement");
-                message.setStringProperty("subscribers", null);
+                message.setStringProperty(MessageConstants.EVENT_STREAM_EVENT, "Movement");
+                message.setStringProperty(MessageConstants.EVENT_STREAM_SUBSCRIBER_LIST, null);
                 MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
 
                 context.createProducer().setDeliveryMode(1).setTimeToLive(5000L).send(destination, message);
