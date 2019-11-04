@@ -7,3 +7,4 @@ logging.properties
 .settings
 .classpath
 .project
+.flattened-pom.xml
