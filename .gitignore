@@ -8,3 +8,4 @@ logging.properties
 .classpath
 .project
 .flattened-pom.xml
+pom.xml.versionsBackup
