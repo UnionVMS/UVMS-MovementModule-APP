@@ -58,6 +58,7 @@ public class EventStreamSenderTest extends BuildMovementServiceTestDeployment {
         assertNotNull(message);
 
         assertEquals("Movement", message.getStringProperty(MessageConstants.EVENT_STREAM_EVENT));
+        assertEquals(incomingMovement.getMovementSourceType(), message.getStringProperty(MessageConstants.EVENT_STREAM_MOVEMENT_SOURCE));
         assertNull(message.getStringProperty(MessageConstants.EVENT_STREAM_SUBSCRIBER_LIST));
 
         MicroMovementExtended micro = mapper.readValue(message.getText(), MicroMovementExtended.class);

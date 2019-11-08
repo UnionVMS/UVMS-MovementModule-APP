@@ -52,6 +52,7 @@ public class EventStreamSender {
                 TextMessage message = this.context.createTextMessage(outgoingJson);
                 message.setStringProperty(MessageConstants.EVENT_STREAM_EVENT, "Movement");
                 message.setStringProperty(MessageConstants.EVENT_STREAM_SUBSCRIBER_LIST, null);
+                message.setStringProperty(MessageConstants.EVENT_STREAM_MOVEMENT_SOURCE, micro.getMicroMove().getSource().value());
                 MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
 
                 context.createProducer().setDeliveryMode(1).setTimeToLive(5000L).send(destination, message);
