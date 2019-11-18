@@ -11,7 +11,7 @@ import java.util.UUID;
 public class MicroMovementExtended implements Serializable {
 
     public static final String FIND_ALL_AFTER_DATE = "MicroMovementExtended.findAllAfterDate";
-    public static final String FIND_ALL_FOR_ASSET_AFTER_DATE = "MicroMovementExtended.findAllForAssetAfterDate";
+    public static final String FIND_ALL_FOR_ASSET_BETWEEN_DATES = "MicroMovementExtended.findAllForAssetBetweenDates";
     public static final String FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES = "MicroMovementExtended.findAllForConnectIdsBetweenDates";
 
     private MicroMovement microMove;

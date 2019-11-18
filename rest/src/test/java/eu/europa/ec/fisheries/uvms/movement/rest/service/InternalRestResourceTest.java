@@ -1,7 +1,10 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.europa.ec.fisheries.schema.movement.search.v1.*;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
