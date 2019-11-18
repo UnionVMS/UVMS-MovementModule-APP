@@ -34,10 +34,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Stateless
 @Path("micro")
@@ -66,6 +63,26 @@ public class MicroMovementRestResource {
             return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Micro Movement for connectId: {}", connectId, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+
+    @POST
+    @Path("/track/assets/")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public Response getMicroMovementTrackForAssets(@DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, @QueryParam("sources") List<String> sources, List<UUID> assetIds) {
+        try {
+            if (assetIds.isEmpty()) {
+                return Response.ok(Collections.emptyList()).header("MDC", MDC.get("requestId")).build();
+            }
+
+            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
+            Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtil.getDateFromString(startDate));
+            Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtil.getDateFromString(endDate));
+            List<MicroMovementExtended> microList = movementDao.getMicroMovementsForConnectIdsBetweenDates(assetIds, startInstant, endInstant, sourceTypes);
+            return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("Error when getting Micro Movement for connectIds: {}", assetIds, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }

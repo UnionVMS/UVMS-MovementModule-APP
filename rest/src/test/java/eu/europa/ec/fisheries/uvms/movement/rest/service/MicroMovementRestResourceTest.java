@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -24,6 +25,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,6 +57,33 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         assertTrue(latestMovements
                 .stream()
                 .anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getTrackForAssetsTest() {
+        Movement movementBaseType1 = MovementTestHelper.createMovement();
+        Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
+
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
+
+        OffsetDateTime timestamp = createdMovement1.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
+        List<MicroMovementExtended> latestMovements = getWebTarget()
+                .path("micro")
+                .path("track")
+                .path("assets")
+                .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .post(Entity.json(Arrays.asList(createdMovement1.getMovementConnect().getId(), createdMovement2.getMovementConnect().getId())),new GenericType<List<MicroMovementExtended>>() {});
+
+        assertTrue(latestMovements
+                .stream()
+                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement1.getId().toString())));
+        assertTrue(latestMovements
+                .stream()
+                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
     }
 
     @Test
@@ -134,6 +163,36 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         assertTrue(latestMovements
                 .stream()
                 .anyMatch(m -> m.getGuid().equals(iridiumCreated.getId().toString())));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getTrackForAssetsAndSourcesTest() {
+        Movement movementBaseType1 = MovementTestHelper.createMovement();
+        movementBaseType1.setMovementSource(MovementSourceType.IRIDIUM);
+        Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
+
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType2.setMovementSource(MovementSourceType.OTHER);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
+
+        OffsetDateTime timestamp = createdMovement1.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
+        List<MicroMovementExtended> latestMovements = getWebTarget()
+                .path("micro")
+                .path("track")
+                .path("assets")
+                .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
+                .queryParam("sources", MovementSourceType.NAF.value(), MovementSourceType.IRIDIUM)
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .post(Entity.json(Arrays.asList(createdMovement1.getMovementConnect().getId(), createdMovement2.getMovementConnect().getId())),new GenericType<List<MicroMovementExtended>>() {});
+
+        assertTrue(latestMovements
+                .stream()
+                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement1.getId().toString())));
+        assertFalse(latestMovements
+                .stream()
+                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
     }
 
     @Test
