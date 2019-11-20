@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.TrackForAssetsQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
@@ -50,10 +51,10 @@ public class MicroMovementRestResource {
     @Inject
     private MovementDao movementDao;
 
-    @GET
+    @POST
     @Path("/track/asset/{id}/")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackForAsset(@PathParam("id") UUID connectId, @DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, @QueryParam("sources") List<String> sources) {
+    public Response getMicroMovementTrackForAsset(@PathParam("id") UUID connectId, @DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, List<String> sources) {
         try {
 
             List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
@@ -70,19 +71,19 @@ public class MicroMovementRestResource {
     @POST
     @Path("/track/assets/")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackForAssets(@DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, @QueryParam("sources") List<String> sources, List<UUID> assetIds) {
+    public Response getMicroMovementTrackForAssets(@DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, TrackForAssetsQuery query) {
         try {
-            if (assetIds.isEmpty()) {
+            if (query.getAssetIds().isEmpty()) {
                 return Response.ok(Collections.emptyList()).header("MDC", MDC.get("requestId")).build();
             }
 
-            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
+            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(query.getSources());
             Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtil.getDateFromString(startDate));
             Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtil.getDateFromString(endDate));
-            List<MicroMovementExtended> microList = movementDao.getMicroMovementsForConnectIdsBetweenDates(assetIds, startInstant, endInstant, sourceTypes);
+            List<MicroMovementExtended> microList = movementDao.getMicroMovementsForConnectIdsBetweenDates(query.getAssetIds(), startInstant, endInstant, sourceTypes);
             return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
-            LOG.error("Error when getting Micro Movement for connectIds: {}", assetIds, e);
+            LOG.error("Error when getting Micro Movement for connectIds: {}", query.getAssetIds(), e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
@@ -101,10 +102,10 @@ public class MicroMovementRestResource {
         }
     }
 
-    @GET
+    @POST
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getLastMicroMovementForAllAssets(@QueryParam("sources") List<String> sources) {
+    public Response getLastMicroMovementForAllAssets(List<String> sources) {
         try {
             List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
             List<MicroMovementExtended> microMovements = movementService.getLatestMovementsLast8Hours(sourceTypes);
