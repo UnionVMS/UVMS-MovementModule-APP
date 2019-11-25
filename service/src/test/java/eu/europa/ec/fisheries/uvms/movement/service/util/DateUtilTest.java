@@ -1,23 +1,18 @@
 package eu.europa.ec.fisheries.uvms.movement.service.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import javax.xml.datatype.DatatypeConfigurationException;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import java.text.ParseException;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class DateUtilTest extends TransactionalTests {
@@ -190,14 +185,4 @@ public class DateUtilTest extends TransactionalTests {
 			assertTrue(true);
 		}
 	}
-	
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testNowUTC() {
-		Instant now = Instant.now();
-		Instant output = DateUtil.nowUTC();
-		assertEquals(now, output);
-	}
-
-	
 }

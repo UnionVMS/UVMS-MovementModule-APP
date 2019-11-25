@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,8 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		assertEquals(lat, output.getPosition().getLatitude(), 0D);
 		assertEquals(lon, output.getPosition().getLongitude(), 0D);
 		assertEquals(connectId.toString(), output.getConnectId());
-		assertEquals(lesTime, output.getLesReportTime().toInstant());
+		assertEquals(lesTime.truncatedTo(ChronoUnit.MILLIS),
+				output.getLesReportTime().toInstant().truncatedTo(ChronoUnit.MILLIS));
 		try {
 			output = MovementEntityToModelMapper.mapToMovementBaseType(null);
 			fail("null input should result in a nullpointer");
