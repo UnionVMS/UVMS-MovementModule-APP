@@ -43,6 +43,8 @@
     <arquillian.wildfly.admin.port>9990</arquillian.wildfly.admin.port>
     <arquillian.wildfly.admin.user>admin</arquillian.wildfly.admin.user>
     <arquillian.wildfly.admin.pwd>Wildfly4ever!</arquillian.wildfly.admin.pwd>
+    <activemq.host>activemq</activemq.host>
+    <activemq.port>61616</activemq.port>
   </properties>
 
   <dependencies>

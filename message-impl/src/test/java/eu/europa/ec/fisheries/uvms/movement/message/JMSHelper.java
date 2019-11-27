@@ -10,8 +10,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
@@ -33,15 +37,40 @@ import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 
 public class JMSHelper {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(JMSHelper.class);
 
     private static final long TIMEOUT = 20000;
     private static final String MOVEMENT_QUEUE = "UVMSMovementEvent";
-    private static final String AMQ_HOST = System.getProperty("activemq_host","localhost");
+    private static final String PROPERTIES_FILE = "jms.properties";
+    private static final String DEFAULT_AMQ_HOST = "activemq";
+    private static final String DEFAULT_AMQ_PORT = "61616";
+    private static final String DEFAULT_AMQ_USER = "admin";
+    private static final String DEFAULT_AMQ_PWD = "admin";
+    private Properties properties = new Properties();
     public static final String RESPONSE_QUEUE = "MovementTestQueue";
 
-    private ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://"+AMQ_HOST+":61616");
+    private ConnectionFactory connectionFactory;
+    
+    public JMSHelper() {
+    	InputStream is = getClass().getResourceAsStream("/"+PROPERTIES_FILE);
+        if (is != null) {
+            try {
+				properties.load(is);
+            } catch (IOException e) {
+            	LOG.warn("Failed to load class-path resource:'{}'. Using default values", PROPERTIES_FILE, e);
+            }
+        } else {
+        	LOG.debug("Class-path resource: '{}' does not exist. Using default values", PROPERTIES_FILE);
+        }
+        
+        connectionFactory = new ActiveMQConnectionFactory(
+        		properties.getProperty("activemq_user", DEFAULT_AMQ_USER),
+        		properties.getProperty("activemq_pwd", DEFAULT_AMQ_PWD),
+        		"tcp://"+properties.getProperty("activemq_host", DEFAULT_AMQ_HOST)+
+        		":"+ properties.getProperty("activemq_port", DEFAULT_AMQ_PORT));
+    }
+    
 
     public PingResponse pingMovement() throws Exception {
         String pingRequest = MovementModuleRequestMapper.mapToPingRequest(null);
