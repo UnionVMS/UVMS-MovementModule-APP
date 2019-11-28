@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 
 import javax.annotation.PostConstruct;
@@ -69,5 +69,18 @@ public class MovementRestClient {
                 .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
 
         return response.readEntity(new GenericType<List<MicroMovementExtended>>() {});
+    }
+
+    public String getMicroMovementsForConnectIdsBetweenDates(List<String> connectIds, Instant fromDate, Instant toDate, List<String> sources) {
+        MicroMovementsForConnectIdsBetweenDatesRequest request = new MicroMovementsForConnectIdsBetweenDatesRequest(connectIds, fromDate, toDate);
+        request.setSources(sources);
+
+        Response response = webTarget
+                .path("internal/microMovementsForConnectIdsBetweenDates")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+                .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
+
+        return response.readEntity(String.class);
     }
 }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractTopicProducer;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
@@ -15,12 +14,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
 import javax.jms.*;
-import javax.transaction.Transactional;
 
 @Stateless
 public class EventStreamSender {
