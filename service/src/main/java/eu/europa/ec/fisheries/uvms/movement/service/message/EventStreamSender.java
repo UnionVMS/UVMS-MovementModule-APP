@@ -52,7 +52,7 @@ public class EventStreamSender {
                 message.setStringProperty(MessageConstants.EVENT_STREAM_MOVEMENT_SOURCE, micro.getMicroMove().getSource().value());
                 MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
 
-                context.createProducer().setDeliveryMode(1).send(destination, message);
+                context.createProducer().setDeliveryMode(1).setTimeToLive(5000L).send(destination, message);
 
             }
         }catch (Exception e){
