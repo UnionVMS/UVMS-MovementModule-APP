@@ -1,12 +1,12 @@
 package eu.europa.ec.fisheries.uvms.movement.client;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MovementPoint;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -19,13 +19,11 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.ws.rs.core.GenericType;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class MovementRestClientTest extends BuildMovementClientDeployment {
@@ -67,6 +65,77 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
         assertEquals(incomingMovement.getLatitude(), location.getLatitude());
         assertEquals(incomingMovement.getLongitude(), location.getLongitude());
+    }
+
+    @Test
+    public void getMicroMovementsForConnectIdsBetweenDatesEmptySourceList() {
+        // Given
+        AssetDTO asset = createBasicAsset();
+        Instant positionTime = Instant.now();
+
+        IncomingMovement incomingMovement = createIncomingMovement(asset, Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+
+        List<String> connectIds = new ArrayList<>();
+        connectIds.add(asset.getId().toString());
+
+        // When
+        String jsonOutput = movementRestClient.getMicroMovementsForConnectIdsBetweenDates(connectIds, positionTime, Instant.now(), new ArrayList<>());
+
+        // Then
+        assertTrue(jsonOutput.contains(createdMovement.getId().toString()));
+    }
+
+    @Test
+    public void getMicroMovementsForTwoAssetsBetweenDatesOneOfTwoSources() {
+        // Given
+        AssetDTO asset1 = createBasicAsset();
+        AssetDTO asset2 = createBasicAsset();
+        Instant positionTime = Instant.now();
+
+        IncomingMovement incomingMovement = createIncomingMovement(asset1, Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementSource(MovementSourceType.OTHER);
+        Movement createdMovement1 = movementService.createAndProcessMovement(movement);
+
+        incomingMovement = createIncomingMovement(asset2, Instant.now());
+        movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementSource(MovementSourceType.MANUAL);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movement);
+
+        List<String> connectIds = new ArrayList<>();
+        connectIds.add(asset1.getId().toString());
+        connectIds.add(asset2.getId().toString());
+
+        // When
+        String jsonOutput = movementRestClient.getMicroMovementsForConnectIdsBetweenDates(connectIds, positionTime, Instant.now(), Arrays.asList(MovementSourceType.MANUAL.value(), MovementSourceType.AIS.value()));
+
+        // Then
+        assertFalse(jsonOutput.contains(createdMovement1.getId().toString()));
+        assertTrue(jsonOutput.contains(createdMovement2.getId().toString()));
+    }
+
+
+    @Test
+    public void getMicroMovementsForConnectIdsBetweenDatesNullDates() {
+        // Given
+        AssetDTO asset = createBasicAsset();
+        Instant positionTime = Instant.now();
+
+        IncomingMovement incomingMovement = createIncomingMovement(asset, Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+
+        List<String> connectIds = new ArrayList<>();
+        connectIds.add(asset.getId().toString());
+
+
+        // When
+        String jsonOutput =  movementRestClient.getMicroMovementsForConnectIdsBetweenDates(connectIds, null, null, new ArrayList<>());
+
+        // Then
+        assertTrue(jsonOutput.contains(createdMovement.getId().toString()));
     }
 
     private IncomingMovement createIncomingMovement(AssetDTO testAsset, Instant positionTime) {
