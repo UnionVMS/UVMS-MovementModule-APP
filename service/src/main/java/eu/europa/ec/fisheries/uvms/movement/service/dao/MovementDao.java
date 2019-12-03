@@ -74,10 +74,6 @@ public class MovementDao {
         return em.find(Track.class, id);
     }
 
-    public Movement getMovementByGUID(UUID guid) {
-            return em.find(Movement.class, guid);
-    }
-
     public Movement getMovementById(UUID id) {
         return em.find(Movement.class, id);
     }
@@ -318,11 +314,5 @@ public class MovementDao {
         query.setParameter("toDate", toDate);
         query.setParameter("sources", sources);
         return query.getResultList();
-    }
-
-    public MicroMovement getMicroMovementById(UUID movementId) {
-        TypedQuery<MicroMovement> query = em.createNamedQuery(Movement.FIND_BY_ID, MicroMovement.class);
-        query.setParameter("movementId", movementId);
-        return query.getSingleResult();
     }
 }

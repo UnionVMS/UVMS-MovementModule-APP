@@ -93,7 +93,7 @@ public class MicroMovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getMicroMovementTrackByMovement(@PathParam("id") UUID id, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
         try {
-            Movement movement = movementDao.getMovementByGUID(id);
+            Movement movement = movementDao.getMovementById(id);
             List<MicroMovement> returnList = movementDao.getMicroMovementsDtoByTrack(movement.getTrack(), maxNbr);
             return Response.ok(returnList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {

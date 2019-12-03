@@ -39,14 +39,14 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testGetMovementsByGUID() throws Exception {
-		Movement output = movementDao.getMovementByGUID(UUID.randomUUID());
+		Movement output = movementDao.getMovementById(UUID.randomUUID());
 		assertNull(output);
 		
 		UUID connectId = UUID.randomUUID();
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		Movement move = movementHelpers.createMovement(20D, 20D, connectId, "TEST", Instant.now());
 		
-		output = movementDao.getMovementByGUID(move.getId());
+		output = movementDao.getMovementById(move.getId());
 		System.out.println(output);
 		assertEquals(move.getId(), output.getId());
 	}

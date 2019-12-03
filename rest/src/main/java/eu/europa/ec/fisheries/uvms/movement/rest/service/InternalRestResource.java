@@ -102,7 +102,7 @@ public class InternalRestResource {
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getMicroMovementById(@PathParam("movementId") UUID movementId) {
         try {
-            MicroMovement byId = movementDao.getMicroMovementById(movementId);
+            MicroMovement byId = movementService.getMicroMovementById(movementId);
             return Response.ok(byId).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
