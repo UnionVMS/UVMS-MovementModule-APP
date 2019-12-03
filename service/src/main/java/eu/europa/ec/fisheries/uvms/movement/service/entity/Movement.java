@@ -58,7 +58,8 @@ import java.util.UUID;
 
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"),
-    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.updated DESC")
+    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.updated DESC"),
+    @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.id = :movementId")
 
 })
 @DynamicUpdate
@@ -77,6 +78,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT = "Movement.findLatestMovementByMovementConnect";
     public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST = "Movement.findLatestMovementByMovementConnectList";
     public static final String FIND_LATEST = "Movement.findLatest";
+    public static final String FIND_BY_ID = "Movement.findById";
 
 
 

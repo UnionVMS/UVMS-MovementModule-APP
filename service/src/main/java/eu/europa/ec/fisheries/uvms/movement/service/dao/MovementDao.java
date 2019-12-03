@@ -319,4 +319,10 @@ public class MovementDao {
         query.setParameter("sources", sources);
         return query.getResultList();
     }
+
+    public MicroMovement getMicroMovementById(UUID movementId) {
+        TypedQuery<MicroMovement> query = em.createNamedQuery(Movement.FIND_BY_ID, MicroMovement.class);
+        query.setParameter("movementId", movementId);
+        return query.getSingleResult();
+    }
 }
