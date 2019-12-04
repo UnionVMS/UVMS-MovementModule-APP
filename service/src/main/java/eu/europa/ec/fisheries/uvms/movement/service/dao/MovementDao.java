@@ -74,10 +74,6 @@ public class MovementDao {
         return em.find(Track.class, id);
     }
 
-    public Movement getMovementByGUID(UUID guid) {
-            return em.find(Movement.class, guid);
-    }
-
     public Movement getMovementById(UUID id) {
         return em.find(Movement.class, id);
     }

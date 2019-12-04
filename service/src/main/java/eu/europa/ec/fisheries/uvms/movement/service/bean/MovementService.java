@@ -22,6 +22,7 @@ import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
@@ -190,7 +191,7 @@ public class MovementService {
     }
 
     public Movement getById(UUID id) {
-        return movementDao.getMovementByGUID(id);
+        return movementDao.getMovementById(id);
     }
 
 
@@ -279,5 +280,11 @@ public class MovementService {
         if(toBeDeleted != null) {
             movementDao.deleteMovementConnect(toBeDeleted);
         }
+    }
+
+    public MicroMovement getMicroMovementById(UUID movementId) {
+        Movement movement = movementDao.getMovementById(movementId);
+        return new MicroMovement(movement.getLocation(), movement.getHeading(), movement.getId(),
+                movement.getTimestamp(), movement.getSpeed(), movement.getMovementSource());
     }
 }

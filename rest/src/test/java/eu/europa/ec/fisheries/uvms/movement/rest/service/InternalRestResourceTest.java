@@ -14,6 +14,7 @@ import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -131,6 +132,22 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .get(long.class);
 
         assertEquals(1, response);
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void createAndGetMicroMovementById() {
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
+
+        MicroMovement response = getWebTarget()
+                .path("internal/getMicroMovement/")
+                .path(createdMovement.getId().toString())
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
+                .get(MicroMovement.class);
+
+        assertNotNull(response);
     }
 
     @Test

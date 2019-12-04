@@ -9,6 +9,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectId
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
@@ -92,6 +93,20 @@ public class InternalRestResource {
         } catch (IllegalArgumentException e) {
             return Response.status(Status.BAD_REQUEST).entity("No MovementQuery found").build();
         } catch (Exception e) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+
+    @GET
+    @Path("/getMicroMovement/{movementId}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getMicroMovementById(@PathParam("movementId") UUID movementId) {
+        try {
+            MicroMovement byId = movementService.getMicroMovementById(movementId);
+            return Response.ok(byId).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when counting movements. ]", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }

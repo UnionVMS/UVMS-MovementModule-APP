@@ -62,7 +62,7 @@ public class MovementCreateBean {
                 incomingMovement.setUpdated(Instant.now());
             }
 
-            AssetMTEnrichmentRequest request = createRequest(incomingMovement, incomingMovement.getUpdatedBy());
+            AssetMTEnrichmentRequest request = createRequest(incomingMovement);
             AssetMTEnrichmentResponse response = assetClient.collectAssetMT(request);
             enrichIncomingMovement(incomingMovement, response);
 
@@ -108,7 +108,7 @@ public class MovementCreateBean {
         im.setFlagState(response.getFlagstate());
     }
 
-    private AssetMTEnrichmentRequest createRequest(IncomingMovement ic, String username) {
+    private AssetMTEnrichmentRequest createRequest(IncomingMovement ic) {
         // OBS OBS OBS
         // missing in AssetId
         // GFCM, UVI, ACCAT = > belg req
@@ -132,7 +132,7 @@ public class MovementCreateBean {
 
         req.setTranspondertypeValue(ic.getMovementSourceType());
         req.setPluginType(ic.getPluginType());
-        req.setUser(username);
+        req.setUser(ic.getUpdatedBy());
 
         return req;
     }

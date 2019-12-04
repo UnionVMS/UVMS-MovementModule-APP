@@ -138,6 +138,19 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         assertTrue(jsonOutput.contains(createdMovement.getId().toString()));
     }
 
+    @Test
+    public void getMicroMovementById() {
+        // Given
+        AssetDTO asset = createBasicAsset();
+        IncomingMovement incomingMovement = createIncomingMovement(asset, Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+       // When
+        MicroMovement movementById = movementRestClient.getMicroMovementById(createdMovement.getId());
+        // Then
+        assertNotNull(movementById);
+    }
+
     private IncomingMovement createIncomingMovement(AssetDTO testAsset, Instant positionTime) {
 
         IncomingMovement incomingMovement = new IncomingMovement();
