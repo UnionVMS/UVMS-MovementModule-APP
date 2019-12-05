@@ -13,7 +13,7 @@
 		<url-pattern>/rest/config/*</url-pattern>
 		<url-pattern>/rest/movement/*</url-pattern>
 		<url-pattern>/rest/search/*</url-pattern>
-		<url-pattern>/rest/tempmovement/*</url-pattern>
+		<url-pattern>/rest/manualMovement/*</url-pattern>
 		<url-pattern>/rest/alarms/*</url-pattern>
 		<url-pattern>/rest/segment/*</url-pattern>
 		<url-pattern>/rest/track/*</url-pattern>

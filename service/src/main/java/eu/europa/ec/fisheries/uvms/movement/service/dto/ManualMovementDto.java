@@ -9,18 +9,34 @@ the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the impl
 FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. You should have received a
 copy of the GNU General Public License along with the IFDM Suite. If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.europa.ec.fisheries.uvms.movement.service.event;
+package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 
-import javax.inject.Qualifier;
+import java.io.Serializable;
+import java.time.Instant;
 
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE })
-public @interface CreatedManualMovement {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ManualMovementDto implements Serializable {
 
+    private MicroMovement movement;
+
+    private VesselType asset;
+
+    public MicroMovement getMovement() {
+        return movement;
+    }
+
+    public void setMovement(MicroMovement movement) {
+        this.movement = movement;
+    }
+
+    public VesselType getAsset() {
+        return asset;
+    }
+
+    public void setAsset(VesselType asset) {
+        this.asset = asset;
+    }
 }
