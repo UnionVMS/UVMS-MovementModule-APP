@@ -11,26 +11,22 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
-import java.util.ArrayList;
-import java.util.Date;  //leave be for now
-import java.util.List;
-
-import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementComChannelType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.*;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class MovementMapper {
@@ -79,7 +75,7 @@ public class MovementMapper {
         return dto;
     }
 
-    public static SetReportMovementType mapToSetReportMovementType(DraftMovement movement) {
+    public static SetReportMovementType mapToSetReportMovementType(ManualMovementDto movement) {
 
         SetReportMovementType report = new SetReportMovementType();
         report.setPluginName("ManualMovement");
@@ -95,11 +91,11 @@ public class MovementMapper {
 
         AssetIdList cfr = new AssetIdList();
         cfr.setIdType(AssetIdType.CFR);
-        cfr.setValue(movement.getCfr());
+        cfr.setValue(movement.getAsset().getCfr());
 
         AssetIdList ircs = new AssetIdList();
         ircs.setIdType(AssetIdType.IRCS);
-        ircs.setValue(movement.getIrcs());
+        ircs.setValue(movement.getAsset().getIrcs());
 
         exchangeAssetId.getAssetIdList().add(cfr);
         exchangeAssetId.getAssetIdList().add(ircs);
@@ -107,24 +103,21 @@ public class MovementMapper {
         exchangeMovementBaseType.setAssetId(exchangeAssetId);
 
         eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint exchangeMovementPoint = new MovementPoint();
-        if (movement.getLatitude() != null)
-            exchangeMovementPoint.setLatitude(movement.getLatitude());
-        if (movement.getLongitude() != null)
-            exchangeMovementPoint.setLongitude(movement.getLongitude());
+        if (movement.getMovement().getLocation().getLatitude() != null)
+            exchangeMovementPoint.setLatitude(movement.getMovement().getLocation().getLatitude());
+        if (movement.getMovement().getLocation().getLongitude() != null)
+            exchangeMovementPoint.setLongitude(movement.getMovement().getLocation().getLongitude());
         exchangeMovementBaseType.setPosition(exchangeMovementPoint);
 
-        exchangeMovementBaseType.setReportedCourse(movement.getCourse());
-        exchangeMovementBaseType.setReportedSpeed(movement.getSpeed());
-        exchangeMovementBaseType.setStatus(movement.getStatus());
+        exchangeMovementBaseType.setReportedCourse(movement.getMovement().getHeading());
+        exchangeMovementBaseType.setReportedSpeed(movement.getMovement().getSpeed());
+        exchangeMovementBaseType.setStatus("10");
 
-        exchangeMovementBaseType.setAssetName(movement.getName());
-        exchangeMovementBaseType.setFlagState(movement.getFlag());
-        exchangeMovementBaseType.setExternalMarking(movement.getExternalMarkings());
         exchangeMovementBaseType.setMovementType(MovementTypeType.MAN);
         exchangeMovementBaseType.setSource(MovementSourceType.MANUAL);
 
         try {
-            Date date = Date.from(movement.getTimestamp());
+            Date date = Date.from(movement.getMovement().getTimestamp());
             exchangeMovementBaseType.setPositionTime(date);
         } catch (Exception e) {
             LOG.error("Error when parsing position date for temp movement continuing ");

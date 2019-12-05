@@ -30,7 +30,6 @@ import eu.europa.ec.fisheries.uvms.movement.longpolling.constants.LongPollingCon
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportCountEvent;
 import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportEvent;
-import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedManualMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 
 @WebServlet(asyncSupported = true, urlPatterns = {LongPollingConstants.MOVEMENT_PATH, LongPollingConstants.MANUAL_MOVEMENT_PATH, LongPollingConstants.ALARM_REPORT_PATH, LongPollingConstants.ALARM_REPORT_COUNT_PATH})
@@ -63,11 +62,6 @@ public class LongPollingHttpServlet extends HttpServlet {
         completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(movement.getId().toString()));
     }
 
-    public void createdManualMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedManualMovement NotificationMessage message) throws IOException {
-        UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
-        completePoll(LongPollingConstants.MANUAL_MOVEMENT_PATH, createJsonMessage(guid.toString()));
-    }
-    
     public void observeAlarmCreated(@Observes(during = TransactionPhase.AFTER_SUCCESS) @AlarmReportEvent NotificationMessage message) throws IOException {
         UUID guid = (UUID) message.getProperties().get(LongPollingConstants.PROPERTY_GUID);
         completePoll(LongPollingConstants.ALARM_REPORT_PATH, createJsonMessage(guid.toString()));

@@ -31,5 +31,7 @@
 
     <include file="v5.2.30\db-changelog-add-source-satellite-id-5.2.26.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.3.0\db-changelog-drop-draft-movement-5.3.0.xml" relativeToChangelogFile="true"/>
+
         
 </databaseChangeLog>

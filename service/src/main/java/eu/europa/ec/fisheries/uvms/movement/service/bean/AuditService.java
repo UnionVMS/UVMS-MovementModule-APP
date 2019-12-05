@@ -16,7 +16,6 @@ import eu.europa.ec.fisheries.uvms.audit.model.mapper.AuditLogModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.DraftMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.AuditModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.AuditProducer;
 import org.slf4j.Logger;
@@ -61,13 +60,13 @@ public class AuditService {
     }
 
     @Asynchronous
-    public void sendTempMovementCreatedAudit(DraftMovement draftMovement, String username) {
+    public void sendManualMovementCreatedAudit(String draftMovement, String username) {
         try {
-            String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(draftMovement.getId().toString(),
+            String auditRequest = AuditModuleRequestMapper.mapAuditLogTempMovementCreated(draftMovement,
                     username);
             producer.sendModuleMessage(auditRequest);
         } catch (JMSException e) {
-            LOG.error("Failed to send audit log message! DraftMovement with guid {} was created ", draftMovement.getId().toString(), e);
+            LOG.error("Failed to send audit log message! DraftMovement with guid {} was created ", draftMovement, e);
         }
     }
 

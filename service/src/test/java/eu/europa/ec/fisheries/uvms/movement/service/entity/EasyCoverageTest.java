@@ -35,7 +35,7 @@ public class EasyCoverageTest extends Assert {
 		assertTrue(EXPECT_CLASSES_IN_PACKAGE,
 				checkAllClassesInPackage(testSuiteProvider, "eu.europa.ec.fisheries.uvms.movement.service.entity.group"));
 		assertTrue(EXPECT_CLASSES_IN_PACKAGE,
-				checkAllClassesInPackage(testSuiteProvider, "eu.europa.ec.fisheries.uvms.movement.service.entity.temp"));
+				checkAllClassesInPackage(testSuiteProvider, "eu.europa.ec.fisheries.uvms.movement.service.entity.alarm"));
 //		assertTrue(EXPECT_CLASSES_IN_PACKAGE,
 //				checkAllClassesInPackage(testSuiteProvider, "eu.europa.ec.fisheries.uvms.movement.service.dto"));
 

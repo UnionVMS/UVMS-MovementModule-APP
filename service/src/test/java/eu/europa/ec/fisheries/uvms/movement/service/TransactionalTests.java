@@ -11,7 +11,7 @@ import javax.transaction.*;
 public class TransactionalTests extends BuildMovementServiceTestDeployment {
 
     @Inject
-    private UserTransaction userTransaction;
+    protected UserTransaction userTransaction;
 
     @PersistenceContext
     protected EntityManager em;

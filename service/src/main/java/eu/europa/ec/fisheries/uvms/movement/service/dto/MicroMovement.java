@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MicroMovement implements Serializable {
 
     public static final String FIND_ALL_AFTER_DATE = "MicroMovementDtoV2.findAllAfterDate";

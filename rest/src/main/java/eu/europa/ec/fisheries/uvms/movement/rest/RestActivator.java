@@ -35,7 +35,7 @@ public class RestActivator extends Application {
     public RestActivator() {
         set.add(MovementRestResource.class);
         set.add(MovementSearchGroupResource.class);
-        set.add(TempMovementResource.class);
+        set.add(ManualMovementRestResource.class);
         set.add(ConfigResource.class);
         set.add(UnionVMSFeatureFilter.class);
         set.add(MovementRestExceptionMapper.class);
