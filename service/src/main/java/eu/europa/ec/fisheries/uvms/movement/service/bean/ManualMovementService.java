@@ -46,7 +46,7 @@ public class ManualMovementService {
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
                     DateUtil.nowUTC(), PluginType.MANUAL, username, null);
             exchangeProducer.sendModuleMessage(exchangeRequest, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value());
-            auditService.sendManualMovementCreatedAudit(exchangeRequest, username);
+//            auditService.sendManualMovementCreatedAudit(exchangeRequest, username);
         } catch (JMSException ex) {
             throw new IllegalArgumentException("Error when marshaling exchange request.", ex);
         }
