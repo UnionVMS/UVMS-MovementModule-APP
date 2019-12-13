@@ -5,8 +5,8 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryRe
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
@@ -117,7 +117,7 @@ public class InternalRestResource {
     public Response countMovementsInDateAndTheDayBeforeForAsset(@PathParam("id") String id,
                                                                 @QueryParam("after") String after) { // yyyy-MM-dd HH:mm:ss Z
         try {
-            Instant afterInstant = DateUtil.convertDateTimeInUTC(after);
+            Instant afterInstant = DateUtils.stringToDate(after);
             Instant yesterday = afterInstant.minusSeconds(60L * 60L * 24L); // 1 day in seconds
             long count = movementDao.countNrOfMovementsForAssetBetween(UUID.fromString(id),yesterday, afterInstant);
             return Response.ok().entity(count).type(MediaType.APPLICATION_JSON)

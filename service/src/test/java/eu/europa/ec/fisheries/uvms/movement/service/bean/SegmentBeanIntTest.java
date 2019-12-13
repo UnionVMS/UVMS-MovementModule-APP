@@ -1,29 +1,27 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
-import java.util.UUID;
-import javax.ejb.EJB;
-import javax.persistence.TypedQuery;
-
+import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
+import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
-import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
+
+import javax.ejb.EJB;
+import javax.persistence.TypedQuery;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 @Ignore //Since we process movements as we create them, theses tests need changing to not try to create the same segments.
@@ -244,8 +242,8 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         UUID connectId = UUID.randomUUID();
 
-        Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "TEST", DateUtil.nowUTC());
-        Movement toMovement = movementHelpers.createMovement(1d, 1d, connectId, "TEST", DateUtil.nowUTC());
+        Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "TEST", Instant.now());
+        Movement toMovement = movementHelpers.createMovement(1d, 1d, connectId, "TEST", Instant.now());
 
         Segment segment = segmentBean.createSegment(fromMovement, toMovement);
         Track track = segmentBean.createNewTrack(segment);

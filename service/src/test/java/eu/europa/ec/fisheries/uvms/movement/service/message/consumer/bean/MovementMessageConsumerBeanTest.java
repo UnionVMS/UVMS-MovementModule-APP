@@ -1,29 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.*;
-
-import java.math.BigInteger;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
-import javax.jms.TextMessage;
-
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -32,21 +8,39 @@ import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementRespons
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.search.v1.*;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import eu.europa.ec.fisheries.uvms.movementrules.model.mapper.JAXBMarshaller;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
+import javax.jms.Message;
+import javax.jms.TextMessage;
+import java.math.BigInteger;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDeployment {
@@ -553,8 +547,8 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         RangeCriteria criteria = new RangeCriteria();
         criteria.setKey(RangeKeyType.DATE);
-        criteria.setFrom(DateUtil.parseUTCDateToString(timestampBefore));
-        criteria.setTo(DateUtil.parseUTCDateToString(timestampAfter));
+        criteria.setFrom(DateUtils.dateToEpochMilliseconds(timestampBefore));
+        criteria.setTo(DateUtils.dateToEpochMilliseconds(timestampAfter));
         query.getMovementRangeSearchCriteria().add(criteria);
         ListCriteria criteria1 = new ListCriteria();
         criteria1.setKey(SearchKey.CONNECT_ID);
@@ -593,8 +587,8 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         RangeCriteria criteria = new RangeCriteria();
         criteria.setKey(RangeKeyType.DATE);
-        criteria.setFrom(DateUtil.parseUTCDateToString(timestampBefore));
-        criteria.setTo(DateUtil.parseUTCDateToString(timestampAfter));
+        criteria.setFrom(DateUtils.dateToEpochMilliseconds(timestampBefore));
+        criteria.setTo(DateUtils.dateToEpochMilliseconds(timestampAfter));
         query.getMovementRangeSearchCriteria().add(criteria);
         ListCriteria criteria1 = new ListCriteria();
         criteria1.setKey(SearchKey.CONNECT_ID);

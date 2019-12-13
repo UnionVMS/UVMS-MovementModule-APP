@@ -1,25 +1,24 @@
 package eu.europa.ec.fisheries.uvms.movement.service.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-import javax.ejb.EJB;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.LineString;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
+
+import javax.ejb.EJB;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class GeometryUtilTest extends TransactionalTests {
@@ -79,7 +78,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	public void testGetCoordinateSequenceFromMovements() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = Instant.now();
 		
 		Coordinate[] input = new Coordinate[2];
 		input[0] = new Coordinate(11.641982, 57.632304);

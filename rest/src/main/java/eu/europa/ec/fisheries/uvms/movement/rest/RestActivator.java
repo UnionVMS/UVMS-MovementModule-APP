@@ -11,18 +11,17 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.rest;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.movement.rest.filter.MovementRestExceptionMapper;
 import eu.europa.ec.fisheries.uvms.movement.rest.service.*;
+import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeatureFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeatureFilter;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+import java.util.HashSet;
+import java.util.Set;
 
 @ApplicationPath(RestConstants.MODULE_REST)
 public class RestActivator extends Application {

@@ -1,16 +1,17 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
 
-import java.util.UUID;
+import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+
+import java.time.Instant;
+import java.util.UUID;
 
 /**
  * Created by thofan on 2017-02-14.
@@ -29,7 +30,7 @@ public class MovementConnectIntTest extends TransactionalTests {
             MovementConnect movementConnect = new MovementConnect();
             movementConnect.setId(UUID.randomUUID());
             movementConnect.setUpdatedBy("arquillian");
-            movementConnect.setUpdated(DateUtil.nowUTC());
+            movementConnect.setUpdated(Instant.now());
             em.persist(movementConnect);
             em.flush();
         }

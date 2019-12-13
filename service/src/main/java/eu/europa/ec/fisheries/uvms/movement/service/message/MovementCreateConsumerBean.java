@@ -9,12 +9,11 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
@@ -30,7 +29,7 @@ public class MovementCreateConsumerBean implements MessageListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementCreateConsumerBean.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
     
     @Inject
     private MovementCreateBean movementCreate;
@@ -44,9 +43,8 @@ public class MovementCreateConsumerBean implements MessageListener {
 
     @PostConstruct
     private void init() {
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+        mapper = resolver.getContext(null);
     }
 
 

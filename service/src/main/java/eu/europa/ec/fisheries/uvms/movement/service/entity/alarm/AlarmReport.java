@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import eu.europa.ec.fisheries.schema.movementrules.exchange.v1.PluginType;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
 import javax.persistence.*;
@@ -16,7 +13,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,12 +46,12 @@ public class AlarmReport implements Serializable {
     private String assetGuid;   //exists in Type, same name
     private String status;  //Expects values from teh class AlarmsStatusType, exists in Type, same name
     private String recipient;   //exists in Type, same name
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     private Instant createdDate;   //exists in Type as openDate
+
     @NotNull
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     private Instant updated;       //exists in Type, same name
     @NotNull
     private String updatedBy;   //exists in Type, same name

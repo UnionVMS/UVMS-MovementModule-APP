@@ -12,27 +12,18 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import org.locationtech.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.UUID;
+import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import org.hibernate.annotations.*;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "segment", indexes = {
@@ -88,8 +79,7 @@ public class Segment implements Serializable {
     @Column(name = "seg_cog")
     private Float courseOverGround;
 
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     @NotNull
     @Column(name = "seg_updattim")
     private Instant updated;

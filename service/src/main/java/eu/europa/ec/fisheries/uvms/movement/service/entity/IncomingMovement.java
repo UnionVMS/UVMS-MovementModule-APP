@@ -2,10 +2,8 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 
 import javax.persistence.*;
@@ -29,14 +27,14 @@ public class IncomingMovement {
 
     private String assetHistoryId;
     private String ackResponseMessageId;
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     private Instant dateReceived;
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     private Instant positionTime;
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     private Instant lesReportTime;
     
     private String status;
@@ -83,8 +81,7 @@ public class IncomingMovement {
     private boolean duplicate = false;
 
     @NotNull
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     private Instant updated;
     @NotNull
     private String updatedBy;

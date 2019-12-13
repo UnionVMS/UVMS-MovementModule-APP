@@ -1,10 +1,9 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
@@ -35,8 +34,8 @@ public class EventStreamSender {
 
     @PostConstruct
     public void init() {
-        om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+        om = resolver.getContext(null);  //class does not matter, it is just needed
     }
 
     public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement move){

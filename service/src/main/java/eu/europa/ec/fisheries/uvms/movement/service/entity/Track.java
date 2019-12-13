@@ -12,23 +12,17 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import org.locationtech.jts.geom.LineString;
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.UUID;
 
 /**
  **/
@@ -71,8 +65,7 @@ public class Track implements Serializable {
     @Column(name = "trac_avgspeed")
     private double averageSpeed;
 
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     @NotNull
     @Column(name = "trac_updattim")
     private Instant updated;

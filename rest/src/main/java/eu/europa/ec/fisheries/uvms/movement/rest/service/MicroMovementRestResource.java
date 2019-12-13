@@ -12,7 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.TrackForAssetsQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
@@ -58,8 +58,8 @@ public class MicroMovementRestResource {
         try {
 
             List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
-            Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtil.getDateFromString(startDate));
-            Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtil.getDateFromString(endDate));
+            Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
+            Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtils.stringToDate(endDate));
             List<MicroMovement> microList = movementDao.getMicroMovementsForAssetAfterDate(connectId, startInstant, endInstant, sourceTypes);
             return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
@@ -78,8 +78,8 @@ public class MicroMovementRestResource {
             }
 
             List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(query.getSources());
-            Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtil.getDateFromString(startDate));
-            Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtil.getDateFromString(endDate));
+            Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
+            Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtils.stringToDate(endDate));
             List<MicroMovementExtended> microList = movementDao.getMicroMovementsForConnectIdsBetweenDates(query.getAssetIds(), startInstant, endInstant, sourceTypes);
             return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {

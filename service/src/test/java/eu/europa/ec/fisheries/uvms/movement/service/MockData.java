@@ -15,17 +15,16 @@ import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 import java.sql.Date;
 import java.time.Instant;
 import java.util.UUID;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 
 public class MockData {
 
@@ -35,7 +34,7 @@ public class MockData {
     
     public static Movement createMovement(double longitude, double latitude, UUID connectId, double reportedCourse, String username) {
 
-        LatLong latLong = new LatLong(latitude, longitude, DateUtil.nowUTC());
+        LatLong latLong = new LatLong(latitude, longitude, Instant.now());
         latLong.bearing = reportedCourse;
         return createMovement(latLong, connectId, username);
     }
@@ -79,7 +78,7 @@ public class MockData {
     
     public static MovementType createMovementType(double longitude, double latitude, double altitude, SegmentCategoryType segmentCategoryType, String connectId, double reportedCourse) {
 
-        LatLong latLong = new LatLong(latitude, longitude, DateUtil.nowUTC());
+        LatLong latLong = new LatLong(latitude, longitude, Instant.now());
         latLong.bearing = reportedCourse;
         return createMovementType(latLong, segmentCategoryType, connectId, altitude);
     }

@@ -1,10 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import org.locationtech.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialRestClient;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
@@ -12,7 +8,10 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.util.GeometryUtil;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.time.Instant;
 
 @Stateless
 public class SegmentBean {
@@ -92,7 +91,7 @@ public class SegmentBean {
         segment.setFromMovement(fromMovement);
         segment.setToMovement(toMovement);
 
-        segment.setUpdated(DateUtil.nowUTC());
+        segment.setUpdated(Instant.now());
         segment.setUpdatedBy("UVMS");
 
 
@@ -143,7 +142,7 @@ public class SegmentBean {
         Track track = new Track();
         track.setDistance(segment.getDistance());
         track.setDuration(segment.getDuration());
-        track.setUpdated(DateUtil.nowUTC());
+        track.setUpdated(Instant.now());
         track.setUpdatedBy("UVMS");
         segment.setTrack(track);
         return track;

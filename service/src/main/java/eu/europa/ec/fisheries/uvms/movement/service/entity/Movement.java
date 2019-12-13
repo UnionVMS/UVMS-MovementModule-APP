@@ -12,11 +12,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.DynamicInsert;
@@ -139,21 +137,18 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Enumerated(EnumType.ORDINAL)
     private MovementTypeType movementType;
 
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     @Column(name = "move_timestamp")
     private Instant timestamp;
     
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     @Column(name = "move_lesreporttime")
     private Instant lesReportTime;
 
     @Column(name = "move_satellite_id")
     private Short sourceSatelliteId;
 
-	@JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+    @JsonDeserialize(using = UVMSInstantDeserializer.class)
     @NotNull
     @Column(name = "move_updattim")
     private Instant updated;
