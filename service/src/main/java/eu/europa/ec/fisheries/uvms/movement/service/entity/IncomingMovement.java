@@ -3,9 +3,11 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,12 +31,15 @@ public class IncomingMovement {
     private String ackResponseMessageId;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant dateReceived;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant positionTime;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant lesReportTime;
     
     private String status;
@@ -82,6 +87,7 @@ public class IncomingMovement {
 
     @NotNull
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant updated;
     @NotNull
     private String updatedBy;

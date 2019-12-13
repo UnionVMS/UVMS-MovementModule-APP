@@ -30,7 +30,7 @@ public class EventStreamSender {
     @JMSConnectionFactory("java:/ConnectionFactory")
     JMSContext context;
 
-    private ObjectMapper om = new ObjectMapper();
+    private ObjectMapper om;
 
     @PostConstruct
     public void init() {

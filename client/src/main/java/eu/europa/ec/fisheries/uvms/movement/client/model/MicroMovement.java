@@ -3,8 +3,10 @@ package eu.europa.ec.fisheries.uvms.movement.client.model;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import java.time.Instant;
 
 public class MicroMovement {
@@ -16,6 +18,7 @@ public class MicroMovement {
     private String guid;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant timestamp;
 
     private Double speed;

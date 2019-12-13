@@ -13,10 +13,12 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -62,6 +64,7 @@ public class Activity implements Serializable {
     private String callback;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     @NotNull
     @Column(name = "act_updattim")
     private Instant updated;

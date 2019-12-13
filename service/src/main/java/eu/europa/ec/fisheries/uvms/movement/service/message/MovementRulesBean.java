@@ -1,18 +1,18 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.jms.*;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Queue;
 
 @Stateless
 public class MovementRulesBean extends AbstractProducer {
@@ -20,13 +20,12 @@ public class MovementRulesBean extends AbstractProducer {
     @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENTRULES_EVENT)
     private Queue destination;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     @PostConstruct
     private void init() {
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+        mapper = resolver.getContext(null);
     }
 
     public void send(MovementDetails movementDetails) throws JsonProcessingException, JMSException {

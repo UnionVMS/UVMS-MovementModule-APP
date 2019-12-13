@@ -12,10 +12,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -60,6 +62,7 @@ public class Activitytype implements Serializable {
     private String acttypDesc;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     @NotNull
     @Column(name = "acttyp_updattim")
     private Instant acttypUpdattim;

@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 
@@ -54,7 +55,8 @@ public class SpatialRestClient{
         client.register(new ContextResolver<ObjectMapper>() {
             @Override
             public ObjectMapper getContext(Class<?> type) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+                ObjectMapper mapper = resolver.getContext(null);
                 mapper.registerModule(new JaxbAnnotationModule());
                 mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 return mapper;
@@ -73,7 +75,8 @@ public class SpatialRestClient{
         request.add(movementType2);
 
         //this is here to make a correct json string for the rest call since I cant make Entity.json do so.......
-        ObjectMapper om = new ObjectMapper();
+        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+        ObjectMapper om = resolver.getContext(null);
         String s = "";
         try {
             s = om.writeValueAsString(request);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
@@ -51,9 +52,8 @@ public class MovementRestClient {
         client.register(new ContextResolver<ObjectMapper>() {
             @Override
             public ObjectMapper getContext(Class<?> type) {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+                ObjectMapper mapper = resolver.getContext(null);
                 client.register(new JacksonJaxbJsonProvider(mapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
                 return mapper;
             }

@@ -59,10 +59,10 @@ public class AlarmRestResource {
 
     @PUT
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
-    public Response updateAlarmStatus(final AlarmReport alarmReport) {
-        LOG.info("Update alarm status invoked in rest layer");
-        AlarmReport updated = validationService.updateAlarmStatus(alarmReport);
-        return Response.ok(updated).build();
+    public Response updateAlarmStatus(final String alarmReport) {
+        /*LOG.info("Update alarm status invoked in rest layer");
+        AlarmReport updated = validationService.updateAlarmStatus(alarmReport);*/
+        return Response.ok(/*updated*/).build();
     }
 
     @PUT

@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
@@ -25,6 +27,7 @@ public class MicroMovement implements Serializable {
     private String guid;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant timestamp;
 
     private Double speed;

@@ -130,14 +130,14 @@ public class DateUtilTest extends TransactionalTests {
 		Instant testDate = OffsetDateTime.of(2018, 3, 9, 11, 26, 30, 0, ZoneOffset.ofHours(2)).toInstant();
 
 		String formatedDate = DateUtils.dateToHumanReadableString(testDate);
-		assertTrue(formatedDate.contentEquals("2018-03-09 09:26:30 +0000"));
+		assertTrue(formatedDate.contentEquals("2018-03-09 09:26:30 Z"));
 
 		testDate = OffsetDateTime.of(2018,3, 9, 3, 26, 30, 00, ZoneOffset.ofHours(2)).toInstant();
 		ZonedDateTime zonedTestDate = ZonedDateTime.of(2018,3, 9, 10, 26, 30, 00, ZoneId.of("CET"));			//Lets hop that it understand that this is supposed to be summer time internally
 		zonedTestDate = zonedTestDate.withZoneSameInstant(ZoneId.of("CST", ZoneId.SHORT_IDS));
 
 		formatedDate = DateUtils.dateToHumanReadableString(zonedTestDate.toInstant());
-		assertTrue(formatedDate, formatedDate.contentEquals("2018-03-09 09:26:30 +0000"));
+		assertTrue(formatedDate, formatedDate.contentEquals("2018-03-09 09:26:30 Z"));
 		
 		formatedDate = DateUtils.dateToHumanReadableString(null);
 		assertNull(formatedDate);

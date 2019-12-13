@@ -9,6 +9,7 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryRe
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
@@ -19,6 +20,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,7 +47,13 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     @Inject
     private MovementDao movementDao;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
+
+    @Before
+    public void init(){
+        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+        mapper = resolver.getContext(null);
+    }
 
     @Test
     @OperateOnDeployment("movement")

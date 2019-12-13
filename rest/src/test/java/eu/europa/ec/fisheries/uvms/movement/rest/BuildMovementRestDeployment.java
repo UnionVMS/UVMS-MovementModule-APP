@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
@@ -87,13 +89,11 @@ public abstract class BuildMovementRestDeployment {
     }
     
     protected WebTarget getWebTarget() {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+        ObjectMapper objectMapper = resolver.getContext(null);
         Client client = ClientBuilder.newClient();
-        client.register(new JacksonJaxbJsonProvider(objectMapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
+        client.register(new JacksonJsonProvider(objectMapper, JacksonJsonProvider.BASIC_ANNOTATIONS));
+        //client.
         //return client.target("http://localhost:28080/test/rest");
         return client.target("http://localhost:8080/test/rest");
     }

@@ -29,8 +29,6 @@ import java.util.UUID;
 @Stateless
 public class AssetMTRestMock {
 
-    ObjectMapper MAPPER = new ObjectMapper();
-
 
     @POST
     @Path("collectassetmt")

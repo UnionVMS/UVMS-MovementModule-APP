@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -48,10 +50,12 @@ public class AlarmReport implements Serializable {
     private String recipient;   //exists in Type, same name
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant createdDate;   //exists in Type as openDate
 
     @NotNull
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant updated;       //exists in Type, same name
     @NotNull
     private String updatedBy;   //exists in Type, same name

@@ -2,8 +2,10 @@ package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -22,6 +24,7 @@ public class SegmentDTO {
     private Double courseOverGround;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant updated;
 
     private String updatedBy;

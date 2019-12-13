@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -19,9 +21,11 @@ public class MicroMovementsForConnectIdsBetweenDatesRequest implements Serializa
     private List<String> assetIds;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant fromDate = Instant.now().minus(8, ChronoUnit.HOURS);
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     private Instant toDate = Instant.now();
 
     private List<String> sources;

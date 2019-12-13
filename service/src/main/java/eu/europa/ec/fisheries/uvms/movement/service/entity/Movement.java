@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import org.apache.commons.lang3.ObjectUtils;
@@ -23,6 +24,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.locationtech.jts.geom.Point;
 
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -138,10 +140,12 @@ public class Movement implements Serializable, Comparable<Movement> {
     private MovementTypeType movementType;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     @Column(name = "move_timestamp")
     private Instant timestamp;
     
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     @Column(name = "move_lesreporttime")
     private Instant lesReportTime;
 
@@ -149,6 +153,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     private Short sourceSatelliteId;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
     @NotNull
     @Column(name = "move_updattim")
     private Instant updated;

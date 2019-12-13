@@ -13,6 +13,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
@@ -51,22 +52,18 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Inject
     MovementService movementService;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     JMSHelper jmsHelper;
 
-    @PostConstruct
-    public void init() {
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-
-    }
 
     @Before
     public void cleanJMS() throws Exception {
         jmsHelper = new JMSHelper(connectionFactory);
         jmsHelper.clearQueue("UVMSMovementRulesEvent");
+
+        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+        mapper = resolver.getContext(null);
     }
 
     @Test
@@ -171,7 +168,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
         assertThat(movementDetails.getLongitude(), is(incomingMovement.getLongitude()));
         assertThat(movementDetails.getLatitude(), is(incomingMovement.getLatitude()));
-        assertEquals(movementDetails.getPositionTime().toEpochMilli(), incomingMovement.getPositionTime().toEpochMilli());
+        assertEquals(movementDetails.getPositionTime().truncatedTo(ChronoUnit.MILLIS), incomingMovement.getPositionTime().truncatedTo(ChronoUnit.MILLIS));
         assertThat(movementDetails.getStatusCode(), is(incomingMovement.getStatus()));
         assertThat(movementDetails.getReportedSpeed(), is(incomingMovement.getReportedSpeed()));
         assertThat(movementDetails.getReportedCourse(), is(incomingMovement.getReportedCourse()));
