@@ -12,7 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantAdapter;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -21,7 +21,6 @@ import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
@@ -30,7 +29,6 @@ import java.util.UUID;
  **/
 @Entity
 @Table(name = "activitytype")
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Activitytype.findAll", query = "SELECT a FROM Activitytype a"),
     @NamedQuery(name = "Activitytype.findByActtypId", query = "SELECT a FROM Activitytype a WHERE a.acttypId = :acttypId"),
@@ -62,7 +60,7 @@ public class Activitytype implements Serializable {
     private String acttypDesc;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     @NotNull
     @Column(name = "acttyp_updattim")
     private Instant acttypUpdattim;

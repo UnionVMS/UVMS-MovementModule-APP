@@ -11,12 +11,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
@@ -91,9 +87,17 @@ public abstract class BuildMovementRestDeployment {
     protected WebTarget getWebTarget() {
         ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
         ObjectMapper objectMapper = resolver.getContext(null);
+
+        //ObjectMapper om2 = new ObjectMapper();
+
+        /*JsonbConfig jsonbConf = new JsonbConfig().withAdapters(new JsonBInstantDeserializer());
+        Jsonb jsonb = JsonbBuilder.create(jsonbConf);*/
+
+
         Client client = ClientBuilder.newClient();
-        client.register(new JacksonJsonProvider(objectMapper, JacksonJsonProvider.BASIC_ANNOTATIONS));
-        //client.
+        //client.register(JacksonFeature)
+        client.register(new JacksonJaxbJsonProvider(objectMapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
+        //client.register(new  JacksonJaxbJsonProvider(jsonb, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
         //return client.target("http://localhost:28080/test/rest");
         return client.target("http://localhost:8080/test/rest");
     }

@@ -155,6 +155,11 @@
 			<version>1.1.0</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
+            <version>4.4.1.Final</version>
+        </dependency>
     </dependencies>
 
     <build>

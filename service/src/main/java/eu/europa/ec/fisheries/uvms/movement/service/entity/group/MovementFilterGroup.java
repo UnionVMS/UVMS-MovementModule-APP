@@ -12,7 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.entity.group;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantAdapter;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -59,7 +59,7 @@ public class MovementFilterGroup implements Serializable {
     private String name;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     @NotNull
     @Column(name = "movefiltgrp_updattim")
     private Instant updated;

@@ -1,16 +1,16 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantAdapter;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 
 import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -18,7 +18,6 @@ import java.util.UUID;
 @Table(name = "incomingmovement", indexes = {
         @Index(columnList = "alarmreport_id", name = "incomingmovement_alarmreport_fk_inx", unique = false)
 })
-@XmlRootElement
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IncomingMovement {
 
@@ -31,15 +30,15 @@ public class IncomingMovement {
     private String ackResponseMessageId;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant dateReceived;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant positionTime;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant lesReportTime;
     
     private String status;
@@ -87,11 +86,12 @@ public class IncomingMovement {
 
     @NotNull
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant updated;
     @NotNull
     private String updatedBy;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)    //DB is set to allow null values here since, for some reason, hibernate passes a null that is later changed into the correct value.
     private AlarmReport alarmReport;
 

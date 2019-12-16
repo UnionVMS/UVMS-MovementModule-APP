@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantAdapter;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
 import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -22,14 +21,13 @@ import java.util.UUID;
 @Table(name = "alarmreport", indexes = {
         @Index(columnList = "incomingmovement_id", name = "alarmreport_incomingmovement_fk_inx", unique = false)
 })
-@XmlRootElement
 @NamedQueries({
         @NamedQuery(name = AlarmReport.FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID, query = "SELECT ar FROM AlarmReport ar WHERE ar.incomingMovement.id = :movementGuid and ar.status = 'OPEN'"),
         @NamedQuery(name = AlarmReport.FIND_ALARM_REPORT_BY_ASSET_GUID_AND_RULE_GUID, query = "SELECT ar FROM AlarmReport ar left join ar.alarmItemList ai WHERE ar.assetGuid = :assetGuid and ar.status = 'OPEN' and ai.ruleGuid = :ruleGuid"),
         @NamedQuery(name = AlarmReport.COUNT_OPEN_ALARMS, query = "SELECT count(ar) FROM AlarmReport ar where ar.status = 'OPEN'")
 })
 //@formatter:on
-@JsonIdentityInfo(generator= ObjectIdGenerators.UUIDGenerator.class)
+//@JsonIdentityInfo(generator= ObjectIdGenerators.UUIDGenerator.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AlarmReport implements Serializable {
 
@@ -50,12 +48,12 @@ public class AlarmReport implements Serializable {
     private String recipient;   //exists in Type, same name
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant createdDate;   //exists in Type as openDate
 
     @NotNull
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant updated;       //exists in Type, same name
     @NotNull
     private String updatedBy;   //exists in Type, same name

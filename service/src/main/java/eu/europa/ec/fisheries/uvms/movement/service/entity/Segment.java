@@ -13,7 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantDeserializer;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantAdapter;
 import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -22,7 +22,6 @@ import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
@@ -35,7 +34,6 @@ import java.util.UUID;
         @UniqueConstraint(name = "segment_seg_frommove_id_key", columnNames = "seg_frommove_id"),
         @UniqueConstraint(name = "segment_seg_tomove_id_key", columnNames = "seg_tomove_id")
 })
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = Segment.FIND_ALL, query = "SELECT s FROM Segment s"),
     @NamedQuery(name = Segment.FIND_ALL_BY_TRACK, query = "SELECT s FROM Segment s where s.track = :track"),
@@ -82,7 +80,7 @@ public class Segment implements Serializable {
     private Float courseOverGround;
 
     @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantDeserializer.class)
+    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     @NotNull
     @Column(name = "seg_updattim")
     private Instant updated;
