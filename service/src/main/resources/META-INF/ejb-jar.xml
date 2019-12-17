@@ -175,7 +175,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -184,14 +184,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -201,7 +193,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -210,14 +202,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -227,7 +211,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -236,14 +220,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -253,7 +229,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -262,14 +238,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -279,7 +247,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -288,14 +256,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -305,7 +265,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -314,14 +274,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -331,7 +283,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -340,14 +292,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -357,7 +301,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -366,14 +310,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -383,7 +319,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -392,14 +328,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -409,7 +337,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -418,14 +346,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -435,7 +355,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -444,14 +364,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -461,7 +373,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -470,14 +382,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -487,7 +391,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -496,14 +400,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -513,7 +409,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -522,14 +418,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -539,7 +427,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -548,14 +436,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -565,7 +445,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -574,14 +454,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -591,7 +463,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -600,14 +472,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -617,7 +481,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -626,14 +490,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -643,7 +499,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -652,14 +508,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -669,7 +517,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -678,14 +526,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -695,7 +535,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -704,14 +544,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -721,7 +553,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -730,14 +562,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -747,7 +571,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -756,14 +580,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -773,7 +589,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -782,14 +598,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -799,7 +607,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -808,14 +616,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -825,7 +625,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -834,14 +634,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -851,7 +643,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -860,14 +652,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -877,7 +661,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -886,14 +670,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -903,7 +679,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -912,14 +688,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
@@ -929,7 +697,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>destination</activation-config-property-name>
-					<activation-config-property-value>UVMSMovementEvent</activation-config-property-value>
+					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>destinationType</activation-config-property-name>
@@ -938,14 +706,6 @@
 				<activation-config-property>
 					<activation-config-property-name>maxSession</activation-config-property-name>
 					<activation-config-property-value>1</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>maximumRedeliveries</activation-config-property-name>
-					<activation-config-property-value>6</activation-config-property-value>
-				</activation-config-property>
-				<activation-config-property>
-					<activation-config-property-name>initialRedeliveryDelay</activation-config-property-name>
-					<activation-config-property-value>100</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
 		</message-driven>
