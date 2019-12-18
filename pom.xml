@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>fish.focus.uvms.maven</groupId>
 		<artifactId>uvms-pom</artifactId>
-		<version>2.4</version>
+		<version>2.5</version>
 	</parent>
 
 	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
@@ -25,7 +25,7 @@
 		<audit.model.version>4.1.4</audit.model.version>
 		<exchange.model.version>5.0.19-UVMS</exchange.model.version>
 		<asset.client.version>6.3.2</asset.client.version>
-		<movement-rules.model.version>2.1.31-SNAPSHOT</movement-rules.model.version>
+		<movement-rules.model.version>2.1.30</movement-rules.model.version>
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
@@ -87,17 +87,10 @@
 				<groupId>com.fasterxml.jackson.datatype</groupId>
 				<artifactId>jackson-datatype-jsr310</artifactId>
 				<version>${jackson.version}</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-jaxb-annotations</artifactId>
-				<version>${jackson.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>

@@ -1,14 +1,12 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.*;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
@@ -29,7 +27,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
@@ -50,20 +47,20 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     private ConnectionFactory connectionFactory;
 
     @Inject
-    MovementService movementService;
+    private MovementService movementService;
 
-    private ObjectMapper mapper;
+    private static ObjectMapper mapper;
+    private JMSHelper jmsHelper;
 
-    JMSHelper jmsHelper;
-
+    static {
+        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
+        mapper = resolver.getContext(null);
+    }
 
     @Before
     public void cleanJMS() throws Exception {
         jmsHelper = new JMSHelper(connectionFactory);
         jmsHelper.clearQueue("UVMSMovementRulesEvent");
-
-        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
-        mapper = resolver.getContext(null);
     }
 
     @Test
@@ -83,7 +80,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
         // Send positions to movement
         for (int i = 0; i < numberOfPositions; i++) {
-            IncomingMovement im = MovementTestHelper.createIncomingMovement(0d,0d);
+            IncomingMovement im = MovementTestHelper.createIncomingMovement(0d, 0d);
             im.setAssetHistoryId(connectId);
             im.setPositionTime(timestamp);
             timestamp = timestamp.plusSeconds(10);
@@ -92,15 +89,15 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         }
 
         Instant maxTime = Instant.now().plusSeconds(30);
-        while(jmsHelper.checkQueueSize(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME) < 20) {
-            if(Instant.now().isAfter(maxTime)) {
+        while (jmsHelper.checkQueueSize(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME) < 20) {
+            if (Instant.now().isAfter(maxTime)) {
                 break;
             }
             Thread.sleep(100);
         }
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        query.getPagination().setListSize(BigInteger.valueOf(100l));
+        query.getPagination().setListSize(BigInteger.valueOf(100L));
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
         criteria.setValue(connectId);
@@ -109,15 +106,13 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         GetMovementListByQueryResponse movementResponse = jmsHelper.getMovementListByQuery(query, connectId);
         List<MovementType> movements = movementResponse.getMovement();
 
-        movements.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
+        movements.sort(Comparator.comparing(MovementBaseType::getPositionTime));
         MovementType previous = null;
         for (MovementType movementType : movements) {
-            if (previous == null) {
-                previous = movementType;
-            } else {
+            if (previous != null) {
                 assertFalse(Collections.disjoint(previous.getSegmentIds(), movementType.getSegmentIds()));
-                previous = movementType;
             }
+            previous = movementType;
         }
     }
 
@@ -152,7 +147,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         Movement createdMovement = movementService.getById(UUID.fromString(movementDetails.getMovementGuid()));
         assertEquals(satelliteId, createdMovement.getSourceSatelliteId());
     }
-    
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -179,7 +173,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movementDetails.getInternalReferenceNumber(), is(incomingMovement.getInternalReferenceNumber()));
     }
 
-
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovementVerifyNullAltitudeData() throws Exception {
@@ -192,7 +185,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movementDetails.getAltitude(), is(incomingMovement.getAltitude()));
     }
 
-
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovementVerifyWKTData() throws Exception {
@@ -204,18 +196,16 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movementDetails.getWkt(), is(notNullValue()));
     }
 
-
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovementVerifyCalculatedData() throws Exception {
-
         String uuid = UUID.randomUUID().toString();
 
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId("TestIrcs");
         incomingMovement.setPositionTime(Instant.now().minusSeconds(10));
-        incomingMovement.setAssetIRCS("TestIrcs:" + uuid);                                                    //I set the asset mocker up so that TestIrcs returns the id behind the :
+        incomingMovement.setAssetIRCS("TestIrcs:" + uuid); //I set the asset mocker up so that TestIrcs returns the id behind the :
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
 
         IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
@@ -224,23 +214,20 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);
         MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2);
 
-        
         assertThat(movementDetails2.getMovementGuid(), is(notNullValue()));
         assertThat(movementDetails2.getCalculatedSpeed(), is(notNullValue()));
         assertThat(movementDetails2.getCalculatedCourse(), is(notNullValue()));
     }
 
-
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovementVerifyBasicSegment() throws Exception {
-
         String uuid = UUID.randomUUID().toString();
 
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(uuid);
         incomingMovement.setAssetHistoryId(uuid);
-        incomingMovement.setAssetIRCS("TestIrcs:" + uuid);                                                  //I set the asset mocker up so that TestIrcs returns the id behind the :
+        incomingMovement.setAssetIRCS("TestIrcs:" + uuid); //I set the asset mocker up so that TestIrcs returns the id behind the :
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
 
         IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
@@ -249,7 +236,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);
         MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2);
 
-        
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
@@ -257,15 +243,13 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         query.getMovementSearchCriteria().add(criteria);
         GetMovementListByQueryResponse movementList = jmsHelper.getMovementListByQuery(query, movementDetails2.getConnectId());
         List<MovementType> movements = movementList.getMovement();
-        
+
         assertThat(movements.size(), is(2));
         assertThat(movements.get(0).getSegmentIds(), is(movements.get(1).getSegmentIds()));
-
     }
 
-    
     @Test
-    @Ignore   //TODO: This one needs create batch functionality
+    @Ignore("This one needs create batch functionality")
     @OperateOnDeployment("movementservice")
     public void createMovementBatchTest() throws Exception {
         /*
@@ -277,7 +261,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         List<MovementType> createdMovement = response.getMovements();
         assertThat(createdMovement.size(), is(3));*/
     }
-    
+
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovementVerifyPreviousPosition() throws Exception {
@@ -290,10 +274,10 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         firstIncomingMovement.setLongitude(firstLongitude);
         firstIncomingMovement.setLatitude(firstLatitude);
         MovementDetails firstMovementDetails = sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
-        
+
         assertThat(firstMovementDetails.getPreviousLatitude(), is(nullValue()));
         assertThat(firstMovementDetails.getPreviousLongitude(), is(nullValue()));
-        
+
         IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
         secondIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
         secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
@@ -302,7 +286,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(secondMovementDetails.getPreviousLatitude(), is(firstLatitude));
         assertThat(secondMovementDetails.getPreviousLongitude(), is(firstLongitude));
     }
-    
+
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovementVerifySumPositionReport() throws Exception {
@@ -310,16 +294,16 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();
         firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
         MovementDetails firstMovementDetails = sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
-        
+
         assertThat(firstMovementDetails.getSumPositionReport(), is(1));
-        
+
         IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
         secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
         MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
 
         assertThat(secondMovementDetails.getSumPositionReport(), is(2));
     }
-    
+
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovementVerifySumPositionReportTwoDayGap() throws Exception {
@@ -328,14 +312,14 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
         firstIncomingMovement.setPositionTime(Instant.now().minus(2, ChronoUnit.DAYS));
         sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
-        
+
         IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
         secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
         MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
 
         assertThat(secondMovementDetails.getSumPositionReport(), is(1));
     }
-    
+
     @Test
     @OperateOnDeployment("movementservice")
     public void createDuplicateMovement() throws Exception {
@@ -344,7 +328,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         movement.setAssetIRCS("TestIrcs:" + assetHistoryId);
         movement.setPositionTime(Instant.now().minus(2, ChronoUnit.DAYS));
         sendIncomingMovementAndWaitForResponse(movement);
-        
+
         jmsHelper.clearQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
         ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(movement);
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
@@ -359,10 +343,10 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         movement.setPositionTime(Instant.now().minus(2, ChronoUnit.DAYS));
         movement.setMovementSourceType(MovementSourceType.AIS.value());
         sendIncomingMovementAndWaitForResponse(movement);
-        
+
         movement.setMovementSourceType(MovementSourceType.INMARSAT_C.value());
         sendIncomingMovementAndWaitForResponse(movement);
-        
+
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
@@ -372,19 +356,19 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, movement.getAssetGuid());
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
-        
+
         ListCriteria criteria2 = new ListCriteria();
         criteria2.setKey(SearchKey.SOURCE);
         criteria2.setValue(MovementSourceType.INMARSAT_C.value());
         query.getMovementSearchCriteria().add(criteria2);
-        
+
         GetMovementListByQueryResponse listByQueryResponse2 = jmsHelper.getMovementListByQuery(query, movement.getAssetGuid());
         List<MovementType> movements2 = listByQueryResponse2.getMovement();
         assertThat(movements2.size(), is(1));
         assertThat(movements2.get(0).getPositionTime(), is(Date.from(movement.getPositionTime())));
-        
+
         criteria2.setValue(MovementSourceType.AIS.value());
-        
+
         GetMovementListByQueryResponse listByQueryResponse3 = jmsHelper.getMovementListByQuery(query, movement.getAssetGuid());
         List<MovementType> movements3 = listByQueryResponse3.getMovement();
         assertThat(movements3.size(), is(1));
@@ -400,7 +384,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement.setAssetHistoryId(null);
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement, groupId.toString());
 
-
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
@@ -415,7 +398,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movements.get(0).getPosition().getLatitude(), is(incomingMovement.getLatitude()));
         assertThat(movements.get(0).getPositionTime().getTime(), is(incomingMovement.getPositionTime().toEpochMilli()));
     }
-
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -434,7 +416,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
         incomingMovement2.setAssetGuid(null);
         incomingMovement2.setAssetHistoryId("TestIrcs");
-        incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);                                              //I set the asset mocker up so that TestIrcs returns the id behind the :
+        incomingMovement2.setAssetIRCS("TestIrcs:" + uuid);  //I set the asset mocker up so that TestIrcs returns the id behind the :
         MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2, uuid);
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
@@ -458,7 +440,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement, grouping);
 
         MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement, grouping);
-
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         ListCriteria criteria1 = new ListCriteria();
@@ -489,7 +470,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria.setKey(SearchKey.MOVEMENT_ID);
         criteria.setValue(movementDetails.getMovementGuid());
         query.getMovementSearchCriteria().add(criteria);
-        
+
         GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, grouping);
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(1));
@@ -498,7 +479,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movements.get(0).getPosition().getLatitude(), is(movementDetails.getLatitude()));
         assertThat(movements.get(0).getPositionTime().getTime(), is(movementDetails.getPositionTime().toEpochMilli()));
     }
-    
+
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementListByMovementIdTwoMovements() throws Exception {
@@ -522,12 +503,12 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria2.setKey(SearchKey.MOVEMENT_ID);
         criteria2.setValue(movementDetails2.getMovementGuid());
         query.getMovementSearchCriteria().add(criteria2);
-        
+
         GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, grouping);
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
     }
-    
+
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementListByDateFromRange() throws Exception {
@@ -538,7 +519,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement, grouping);
-        
+
         Instant timestampAfter = Instant.now().plusSeconds(1);
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
@@ -551,7 +532,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria1.setKey(SearchKey.CONNECT_ID);
         criteria1.setValue(movementDetails.getConnectId());
         query.getMovementSearchCriteria().add(criteria1);
-        
+
         GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, grouping);
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(1));
@@ -561,7 +542,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movements.get(0).getPositionTime().toInstant().truncatedTo(ChronoUnit.MILLIS),
                 is(movementDetails.getPositionTime().truncatedTo(ChronoUnit.MILLIS)));
     }
-
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -580,7 +560,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementDetails movementDetails2 = sendIncomingMovementAndWaitForResponse(incomingMovement2, grouping);
 
         Instant timestampAfter = Instant.now().plusSeconds(60);
-        
+
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
         RangeCriteria criteria = new RangeCriteria();
         criteria.setKey(RangeKeyType.DATE);
@@ -595,13 +575,11 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         criteria2.setKey(SearchKey.CONNECT_ID);
         criteria2.setValue(movementDetails2.getConnectId());
         query.getMovementSearchCriteria().add(criteria2);
-        
+
         GetMovementListByQueryResponse listByQueryResponse = jmsHelper.getMovementListByQuery(query, grouping);
         List<MovementType> movements = listByQueryResponse.getMovement();
         assertThat(movements.size(), is(2));
     }
-
-
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -609,18 +587,18 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         int numberOfPositions = 20;
         String connectId1 = UUID.randomUUID().toString();
         String connectId2 = UUID.randomUUID().toString();
-        
+
         List<String> correlationIds = new ArrayList<>();
-        
+
         Instant timestamp = Instant.now().minusSeconds(60 * 60);  //to avoid the sanity rule "time in future"
-        
+
         // Send positions to movement
         for (int i = 0; i < numberOfPositions; i++) {
             IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
             incomingMovement.setAssetGuid(null);
             incomingMovement.setAssetHistoryId(null);
             incomingMovement.setPositionTime(timestamp);
-            incomingMovement.setAssetIRCS("TestIrcs:" + connectId1);                                              //I set the asset mocker up so that TestIrcs returns the id behind the :
+            incomingMovement.setAssetIRCS("TestIrcs:" + connectId1); //I set the asset mocker up so that TestIrcs returns the id behind the :
             String json = mapper.writeValueAsString(incomingMovement);
             jmsHelper.sendMovementMessage(json, "Grouping:1", "CREATE");
 
@@ -628,14 +606,12 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             incomingMovement2.setAssetGuid(null);
             incomingMovement2.setAssetHistoryId(null);
             incomingMovement2.setPositionTime(timestamp);
-            incomingMovement2.setAssetIRCS("TestIrcs:" + connectId2);                                              //I set the asset mocker up so that TestIrcs returns the id behind the :
+            incomingMovement2.setAssetIRCS("TestIrcs:" + connectId2); //I set the asset mocker up so that TestIrcs returns the id behind the :
             String json2 = mapper.writeValueAsString(incomingMovement2);
             jmsHelper.sendMovementMessage(json2, "Grouping:2", "CREATE");
 
-
             timestamp = timestamp.plusSeconds(10);
         }
-
 
         // Check responses
         for (int i = 0; i < numberOfPositions; i++) {
@@ -647,9 +623,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             jsonResponse = response.getText();
             movementDetails = mapper.readValue(jsonResponse, MovementDetails.class);
         }
-        
+
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
-        query.getPagination().setListSize(BigInteger.valueOf(100l));
+        query.getPagination().setListSize(BigInteger.valueOf(100L));
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
         criteria.setValue(connectId1);
@@ -658,19 +634,17 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         GetMovementListByQueryResponse movementResponse = jmsHelper.getMovementListByQuery(query, connectId1);
         List<MovementType> movements = movementResponse.getMovement();
 
-        movements.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
+        movements.sort(Comparator.comparing(MovementBaseType::getPositionTime));
         MovementType previous = null;
         for (MovementType movementType : movements) {
-            if (previous == null) {
-                previous = movementType;
-            } else {
+            if (previous != null) {
                 assertFalse(Collections.disjoint(previous.getSegmentIds(), movementType.getSegmentIds()));
-                previous = movementType;
             }
+            previous = movementType;
         }
-        
+
         MovementQuery query2 = MovementTestHelper.createMovementQuery(true, false, false);
-        query2.getPagination().setListSize(BigInteger.valueOf(100l));
+        query2.getPagination().setListSize(BigInteger.valueOf(100L));
         ListCriteria criteria2 = new ListCriteria();
         criteria2.setKey(SearchKey.CONNECT_ID);
         criteria2.setValue(connectId2);
@@ -679,15 +653,13 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         GetMovementListByQueryResponse movementResponse2 = jmsHelper.getMovementListByQuery(query2, connectId2);
         List<MovementType> movements2 = movementResponse2.getMovement();
 
-        movements2.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
+        movements2.sort(Comparator.comparing(MovementBaseType::getPositionTime));
         MovementType previous2 = null;
         for (MovementType movementType : movements2) {
-            if (previous2 == null) {
-                previous2 = movementType;
-            } else {
+            if (previous2 != null) {
                 assertFalse(Collections.disjoint(previous2.getSegmentIds(), movementType.getSegmentIds()));
-                previous2 = movementType;
             }
+            previous2 = movementType;
         }
     }
 
@@ -703,11 +675,11 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement.setPluginType(null);
         incomingMovement.setMovementSourceType(null);
         String json = mapper.writeValueAsString(incomingMovement);
-        jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");   //grouping on null.....
+        jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");   //grouping on null..
 
         Message dlqMessage = jmsHelper.listenOnQueue("DLQ");
         int responseQueueAfter = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
-        
+
         assertThat(dlqMessage, is(notNullValue()));
         assertThat(responseQueueBefore, is(responseQueueAfter));
     }
@@ -715,7 +687,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Test
     @OperateOnDeployment("movementservice")
     public void setMovementTypeTest() throws Exception {
-
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
@@ -723,9 +694,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
 
         assertNotNull(movementDetails.getMovementType());
-
     }
-
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -755,7 +724,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Test
     @OperateOnDeployment("movementservice")
     public void vicinityOfSeveralBoatsTest() throws Exception {
-
         double lon = Math.random() * 360d - 180d;
         double lat = Math.random() * 180d - 90d;
         UUID connectId = UUID.randomUUID();
@@ -765,7 +733,9 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement.setAssetHistoryId(null);
         incomingMovement.setLongitude(lon);
         incomingMovement.setLatitude(lat);
-        incomingMovement.setAssetIRCS("TestIrcs:" + connectId);     //this is bc we save history id in movementsDB but send asset id to MR, setting it like this makes both asset id and asset history id to be the same
+        // this is bc we save history id in movementsDB but send asset id to MR,
+        // setting it like this makes both asset id and asset history id to be the same
+        incomingMovement.setAssetIRCS("TestIrcs:" + connectId);
         incomingMovement.setPositionTime(Instant.now().minusSeconds(60));
         MovementDetails movementDetails1 = sendIncomingMovementAndWaitForResponse(incomingMovement);
 
@@ -783,7 +753,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertNotNull(movementDetails2);
         assertNotNull(movementDetails2.getVicinityOf());
         assertEquals(1, movementDetails2.getVicinityOf().size());
-        assertEquals(movementDetails1.getAssetGuid(), movementDetails2.getVicinityOf().get(0).getAsset().toString());
+        assertEquals(movementDetails1.getAssetGuid(), movementDetails2.getVicinityOf().get(0).getAsset());
         assertTrue(movementDetails2.getVicinityOf().get(0).getDistance() > 0);
 
         Thread.sleep(1000);
@@ -809,16 +779,14 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
         TextMessage response = (TextMessage) jmsHelper.listenOnMRQueue();
         String jsonResponse = response.getText();
-        MovementDetails movementDetails = mapper.readValue(jsonResponse, MovementDetails.class);
-        return movementDetails;
+        return mapper.readValue(jsonResponse, MovementDetails.class);
     }
-    
-    private ProcessedMovementResponse sendIncomingMovementAndReturnAlarmResponse(IncomingMovement incomingMovement) throws Exception{
+
+    private ProcessedMovementResponse sendIncomingMovementAndReturnAlarmResponse(IncomingMovement incomingMovement) throws Exception {
         String json = mapper.writeValueAsString(incomingMovement);
         jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");
 
         Message response = jmsHelper.listenOnQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
-        ProcessedMovementResponse movementResponse = JAXBMarshaller.unmarshallTextMessage((TextMessage) response, ProcessedMovementResponse.class);
-        return movementResponse;
+        return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, ProcessedMovementResponse.class);
     }
 }
