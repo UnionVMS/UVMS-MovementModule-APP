@@ -34,7 +34,7 @@
 		<uvms.config.version>4.0.5</uvms.config.version>
 
 		<!-- 3rd-party dependencies -->
-		<jackson.version>2.10.0</jackson.version>
+		<jackson.version>2.10.2</jackson.version>
 	</properties>
 
 	<dependencies>
