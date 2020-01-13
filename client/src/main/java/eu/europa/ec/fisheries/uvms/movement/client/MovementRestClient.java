@@ -93,9 +93,7 @@ public class MovementRestClient {
                     .request(MediaType.APPLICATION_JSON)
                     .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
                     .get();
-            if(response.getStatus() == Response.Status.OK.getStatusCode()) {
-                return response.readEntity(MicroMovement.class);
-            }
-            return null;
+
+            return response.readEntity(MicroMovement.class);
     }
 }
