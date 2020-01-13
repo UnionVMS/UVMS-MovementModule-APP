@@ -87,11 +87,13 @@ public class MovementRestClient {
     }
 
     public MicroMovement getMicroMovementById(UUID id) {
-        return webTarget
-                .path("internal/getMicroMovement")
-                .path(id.toString())
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
-                .get(MicroMovement.class);
+            Response response = webTarget
+                    .path("internal/getMicroMovement")
+                    .path(id.toString())
+                    .request(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+                    .get();
+
+            return response.readEntity(MicroMovement.class);
     }
 }
