@@ -11,12 +11,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.clients;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -24,17 +28,9 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ContextResolver;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Stateless
 public class SpatialRestClient{
@@ -43,25 +39,20 @@ public class SpatialRestClient{
 
     @Resource(name = "java:global/spatial_endpoint")
     private String spatialEndpoint;
+
+    private Jsonb jsonb;
     
     @PostConstruct
     public void initClient() {
         String url = spatialEndpoint + "/spatialnonsecure/json/";
+        JsonBConfigurator jsonBConfigurator = new JsonBConfigurator();
+        jsonb = jsonBConfigurator.getContext(null);
 
         ClientBuilder clientBuilder = ClientBuilder.newBuilder();
         clientBuilder.connectTimeout(30, TimeUnit.SECONDS);
         clientBuilder.readTimeout(30, TimeUnit.SECONDS);
         Client client = clientBuilder.build();
-        client.register(new ContextResolver<ObjectMapper>() {
-            @Override
-            public ObjectMapper getContext(Class<?> type) {
-                ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
-                ObjectMapper mapper = resolver.getContext(null);
-                mapper.registerModule(new JaxbAnnotationModule());
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                return mapper;
-            }
-        });
+        client.register(jsonBConfigurator);
         webTarget = client.target(url);
     }
 
@@ -74,15 +65,7 @@ public class SpatialRestClient{
         request.add(movementType1);
         request.add(movementType2);
 
-        //this is here to make a correct json string for the rest call since I cant make Entity.json do so.......
-        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
-        ObjectMapper om = resolver.getContext(null);
-        String s = "";
-        try {
-            s = om.writeValueAsString(request);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        String s = jsonb.toJson(request);
 
         Response response =  webTarget
                 .path("getSegmentCategoryType")

@@ -22,7 +22,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
-import java.sql.Date;
+import java.util.Date;
 import java.time.Instant;
 import java.util.UUID;
 

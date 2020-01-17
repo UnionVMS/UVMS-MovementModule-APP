@@ -1,21 +1,15 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantAdapter;
-import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
-import javax.json.bind.annotation.JsonbTypeAdapter;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MicroMovement implements Serializable {
 
     public static final String FIND_ALL_AFTER_DATE = "MicroMovementDtoV2.findAllAfterDate";
@@ -26,8 +20,6 @@ public class MicroMovement implements Serializable {
 
     private String guid;
 
-    @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant timestamp;
 
     private Double speed;

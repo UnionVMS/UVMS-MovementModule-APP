@@ -13,6 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.TrackForAssetsQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
@@ -27,8 +28,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.json.JsonObject;
+import javax.json.bind.Jsonb;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -50,6 +54,13 @@ public class MicroMovementRestResource {
 
     @Inject
     private MovementDao movementDao;
+
+    private Jsonb jsonb;    //to be able to replace one part of the string beeing sent out since yasson does not allow one to send raw ;(
+
+    @PostConstruct
+    public void init(){
+        jsonb = new JsonBConfigurator().getContext(null);
+    }
 
     @POST
     @Path("/track/asset/{id}/")
@@ -116,9 +127,10 @@ public class MicroMovementRestResource {
             }
 
             String assetInfo = movementService.getMicroAssets(assetIdList);
-            RealTimeMapInitialData retVal = new RealTimeMapInitialData(microMovements, assetInfo);
+            RealTimeMapInitialData retVal = new RealTimeMapInitialData(microMovements);
+            String returnJson = jsonb.toJson(retVal).replace(RealTimeMapInitialData.ASSET_JSON_PLACE_HERE, assetInfo);
 
-            return Response.ok(retVal).header("MDC", MDC.get("requestId")).build();
+            return Response.ok(returnJson).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting latest Micro Movements", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();

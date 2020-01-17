@@ -1,11 +1,12 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
@@ -20,8 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.json.bind.Jsonb;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -43,13 +46,21 @@ public class InternalRestResource {
     @Inject
     private MovementDao movementDao;
 
+    private Jsonb jsonb;    //since for some reason jackson is used to serialize stuff if we use the framework
+
+    @PostConstruct
+    public void init(){
+        jsonb = new JsonBConfigurator().getContext(null);
+    }
+
     @POST
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getListByQuery(MovementQuery query) {
         try {
             GetMovementListByQueryResponse list = movementService.getList(query);
-            return Response.ok(list).build();
+            String jsonString = jsonb.toJson(list);
+            return Response.ok(jsonString).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
@@ -61,7 +72,8 @@ public class InternalRestResource {
     public Response getMinimalListByQuery(MovementQuery query) {
         try {
             GetMovementListByQueryResponse minimalList = movementService.getMinimalList(query);
-            return Response.ok(minimalList).build();
+            String jsonString = jsonb.toJson(minimalList);
+            return Response.ok(jsonString).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }

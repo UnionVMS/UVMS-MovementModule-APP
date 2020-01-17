@@ -1,29 +1,19 @@
 package eu.europa.ec.fisheries.uvms.movement.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantAdapter;
-import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import javax.json.bind.annotation.JsonbTypeAdapter;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MicroMovementsForConnectIdsBetweenDatesRequest implements Serializable {
     private List<String> assetIds;
 
-    @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant fromDate = Instant.now().minus(8, ChronoUnit.HOURS);
 
-    @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant toDate = Instant.now();
 
     private List<String> sources;

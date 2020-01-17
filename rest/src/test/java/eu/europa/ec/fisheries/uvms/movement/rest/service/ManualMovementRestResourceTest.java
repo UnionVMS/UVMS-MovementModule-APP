@@ -1,11 +1,8 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
@@ -43,7 +40,7 @@ public class ManualMovementRestResourceTest extends BuildMovementRestDeployment 
     @Test
     @OperateOnDeployment("movement")
     public void createManualMovementLessInfoInVesselTypeTest() {
-        String movement = "{\"movement\":{\"location\":{\"longitude\":0.0,\"latitude\":0.0,\"altitude\":null},\"heading\":0.0,\"timestamp\":1575545948.469924300,\"speed\":0.0,\"source\":\"MANUAL\"},\"asset\":{\"ircs\":\"T\",\"cfr\":\"T\"}}";
+        String movement = "{\"movement\":{\"location\":{\"longitude\":0.0,\"latitude\":0.0,\"altitude\":null},\"heading\":0.0,\"timestamp\":\"1575545948.469924300\",\"speed\":0.0,\"source\":\"MANUAL\"},\"asset\":{\"ircs\":\"T\",\"cfr\":\"T\"}}";
 
         Response response = getWebTarget()
                 .path("manualMovement")
@@ -56,7 +53,7 @@ public class ManualMovementRestResourceTest extends BuildMovementRestDeployment 
     @Test
     @OperateOnDeployment("movement")
     public void createManualMovementOnlySecondsInTimestampTest() {
-        String movement = "{\"movement\":{\"location\":{\"longitude\":0.0,\"latitude\":0.0,\"altitude\":null},\"heading\":0.0,\"timestamp\":1575545948,\"speed\":0.0,\"source\":\"MANUAL\"},\"asset\":{\"ircs\":\"T\",\"cfr\":\"T\"}}";
+        String movement = "{\"movement\":{\"location\":{\"longitude\":0.0,\"latitude\":0.0,\"altitude\":null},\"heading\":0.0,\"timestamp\":\"1575545948\",\"speed\":0.0,\"source\":\"MANUAL\"},\"asset\":{\"ircs\":\"T\",\"cfr\":\"T\"}}";
 
         Response response = getWebTarget()
                 .path("manualMovement")

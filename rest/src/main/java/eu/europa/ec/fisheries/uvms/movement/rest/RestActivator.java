@@ -11,7 +11,7 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.rest;
 
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.rest.filter.MovementRestExceptionMapper;
 import eu.europa.ec.fisheries.uvms.movement.rest.service.*;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeatureFilter;
@@ -42,7 +42,7 @@ public class RestActivator extends Application {
         set.add(InternalRestResource.class);
         set.add(SSEResource.class);
         set.add(MicroMovementRestResource.class);
-        set.add(ObjectMapperContextResolver.class);
+        set.add(JsonBConfigurator.class);
         LOG.info(RestConstants.MODULE_NAME + " module starting up");
     }
 

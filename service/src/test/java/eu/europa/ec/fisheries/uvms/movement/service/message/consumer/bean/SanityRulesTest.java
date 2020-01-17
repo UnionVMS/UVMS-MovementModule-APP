@@ -1,43 +1,40 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.UUID;
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
-import javax.jms.TextMessage;
-
+import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
+import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
+import eu.europa.ec.fisheries.uvms.movement.service.message.MovementTestHelper;
+import eu.europa.ec.fisheries.uvms.movementrules.model.mapper.JAXBMarshaller;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
-import eu.europa.ec.fisheries.uvms.movement.service.message.MovementTestHelper;
-import eu.europa.ec.fisheries.uvms.movementrules.model.mapper.JAXBMarshaller;
+
+import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
+import javax.jms.Message;
+import javax.jms.TextMessage;
+import javax.json.bind.Jsonb;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.UUID;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class SanityRulesTest extends BuildMovementServiceTestDeployment {
@@ -45,7 +42,7 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
     @Resource(mappedName = "java:/ConnectionFactory")
     private ConnectionFactory connectionFactory;
 
-    private ObjectMapper mapper;
+    private Jsonb jsonb;
 
     JMSHelper jmsHelper;
 
@@ -55,8 +52,7 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         jmsHelper.clearQueue("UVMSMovementRulesEvent");
         jmsHelper.clearQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
 
-        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
-        mapper = resolver.getContext(null);
+        jsonb = new JsonBConfigurator().getContext(null);
     }
 
     @Inject
@@ -291,7 +287,7 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
     }
 
     private ProcessedMovementResponse sendIncomingMovementAndReturnAlarmResponse(IncomingMovement incomingMovement) throws Exception{
-        String json = mapper.writeValueAsString(incomingMovement);
+        String json = jsonb.toJson(incomingMovement);
         jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");   //grouping on null.....
 
         Message response = jmsHelper.listenOnQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);

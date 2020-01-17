@@ -1,14 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity.alarm;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantAdapter;
-import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
-import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -27,8 +20,6 @@ import java.util.UUID;
         @NamedQuery(name = AlarmReport.COUNT_OPEN_ALARMS, query = "SELECT count(ar) FROM AlarmReport ar where ar.status = 'OPEN'")
 })
 //@formatter:on
-//@JsonIdentityInfo(generator= ObjectIdGenerators.UUIDGenerator.class)
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class AlarmReport implements Serializable {
 
     public static final String FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID = "AlarmReport.findByMovementGuid";
@@ -47,13 +38,9 @@ public class AlarmReport implements Serializable {
     private String status;  //Expects values from teh class AlarmsStatusType, exists in Type, same name
     private String recipient;   //exists in Type, same name
 
-    @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant createdDate;   //exists in Type as openDate
 
     @NotNull
-    @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant updated;       //exists in Type, same name
     @NotNull
     private String updatedBy;   //exists in Type, same name

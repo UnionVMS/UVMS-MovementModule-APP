@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryResponse;
@@ -10,8 +9,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
@@ -32,6 +31,7 @@ import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.TextMessage;
+import javax.json.bind.Jsonb;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -49,18 +49,15 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     @Inject
     private MovementService movementService;
 
-    private static ObjectMapper mapper;
+    private static Jsonb jsonb;
     private JMSHelper jmsHelper;
-
-    static {
-        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
-        mapper = resolver.getContext(null);
-    }
 
     @Before
     public void cleanJMS() throws Exception {
         jmsHelper = new JMSHelper(connectionFactory);
         jmsHelper.clearQueue("UVMSMovementRulesEvent");
+
+        jsonb = new JsonBConfigurator().getContext(null);
     }
 
     @Test
@@ -84,7 +81,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             im.setAssetHistoryId(connectId);
             im.setPositionTime(timestamp);
             timestamp = timestamp.plusSeconds(10);
-            String json = mapper.writeValueAsString(im);
+            String json = jsonb.toJson(im);
             jmsHelper.sendMovementMessage(json, connectId, "CREATE");
         }
 
@@ -599,7 +596,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             incomingMovement.setAssetHistoryId(null);
             incomingMovement.setPositionTime(timestamp);
             incomingMovement.setAssetIRCS("TestIrcs:" + connectId1); //I set the asset mocker up so that TestIrcs returns the id behind the :
-            String json = mapper.writeValueAsString(incomingMovement);
+            String json = jsonb.toJson(incomingMovement);
             jmsHelper.sendMovementMessage(json, "Grouping:1", "CREATE");
 
             IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
@@ -607,7 +604,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
             incomingMovement2.setAssetHistoryId(null);
             incomingMovement2.setPositionTime(timestamp);
             incomingMovement2.setAssetIRCS("TestIrcs:" + connectId2); //I set the asset mocker up so that TestIrcs returns the id behind the :
-            String json2 = mapper.writeValueAsString(incomingMovement2);
+            String json2 = jsonb.toJson(incomingMovement2);
             jmsHelper.sendMovementMessage(json2, "Grouping:2", "CREATE");
 
             timestamp = timestamp.plusSeconds(10);
@@ -617,11 +614,11 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         for (int i = 0; i < numberOfPositions; i++) {
             TextMessage response = (TextMessage) jmsHelper.listenOnMRQueue();
             String jsonResponse = response.getText();
-            MovementDetails movementDetails = mapper.readValue(jsonResponse, MovementDetails.class);
+            MovementDetails movementDetails = jsonb.fromJson(jsonResponse, MovementDetails.class);
 
             response = (TextMessage) jmsHelper.listenOnMRQueue();
             jsonResponse = response.getText();
-            movementDetails = mapper.readValue(jsonResponse, MovementDetails.class);
+            movementDetails = jsonb.fromJson(jsonResponse, MovementDetails.class);
         }
 
         MovementQuery query = MovementTestHelper.createMovementQuery(true, false, false);
@@ -674,7 +671,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         incomingMovement.setAssetHistoryId(null);
         incomingMovement.setPluginType(null);
         incomingMovement.setMovementSourceType(null);
-        String json = mapper.writeValueAsString(incomingMovement);
+        String json = jsonb.toJson(incomingMovement);
         jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");   //grouping on null..
 
         Message dlqMessage = jmsHelper.listenOnQueue("DLQ");
@@ -774,16 +771,16 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     }
 
     private MovementDetails sendIncomingMovementAndWaitForResponse(IncomingMovement incomingMovement, String groupId) throws Exception {
-        String json = mapper.writeValueAsString(incomingMovement);
+        String json = jsonb.toJson(incomingMovement);
         jmsHelper.sendMovementMessage(json, groupId, "CREATE");
 
         TextMessage response = (TextMessage) jmsHelper.listenOnMRQueue();
         String jsonResponse = response.getText();
-        return mapper.readValue(jsonResponse, MovementDetails.class);
+        return jsonb.fromJson(jsonResponse, MovementDetails.class);
     }
 
     private ProcessedMovementResponse sendIncomingMovementAndReturnAlarmResponse(IncomingMovement incomingMovement) throws Exception {
-        String json = mapper.writeValueAsString(incomingMovement);
+        String json = jsonb.toJson(incomingMovement);
         jmsHelper.sendMovementMessage(json, incomingMovement.getAssetGuid(), "CREATE");
 
         Message response = jmsHelper.listenOnQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);

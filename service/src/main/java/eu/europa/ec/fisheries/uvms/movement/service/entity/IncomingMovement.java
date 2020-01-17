@@ -1,14 +1,9 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBInstantAdapter;
-import eu.europa.ec.fisheries.uvms.commons.date.UVMSInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 
-import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
@@ -18,7 +13,6 @@ import java.util.UUID;
 @Table(name = "incomingmovement", indexes = {
         @Index(columnList = "alarmreport_id", name = "incomingmovement_alarmreport_fk_inx", unique = false)
 })
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class IncomingMovement {
 
 	@Id
@@ -29,16 +23,10 @@ public class IncomingMovement {
     private String assetHistoryId;
     private String ackResponseMessageId;
 
-    @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant dateReceived;
 
-    @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant positionTime;
 
-    @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant lesReportTime;
     
     private String status;
@@ -85,13 +73,11 @@ public class IncomingMovement {
     private boolean duplicate = false;
 
     @NotNull
-    @JsonDeserialize(using = UVMSInstantDeserializer.class)
-    @JsonbTypeAdapter(JsonBInstantAdapter.class)
     private Instant updated;
     @NotNull
     private String updatedBy;
 
-    @JsonIgnore
+    @JsonbTransient
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)    //DB is set to allow null values here since, for some reason, hibernate passes a null that is later changed into the correct value.
     private AlarmReport alarmReport;
 

@@ -16,7 +16,7 @@
 	<properties>
 		<movement.api.check.against.version>4.0.0</movement.api.check.against.version>
 
-		<docker.dev.version>3.40.14.w18</docker.dev.version>
+		<docker.dev.version>3.40.19.w18-JsonBOverJackson</docker.dev.version>
 		<docker.liquibase.changeLogFile>LIQUIBASE/changelog/db-changelog-master-postgres.xml</docker.liquibase.changeLogFile>
         <docker.liquibase.db.user>movement</docker.liquibase.db.user>
         <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
@@ -29,12 +29,10 @@
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
-		<uvms.common.version>4.0.13</uvms.common.version>
+		<uvms.common.version>4.1.0</uvms.common.version>
 		<usm4uvms.version>4.0.23</usm4uvms.version>
 		<uvms.config.version>4.0.5</uvms.config.version>
 
-		<!-- 3rd-party dependencies -->
-		<jackson.version>2.10.0</jackson.version>
 	</properties>
 
 	<dependencies>
@@ -84,19 +82,9 @@
 				<type>pom</type>
 			</dependency>
 			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-jsr310</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.module</groupId>
-				<artifactId>jackson-module-jaxb-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>28.1-jre</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

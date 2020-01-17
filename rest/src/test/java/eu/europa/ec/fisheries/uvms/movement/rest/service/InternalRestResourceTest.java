@@ -1,15 +1,14 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
-import eu.europa.ec.fisheries.uvms.commons.service.exception.ObjectMapperContextResolver;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.uvms.movement.model.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
@@ -25,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
@@ -47,17 +47,16 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     @Inject
     private MovementDao movementDao;
 
-    private ObjectMapper mapper;
+    private Jsonb jsonb;
 
     @Before
     public void init(){
-        ObjectMapperContextResolver resolver = new ObjectMapperContextResolver();
-        mapper = resolver.getContext(null);
+        jsonb = new JsonBConfigurator().getContext(null);
     }
 
     @Test
     @OperateOnDeployment("movement")
-    public void getMovementListByQuery() throws IOException {
+    public void getMovementListByQuery() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -73,14 +72,14 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         assertNotNull(response);
 
         GetMovementListByQueryResponse movList =
-                mapper.readValue(response, GetMovementListByQueryResponse.class);
+                jsonb.fromJson(response, GetMovementListByQueryResponse.class);
         assertNotNull(movList);
         assertTrue(movList.getMovement().size() > 0);
     }
 
     @Test
     @OperateOnDeployment("movement")
-    public void getMovementMinimalListByQuery() throws IOException {
+    public void getMovementMinimalListByQuery() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -96,14 +95,14 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         assertNotNull(response);
 
         GetMovementListByQueryResponse movList =
-                mapper.readValue(response, GetMovementListByQueryResponse.class);
+                jsonb.fromJson(response, GetMovementListByQueryResponse.class);
         assertNotNull(movList);
         assertTrue(movList.getMovement().size() > 0);
     }
 
     @Test
     @OperateOnDeployment("movement")
-    public void getLatestMovementsByConnectIds() throws IOException {
+    public void getLatestMovementsByConnectIds() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -118,7 +117,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .post(Entity.json(Collections.singletonList(movConnectId)), String.class);
         assertNotNull(response);
 
-        List<MovementType> movements = Arrays.asList(mapper.readValue(response, MovementType[].class));
+        List<MovementType> movements = Arrays.asList(jsonb.fromJson(response, MovementType[].class));
 
         assertNotNull(movements);
         assertEquals(1, movements.size());
@@ -173,7 +172,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .post(Entity.json(query), String.class);
         assertNotNull(response);
 
-        GetMovementMapByQueryResponse movMap = mapper.readValue(response, GetMovementMapByQueryResponse.class);
+        GetMovementMapByQueryResponse movMap = jsonb.fromJson(response, GetMovementMapByQueryResponse.class);
         assertNotNull(movMap);
         assertEquals(1, movMap.getMovementMap().size());
     }
@@ -210,7 +209,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         assertNotNull(response);
 
         GetMovementListByQueryResponse movList =
-                mapper.readValue(response, GetMovementListByQueryResponse.class);
+                jsonb.fromJson(response, GetMovementListByQueryResponse.class);
         assertEquals(2, movList.getMovement().size());
         assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement1.getId().toString())));
         assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement2.getId().toString())));
@@ -299,7 +298,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
             ListPagination pagination = new ListPagination();
             pagination.setPage(BigInteger.ONE);
-            pagination.setListSize(BigInteger.valueOf(100));
+            pagination.setListSize(BigInteger.valueOf(10));
             query.setPagination(pagination);
         }
         return query;
