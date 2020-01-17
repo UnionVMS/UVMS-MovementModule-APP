@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeatureFilter;
+import eu.europa.ec.fisheries.uvms.commons.rest.filter.EncodingResponseFilter;
 
 @ApplicationPath(RestConstants.MODULE_REST)
 public class RestActivator extends Application {
@@ -43,6 +44,7 @@ public class RestActivator extends Application {
         set.add(TrackRestResource.class);
         set.add(SSEResource.class);
         set.add(ObjectMapperContextResolver.class);
+        set.add(EncodingResponseFilter.class);
         LOG.info(RestConstants.MODULE_NAME + " module starting up");
     }
 
