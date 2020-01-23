@@ -117,6 +117,12 @@ public class MovementDao {
         latestMovementQuery.setMaxResults(numberOfMovements);
         return latestMovementQuery.getResultList();
     }
+    
+    public Movement getMovementByPrevious(Movement previousMovement) {
+        return em.createNamedQuery(Movement.FIND_BY_PREVIOUS_MOVEMENT, Movement.class)
+                .setParameter("previousMovement", previousMovement)
+                .getSingleResult();
+    }
 
     public Movement getPreviousMovement(UUID id, Instant date) {
         Movement singleResult = null;

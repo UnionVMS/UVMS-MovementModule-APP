@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.time.Instant;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.ejb.EJB;
+import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -151,7 +153,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		List<Movement> input = movementHelpers.createFishingTourVarberg(1, connectId);
-		
+		em.flush();
 		List<MovementType> output = MovementEntityToModelMapper.mapToMovementType(input);
 		
 		assertEquals(input.size(),output.size());
@@ -172,26 +174,13 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
+		em.flush();
 		
-		List<Segment> input = new ArrayList<Segment>();
-		Segment seg;
-		Movement prevMove = null;
-		for(Movement mov : movementList) {
-			seg = new Segment();
-			if(prevMove != null) {
-				seg.setFromMovement(prevMove);
-			}else {
-				seg.setFromMovement(mov);
-			}
-			seg.setToMovement(mov);
-		}
+		List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(movementList);
+		assertThat(output.size(), CoreMatchers.is(movementList.size() - 1));
 		
-		List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(input);
-		assertEquals(input.size(),output.size());
-		
-		input = null;
 		try {
-			output = MovementEntityToModelMapper.mapToMovementSegment(input);
+			MovementEntityToModelMapper.mapToMovementSegment(null);
 			fail("Null as input");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -280,8 +269,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		UUID connectId = UUID.randomUUID();
 		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));
 
-		List<Segment> input = new ArrayList<>(MovementEntityToModelMapper.extractSegments(movementList, true));
-		List<Track> output = MovementEntityToModelMapper.extractTracks(input);
+		List<Track> output = MovementEntityToModelMapper.extractTracks(movementList);
 		
 		assertEquals(1, output.size());
 		assertEquals(movementList.get(0).getTrack().getDuration(), output.get(0).getDuration(),0D);

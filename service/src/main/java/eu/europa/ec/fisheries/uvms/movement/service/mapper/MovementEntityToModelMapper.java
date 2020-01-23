@@ -12,6 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,17 +23,20 @@ import java.util.Set;
 import java.util.UUID;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.noding.SegmentPointComparator;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
+import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 
 public class MovementEntityToModelMapper {
@@ -81,6 +85,7 @@ public class MovementEntityToModelMapper {
             model.setCalculatedSpeed((double)movement.getFromSegment().getSpeedOverGround());
             model.setCalculatedCourse((double)movement.getFromSegment().getCourseOverGround());
         }
+        
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
         return model;
     }
@@ -119,16 +124,16 @@ public class MovementEntityToModelMapper {
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
 
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
-        if (movement.getFromSegment() != null) {
-            model.getSegmentIds().add(movement.getFromSegment().getId().toString());
-            model.setCalculatedCourse((double)movement.getFromSegment().getCourseOverGround());
-            model.setCalculatedSpeed((double)movement.getFromSegment().getSpeedOverGround());
+        Movement previousMovement = movement.getPreviousMovement();
+        if (previousMovement != null) {
+            SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
+            model.setCalculatedCourse(positionCalculations.getCourse());
+            model.setCalculatedSpeed(positionCalculations.getAvgSpeed());
         }
-
-        if (movement.getToSegment() != null) {
-            model.getSegmentIds().add(movement.getToSegment().getId().toString());
+        if (movement.getTrack() != null) {
+            // Investigate if segmentsIds can be removed
+            model.getSegmentIds().add(movement.getTrack().getId().toString());
         }
-
         model.setProcessed(true);
 
         model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
@@ -164,16 +169,28 @@ public class MovementEntityToModelMapper {
         }
         return null;
     }
-
-    public static List<MovementSegment> mapToMovementSegment(List<Segment> segments) {
+    
+    public static List<MovementSegment> mapToMovementSegment(List<Movement> movements) {
         List<MovementSegment> mappedSegments = new ArrayList<>();
-        for (Segment segment : segments) {
-            mappedSegments.add(mapToMovementSegment(segment));
+        for (Movement movement : movements) {
+            Movement previousMovement = movement.getPreviousMovement();
+            if (previousMovement != null) {
+                SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
+                MovementSegment movSegment = new MovementSegment();
+                //movSegment.setCategory(); // TODO
+                movSegment.setTrackId(movement.getTrack().getId().toString());
+                movSegment.setWkt(WKTUtil.getWktLineStringFromMovementList(Arrays.asList(previousMovement, movement)));
+                movSegment.setCourseOverGround(positionCalculations.getCourse());
+                movSegment.setSpeedOverGround(positionCalculations.getAvgSpeed());
+                movSegment.setDuration(positionCalculations.getDurationBetweenPoints());
+                movSegment.setDistance(positionCalculations.getDistanceBetweenPoints());
+                mappedSegments.add(movSegment);
+            }
         }
         return mappedSegments;
     }
 
-    public static MovementSegment mapToMovementSegment(Segment segment) {
+    private static MovementSegment mapToMovementSegment(Segment segment) {
         MovementSegment movSegment = new MovementSegment();
         movSegment.setCategory(segment.getSegmentCategory());
         movSegment.setId(segment.getId().toString());
@@ -213,10 +230,10 @@ public class MovementEntityToModelMapper {
         return orderedMovements;
     }
 
-    public static List<Track> extractTracks(List<Segment> segments) {
+    public static List<Track> extractTracks(List<Movement> movements) {
         Set<Track> tracks = new HashSet<>();
-        for (Segment segment : segments) {
-            tracks.add(segment.getTrack());
+        for (Movement movement : movements) {
+            tracks.add(movement.getTrack());
         }
         return new ArrayList<>(tracks);
     }

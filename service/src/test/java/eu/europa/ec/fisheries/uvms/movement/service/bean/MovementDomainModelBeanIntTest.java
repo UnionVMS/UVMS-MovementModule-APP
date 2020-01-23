@@ -41,9 +41,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
     private Random rnd = new Random();
 
-	@Inject
-	private IncomingMovementBean incomingMovementBean;
-
 	@EJB
 	private MovementMapResponseHelper mapResponseHelper;
 	
@@ -445,6 +442,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     public void testRemoveTrackMismatches() {
     	UUID connectID = UUID.randomUUID();
     	List<Movement> varbergGrena = createAndProcess10MovementsFromVarbergGrena(connectID);
+    	em.flush();
     	List<MovementTrack> input = new ArrayList<>();
     	MovementTrack movementTrack = new MovementTrack();
     	movementTrack.setId("" + varbergGrena.get(0).getTrack().getId());

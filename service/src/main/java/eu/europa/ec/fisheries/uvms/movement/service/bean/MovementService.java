@@ -70,8 +70,6 @@ public class MovementService {
     @EJB
     private ParameterService parameterService;
 
-
-
     @Inject
     @CreatedMovement
     private Event<Movement> createdMovementEvent;

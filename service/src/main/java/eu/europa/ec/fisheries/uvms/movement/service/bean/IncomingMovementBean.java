@@ -21,7 +21,7 @@ public class IncomingMovementBean {
     private static final Logger LOG = LoggerFactory.getLogger(IncomingMovementBean.class);
 
     @Inject
-    private SegmentBean segmentBean;
+    private TrackService trackService;
 
     @Inject
     private MovementDao dao;
@@ -39,17 +39,23 @@ public class IncomingMovementBean {
             currentMovement.getMovementConnect().setLatestLocation(currentMovement.getLocation());
         } else {
             if (currentMovement.getTimestamp().isAfter(latestMovement.getTimestamp())) {
-                segmentBean.newSegment(latestMovement, currentMovement); // Normal case (latest position)
+                // Normal case (latest position)
+                currentMovement.setPreviousMovement(latestMovement);
                 currentMovement.getMovementConnect().setLatestMovement(currentMovement);
                 currentMovement.getMovementConnect().setLatestLocation(currentMovement.getLocation());
+                trackService.upsertTrack(latestMovement, currentMovement);
             } else {
                 Movement previousMovement = dao.getPreviousMovement(connectId, timeStamp);
                 if (previousMovement == null) { // Before first position
                     Movement firstMovement = dao.getFirstMovement(connectId, currentMovement.getTimestamp());
-                    segmentBean.addMovementBeforeFirst(firstMovement, currentMovement);
+                    firstMovement.setPreviousMovement(currentMovement);
+                    trackService.upsertTrack(latestMovement, currentMovement);
                 } else { // Between two positions
-                    segmentBean.splitSegment(previousMovement, currentMovement);
-
+                    Movement nextMovement = dao.getMovementByPrevious(previousMovement);
+                    nextMovement.setPreviousMovement(currentMovement);
+                    dao.flush();
+                    currentMovement.setPreviousMovement(previousMovement);
+                    trackService.upsertTrack(latestMovement, currentMovement);
                 }
             }
         }

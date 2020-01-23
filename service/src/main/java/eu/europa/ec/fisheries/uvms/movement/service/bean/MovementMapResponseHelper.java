@@ -72,8 +72,7 @@ public class MovementMapResponseHelper {
 
                 responseType.setKey(entries.getKey().toString());
 
-                ArrayList<Segment> extractSegments = MovementEntityToModelMapper.extractSegments(new ArrayList<>(entries.getValue()), query.isExcludeFirstAndLastSegment());
-                List<MovementSegment> segmentList = MovementEntityToModelMapper.mapToMovementSegment(extractSegments);
+                List<MovementSegment> segmentList = MovementEntityToModelMapper.mapToMovementSegment(entries.getValue());
                 List<MovementSegment> filteredSegments = filterSegments(segmentList, searchKeyValuesRange);
 
                 responseType.getSegments().addAll(filteredSegments);
@@ -81,7 +80,7 @@ public class MovementMapResponseHelper {
                 List<MovementType> mapToMovementType = MovementEntityToModelMapper.mapToMovementType(entries.getValue());
                 responseType.getMovements().addAll(mapToMovementType);
 
-                List<Track> tracks = MovementEntityToModelMapper.extractTracks(extractSegments);
+                List<Track> tracks = MovementEntityToModelMapper.extractTracks(entries.getValue());
                 List<MovementTrack> extractTracks = new ArrayList<>();
                 for (Track track : tracks) {
                     List<Geometry> points = movementDao.getPointsFromTrack(track,2000); //2k is a magical int that looks good........

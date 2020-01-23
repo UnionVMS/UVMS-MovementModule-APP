@@ -17,6 +17,7 @@ import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -392,6 +393,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @Ignore("Segment have been removed")
     @OperateOnDeployment("movementservice")
     public void getMovementListBySegmentDuration() throws Exception {
         UUID connectId = UUID.randomUUID();
@@ -429,6 +431,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @Ignore("Segment have been removed")
     @OperateOnDeployment("movementservice")
     public void getMovementMapBySegmentDuration() throws Exception {
         UUID connectId = UUID.randomUUID();
@@ -472,6 +475,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @Ignore("Segment have been removed")
     @OperateOnDeployment("movementservice")
     public void getMovementMapBySegmentLength() throws Exception {
         UUID connectId = UUID.randomUUID();
@@ -515,6 +519,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     }
 
     @Test
+    @Ignore("Segment have been removed")
     @OperateOnDeployment("movementservice")
     public void getMovementMapBySegmentSpeed() throws Exception {
         UUID connectId = UUID.randomUUID();
