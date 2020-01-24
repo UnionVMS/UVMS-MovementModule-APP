@@ -35,7 +35,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 
 @RunWith(Arquillian.class)
@@ -214,54 +213,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 			assertTrue(true);
 		}
 	}
-	
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testExtractSegments() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementService);
-		UUID connectId = UUID.randomUUID();
-		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
-		//srsly......
-		ArrayList<Movement> input = new ArrayList<>(movementList);
-		Movement prevMove = null;
-		Segment prevSeg = null;
-		Segment seg = null;
-		for(Movement move : input) {
-			seg = new Segment();
-			if(prevMove != null) {
-				seg.setFromMovement(prevMove);
-			}else {
-				seg.setFromMovement(move);
-			}
-			seg.setToMovement(move);
-			move.setFromSegment(prevSeg);
-			move.setToSegment(seg);
-			prevMove = move;
-			prevSeg = seg;
-		}
-		
-		List<Segment> output = MovementEntityToModelMapper.extractSegments(input, true);
-		assertEquals(input.size() - 1, output.size());
-		
-		output = MovementEntityToModelMapper.extractSegments(input, false);
-		assertEquals(input.size(), output.size());
-		
-		input.set(42, null);
-		try {
-			output = MovementEntityToModelMapper.extractSegments(input, false);
-			fail("Null in the middle of the input");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-		
-		try {
-			output = MovementEntityToModelMapper.extractSegments(null, false);
-			fail("Null as input");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-	}
-	
+
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testExtractTracks() {

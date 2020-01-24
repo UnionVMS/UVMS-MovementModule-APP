@@ -36,7 +36,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
 @RunWith(Arquillian.class)
 public class SearchMapperListTest extends TransactionalTests {
 
-    private static final String GLOBAL_ID = "1";
     private static final String INITIAL_SELECT = "SELECT  m FROM Movement m ";
     private static final String ORDER_BY = "ORDER BY m.timestamp DESC ";
     private static final String NO_DUPLICATE = "";
@@ -75,54 +74,6 @@ public class SearchMapperListTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void testSearchFieldSegmentId() throws Exception {
-        List<ListCriteria> listCriterias = new ArrayList<>();
-
-        ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.SEGMENT_ID);
-        criteria.setValue(GLOBAL_ID);
-        listCriterias.add(criteria);
-
-        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
-
-        assertTrue(mapSearchField.size() == 1);
-
-        String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
-        assertEquals("SELECT  m FROM Movement m " +
-                "INNER JOIN FETCH m.movementConnect mc  " +
-                "LEFT JOIN FETCH m.activity act  " +
-                "LEFT JOIN FETCH m.track tra  " +
-                "LEFT JOIN FETCH m.fromSegment fromSeg  " +
-                "LEFT JOIN FETCH m.toSegment toSeg  " +
-                "WHERE  ( toSeg.id = 1 OR fromSeg.id = 1 )  ORDER BY m.timestamp DESC ",data);
-    }
-    
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void testSearchFieldCategory() throws Exception {
-        List<ListCriteria> listCriterias = new ArrayList<>();
-
-        ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.CATEGORY);
-        criteria.setValue(SegmentCategoryType.ANCHORED.name());
-        listCriterias.add(criteria);
-
-        List<SearchValue> mapSearchField = SearchFieldMapper.mapListCriteriaToSearchValue(listCriterias);
-
-        assertTrue(mapSearchField.size() == 1);
-
-        String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, true);
-        assertEquals("SELECT  m FROM Movement m " +
-                "INNER JOIN FETCH m.movementConnect mc  " +
-                "LEFT JOIN FETCH m.activity act  " +
-                "LEFT JOIN FETCH m.track tra  " +
-                "LEFT JOIN FETCH m.fromSegment fromSeg  " +
-                "LEFT JOIN FETCH m.toSegment toSeg  " +
-                "WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  ORDER BY m.timestamp DESC ",data);
-    }
-    
-    @Test
-    @OperateOnDeployment("movementservice")
     public void testCreateMinimalSelectSearchSql() throws Exception {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
@@ -145,8 +96,8 @@ public class SearchMapperListTest extends TransactionalTests {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
-        criteria.setKey(SearchKey.CATEGORY);
-        criteria.setValue(SegmentCategoryType.ANCHORED.name());
+        criteria.setKey(SearchKey.STATUS);
+        criteria.setValue("11");
         listCriterias.add(criteria);
         
         criteria = new ListCriteria();
@@ -161,9 +112,8 @@ public class SearchMapperListTest extends TransactionalTests {
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, false);
         System.out.println(data);
         String correctOutput = "SELECT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra "
-        		+ " LEFT JOIN FETCH m.fromSegment fromSeg  LEFT JOIN FETCH m.toSegment toSeg "
-        		+ " WHERE m.movementSource = 3 OR  ( toSeg.segmentCategory = 6 OR"
-        		+ " fromSeg.segmentCategory = 6 )  ORDER BY m.timestamp DESC ";
+        		+ " WHERE m.movementSource = 3 OR m.status = '11'"
+        		+ " ORDER BY m.timestamp DESC ";
         assertEquals(correctOutput, data);
     }
     
@@ -183,7 +133,6 @@ public class SearchMapperListTest extends TransactionalTests {
 
         String data = SearchFieldMapper.createCountSearchSql(mapSearchField, true);
         String correctOutput = "SELECT COUNT( m) FROM Movement m  INNER JOIN m.movementConnect mc  LEFT JOIN m.activity act  LEFT JOIN m.track tra "
-        		+ " LEFT JOIN m.fromSegment fromSeg  LEFT JOIN m.toSegment toSeg "
         		+ " WHERE m.movementSource = 3";
         assertEquals(correctOutput, data);
     }

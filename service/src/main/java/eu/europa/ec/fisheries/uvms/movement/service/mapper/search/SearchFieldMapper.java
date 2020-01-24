@@ -342,9 +342,7 @@ public class SearchFieldMapper {
     private static String buildJoin(HashMap<SearchField, List<SearchValue>> orderedValues, boolean fetch) {
         return getJoin(fetch, JoinType.INNER) + SearchTables.MOVEMENT.getTableAlias() + "." + "movementConnect " + SearchTables.MOVEMENT_CONNECT.getTableAlias() + " " +
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "activity " + SearchTables.ACTIVITY.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "track " + SearchTables.TRACK.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "fromSegment " + SearchTables.FROM_SEGMENT.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "toSegment " + SearchTables.TO_SEGMENT.getTableAlias() + " ";
+                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "track " + SearchTables.TRACK.getTableAlias() + " ";
     }
 
     /**

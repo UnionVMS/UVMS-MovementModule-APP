@@ -16,7 +16,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -60,12 +59,6 @@ public class MovementDao {
     public List<MicroMovement> getMicroMovementsDtoByTrack(Track track, int maxResults) {
         TypedQuery<MicroMovement> query = em.createNamedQuery(Movement.FIND_ALL_BY_TRACK, MicroMovement.class);
         query.setMaxResults(maxResults);
-        query.setParameter("track", track);
-        return query.getResultList();
-    }
-
-    public List<Segment> getSegmentsByTrack(Track track) {
-        TypedQuery<Segment> query = em.createNamedQuery(Segment.FIND_ALL_BY_TRACK, Segment.class);
         query.setParameter("track", track);
         return query.getResultList();
     }
@@ -255,17 +248,6 @@ public class MovementDao {
     public Movement createMovement(Movement entity) {
         em.persist(entity);
         return entity;
-    }
-
-    public Segment createSegment(Segment segment) {
-        em.persist(segment);
-        return segment;
-    }
-    
-    public Segment updateSegment(Segment segment) {
-        Segment updated = em.merge(segment);
-        em.flush();
-        return updated;
     }
 
     public MovementConnect createMovementConnect(MovementConnect movementConnect) {

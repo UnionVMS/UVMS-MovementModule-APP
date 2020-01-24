@@ -128,14 +128,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     @OneToOne(fetch = FetchType.LAZY)
     private Movement previousMovement;
 
-    @Fetch(FetchMode.JOIN)
-    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "toMovement")
-    private Segment fromSegment;
-
-    @Fetch(FetchMode.JOIN)
-    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fromMovement")
-    private Segment toSegment;
-
     @Column(name = "move_movesour_id")
     @Enumerated(EnumType.ORDINAL)
     private MovementSourceType movementSource;
@@ -271,22 +263,6 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setPreviousMovement(Movement previousMovement) {
         this.previousMovement = previousMovement;
-    }
-
-    public Segment getFromSegment() {
-        return fromSegment;
-    }
-
-    public void setFromSegment(Segment fromSegment) {
-        this.fromSegment = fromSegment;
-    }
-
-    public Segment getToSegment() {
-        return toSegment;
-    }
-
-    public void setToSegment(Segment toSegment) {
-        this.toSegment = toSegment;
     }
 
     public Instant getUpdated() {

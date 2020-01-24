@@ -14,10 +14,8 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import org.locationtech.jts.geom.LineString;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.*;
@@ -28,7 +26,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
 
 /**
  **/

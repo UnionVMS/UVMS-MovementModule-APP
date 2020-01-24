@@ -23,8 +23,8 @@
         </sql>
     </changeSet>
     
-    <!-- changeSet id="drop_segment" author="peerik">
+    <changeSet id="drop_segment" author="peerik">
         <dropTable tableName="segment"/>
-    </changeSet -->
+    </changeSet>
     
 </databaseChangeLog>

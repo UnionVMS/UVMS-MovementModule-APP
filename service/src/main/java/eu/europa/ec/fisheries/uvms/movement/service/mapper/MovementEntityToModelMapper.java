@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.UUID;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.noding.SegmentPointComparator;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
@@ -34,7 +33,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
@@ -81,9 +79,11 @@ public class MovementEntityToModelMapper {
         model.setPosition(movementPoint);
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
 
-        if (movement.getFromSegment() != null) {
-            model.setCalculatedSpeed((double)movement.getFromSegment().getSpeedOverGround());
-            model.setCalculatedCourse((double)movement.getFromSegment().getCourseOverGround());
+        Movement previousMovement = movement.getPreviousMovement();
+        if (previousMovement != null) {
+            SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
+            model.setCalculatedSpeed(positionCalculations.getAvgSpeed());
+            model.setCalculatedCourse(positionCalculations.getCourse());
         }
         
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
@@ -190,19 +190,6 @@ public class MovementEntityToModelMapper {
         return mappedSegments;
     }
 
-    private static MovementSegment mapToMovementSegment(Segment segment) {
-        MovementSegment movSegment = new MovementSegment();
-        movSegment.setCategory(segment.getSegmentCategory());
-        movSegment.setId(segment.getId().toString());
-        movSegment.setTrackId(segment.getTrack().getId().toString());
-        movSegment.setWkt(WKTUtil.getWktLineStringFromSegment(segment));
-        movSegment.setCourseOverGround((double)segment.getCourseOverGround());
-        movSegment.setSpeedOverGround((double)segment.getSpeedOverGround());
-        movSegment.setDuration((double)segment.getDuration());
-        movSegment.setDistance(segment.getDistance());
-        return movSegment;
-    }
-
     public static MovementTrack mapToMovementTrack(Track track, List<Geometry> points) {
         MovementTrack movementTrack = new MovementTrack();
         if(track == null){
@@ -237,44 +224,4 @@ public class MovementEntityToModelMapper {
         }
         return new ArrayList<>(tracks);
     }
-
-    public static ArrayList<Segment> extractSegments(ArrayList<Movement> movements, boolean excludeFirstLastSegment) {
-        Set<Segment> segments = new HashSet<>();
-        if (movements.size() == 1 && excludeFirstLastSegment) {
-            return new ArrayList<>(segments);
-        }
-
-        Collections.sort(movements);
-
-        for (int i = 0; i < movements.size(); i++) {
-
-            if (excludeFirstLastSegment) {
-                if (i == 0) {
-                    if (movements.get(i).getToSegment() != null) {
-                        segments.add(movements.get(i).getToSegment());
-                    }
-                } else if (i == movements.size() - 1) {
-                    if (movements.get(i).getFromSegment() != null) {
-                        segments.add(movements.get(i).getFromSegment());
-                    }
-                } else {
-                    if (movements.get(i).getFromSegment() != null) {
-                        segments.add(movements.get(i).getFromSegment());
-                    }
-                    if (movements.get(i).getToSegment() != null) {
-                        segments.add(movements.get(i).getToSegment());
-                    }
-                }
-            } else {
-                if (movements.get(i).getFromSegment() != null) {
-                    segments.add(movements.get(i).getFromSegment());
-                }
-                if (movements.get(i).getToSegment() != null) {
-                    segments.add(movements.get(i).getToSegment());
-                }
-            }
-        }
-        return new ArrayList<>(segments);
-    }
-
 }
