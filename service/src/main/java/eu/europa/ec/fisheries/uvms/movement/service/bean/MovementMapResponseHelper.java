@@ -71,7 +71,7 @@ public class MovementMapResponseHelper {
 
                 responseType.setKey(entries.getKey().toString());
 
-                List<MovementSegment> segmentList = MovementEntityToModelMapper.mapToMovementSegment(entries.getValue());
+                List<MovementSegment> segmentList = MovementEntityToModelMapper.mapToMovementSegment(entries.getValue(), query.isExcludeFirstAndLastSegment());
                 List<MovementSegment> filteredSegments = filterSegments(segmentList, searchKeyValuesRange);
 
                 responseType.getSegments().addAll(filteredSegments);

@@ -12,10 +12,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -110,11 +112,8 @@ public class SearchMapperListTest extends TransactionalTests {
         assertTrue(mapSearchField.size() == 2);
 
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, false);
-        System.out.println(data);
-        String correctOutput = "SELECT  m FROM Movement m INNER JOIN FETCH m.movementConnect mc  LEFT JOIN FETCH m.activity act  LEFT JOIN FETCH m.track tra "
-        		+ " WHERE m.movementSource = 3 OR m.status = '11'"
-        		+ " ORDER BY m.timestamp DESC ";
-        assertEquals(correctOutput, data);
+        assertThat(data, CoreMatchers.containsString("m.status = '11'"));
+        assertThat(data, CoreMatchers.containsString("m.movementSource = 3"));
     }
     
     @Test

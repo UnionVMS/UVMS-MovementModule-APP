@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -171,15 +172,14 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementSegment() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = DateUtil.nowUTC();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		em.flush();
 		
-		List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(movementList);
+		List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(movementList, false);
 		assertThat(output.size(), CoreMatchers.is(movementList.size() - 1));
 		
 		try {
-			MovementEntityToModelMapper.mapToMovementSegment(null);
+			MovementEntityToModelMapper.mapToMovementSegment(null, false);
 			fail("Null as input");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -188,6 +188,32 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
+    public void testMapToMovementSegmentIncludeFirstAndLast() {
+        MovementHelpers movementHelpers = new MovementHelpers(movementService);
+        UUID connectId = UUID.randomUUID();
+        List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
+        em.flush();
+
+        List<Movement> movementSublist = movementList.subList(1, movementList.size());
+        List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(movementSublist, false);
+        assertThat(output.size(), CoreMatchers.is(movementSublist.size()));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void testMapToMovementSegmentExcludeFirstAndLast() {
+        MovementHelpers movementHelpers = new MovementHelpers(movementService);
+        UUID connectId = UUID.randomUUID();
+        List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
+        em.flush();
+
+        List<Movement> movementSublist = movementList.subList(1, movementList.size());
+        List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(movementSublist, true);
+        assertThat(output.size(), CoreMatchers.is(movementSublist.size() - 1));
+    }
+
+	@Test
+	@OperateOnDeployment("movementservice")
 	public void testOrderMovementsByConnectId() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		List<UUID> connectId = new ArrayList<>();

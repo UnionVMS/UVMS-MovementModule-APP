@@ -242,7 +242,7 @@ public class MovementDao {
     }
 
     public MovementConnect getMovementConnectByConnectId(UUID id) {
-            return em.find(MovementConnect.class, id);
+        return em.find(MovementConnect.class, id);
     }
 
     public Movement createMovement(Movement entity) {
