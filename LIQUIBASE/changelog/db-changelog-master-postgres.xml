@@ -33,5 +33,6 @@
 
     <include file="v5.3.0\db-changelog-drop-draft-movement-5.3.0.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.3.4\db-changelog-drop-segment.xml" relativeToChangelogFile="true"/>
         
 </databaseChangeLog>

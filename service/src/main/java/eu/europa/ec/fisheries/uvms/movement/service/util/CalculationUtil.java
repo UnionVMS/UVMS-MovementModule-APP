@@ -16,7 +16,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.UUID;
 

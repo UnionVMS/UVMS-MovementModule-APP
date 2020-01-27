@@ -41,9 +41,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 
     private Random rnd = new Random();
 
-	@Inject
-	private IncomingMovementBean incomingMovementBean;
-
 	@EJB
 	private MovementMapResponseHelper mapResponseHelper;
 	
@@ -402,6 +399,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	output = movementService.getMapByQuery(input);
     	assertEquals(1, output.getMovementMap().size());
     	assertEquals(10, output.getMovementMap().get(0).getMovements().size());
+    	assertEquals(9, output.getMovementMap().get(0).getSegments().size());
+    	assertEquals(1, output.getMovementMap().get(0).getTracks().size());
     	
     	listCriteria = new ListCriteria();
     	listCriteria.setKey(SearchKey.CONNECT_ID);
@@ -410,6 +409,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	output = movementService.getMapByQuery(input);
     	assertEquals(2, output.getMovementMap().size());
     	assertEquals(10, output.getMovementMap().get(1).getMovements().size());
+    	assertEquals(9, output.getMovementMap().get(1).getSegments().size());
+    	assertEquals(1, output.getMovementMap().get(1).getTracks().size());
     	
     	input.getMovementSearchCriteria().remove(listCriteria);
     	
@@ -421,6 +422,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	output = movementService.getMapByQuery(input);
     	assertEquals(6, output.getMovementMap().get(0).getMovements().size());
+    	assertEquals(5, output.getMovementMap().get(0).getSegments().size());
     }
 
 	@Test
@@ -445,6 +447,7 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     public void testRemoveTrackMismatches() {
     	UUID connectID = UUID.randomUUID();
     	List<Movement> varbergGrena = createAndProcess10MovementsFromVarbergGrena(connectID);
+    	em.flush();
     	List<MovementTrack> input = new ArrayList<>();
     	MovementTrack movementTrack = new MovementTrack();
     	movementTrack.setId("" + varbergGrena.get(0).getTrack().getId());
