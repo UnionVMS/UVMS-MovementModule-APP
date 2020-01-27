@@ -36,6 +36,10 @@ public class WKTUtil {
         CoordinateSequence seq = new CoordinateArraySequence(coords.toArray(new Coordinate[0]));
         return WKTWriter.toLineString(seq);
     }
+    
+    public static String getWktLineStringFromMovements(Movement previous, Movement current) {
+        return WKTWriter.toLineString(GeometryUtil.getLineStringFromMovements(previous, current).getCoordinateSequence());
+    }
 
     public static String getWktLineStringFromMovementList(List<Movement> movements) {
         List<Coordinate> coords = new ArrayList<>();

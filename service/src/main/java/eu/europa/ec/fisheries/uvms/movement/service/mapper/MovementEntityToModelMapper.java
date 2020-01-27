@@ -29,6 +29,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -178,9 +179,10 @@ public class MovementEntityToModelMapper {
             if (previousMovement != null) {
                 SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
                 MovementSegment movSegment = new MovementSegment();
-                //movSegment.setCategory(); // TODO
+                movSegment.setId(movement.getId().toString());
+//                movSegment.setCategory(SegmentCategoryType.OTHER); // TODO
                 movSegment.setTrackId(movement.getTrack().getId().toString());
-                movSegment.setWkt(WKTUtil.getWktLineStringFromMovementList(Arrays.asList(previousMovement, movement)));
+                movSegment.setWkt(WKTUtil.getWktLineStringFromMovements(previousMovement, movement));
                 movSegment.setCourseOverGround(positionCalculations.getCourse());
                 movSegment.setSpeedOverGround(positionCalculations.getAvgSpeed());
                 movSegment.setDuration(positionCalculations.getDurationBetweenPoints());
@@ -188,7 +190,7 @@ public class MovementEntityToModelMapper {
                 mappedSegments.add(movSegment);
             }
         }
-        if (excludeFirstAndLast) {
+        if (excludeFirstAndLast && mappedSegments.size() >= movements.size()) {
             return mappedSegments.subList(1, mappedSegments.size());
         }
         return mappedSegments;

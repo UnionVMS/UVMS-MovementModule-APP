@@ -123,7 +123,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     @ManyToOne(optional = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Track track;
 
-    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "move_prevmove_id", referencedColumnName = "move_id")
     @OneToOne(fetch = FetchType.LAZY)
     private Movement previousMovement;
