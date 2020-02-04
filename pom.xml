@@ -32,7 +32,7 @@
 		<!-- UVMS Libraries -->
 		<uvms.common.version>4.0.13</uvms.common.version>
 		<usm4uvms.version>4.1.0</usm4uvms.version>
-		<uvms.config.version>4.0.5</uvms.config.version>
+		<uvms.config.version>4.1.0</uvms.config.version>
 
 		<!-- 3rd-party dependencies -->
 		<jackson.version>2.10.2</jackson.version>
