@@ -43,8 +43,8 @@ public class MovementRestClient {
         String url = movementEndpoint + "/";
 
         ClientBuilder clientBuilder = ClientBuilder.newBuilder();
-        clientBuilder.connectTimeout(30, TimeUnit.SECONDS);
-        clientBuilder.readTimeout(30, TimeUnit.SECONDS);
+        clientBuilder.connectTimeout(10, TimeUnit.MINUTES);
+        clientBuilder.readTimeout(10, TimeUnit.MINUTES);
         Client client = clientBuilder.build();
 
         // This has to be an anonymous class since the method doesn't support lambdas, it will throw exception in runtime
