@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity.alarm;
 
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,6 +31,7 @@ public class AlarmItem implements Serializable {
     private String updatedBy;
 
     /*@JoinColumn(name = "alarmitem_alarmrep_id", referencedColumnName = "alarmrep_id")*/
+    @JsonbTransient
     @ManyToOne(fetch = FetchType.LAZY)
     private AlarmReport alarmReport;
 
