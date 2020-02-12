@@ -70,8 +70,6 @@ public class MovementService {
     @EJB
     private ParameterService parameterService;
 
-
-
     @Inject
     @CreatedMovement
     private Event<Movement> createdMovementEvent;
@@ -284,7 +282,7 @@ public class MovementService {
 
     public MicroMovement getMicroMovementById(UUID movementId) {
         Movement movement = movementDao.getMovementById(movementId);
-        return new MicroMovement(movement.getLocation(), movement.getHeading(), movement.getId(),
+        return movement == null ? null : new MicroMovement(movement.getLocation(), movement.getHeading(), movement.getId(),
                 movement.getTimestamp(), movement.getSpeed(), movement.getMovementSource());
     }
 }

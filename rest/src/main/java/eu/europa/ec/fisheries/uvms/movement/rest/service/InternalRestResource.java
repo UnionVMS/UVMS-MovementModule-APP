@@ -103,8 +103,10 @@ public class InternalRestResource {
             GetMovementMapByQueryResponse response = movementService.getMapByQuery(query);
             return Response.ok(response).build();
         } catch (IllegalArgumentException e) {
+            LOG.error("Error when retrieving movement map", e);
             return Response.status(Status.BAD_REQUEST).entity("No MovementQuery found").build();
         } catch (Exception e) {
+            LOG.error("Error when retrieving movement map", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }

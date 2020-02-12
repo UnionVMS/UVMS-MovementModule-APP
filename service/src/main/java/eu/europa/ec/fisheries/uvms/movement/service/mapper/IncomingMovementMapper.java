@@ -4,10 +4,12 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -97,10 +99,12 @@ public abstract class IncomingMovementMapper {
         md.setLongitude(movement.getLocation().getX());
         md.setLatitude(movement.getLocation().getY());
         md.setMovementType(movement.getMovementType().value());
-        if(movement.getFromSegment() != null) {
-            md.setCalculatedCourse((double)movement.getFromSegment().getCourseOverGround());
-            md.setCalculatedSpeed((double)movement.getFromSegment().getSpeedOverGround());
-            md.setSegmentType(movement.getFromSegment().getSegmentCategory().value());
+        Movement previousMovement = movement.getPreviousMovement();
+        if(previousMovement != null) {
+            SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
+            md.setCalculatedCourse(positionCalculations.getCourse());
+            md.setCalculatedSpeed(positionCalculations.getAvgSpeed());
+            //md.setSegmentType(movement.getFromSegment().getSegmentCategory().value()); // TODO
         }
         md.setReportedCourse(movement.getHeading() != null ? (double)movement.getHeading() : null);
         md.setReportedSpeed(movement.getSpeed() != null ? (double)movement.getSpeed() : null);
@@ -137,9 +141,9 @@ public abstract class IncomingMovementMapper {
         //md.setMobileTerminalStatus();
         md.setSource(movement.getMovementSource().value());
 
-        if (movement.getFromSegment() != null && movement.getFromSegment().getFromMovement() != null) {
-            md.setPreviousLatitude(movement.getFromSegment().getFromMovement().getLocation().getY());
-            md.setPreviousLongitude(movement.getFromSegment().getFromMovement().getLocation().getX());
+        if (previousMovement != null) {
+            md.setPreviousLatitude(previousMovement.getLocation().getY());
+            md.setPreviousLongitude(previousMovement.getLocation().getX());
         }
         
         /*

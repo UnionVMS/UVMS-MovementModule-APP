@@ -9,7 +9,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.3.2-UVMS-SNAPSHOT</version>
+        <version>5.4.1-UVMS-SNAPSHOT</version>
     </parent>
 
     <dependencyManagement>
@@ -129,7 +129,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
+                        <version>3.1.1</version>
                         <executions>
                             <execution>
                                 <id>generate-service-docs</id>
@@ -146,7 +146,8 @@
                                     <additionalparam>
                                         -apiVersion ${project.version}
                                         -docBasePath /${project.parent.artifactId}/apidocs
-                                        -apiBasePath /${project.parent.artifactId}/rest</additionalparam>
+                                        -apiBasePath /${project.parent.artifactId}/rest
+                                    </additionalparam>
                                 </configuration>
                                 <goals>
                                     <goal>javadoc</goal>

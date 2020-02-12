@@ -39,8 +39,8 @@ public class MovementRestClient {
         String url = movementEndpoint + "/";
 
         ClientBuilder clientBuilder = ClientBuilder.newBuilder();
-        clientBuilder.connectTimeout(30, TimeUnit.SECONDS);
-        clientBuilder.readTimeout(30, TimeUnit.SECONDS);
+        clientBuilder.connectTimeout(10, TimeUnit.MINUTES);
+        clientBuilder.readTimeout(10, TimeUnit.MINUTES);
         Client client = clientBuilder.build();
 
         client.register(JsonBConfigurator.class);
@@ -73,11 +73,13 @@ public class MovementRestClient {
     }
 
     public MicroMovement getMicroMovementById(UUID id) {
-        return webTarget
-                .path("internal/getMicroMovement")
-                .path(id.toString())
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
-                .get(MicroMovement.class);
+            Response response = webTarget
+                    .path("internal/getMicroMovement")
+                    .path(id.toString())
+                    .request(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+                    .get();
+
+            return response.readEntity(MicroMovement.class);
     }
 }

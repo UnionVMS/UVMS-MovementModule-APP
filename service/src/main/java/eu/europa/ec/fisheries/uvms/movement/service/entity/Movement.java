@@ -52,7 +52,8 @@ import java.util.UUID;
 
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"),
-    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.updated DESC")
+    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.updated DESC"),
+    @NamedQuery(name = Movement.FIND_BY_PREVIOUS_MOVEMENT, query = "SELECT m FROM Movement m WHERE m.previousMovement = :previousMovement")
 })
 @DynamicUpdate
 @DynamicInsert
@@ -70,8 +71,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT = "Movement.findLatestMovementByMovementConnect";
     public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST = "Movement.findLatestMovementByMovementConnectList";
     public static final String FIND_LATEST = "Movement.findLatest";
-
-
+    public static final String FIND_BY_PREVIOUS_MOVEMENT = "Movement.findByPreviousMovement";
 
     private static final long serialVersionUID = 1L;
 
@@ -114,16 +114,12 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "move_trac_id", referencedColumnName = "trac_id")
-    @ManyToOne(optional = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(optional = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Track track;
 
-    @Fetch(FetchMode.JOIN)
-    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "toMovement")
-    private Segment fromSegment;
-
-    @Fetch(FetchMode.JOIN)
-    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "fromMovement")
-    private Segment toSegment;
+    @JoinColumn(name = "move_prevmove_id", referencedColumnName = "move_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    private Movement previousMovement;
 
     @Column(name = "move_movesour_id")
     @Enumerated(EnumType.ORDINAL)
@@ -248,20 +244,12 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.timestamp = timestamp;
     }
 
-    public Segment getFromSegment() {
-        return fromSegment;
+    public Movement getPreviousMovement() {
+        return previousMovement;
     }
 
-    public void setFromSegment(Segment fromSegment) {
-        this.fromSegment = fromSegment;
-    }
-
-    public Segment getToSegment() {
-        return toSegment;
-    }
-
-    public void setToSegment(Segment toSegment) {
-        this.toSegment = toSegment;
+    public void setPreviousMovement(Movement previousMovement) {
+        this.previousMovement = previousMovement;
     }
 
     public Instant getUpdated() {

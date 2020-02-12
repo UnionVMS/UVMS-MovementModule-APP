@@ -3,7 +3,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.3.2-UVMS-SNAPSHOT</version>
+        <version>5.4.1-UVMS-SNAPSHOT</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
@@ -34,7 +34,7 @@
                 <db.outputFile>changelog/generatedChangelog.xml</db.outputFile>
                 <driver.groupId>org.postgresql</driver.groupId>
                 <driver.artifactId>postgresql</driver.artifactId>
-                <driver.version>9.4-1201-jdbc41</driver.version>
+                <driver.version>42.2.10</driver.version>
             </properties>
             <dependencies>
 		        <dependency>
@@ -75,7 +75,7 @@
 					<plugin>
 						<groupId>org.liquibase</groupId>
 						<artifactId>liquibase-maven-plugin</artifactId>
-						<version>3.5.3</version>
+						<version>3.8.6</version>
 						<configuration>
 							<url>${db.docker.url}</url>
 							<migrationSqlOutputFile>${project.build.directory}/full-update.sql</migrationSqlOutputFile>
@@ -126,7 +126,7 @@
                 <plugin>
                     <groupId>org.liquibase</groupId>
                     <artifactId>liquibase-maven-plugin</artifactId>
-                    <version>3.5.3</version>
+                    <version>3.8.6</version>
                     <configuration>
                         <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                         <changeLogFile>${db.changeLogFile}</changeLogFile>
@@ -143,9 +143,9 @@
         <plugins>
         	<plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.4.1</version>
+                    <version>3.2.0</version>
                     <configuration>
-                        <descriptor>assembly.xml</descriptor>
+                        <descriptors>assembly.xml</descriptors>
                         <finalName>${project.artifactId}</finalName>
                         <appendAssemblyId>false</appendAssemblyId>
                     </configuration>

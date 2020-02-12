@@ -6,7 +6,11 @@ import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
+import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -139,7 +143,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		Instant dateStartMovement = Instant.now();
 		
 		List<Movement> input = movementHelpers.createFishingTourVarberg(1, connectId);
-		
+		em.flush();
 		List<MovementType> output = MovementEntityToModelMapper.mapToMovementType(input);
 		
 		assertEquals(input.size(),output.size());
@@ -160,26 +164,13 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		UUID connectId = UUID.randomUUID();
 		Instant dateStartMovement = Instant.now();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
+		em.flush();
 		
-		List<Segment> input = new ArrayList<Segment>();
-		Segment seg;
-		Movement prevMove = null;
-		for(Movement mov : movementList) {
-			seg = new Segment();
-			if(prevMove != null) {
-				seg.setFromMovement(prevMove);
-			}else {
-				seg.setFromMovement(mov);
-			}
-			seg.setToMovement(mov);
-		}
+		List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(movementList, false);
+		assertThat(output.size(), CoreMatchers.is(movementList.size() - 1));
 		
-		List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(input);
-		assertEquals(input.size(),output.size());
-		
-		input = null;
 		try {
-			output = MovementEntityToModelMapper.mapToMovementSegment(input);
+			MovementEntityToModelMapper.mapToMovementSegment(null, false);
 			fail("Null as input");
 		} catch (Exception e) {
 			assertTrue(true);
@@ -188,6 +179,32 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
+    public void testMapToMovementSegmentIncludeFirstAndLast() {
+        MovementHelpers movementHelpers = new MovementHelpers(movementService);
+        UUID connectId = UUID.randomUUID();
+        List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
+        em.flush();
+
+        List<Movement> movementSublist = movementList.subList(1, movementList.size());
+        List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(movementSublist, false);
+        assertThat(output.size(), CoreMatchers.is(movementSublist.size()));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void testMapToMovementSegmentExcludeFirstAndLast() {
+        MovementHelpers movementHelpers = new MovementHelpers(movementService);
+        UUID connectId = UUID.randomUUID();
+        List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
+        em.flush();
+
+        List<Movement> movementSublist = movementList.subList(1, movementList.size());
+        List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(movementSublist, true);
+        assertThat(output.size(), CoreMatchers.is(movementSublist.size() - 1));
+    }
+
+	@Test
+	@OperateOnDeployment("movementservice")
 	public void testOrderMovementsByConnectId() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		List<UUID> connectId = new ArrayList<>();
@@ -213,54 +230,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 			assertTrue(true);
 		}
 	}
-	
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testExtractSegments() {
-		MovementHelpers movementHelpers = new MovementHelpers(movementService);
-		UUID connectId = UUID.randomUUID();
-		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
-		//srsly......
-		ArrayList<Movement> input = new ArrayList<>(movementList);
-		Movement prevMove = null;
-		Segment prevSeg = null;
-		Segment seg = null;
-		for(Movement move : input) {
-			seg = new Segment();
-			if(prevMove != null) {
-				seg.setFromMovement(prevMove);
-			}else {
-				seg.setFromMovement(move);
-			}
-			seg.setToMovement(move);
-			move.setFromSegment(prevSeg);
-			move.setToSegment(seg);
-			prevMove = move;
-			prevSeg = seg;
-		}
-		
-		List<Segment> output = MovementEntityToModelMapper.extractSegments(input, true);
-		assertEquals(input.size() - 1, output.size());
-		
-		output = MovementEntityToModelMapper.extractSegments(input, false);
-		assertEquals(input.size(), output.size());
-		
-		input.set(42, null);
-		try {
-			output = MovementEntityToModelMapper.extractSegments(input, false);
-			fail("Null in the middle of the input");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-		
-		try {
-			output = MovementEntityToModelMapper.extractSegments(null, false);
-			fail("Null as input");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-	}
-	
+
 	@Test
     @OperateOnDeployment("movementservice")
 	public void testExtractTracks() {
@@ -268,8 +238,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		UUID connectId = UUID.randomUUID();
 		ArrayList<Movement> movementList = new ArrayList<>(movementHelpers.createFishingTourVarberg(1, connectId));
 
-		List<Segment> input = new ArrayList<>(MovementEntityToModelMapper.extractSegments(movementList, true));
-		List<Track> output = MovementEntityToModelMapper.extractTracks(input);
+		List<Track> output = MovementEntityToModelMapper.extractTracks(movementList);
 		
 		assertEquals(1, output.size());
 		assertEquals(movementList.get(0).getTrack().getDuration(), output.get(0).getDuration(),0D);
