@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
@@ -545,7 +546,148 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(movementList.get(0).getTrack(), is(movementList.get(1).getTrack()));
         assertThat(movementList.get(2).getTrack(), is(not(movementList.get(1).getTrack())));
     }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void latestVmsPositionTest() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setMovementSource(MovementSourceType.NAF);
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementService.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        assertThat(movementConnect.getLatestMovement(), is(firstMovement));
+        assertThat(movementConnect.getLatestVMS(), is(firstMovement));
+    }
     
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void latestVmsPositionTwoPositionsTest() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setMovementSource(MovementSourceType.NAF);
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementService.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+        
+        Movement secondMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        secondMovement.setMovementSource(MovementSourceType.NAF);
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        secondMovement = movementService.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        assertThat(movementConnect.getLatestMovement(), is(secondMovement));
+        assertThat(movementConnect.getLatestVMS(), is(secondMovement));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void latestVmsPositionNegativeTest() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setMovementSource(MovementSourceType.AIS);
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementService.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        assertThat(movementConnect.getLatestMovement(), is(firstMovement));
+        assertThat(movementConnect.getLatestVMS(), is(nullValue()));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void latestVmsMultiplePositionsTest() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setMovementSource(MovementSourceType.AIS);
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementService.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        Movement secondMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        secondMovement.setMovementSource(MovementSourceType.NAF);
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        secondMovement = movementService.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        Movement thirdMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        thirdMovement.setMovementSource(MovementSourceType.AIS);
+        thirdMovement.setTimestamp(timestamp);
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        thirdMovement = movementService.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        assertThat(movementConnect.getLatestMovement(), is(thirdMovement));
+        assertThat(movementConnect.getLatestVMS(), is(secondMovement));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void latestVmsMultiplePositionsNonOrderedTest() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setMovementSource(MovementSourceType.AIS);
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementService.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        Movement thirdMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        thirdMovement.setMovementSource(MovementSourceType.AIS);
+        thirdMovement.setTimestamp(timestamp);
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        thirdMovement = movementService.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        Movement secondMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        secondMovement.setMovementSource(MovementSourceType.NAF);
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        secondMovement = movementService.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        assertThat(movementConnect.getLatestMovement(), is(thirdMovement));
+        assertThat(movementConnect.getLatestVMS(), is(secondMovement));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void latestVmsMultiplePositionsFirstPositionTest() throws Exception {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement secondMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        secondMovement.setMovementSource(MovementSourceType.AIS);
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+        secondMovement = movementService.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        Movement thirdMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        thirdMovement.setMovementSource(MovementSourceType.AIS);
+        thirdMovement.setTimestamp(timestamp);
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+        thirdMovement = movementService.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setMovementSource(MovementSourceType.NAF);
+        firstMovement.setTimestamp(timestamp);
+        firstMovement = movementService.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        assertThat(movementConnect.getLatestMovement(), is(thirdMovement));
+        assertThat(movementConnect.getLatestVMS(), is(firstMovement));
+    }
+
     /*
      * Validate segments and track for movements with same connectId
      */
