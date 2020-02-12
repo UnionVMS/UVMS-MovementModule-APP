@@ -57,6 +57,10 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     @OneToOne(fetch = FetchType.LAZY)
     private Movement latestMovement;
 
+    @JoinColumn(name = "moveconn_latest_vms", referencedColumnName = "move_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    private Movement latestVMS;
+
     @NotNull
     @Column(name = "moveconn_updattim")
     private Instant updated;
@@ -133,6 +137,14 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
 
     public void setLatestMovement(Movement latestMovement) {
         this.latestMovement = latestMovement;
+    }
+
+    public Movement getLatestVMS() {
+        return latestVMS;
+    }
+
+    public void setLatestVMS(Movement latestVMS) {
+        this.latestVMS = latestVMS;
     }
 
     public Point getLatestLocation() {

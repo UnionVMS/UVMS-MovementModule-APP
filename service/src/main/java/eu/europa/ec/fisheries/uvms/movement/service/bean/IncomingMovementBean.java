@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -58,6 +58,17 @@ public class IncomingMovementBean {
                     trackService.upsertTrack(latestMovement, currentMovement);
                 }
             }
+        }
+        updateLatestVMS(currentMovement);
+    }
+
+    private void updateLatestVMS(Movement currentMovement) {
+        if (currentMovement.getMovementSource().equals(MovementSourceType.AIS)) {
+            return;
+        }
+        Movement latestVMS = currentMovement.getMovementConnect().getLatestVMS();
+        if (latestVMS == null || currentMovement.getTimestamp().isAfter(latestVMS.getTimestamp())) {
+            currentMovement.getMovementConnect().setLatestVMS(currentMovement);
         }
     }
     
