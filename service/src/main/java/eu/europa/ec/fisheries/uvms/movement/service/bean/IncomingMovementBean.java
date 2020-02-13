@@ -1,6 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
