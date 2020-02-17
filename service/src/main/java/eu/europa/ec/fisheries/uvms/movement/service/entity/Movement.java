@@ -11,12 +11,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.DynamicInsert;
@@ -28,7 +24,6 @@ import org.locationtech.jts.geom.Point;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
@@ -39,7 +34,6 @@ import java.util.UUID;
         @Index(columnList = "move_trac_id", name = "movement_trac_fk_idx", unique = false),
         @Index(columnList = "move_moveconn_id, move_timestamp", name = "movement_count_idx", unique = false)
 })
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
@@ -135,21 +129,15 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Enumerated(EnumType.ORDINAL)
     private MovementTypeType movementType;
 
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @Column(name = "move_timestamp")
     private Instant timestamp;
     
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @Column(name = "move_lesreporttime")
     private Instant lesReportTime;
 
     @Column(name = "move_satellite_id")
     private Short sourceSatelliteId;
 
-	@JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "move_updattim")
     private Instant updated;

@@ -1,7 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
@@ -226,8 +226,8 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("track")
                 .path("asset")
                 .path(connectId.toString())
-                .queryParam("startDate", DateUtil.parseUTCDateToString(startTime)) //yyyy-MM-dd HH:mm:ss Z
-                .queryParam("endDate", DateUtil.parseUTCDateToString(endTime))
+                .queryParam("startDate", DateUtils.dateToEpochMilliseconds(startTime)) //yyyy-MM-dd HH:mm:ss Z
+                .queryParam("endDate", DateUtils.dateToHumanReadableString(endTime))
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(""), new GenericType<List<MicroMovement>>() {});

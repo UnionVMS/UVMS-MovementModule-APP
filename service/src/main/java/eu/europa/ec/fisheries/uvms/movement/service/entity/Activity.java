@@ -11,29 +11,21 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "activity", indexes = {
         @Index(columnList = "act_acttyp_id", name = "activity_activitytype_fk_inx", unique = false)
 })
-@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Activity.findAll", query = "SELECT a FROM Activity a"),
     @NamedQuery(name = "Activity.findById", query = "SELECT a FROM Activity a WHERE a.id = :id"),
@@ -65,8 +57,6 @@ public class Activity implements Serializable {
     @Column(name = "act_callback")
     private String callback;
 
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
     @NotNull
     @Column(name = "act_updattim")
     private Instant updated;
@@ -129,11 +119,4 @@ public class Activity implements Serializable {
         this.activityType = activityType;
     }
 
-    /*public Activitytype getActActtypId() {
-     return actActtypId;
-     }
-
-     public void setActActtypId(Activitytype actActtypId) {
-     this.actActtypId = actActtypId;
-     }*/
 }

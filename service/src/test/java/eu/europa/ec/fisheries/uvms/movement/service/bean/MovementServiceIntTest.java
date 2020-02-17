@@ -1,12 +1,11 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.*;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
@@ -50,7 +49,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     @OperateOnDeployment("movementservice")
     public void createMovement() {
 
-        Instant now = DateUtil.nowUTC();
+        Instant now = Instant.now();
         double longitude = 9.140625D;
         double latitude = 57.683804D;
 
@@ -255,7 +254,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     public void getById() {
 
         try {
-            Instant now = DateUtil.nowUTC();
+            Instant now = Instant.now();
             double longitude = 9.140625D;
             double latitude = 57.683804D;
 

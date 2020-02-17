@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
+import javax.json.bind.Jsonb;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -31,6 +33,7 @@ public class SSEResource {
     private Sse sse;
     private OutboundSseEvent.Builder eventBuilder;
     private SseBroadcaster sseBroadcaster;
+    private Jsonb jsonb = new JsonBConfigurator().getContext(null);
 
     @Context
     public void setSse(Sse sse) {
@@ -44,11 +47,13 @@ public class SSEResource {
             if (move != null) {
                 MicroMovementExtended micro = new MicroMovementExtended(move.getLocation(),
                         move.getHeading(), move.getId(), move.getMovementConnect().getId(), move.getTimestamp(), move.getSpeed(), move.getMovementSource());
+                String outboundJson = jsonb.toJson(micro);
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")
                         .id("" + System.currentTimeMillis())
                         .mediaType(MediaType.APPLICATION_JSON_PATCH_JSON_TYPE)
-                        .data(MicroMovementExtended.class, micro)
+                        //.data(MicroMovementExtended.class, micro)         //for some unknown reason this does not get serialized, so we serialize manually and send the string instead.
+                        .data(String.class, outboundJson)
                         //.reconnectDelay(3000) //this one is optional and governs how long the client should wait b4 attempting to reconnect to this server
                         .comment("New Movement")
                         .build();

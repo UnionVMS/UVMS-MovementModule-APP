@@ -292,6 +292,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         alarmReport.setAssetGuid(UUID.randomUUID().toString());
         alarmReport.setStatus(AlarmStatusType.OPEN.value());
         alarmReport.setUpdated(Instant.now());
+        alarmReport.setCreatedDate(Instant.now());
         alarmReport.setUpdatedBy("Test user");
         return alarmReport;
     }

@@ -1,5 +1,15 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementCreateBean;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import javax.enterprise.event.Event;
@@ -8,20 +18,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementCreateBean;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
-
+import javax.json.bind.Jsonb;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovementCreateConsumerBean implements MessageListener {
@@ -30,7 +28,7 @@ public class MovementCreateConsumerBean implements MessageListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementCreateConsumerBean.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private Jsonb jsonb;
     
     @Inject
     private MovementCreateBean movementCreate;
@@ -44,9 +42,7 @@ public class MovementCreateConsumerBean implements MessageListener {
 
     @PostConstruct
     private void init() {
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        jsonb = new JsonBConfigurator().getContext(null);
     }
 
 
@@ -59,15 +55,15 @@ public class MovementCreateConsumerBean implements MessageListener {
             if(propertyMethod != null) {
                 switch (propertyMethod) {
                     case "CREATE" :
-                        IncomingMovement incomingMovement = mapper.readValue(textMessage.getText(), IncomingMovement.class);
+                        IncomingMovement incomingMovement = jsonb.fromJson(textMessage.getText(), IncomingMovement.class);
                         movementCreate.processIncomingMovement(incomingMovement);
                         break;
 
                     case "CREATE_BATCH" :
-                    List<IncomingMovement> movementList = mapper.readValue(textMessage.getText(), mapper.getTypeFactory().constructCollectionType(List.class, IncomingMovement.class));
-                    for (IncomingMovement im: movementList) {
-                        movementCreate.processIncomingMovement(im);
-                    }
+                        List<IncomingMovement> movementList = jsonb.fromJson(textMessage.getText(), new ArrayList<IncomingMovement>(){}.getClass().getGenericSuperclass());
+                        for (IncomingMovement im: movementList) {
+                            movementCreate.processIncomingMovement(im);
+                        }
                         break;
                     case "PING":
                         movementEventBean.ping(textMessage);

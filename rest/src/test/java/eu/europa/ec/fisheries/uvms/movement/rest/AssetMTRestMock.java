@@ -1,7 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.rest;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.fisheries.schema.mobileterminal.types.v1.ComChannelAttribute;
 import eu.europa.ec.fisheries.schema.mobileterminal.types.v1.ComChannelType;
 import eu.europa.ec.fisheries.schema.mobileterminal.types.v1.MobileTerminalId;
@@ -28,8 +27,6 @@ import java.util.UUID;
 @Path("/asset/rest/internal")
 @Stateless
 public class AssetMTRestMock {
-
-    ObjectMapper MAPPER = new ObjectMapper();
 
 
     @POST

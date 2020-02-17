@@ -1,19 +1,20 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.dto;
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 
 import java.util.List;
 
 public class RealTimeMapInitialData {
 
+    public static final String ASSET_JSON_PLACE_HERE = "\"AssetJsonPlaceHere\"";
+
     List<MicroMovementExtended> microMovements;
-    @JsonRawValue
+
     String assetList;
 
-    public RealTimeMapInitialData(List<MicroMovementExtended> microMovements, String assetList) {
+    public RealTimeMapInitialData(List<MicroMovementExtended> microMovements) {
         this.microMovements = microMovements;
-        this.assetList = assetList;
+        this.assetList = ASSET_JSON_PLACE_HERE.replace("\"", "");
     }
 
     public RealTimeMapInitialData() {

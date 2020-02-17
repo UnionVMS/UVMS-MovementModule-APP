@@ -1,33 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import javax.ejb.EJB;
-import org.hamcrest.CoreMatchers;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
@@ -37,6 +10,23 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
+import org.hamcrest.CoreMatchers;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+
+import javax.ejb.EJB;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class MovementEntityToModelTest extends TransactionalTests {
@@ -55,7 +45,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMovementBaseType() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = Instant.now();
 		Instant lesTime = dateStartMovement;
 		double lon = 11.641982;
 		double lat = 57.632304;
@@ -108,7 +98,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementTypeWithMovementInput() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = Instant.now();
 		double lon = 11.641982;
 		double lat = 57.632304;
 		Movement movement =  movementHelpers.createMovement(lon, lat, connectId, "ONE", dateStartMovement);
@@ -150,7 +140,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		//Most of the method is tested by testMapToMovementType
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = Instant.now();
 		
 		List<Movement> input = movementHelpers.createFishingTourVarberg(1, connectId);
 		em.flush();
@@ -172,6 +162,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	public void testMapToMovementSegment() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
+		Instant dateStartMovement = Instant.now();
 		List<Movement> movementList = movementHelpers.createFishingTourVarberg(1, connectId);
 		em.flush();
 		

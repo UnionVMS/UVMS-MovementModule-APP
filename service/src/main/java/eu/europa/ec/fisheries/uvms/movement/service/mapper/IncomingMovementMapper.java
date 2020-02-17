@@ -1,15 +1,19 @@
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
+import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
-import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
-import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -45,7 +49,7 @@ public abstract class IncomingMovementMapper {
         point.setSRID(4326);
         entity.setLocation(point);
 
-        entity.setUpdated(DateUtil.nowUTC());
+        entity.setUpdated(Instant.now());
         entity.setUpdatedBy(username);
 
         if (ic.getMovementSourceType() != null) {
@@ -59,7 +63,7 @@ public abstract class IncomingMovementMapper {
         if (ic.getPositionTime() != null) {
             entity.setTimestamp(ic.getPositionTime());
         } else {
-            entity.setTimestamp(DateUtil.nowUTC());
+            entity.setTimestamp(Instant.now());
         }
 
         Activity activity = createActivity(ic);
@@ -78,7 +82,7 @@ public abstract class IncomingMovementMapper {
         activity.setActivityType(MovementActivityTypeType.fromValue(ic.getActivityMessageType()));
         activity.setCallback(ic.getActivityCallback());
         activity.setMessageId(ic.getActivityMessageId());
-        activity.setUpdated(DateUtil.nowUTC());
+        activity.setUpdated(Instant.now());
         activity.setUpdatedBy("UVMS");
         return activity;
     }

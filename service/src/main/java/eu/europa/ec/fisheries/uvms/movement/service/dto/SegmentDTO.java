@@ -1,10 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -23,8 +19,6 @@ public class SegmentDTO {
 
     private Double courseOverGround;
 
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
     private Instant updated;
 
     private String updatedBy;

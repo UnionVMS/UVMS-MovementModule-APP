@@ -1,9 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.client;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
@@ -21,7 +18,6 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ContextResolver;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -47,17 +43,7 @@ public class MovementRestClient {
         clientBuilder.readTimeout(10, TimeUnit.MINUTES);
         Client client = clientBuilder.build();
 
-        // This has to be an anonymous class since the method doesn't support lambdas, it will throw exception in runtime
-        client.register(new ContextResolver<ObjectMapper>() {
-            @Override
-            public ObjectMapper getContext(Class<?> type) {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                client.register(new JacksonJaxbJsonProvider(mapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
-                return mapper;
-            }
-        });
+        client.register(JsonBConfigurator.class);
         webTarget = client.target(url);
     }
 

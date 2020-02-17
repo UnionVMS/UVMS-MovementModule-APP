@@ -17,13 +17,13 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.*;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,7 +80,7 @@ public class MovementMapper {
         SetReportMovementType report = new SetReportMovementType();
         report.setPluginName("ManualMovement");
         report.setPluginType(PluginType.MANUAL);
-        report.setTimestamp(Date.from(DateUtil.nowUTC()));
+        report.setTimestamp(Date.from(Instant.now()));
 
         eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType exchangeMovementBaseType =
                 new eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType();

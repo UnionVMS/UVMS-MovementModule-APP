@@ -1,14 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.util;
 
-import java.math.BigInteger;
-import java.time.Instant;
-import java.util.UUID;
-import javax.ejb.EJB;
-import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
@@ -16,6 +7,15 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import org.jboss.arquillian.container.test.api.OperateOnDeployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import javax.ejb.EJB;
+import java.math.BigInteger;
+import java.time.Instant;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -128,7 +128,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	public void testGetPositionCalculations () {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = Instant.now();
 		
 		double startLon = 11.695033;
 		double startLat = 57.678582;
@@ -174,7 +174,7 @@ public class CalculationUtilTest extends TransactionalTests {
 	public void testGetPositionCalculationsMillisecondTimespan () {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = DateUtil.nowUTC();
+		Instant dateStartMovement = Instant.now();
 
 		double startLon = 15.4479166666667;
 		double startLat = 54.9316516666667;

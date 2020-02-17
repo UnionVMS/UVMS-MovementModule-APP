@@ -1,8 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
@@ -17,7 +15,11 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
-import javax.jms.*;
+import javax.jms.Destination;
+import javax.jms.JMSConnectionFactory;
+import javax.jms.JMSContext;
+import javax.jms.TextMessage;
+import javax.json.bind.Jsonb;
 
 @Stateless
 public class EventStreamSender {
@@ -31,12 +33,11 @@ public class EventStreamSender {
     @JMSConnectionFactory("java:/ConnectionFactory")
     JMSContext context;
 
-    private ObjectMapper om = new ObjectMapper();
+    private Jsonb jsonb;
 
     @PostConstruct
     public void init() {
-        om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        jsonb = new JsonBConfigurator().getContext(null);
     }
 
     public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement move){
@@ -44,7 +45,7 @@ public class EventStreamSender {
             if (move != null) {
                 MicroMovementExtended micro = new MicroMovementExtended(move.getLocation(),
                         move.getHeading(), move.getId(), move.getMovementConnect().getId(), move.getTimestamp(), move.getSpeed(), move.getMovementSource());
-                String outgoingJson = om.writeValueAsString(micro);
+                String outgoingJson = jsonb.toJson(micro);
 
                 TextMessage message = this.context.createTextMessage(outgoingJson);
                 message.setStringProperty(MessageConstants.EVENT_STREAM_EVENT, "Movement");

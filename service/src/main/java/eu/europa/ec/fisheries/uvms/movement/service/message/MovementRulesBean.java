@@ -1,10 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
@@ -12,7 +8,10 @@ import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
-import javax.jms.*;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.json.bind.Jsonb;
 
 @Stateless
 public class MovementRulesBean extends AbstractProducer {
@@ -20,17 +19,15 @@ public class MovementRulesBean extends AbstractProducer {
     @Resource(mappedName = "java:/" + MessageConstants.QUEUE_MOVEMENTRULES_EVENT)
     private Queue destination;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private Jsonb jsonb;
 
     @PostConstruct
     private void init() {
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        jsonb = new JsonBConfigurator().getContext(null);
     }
 
-    public void send(MovementDetails movementDetails) throws JsonProcessingException, JMSException {
-        String movementDetailJson = mapper.writeValueAsString(movementDetails);
+    public void send(MovementDetails movementDetails) throws JMSException {
+        String movementDetailJson = jsonb.toJson(movementDetails);
         sendMessageToSpecificQueueWithFunction(movementDetailJson, getDestination(), null, "EVALUATE_RULES", null);
     }
 

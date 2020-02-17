@@ -15,11 +15,11 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilter;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class MovementGroupMapper {
         filterGroup.setActive(Boolean.TRUE.toString());
         filterGroup.setGlobal(Boolean.TRUE.toString());
         filterGroup.setDynamic(searchGroup.isDynamic() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-        filterGroup.setUpdated(DateUtil.nowUTC());
+        filterGroup.setUpdated(Instant.now());
         filterGroup.setUpdatedBy(username);
         filterGroup.setName(searchGroup.getName());
         filterGroup.setUser(searchGroup.getUser());
@@ -75,7 +75,7 @@ public class MovementGroupMapper {
         //filter.setId(parent.getId());
         filter.setField(searchField.getKey());
         filter.setValue(searchField.getValue());
-        filter.setUpdated(DateUtil.nowUTC());
+        filter.setUpdated(Instant.now());
         filter.setUpdatedBy(username);
         filter.setMovementFilterType(searchField.getType());
         filter.setFilterGroup(parent);

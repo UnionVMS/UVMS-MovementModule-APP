@@ -1,12 +1,12 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.*;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -25,6 +25,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -221,8 +222,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	RangeCriteria rangeCriteria = new RangeCriteria();
     	rangeCriteria.setKey(RangeKeyType.DATE);
-    	rangeCriteria.setFrom(DateUtil.parseUTCDateToString(DateUtil.nowUTC()));
-    	rangeCriteria.setTo(DateUtil.parseUTCDateToString(DateUtil.nowUTC().plusSeconds(1800))); //1 800 000 is the time for 6 of the movements in the list  aka 1 800
+    	rangeCriteria.setFrom(DateUtils.dateToEpochMilliseconds(Instant.now()));
+    	rangeCriteria.setTo(DateUtils.dateToEpochMilliseconds(Instant.now().plusSeconds(1800))); //1 800 000 is the time for 6 of the movements in the list  aka 1 800
     	input.getMovementRangeSearchCriteria().add(rangeCriteria);
     	
     	output = movementService.getList(input);
@@ -344,8 +345,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	RangeCriteria rangeCriteria = new RangeCriteria();
     	rangeCriteria.setKey(RangeKeyType.DATE);
-    	rangeCriteria.setFrom(DateUtil.parseUTCDateToString(DateUtil.nowUTC()));
-    	rangeCriteria.setTo(DateUtil.parseUTCDateToString(DateUtil.nowUTC().plusSeconds(1800))); //1 800 000 is the time for 6 of the movements in the list aka 1800 seconds
+		rangeCriteria.setFrom(DateUtils.dateToEpochMilliseconds(Instant.now()));
+		rangeCriteria.setTo(DateUtils.dateToEpochMilliseconds(Instant.now().plusSeconds(1800))); //1 800 000 is the time for 6 of the movements in the list  aka 1 800
     	input.getMovementRangeSearchCriteria().add(rangeCriteria);
     	
     	output = movementService.getMinimalList(input);
@@ -416,8 +417,8 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
     	
     	RangeCriteria rangeCriteria = new RangeCriteria();
     	rangeCriteria.setKey(RangeKeyType.DATE);
-    	rangeCriteria.setFrom(DateUtil.parseUTCDateToString(DateUtil.nowUTC()));
-    	rangeCriteria.setTo(DateUtil.parseUTCDateToString(DateUtil.nowUTC().plusSeconds(1800) )); //1 800 000 is the time for 6 of the movements in the list aka 1800 seconds
+		rangeCriteria.setFrom(DateUtils.dateToEpochMilliseconds(Instant.now()));
+		rangeCriteria.setTo(DateUtils.dateToEpochMilliseconds(Instant.now().plusSeconds(1800))); //1 800 000 is the time for 6 of the movements in the list  aka 1 800
     	input.getMovementRangeSearchCriteria().add(rangeCriteria);
     	
     	output = movementService.getMapByQuery(input);

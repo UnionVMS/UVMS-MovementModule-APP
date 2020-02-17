@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -68,6 +70,12 @@ public class SSEResourceTest extends BuildMovementRestDeployment {
             assertTrue(source.isOpen());
             assertTrue(errorString,errorString.isEmpty());
             assertEquals(dataString,3 ,dataString.split("\\}\\{").length);
+            Pattern p = Pattern.compile("\"timestamp\":\"\\d{13}\"");
+            Matcher m = p.matcher(dataString);
+            assertTrue(m.find());
+            assertTrue(m.find());
+            assertTrue(m.find());
+
         }
 
 

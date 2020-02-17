@@ -1,22 +1,12 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity.alarm;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
-import eu.europa.ec.fisheries.schema.movementrules.exchange.v1.PluginType;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,15 +14,12 @@ import java.util.UUID;
 @Table(name = "alarmreport", indexes = {
         @Index(columnList = "incomingmovement_id", name = "alarmreport_incomingmovement_fk_inx", unique = false)
 })
-@XmlRootElement
 @NamedQueries({
         @NamedQuery(name = AlarmReport.FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID, query = "SELECT ar FROM AlarmReport ar WHERE ar.incomingMovement.id = :movementGuid and ar.status = 'OPEN'"),
         @NamedQuery(name = AlarmReport.FIND_ALARM_REPORT_BY_ASSET_GUID_AND_RULE_GUID, query = "SELECT ar FROM AlarmReport ar left join ar.alarmItemList ai WHERE ar.assetGuid = :assetGuid and ar.status = 'OPEN' and ai.ruleGuid = :ruleGuid"),
         @NamedQuery(name = AlarmReport.COUNT_OPEN_ALARMS, query = "SELECT count(ar) FROM AlarmReport ar where ar.status = 'OPEN'")
 })
 //@formatter:on
-@JsonIdentityInfo(generator= ObjectIdGenerators.UUIDGenerator.class)
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class AlarmReport implements Serializable {
 
     public static final String FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID = "AlarmReport.findByMovementGuid";
@@ -50,12 +37,10 @@ public class AlarmReport implements Serializable {
     private String assetGuid;   //exists in Type, same name
     private String status;  //Expects values from teh class AlarmsStatusType, exists in Type, same name
     private String recipient;   //exists in Type, same name
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+
     private Instant createdDate;   //exists in Type as openDate
+
     @NotNull
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
     private Instant updated;       //exists in Type, same name
     @NotNull
     private String updatedBy;   //exists in Type, same name

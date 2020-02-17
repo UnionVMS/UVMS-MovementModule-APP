@@ -11,22 +11,23 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
+import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
+import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
+import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 
 @Stateless
 public class MovementEventBean {

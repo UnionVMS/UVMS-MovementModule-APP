@@ -16,7 +16,6 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.ExchangeBean;
@@ -26,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jms.JMSException;
+import java.time.Instant;
 
 @Stateless
 public class ManualMovementService {
@@ -44,7 +44,7 @@ public class ManualMovementService {
         try {
             SetReportMovementType report = MovementMapper.mapToSetReportMovementType(incomingMovement);
             String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
-                    DateUtil.nowUTC(), PluginType.MANUAL, username, null);
+                    Instant.now(), PluginType.MANUAL, username, null);
             exchangeProducer.sendModuleMessage(exchangeRequest, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value());
 //            auditService.sendManualMovementCreatedAudit(exchangeRequest, username);
         } catch (JMSException ex) {

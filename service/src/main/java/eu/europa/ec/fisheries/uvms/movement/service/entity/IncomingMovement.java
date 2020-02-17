@@ -1,16 +1,11 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -18,8 +13,6 @@ import java.util.UUID;
 @Table(name = "incomingmovement", indexes = {
         @Index(columnList = "alarmreport_id", name = "incomingmovement_alarmreport_fk_inx", unique = false)
 })
-@XmlRootElement
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class IncomingMovement {
 
 	@Id
@@ -29,14 +22,11 @@ public class IncomingMovement {
 
     private String assetHistoryId;
     private String ackResponseMessageId;
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+
     private Instant dateReceived;
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+
     private Instant positionTime;
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
+
     private Instant lesReportTime;
     
     private String status;
@@ -83,12 +73,11 @@ public class IncomingMovement {
     private boolean duplicate = false;
 
     @NotNull
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonDeserialize(using = MovementInstantDeserializer.class)
     private Instant updated;
     @NotNull
     private String updatedBy;
 
+    @JsonbTransient
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)    //DB is set to allow null values here since, for some reason, hibernate passes a null that is later changed into the correct value.
     private AlarmReport alarmReport;
 

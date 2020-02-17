@@ -11,15 +11,16 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialRestClient;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.time.Instant;
 
 @Stateless
 public class TrackService {
@@ -62,7 +63,7 @@ public class TrackService {
         Track track = new Track();
         track.setDistance(positionCalculations.getDistanceBetweenPoints());
         track.setDuration(positionCalculations.getDurationBetweenPoints());
-        track.setUpdated(DateUtil.nowUTC());
+        track.setUpdated(Instant.now());
         track.setUpdatedBy("UVMS");
         return track;
     }

@@ -11,13 +11,10 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 
 import java.io.Serializable;
-import java.time.Instant;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ManualMovementDto implements Serializable {
 
     private MicroMovement movement;

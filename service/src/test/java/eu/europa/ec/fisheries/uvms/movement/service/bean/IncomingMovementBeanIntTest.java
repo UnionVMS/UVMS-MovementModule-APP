@@ -154,16 +154,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         LOG.info(" [ Duplication id successfully set when a duplicate movement was found in the database. ] ");
     }
 
-
-
-
-
-
-
-
-
-
-    
     @Test
     @OperateOnDeployment("movementservice")
     public void testMovementRelation() throws Exception {

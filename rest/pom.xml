@@ -51,6 +51,10 @@
 				    <groupId>net.sf.ehcache</groupId>
   					<artifactId>ehcache</artifactId>				
 				</exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -87,17 +91,18 @@
 			<version>${uvms.common.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.10.2.1</version>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
             <artifactId>uvms-commons-rest</artifactId>
             <version>${uvms.common.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

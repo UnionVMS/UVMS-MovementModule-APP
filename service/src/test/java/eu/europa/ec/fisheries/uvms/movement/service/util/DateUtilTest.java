@@ -1,18 +1,18 @@
 package eu.europa.ec.fisheries.uvms.movement.service.util;
 
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import java.text.ParseException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Arquillian.class)
 public class DateUtilTest extends TransactionalTests {
@@ -28,48 +28,48 @@ public class DateUtilTest extends TransactionalTests {
 
 		//Formats are in DateFormats.java
 		//yyyy-MM-dd HH:mm:ss Z      					  2018-03-09 09:26:30 +0100
-		Instant timestamp = DateUtil.getDateFromString("2018-03-09 10:26:30 +0100");
+		Instant timestamp = DateUtils.stringToDate("2018-03-09 10:26:30 +0100");
 		assertTrue(testDate.equals(timestamp));
 
-		timestamp = DateUtil.getDateFromString("2018-03-09 09:26:30 Z");
+		timestamp = DateUtils.stringToDate("2018-03-09 09:26:30 Z");
 		assertTrue(testDate.equals(timestamp));
 		
-		timestamp = DateUtil.getDateFromString("2018-03-09 04:26:30 -0500");
+		timestamp = DateUtils.stringToDate("2018-03-09 04:26:30 -0500");
 		assertTrue(testDate.equals(timestamp));
 
 		//EEE MMM dd HH:mm:ss z yyyy			Fri Mar 09 08:26:30 CET 2018
-		timestamp = DateUtil.getDateFromString("Fri Mar 09 10:26:30 CET 2018");
+		timestamp = DateUtils.stringToDate("Fri Mar 09 10:26:30 CET 2018");
 		assertTrue(testDate.equals(timestamp));
 		
-		timestamp = DateUtil.getDateFromString("Fri Mar 09 18:26:30 JST 2018");
+		timestamp = DateUtils.stringToDate("Fri Mar 09 18:26:30 JST 2018");
 		assertTrue(testDate.equals(timestamp));
 
 		//yyyy-MM-dd HH:mm:ss X
-		timestamp = DateUtil.getDateFromString("2018-03-09 10:26:30 +01");
+		timestamp = DateUtils.stringToDate("2018-03-09 10:26:30 +01");
 		assertTrue(testDate.equals(timestamp));
 		
-		timestamp = DateUtil.getDateFromString("2018-03-09 12:26:30 +03");
+		timestamp = DateUtils.stringToDate("2018-03-09 12:26:30 +03");
 		assertTrue(testDate.equals(timestamp));
 
 		//yyyy-MM-dd HH:mm:ss
-		timestamp = DateUtil.getDateFromString("2018-03-09 09:26:30");
+		timestamp = DateUtils.stringToDate("2018-03-09 09:26:30");
 		assertTrue(testDate.equals(timestamp));
 
 		
 		//fails to come
 
-		timestamp = DateUtil.getDateFromString("9:26:30");
+		timestamp = DateUtils.stringToDate("9:26:30");
 		assertNull("Only time should not work", timestamp);
 
 
 
-		timestamp = DateUtil.getDateFromString("2018-02-31");
+		timestamp = DateUtils.stringToDate("2018-02-31");
 		assertNull("Only date should not work", timestamp);
 
-		timestamp = DateUtil.getDateFromString("2018-02-31 10:26");
+		timestamp = DateUtils.stringToDate("2018-02-31 10:26");
 		assertNull("Missing seconds", timestamp);
 
-		timestamp = DateUtil.getDateFromString(null);
+		timestamp = DateUtils.stringToDate(null);
 		assertNull("Null", timestamp);
 
 		
@@ -85,42 +85,42 @@ public class DateUtilTest extends TransactionalTests {
 
 		//Formats are in DateFormats.java
 		//yyyy-MM-dd HH:mm:ss Z      					  2018-03-09 09:26:30 +0100
-		Instant timestamp = DateUtil.parseToUTCDate("2018-03-09 10:26:30 +0100");
+		Instant timestamp = DateUtils.stringToDate("2018-03-09 10:26:30 +0100");
 		assertTrue(testDate.equals( timestamp));
 		
-		timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 04:26:30 -0500");
+		timestamp = DateUtils.stringToDate("2018-03-09 04:26:30 -0500");
 		assertTrue(testDate.equals( timestamp));
 
 		//EEE MMM dd HH:mm:ss z yyyy			Fri Mar 09 08:26:30 CET 2018
-		timestamp = DateUtil.convertDateTimeInUTC("Fri Mar 09 10:26:30 CET 2018");
+		timestamp = DateUtils.stringToDate("Fri Mar 09 10:26:30 CET 2018");
 		assertTrue(testDate.equals( timestamp));
 		
-		timestamp = DateUtil.convertDateTimeInUTC("Fri Mar 09 18:26:30 JST 2018");
+		timestamp = DateUtils.stringToDate("Fri Mar 09 18:26:30 JST 2018");
 		assertTrue(testDate.equals( timestamp));
 
 		//yyyy-MM-dd HH:mm:ss X
-		timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 10:26:30 +01");
+		timestamp = DateUtils.stringToDate("2018-03-09 10:26:30 +01");
 		assertTrue(testDate.equals( timestamp));
 		
-		timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 12:26:30 +03");
+		timestamp = DateUtils.stringToDate("2018-03-09 12:26:30 +03");
 		assertTrue(testDate.equals( timestamp));
 
 		//yyyy-MM-dd HH:mm:ss
-		timestamp = DateUtil.convertDateTimeInUTC("2018-03-09 09:26:30");
+		timestamp = DateUtils.stringToDate("2018-03-09 09:26:30");
 		assertTrue(testDate.equals(timestamp));
 
 		
 		//fails to come
-		timestamp = DateUtil.convertDateTimeInUTC("09:26:30");
+		timestamp = DateUtils.stringToDate("09:26:30");
 		assertNull("Only time should not work", timestamp);
 
-		timestamp = DateUtil.convertDateTimeInUTC("2018-02-31");
+		timestamp = DateUtils.stringToDate("2018-02-31");
 		assertNull("Only date should not work", timestamp);
 
-		timestamp = DateUtil.convertDateTimeInUTC("2018-02-31 10:26");
+		timestamp = DateUtils.stringToDate("2018-02-31 10:26");
 		assertNull("Missing seconds", timestamp);
 		
-		timestamp = DateUtil.convertDateTimeInUTC(null);
+		timestamp = DateUtils.stringToDate(null);
 		assertNull("Input = null", timestamp);
 	}
 	
@@ -129,60 +129,17 @@ public class DateUtilTest extends TransactionalTests {
 	public void testParseUTCDateToString() {
 		Instant testDate = OffsetDateTime.of(2018, 3, 9, 11, 26, 30, 0, ZoneOffset.ofHours(2)).toInstant();
 
-		String formatedDate = DateUtil.parseUTCDateToString(testDate);
-		assertTrue(formatedDate.contentEquals("2018-03-09 09:26:30 +0000"));
+		String formatedDate = DateUtils.dateToHumanReadableString(testDate);
+		assertTrue(formatedDate.contentEquals("2018-03-09 09:26:30 Z"));
 
 		testDate = OffsetDateTime.of(2018,3, 9, 3, 26, 30, 00, ZoneOffset.ofHours(2)).toInstant();
 		ZonedDateTime zonedTestDate = ZonedDateTime.of(2018,3, 9, 10, 26, 30, 00, ZoneId.of("CET"));			//Lets hop that it understand that this is supposed to be summer time internally
 		zonedTestDate = zonedTestDate.withZoneSameInstant(ZoneId.of("CST", ZoneId.SHORT_IDS));
 
-		formatedDate = DateUtil.parseUTCDateToString(zonedTestDate.toInstant());
-		assertTrue(formatedDate, formatedDate.contentEquals("2018-03-09 09:26:30 +0000"));
+		formatedDate = DateUtils.dateToHumanReadableString(zonedTestDate.toInstant());
+		assertTrue(formatedDate, formatedDate.contentEquals("2018-03-09 09:26:30 Z"));
 		
-		formatedDate = DateUtil.parseUTCDateToString(null);
+		formatedDate = DateUtils.dateToHumanReadableString(null);
 		assertNull(formatedDate);
-	}
-	
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testAddSecondsToDateWithXMLGregorianCalendarInput() throws DatatypeConfigurationException {
-		Instant testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 59, 0, ZoneOffset.ofHours(2)).toInstant();
-
-		Instant output = DateUtil.addSecondsToDate(testDate, 1);
-		assertEquals(testDate.plusSeconds(1), output);
-		
-		testDate = testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 32, 0, ZoneOffset.ofHours(2)).toInstant();
-		output = DateUtil.addSecondsToDate(testDate, 52);
-		assertEquals(testDate.plusSeconds(52), output);
-		
-		Instant n = null;
-		try {
-			output = DateUtil.addSecondsToDate(n, 8);
-			fail("Null input");
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
-	}
-	
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testAddSecondsToDateWithDateInput() throws DatatypeConfigurationException { //Almost a carbon copy of the one above
-		Instant testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 59, 0, ZoneOffset.ofHours(2)).toInstant();
-
-		Instant output = DateUtil.addSecondsToDate(testDate, 1);
-		assertEquals(testDate.plusSeconds(1), output);
-
-		testDate = OffsetDateTime.of(2018, 3, 9, 9, 26, 32, 0, ZoneOffset.ofHours(2)).toInstant();
-		output = DateUtil.addSecondsToDate(testDate, 52);
-		assertEquals(testDate.plusSeconds(52), output);
-		
-		Instant n = null;
-		
-		try {
-			output = DateUtil.addSecondsToDate(n, 8);
-			fail();
-		} catch (NullPointerException e) {
-			assertTrue(true);
-		}
 	}
 }

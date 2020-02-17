@@ -11,29 +11,21 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
+import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId;
+import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
+import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.*;
+import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLDecoder;
 import java.time.Instant;
-import java.util.Date; //leave be for now
-
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementActivityType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementActivityTypeType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementComChannelType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
-import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
+import java.util.Date;
 
 /**
  *  code copied  and made standalone - from NAF Plugin
@@ -199,7 +191,7 @@ public class NafMessageResponseMapper {
         while (timeString.length() < 4) {
             timeString = "0" + timeString;
         }
-        Instant date = DateUtil.convertDateTimeInUTC(dateString + " " + timeString + " UTC", DATE_TIME_FORMAT);
+        Instant date = DateUtils.convertDateWithPattern(dateString + " " + timeString + " UTC", DATE_TIME_FORMAT);
         movement.setPositionTime(Date.from(date));
     }
 

@@ -11,7 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -200,8 +200,8 @@ public class MovementDao {
         for (SearchValue searchValue : searchKeyValues) {
             if (searchValue.isRange()) {
                 if (searchValue.getField().equals(SearchField.DATE)) {
-                    query.setParameter("fromDate", DateUtil.convertDateTimeInUTC(searchValue.getFromValue()));
-                    query.setParameter("toDate", DateUtil.convertDateTimeInUTC(searchValue.getToValue()));
+                    query.setParameter("fromDate", DateUtils.stringToDate(searchValue.getFromValue()));
+                    query.setParameter("toDate", DateUtils.stringToDate(searchValue.getToValue()));
                 }
             } else {
                 if (searchValue.getField().equals(SearchField.AREA)) {

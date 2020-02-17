@@ -1,16 +1,14 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import javax.ejb.EJB;
-import javax.ejb.EJBTransactionRolledbackException;
-
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
 import org.hamcrest.core.StringContains;
 import org.hibernate.HibernateException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -23,15 +21,13 @@ import org.junit.runner.RunWith;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
-import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
+
+import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -373,7 +369,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
-        Instant timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = Instant.now();
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
 
@@ -388,7 +384,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList looks unhealthy according to the number of queries it runs  (slow)
 
-        Instant timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = Instant.now();
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
 
@@ -403,7 +399,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
 
-        Instant timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = Instant.now();
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.speed = -42";
 
@@ -418,7 +414,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         // TODO this test is maybe to optimistic since the query parameters are given in the test OR they are manufactured in the Service-layer
         // TODO getMovementList  looks unhealthy according to the number of queries it runs  (slow)
 
-        Instant timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = Instant.now();
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, timeStamp.toString(), timeStamp.toString()));
         String sql = "SELECT m FROM Movement m WHERE m.timestamp >= :fromDate AND m.timestamp <= :toDate";
 
@@ -434,8 +430,8 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         Instant d1980 = OffsetDateTime.of(1980, 3, 3, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant nowPlus10 = Instant.ofEpochMilli(currentTimeMillis + 10000);
-        String fromDate = DateUtil.parseUTCDateToString(d1980);
-        String toDate = DateUtil.parseUTCDateToString(nowPlus10);
+        String fromDate = DateUtils.dateToEpochMilliseconds(d1980);
+        String toDate = DateUtils.dateToEpochMilliseconds(nowPlus10);
         List<SearchValue> searchValues = Collections.singletonList(new SearchValue(SearchField.DATE, fromDate, toDate));
 
         Integer page = 1;
@@ -498,7 +494,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         Movement movement = new Movement();
 
         GeometryFactory geometryFactory = new GeometryFactory();
-        Instant timeStamp = DateUtil.nowUTC();
+        Instant timeStamp = Instant.now();
 
         movement.setMovementSource(MovementSourceType.NAF);
         movement.setMovementType(MovementTypeType.MAN);
@@ -519,7 +515,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setId(UUID.randomUUID());
         movementConnect.setUpdatedBy("Arquillian");
-        movementConnect.setUpdated(DateUtil.nowUTC());
+        movementConnect.setUpdated(Instant.now());
         return movementConnect;
     }
 

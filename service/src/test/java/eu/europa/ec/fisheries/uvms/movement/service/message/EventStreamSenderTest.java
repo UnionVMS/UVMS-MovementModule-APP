@@ -1,10 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
@@ -18,6 +15,10 @@ import org.junit.runner.RunWith;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.jms.*;
+import javax.json.bind.Jsonb;
+import java.time.temporal.ChronoUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
@@ -32,18 +33,17 @@ public class EventStreamSenderTest extends BuildMovementServiceTestDeployment {
     Topic eventBus;
     Session session;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    Jsonb jsonb;
 
     @PostConstruct
     public void init() {
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     }
     @Before
-    public void cleanJMS() throws Exception {
+    public void cleanJMS() {
         jmsHelper = new JMSHelper(connectionFactory);
+
+        jsonb = new JsonBConfigurator().getContext(null);
     }
 
     @Test
@@ -61,11 +61,17 @@ public class EventStreamSenderTest extends BuildMovementServiceTestDeployment {
         assertEquals(incomingMovement.getMovementSourceType(), message.getStringProperty(MessageConstants.EVENT_STREAM_MOVEMENT_SOURCE));
         assertNull(message.getStringProperty(MessageConstants.EVENT_STREAM_SUBSCRIBER_LIST));
 
-        MicroMovementExtended micro = mapper.readValue(message.getText(), MicroMovementExtended.class);
+        String messageJson = message.getText();
+        Pattern p = Pattern.compile("\"timestamp\":\"\\d{13}\"");
+        Matcher m = p.matcher(messageJson);
+        assertTrue(m.find());
+
+        MicroMovementExtended micro = jsonb.fromJson(messageJson, MicroMovementExtended.class);
         assertNotNull(micro);
         assertEquals(incomingMovement.getMovementSourceType(), micro.getMicroMove().getSource().name());
         assertEquals(incomingMovement.getReportedCourse(), micro.getMicroMove().getHeading());
         assertEquals(incomingMovement.getAssetGuid(), micro.getAsset());
+        assertEquals(incomingMovement.getPositionTime().truncatedTo(ChronoUnit.MILLIS), micro.getMicroMove().getTimestamp());
 
     }
 
@@ -75,7 +81,7 @@ public class EventStreamSenderTest extends BuildMovementServiceTestDeployment {
     }
 
     private void sendIncomingMovement(IncomingMovement incomingMovement, String groupId) throws Exception {
-        String json = mapper.writeValueAsString(incomingMovement);
+        String json = jsonb.toJson(incomingMovement);
         jmsHelper.sendMovementMessage(json, groupId, "CREATE");
     }
 

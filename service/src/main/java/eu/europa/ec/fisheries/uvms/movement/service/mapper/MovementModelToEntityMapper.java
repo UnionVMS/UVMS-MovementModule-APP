@@ -11,20 +11,21 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
-import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
+import java.util.UUID;
 
 public class MovementModelToEntityMapper {
 
@@ -54,7 +55,7 @@ public class MovementModelToEntityMapper {
             entity.setLocation(point);
         }
 
-        entity.setUpdated(DateUtil.nowUTC());
+        entity.setUpdated(Instant.now());
         entity.setUpdatedBy(username);
 
         if (movement.getSource() != null) {
@@ -72,7 +73,7 @@ public class MovementModelToEntityMapper {
         if (movement.getPositionTime() != null) {
             entity.setTimestamp(movement.getPositionTime().toInstant());
         } else {
-            entity.setTimestamp(DateUtil.nowUTC());
+            entity.setTimestamp(Instant.now());
         }
 
         if (movement.getActivity() != null) {
@@ -110,7 +111,7 @@ public class MovementModelToEntityMapper {
 
         }
 
-        entity.setUpdated(DateUtil.nowUTC());
+        entity.setUpdated(Instant.now());
         entity.setUpdatedBy(username);
 
         if (movement.getSource() != null) {
@@ -128,7 +129,7 @@ public class MovementModelToEntityMapper {
         if (movement.getPositionTime() != null) {
             entity.setTimestamp(movement.getPositionTime().toInstant());
         } else {
-            entity.setTimestamp(DateUtil.nowUTC());
+            entity.setTimestamp(Instant.now());
         }
 
         if (movement.getActivity() != null) {
@@ -149,7 +150,7 @@ public class MovementModelToEntityMapper {
         activity.setActivityType(movement.getActivity().getMessageType());
         activity.setCallback(movement.getActivity().getCallback());
         activity.setMessageId(movement.getActivity().getMessageId());
-        activity.setUpdated(DateUtil.nowUTC());
+        activity.setUpdated(Instant.now());
         activity.setUpdatedBy("UVMS");
         return activity;
     }
