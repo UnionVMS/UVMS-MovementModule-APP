@@ -40,7 +40,7 @@ public class JMSHelper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JMSHelper.class);
 
-    private static final long TIMEOUT = 20000;
+    private static final long TIMEOUT = 120000;
     private static final String MOVEMENT_QUEUE = "UVMSMovementEvent";
     private static final String PROPERTIES_FILE = "jms.properties";
     private static final String DEFAULT_AMQ_HOST = "activemq";
