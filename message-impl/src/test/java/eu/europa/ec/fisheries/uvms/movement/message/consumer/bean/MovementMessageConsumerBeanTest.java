@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import javax.jms.Message;
@@ -438,7 +439,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         GetMovementListByQueryResponse movementResponse = jmsHelper.getMovementListByQuery(query, connectId);
         List<MovementType> movements = movementResponse.getMovement();
 
-        movements.sort((m1, m2) -> m1.getPositionTime().compareTo(m2.getPositionTime()));
+        movements.sort(Comparator.comparing(MovementBaseType::getPositionTime));
         MovementType previous = null;
         for (MovementType movementType : movements) {
             if (previous == null) {
