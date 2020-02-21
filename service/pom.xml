@@ -133,11 +133,6 @@
             </exclusions>            
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
-            <artifactId>uvms-commons-service</artifactId>
-            <version>${uvms.common.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>

@@ -70,7 +70,7 @@ public class SSEResourceTest extends BuildMovementRestDeployment {
             assertTrue(source.isOpen());
             assertTrue(errorString,errorString.isEmpty());
             assertEquals(dataString,3 ,dataString.split("\\}\\{").length);
-            Pattern p = Pattern.compile("\"timestamp\":\"\\d{13}\"");
+            Pattern p = Pattern.compile("\"timestamp\":\\d{13}");
             Matcher m = p.matcher(dataString);
             assertTrue(m.find());
             assertTrue(m.find());

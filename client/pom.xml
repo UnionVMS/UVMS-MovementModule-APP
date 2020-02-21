@@ -32,12 +32,6 @@
         </dependency>
 
         <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
-            <artifactId>uvms-commons-service</artifactId>
-            <version>${uvms.common.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>fish.focus.uvms.maven</groupId>
             <artifactId>uvms-pom-arquillian-deps</artifactId>
             <type>pom</type>
