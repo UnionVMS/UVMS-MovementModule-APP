@@ -24,7 +24,7 @@ import javax.json.bind.Jsonb;
 @Stateless
 public class EventStreamSender {
 
-    private final static Logger LOG = LoggerFactory.getLogger(EventStreamSender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EventStreamSender.class);
 
     @Resource(mappedName = "java:/" + MessageConstants.EVENT_STREAM_TOPIC)
     private Destination destination;
@@ -53,7 +53,7 @@ public class EventStreamSender {
                 message.setStringProperty(MessageConstants.EVENT_STREAM_MOVEMENT_SOURCE, micro.getMicroMove().getSource().value());
                 MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
 
-                context.createProducer().setDeliveryMode(1).setTimeToLive(5000L).send(destination, message);
+                context.createProducer().setDeliveryMode(1).send(destination, message);
 
             }
         }catch (Exception e){

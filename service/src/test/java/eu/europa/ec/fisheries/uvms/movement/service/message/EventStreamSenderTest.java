@@ -48,7 +48,7 @@ public class EventStreamSenderTest extends BuildMovementServiceTestDeployment {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void EventStreamSenderTest() throws Exception {
+    public void eventStreamSenderTest() throws Exception {
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetIRCS("TestIrcs:" + incomingMovement.getAssetGuid());
         registerSubscriber();
@@ -62,7 +62,7 @@ public class EventStreamSenderTest extends BuildMovementServiceTestDeployment {
         assertNull(message.getStringProperty(MessageConstants.EVENT_STREAM_SUBSCRIBER_LIST));
 
         String messageJson = message.getText();
-        Pattern p = Pattern.compile("\"timestamp\":\"\\d{13}\"");
+        Pattern p = Pattern.compile("\"timestamp\":\\d{13}");
         Matcher m = p.matcher(messageJson);
         assertTrue(m.find());
 
