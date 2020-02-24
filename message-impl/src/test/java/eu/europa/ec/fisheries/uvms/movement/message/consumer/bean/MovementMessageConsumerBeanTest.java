@@ -532,6 +532,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
     
     @Test
     @RunAsClient
+    @Ignore("This is a non-deterministicimplementation")
     public void testMaxRedeliveries() throws Exception {
         int dlqBefore = jmsHelper.checkQueueSize("ActiveMQ.DLQ");
         int responseQueueBefore = jmsHelper.checkQueueSize(JMSHelper.RESPONSE_QUEUE);
