@@ -15,7 +15,6 @@
             <xsd:enumeration value="TRACK_ID"/>
             <xsd:enumeration value="CONNECT_ID"/>
             <xsd:enumeration value="MOVEMENT_TYPE"/>
-            <xsd:enumeration value="ACTIVITY_TYPE"/>
             <xsd:enumeration value="DATE"/>
             <xsd:enumeration value="AREA"/>
             <xsd:enumeration value="STATUS"/>

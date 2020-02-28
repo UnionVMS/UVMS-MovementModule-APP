@@ -37,4 +37,6 @@
 
     <include file="v5.4.1\db-changelog-latest-vms.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.5.2\db-changelog-drop-activity.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

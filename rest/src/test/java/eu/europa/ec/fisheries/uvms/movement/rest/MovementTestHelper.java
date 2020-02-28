@@ -8,7 +8,6 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 
@@ -38,15 +37,6 @@ public class MovementTestHelper {
         Point point = factory.createPoint(coordinate);
         point.setSRID(4326);
         movement.setLocation(point);
-
-        Activity activityType = new Activity();
-        activityType.setCallback("TEST");
-        activityType.setMessageId("TEST");
-        activityType.setActivityType(MovementActivityTypeType.AUT);
-        activityType.setUpdated(Instant.now());
-        activityType.setUpdatedBy("TEST");
-
-        movement.setActivity(activityType);
 
         movement.setInternalReferenceNumber("TEST");
         movement.setHeading(0f);

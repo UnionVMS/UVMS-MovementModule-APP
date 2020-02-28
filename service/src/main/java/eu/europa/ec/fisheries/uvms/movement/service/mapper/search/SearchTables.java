@@ -21,8 +21,7 @@ public enum SearchTables {
     FROM_SEGMENT("fromSeg", "Segment"),
     TO_SEGMENT("toSeg", "Segment"),
     TRACK("tra", "Track"),
-    TEMP_TABLE("temp", "temp"),
-    ACTIVITY("act", "Activity");
+    TEMP_TABLE("temp", "temp");
 
     private final String tableNameAlias;
     private final String tableName;

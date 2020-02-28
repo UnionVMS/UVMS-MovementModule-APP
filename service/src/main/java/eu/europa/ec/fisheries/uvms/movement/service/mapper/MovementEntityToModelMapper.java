@@ -12,7 +12,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,15 +22,12 @@ import java.util.Set;
 import java.util.UUID;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
@@ -110,7 +106,6 @@ public class MovementEntityToModelMapper {
         if ( movement.getLesReportTime() != null) {
         	model.setLesReportTime( Date.from(movement.getLesReportTime() ));
         }
-        model.setActivity(mapToActivityType(movement.getActivity()));
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
         model.setMovementType(movement.getMovementType());
@@ -142,17 +137,6 @@ public class MovementEntityToModelMapper {
 
         
         return model;
-    }
-
-
-    public static MovementActivityType mapToActivityType(Activity activity) {
-        MovementActivityType actType = new MovementActivityType();
-        if (activity != null) {
-            actType.setCallback(activity.getCallback());
-            actType.setMessageId(activity.getMessageId());
-            actType.setMessageType(activity.getActivityType());
-        }
-        return actType;
     }
 
 

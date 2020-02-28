@@ -15,7 +15,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import org.locationtech.jts.geom.Coordinate;
@@ -76,12 +75,6 @@ public class MovementModelToEntityMapper {
             entity.setTimestamp(Instant.now());
         }
 
-        if (movement.getActivity() != null) {
-            Activity activity = createActivity(movement);
-            entity.setActivity(activity);
-        }
-
-
         return entity;
 
     }
@@ -132,26 +125,11 @@ public class MovementModelToEntityMapper {
             entity.setTimestamp(Instant.now());
         }
 
-        if (movement.getActivity() != null) {
-            Activity activity = createActivity(movement);
-            entity.setActivity(activity);
-        }
-
         // TODO find a better solution to transfer connectid
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setId(UUID.fromString(movement.getConnectId()));
         entity.setMovementConnect(movementConnect);
 
         return entity;
-    }
-
-    public static Activity createActivity(MovementBaseType movement){
-        Activity activity = new Activity();
-        activity.setActivityType(movement.getActivity().getMessageType());
-        activity.setCallback(movement.getActivity().getCallback());
-        activity.setMessageId(movement.getActivity().getMessageId());
-        activity.setUpdated(Instant.now());
-        activity.setUpdatedBy("UVMS");
-        return activity;
     }
 }

@@ -15,7 +15,6 @@ import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetId;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.AssetType;
 import eu.europa.ec.fisheries.schema.movement.v1.*;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import org.locationtech.jts.geom.Coordinate;
@@ -41,17 +40,9 @@ public class MockData {
 
     public static Movement createMovement(LatLong latlong, UUID connectId, String username) {
 
-        Activity activityType = new Activity();
-        activityType.setCallback("TEST");
-        activityType.setMessageId("TEST");
-        activityType.setActivityType(MovementActivityTypeType.AUT);
-        activityType.setUpdated(Instant.now());
-        activityType.setUpdatedBy("TEST");
-
         Movement movement = new Movement();
 
         movement.setMovementType(MovementTypeType.POS);
-        movement.setActivity(activityType);
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setId(connectId);
         movementConnect.setUpdated(Instant.now());
