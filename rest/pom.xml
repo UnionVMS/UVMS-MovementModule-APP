@@ -63,6 +63,11 @@
 			<type>pom</type>
 		</dependency>
         <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
+            <artifactId>uvms-commons-rest</artifactId>
+            <version>${uvms.common.version}</version>
+        </dependency>
+        <dependency>
 			<groupId>org.locationtech.jts</groupId>
 			<artifactId>jts-core</artifactId>
 			<version>1.16.1</version>
@@ -91,19 +96,6 @@
 			<version>${uvms.common.version}</version>
 			<scope>test</scope>
 		</dependency>
-
-        <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
-            <artifactId>uvms-commons-rest</artifactId>
-            <version>${uvms.common.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>8.0</version>
-            <scope>provided</scope>
-        </dependency>
 
     </dependencies>
 
