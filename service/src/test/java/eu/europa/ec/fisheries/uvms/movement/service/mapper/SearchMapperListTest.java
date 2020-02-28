@@ -44,7 +44,7 @@ public class SearchMapperListTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void testCreateSearchSql() throws Exception {
+    public void testCreateSearchSql() {
         String data = SearchFieldMapper.createSelectSearchSql(null, true);
         assertEquals(INITIAL_SELECT +NO_DUPLICATE + ORDER_BY, data);
     }
@@ -56,11 +56,6 @@ public class SearchMapperListTest extends TransactionalTests {
         for (MovementTypeType mt : MovementTypeType.values()) {
             Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mt.name(), SearchField.MOVMENT_TYPE));
             assertTrue(mt.ordinal() == data);
-        }
-
-        for (MovementActivityTypeType mat : MovementActivityTypeType.values()) {
-            Integer data = SearchFieldMapper.getOrdinalValueFromEnum(getSearchValue(mat.name(), SearchField.ACTIVITY_TYPE));
-            assertTrue(mat.ordinal() == data);
         }
 
         for (MovementSourceType mst : MovementSourceType.values()) {
@@ -76,7 +71,7 @@ public class SearchMapperListTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void testCreateMinimalSelectSearchSql() throws Exception {
+    public void testCreateMinimalSelectSearchSql() {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -94,7 +89,7 @@ public class SearchMapperListTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void testMultipleSearchFieldCategorys() throws Exception {
+    public void testMultipleSearchFieldCategorys() {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -118,7 +113,7 @@ public class SearchMapperListTest extends TransactionalTests {
     
     @Test
     @OperateOnDeployment("movementservice")
-    public void testCreateCountSearchSql() throws Exception {
+    public void testCreateCountSearchSql() {
     	List<ListCriteria> listCriterias = new ArrayList<>();
 
         ListCriteria criteria = new ListCriteria();
@@ -131,7 +126,7 @@ public class SearchMapperListTest extends TransactionalTests {
         assertTrue(mapSearchField.size() == 1);
 
         String data = SearchFieldMapper.createCountSearchSql(mapSearchField, true);
-        String correctOutput = "SELECT COUNT( m) FROM Movement m  INNER JOIN m.movementConnect mc  LEFT JOIN m.activity act  LEFT JOIN m.track tra "
+        String correctOutput = "SELECT COUNT( m) FROM Movement m  INNER JOIN m.movementConnect mc  LEFT JOIN m.track tra "
         		+ " WHERE m.movementSource = 3";
         assertEquals(correctOutput, data);
     }

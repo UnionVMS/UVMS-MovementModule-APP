@@ -165,7 +165,6 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movementDetails.getReportedCourse(), is(incomingMovement.getReportedCourse()));
         assertThat(movementDetails.getMovementType(), is(incomingMovement.getMovementType()));
         assertThat(movementDetails.getSource(), is(incomingMovement.getMovementSourceType()));
-        assertThat(movementDetails.getActivityMessageId(), is(incomingMovement.getActivityMessageId()));
         assertThat(movementDetails.getTripNumber(), is(incomingMovement.getTripNumber()));
         assertThat(movementDetails.getInternalReferenceNumber(), is(incomingMovement.getInternalReferenceNumber()));
     }

@@ -108,11 +108,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     private MovementConnect movementConnect;
 
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "move_act_id", referencedColumnName = "act_id")
-    @ManyToOne(optional = true, cascade = CascadeType.ALL)
-    private Activity activity;
-
-    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "move_trac_id", referencedColumnName = "trac_id")
     @ManyToOne(optional = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Track track;
@@ -226,14 +221,6 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setMovementSource(MovementSourceType movementSource) {
         this.movementSource = movementSource;
-    }
-
-    public Activity getActivity() {
-        return activity;
-    }
-
-    public void setActivity(Activity activity) {
-        this.activity = activity;
     }
 
     public Instant getTimestamp() {

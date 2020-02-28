@@ -6,7 +6,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.IncomingMovementBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
@@ -117,20 +116,6 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		movement = null;
 		output = MovementEntityToModelMapper.mapToMovementType(movement);
 		assertNull(output);
-	}
-	
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testMapToActivityType() {
-		Activity input = new Activity();
-		
-		MovementActivityType output = MovementEntityToModelMapper.mapToActivityType(input);
-		output.setMessageType(MovementActivityTypeType.COB);
-		output.setMessageId("42....");
-		assertEquals("MovementActivityType[messageType=COB,messageId=42....,callback=<null>]" ,output.toString());
-		
-		output = MovementEntityToModelMapper.mapToActivityType(null); //null is basically an empty return 
-		assertEquals("MovementActivityType[messageType=<null>,messageId=<null>,callback=<null>]" ,output.toString());
 	}
 
 	

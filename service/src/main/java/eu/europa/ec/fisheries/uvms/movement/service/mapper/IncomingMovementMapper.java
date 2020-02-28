@@ -1,11 +1,9 @@
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
-import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
@@ -66,35 +64,13 @@ public abstract class IncomingMovementMapper {
             entity.setTimestamp(Instant.now());
         }
 
-        Activity activity = createActivity(ic);
-        entity.setActivity(activity);
-
-
         return entity;
     }
 
 
-    private static Activity createActivity(IncomingMovement ic) {
-        if (ic.getActivityMessageType() == null) {
-            return null;
-        }
-        Activity activity = new Activity();
-        activity.setActivityType(MovementActivityTypeType.fromValue(ic.getActivityMessageType()));
-        activity.setCallback(ic.getActivityCallback());
-        activity.setMessageId(ic.getActivityMessageId());
-        activity.setUpdated(Instant.now());
-        activity.setUpdatedBy("UVMS");
-        return activity;
-    }
-
 
     public static MovementDetails mapMovementDetails(IncomingMovement im, Movement movement, AssetMTEnrichmentResponse response) {
         MovementDetails md = new MovementDetails();
-        if (movement.getActivity() != null) {
-            md.setActivityCallback(movement.getActivity().getCallback());
-            md.setActivityMessageId(movement.getActivity().getMessageId());
-            md.setActivityMessageType(movement.getActivity().getActivityType().value());
-        }
         md.setMovementGuid(movement.getId().toString());
         md.setLongitude(movement.getLocation().getX());
         md.setLatitude(movement.getLocation().getY());

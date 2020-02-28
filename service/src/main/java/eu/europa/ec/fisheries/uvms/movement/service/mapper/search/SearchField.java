@@ -44,10 +44,6 @@ public enum SearchField implements SearchFieldType {
      */
     MOVMENT_TYPE("movementType", SearchTables.MOVEMENT, MovementTypeType.class),
     /**
-     * The Type of the activity
-     */
-    ACTIVITY_TYPE("activityType", SearchTables.ACTIVITY, MovementActivityTypeType.class),
-    /**
      * The date the movementment was reported
      */
     DATE("timestamp", SearchTables.MOVEMENT, Instant.class),

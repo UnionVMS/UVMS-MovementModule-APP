@@ -11,7 +11,6 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper.search;
 
-import org.locationtech.jts.geom.Geometry;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
@@ -19,6 +18,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
+import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -341,7 +341,6 @@ public class SearchFieldMapper {
     // TODO: There are some typos in the return value. Check if these has impact on expected result.
     private static String buildJoin(HashMap<SearchField, List<SearchValue>> orderedValues, boolean fetch) {
         return getJoin(fetch, JoinType.INNER) + SearchTables.MOVEMENT.getTableAlias() + "." + "movementConnect " + SearchTables.MOVEMENT_CONNECT.getTableAlias() + " " +
-                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "activity " + SearchTables.ACTIVITY.getTableAlias() + " " +
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "track " + SearchTables.TRACK.getTableAlias() + " ";
     }
 
@@ -665,8 +664,6 @@ public class SearchFieldMapper {
                 return SearchField.SOURCE;
             case CATEGORY:
                 return SearchField.CATEGORY;
-            case ACTIVITY_TYPE:
-                return SearchField.ACTIVITY_TYPE;
             case DATE:
                 return SearchField.DATE;
             default:
