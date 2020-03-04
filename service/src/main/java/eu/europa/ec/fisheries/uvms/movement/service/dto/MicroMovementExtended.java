@@ -12,6 +12,7 @@ public class MicroMovementExtended implements Serializable {
 
     public static final String FIND_ALL_AFTER_DATE = "MicroMovementExtended.findAllAfterDate";
     public static final String FIND_ALL_FOR_ASSET_BETWEEN_DATES = "MicroMovementExtended.findAllForAssetBetweenDates";
+    public static final String FIND_LATEST_X_NUMBER_FOR_ASSET = "MicroMovementExtended.findLatestXNumberForAsset";
     public static final String FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES = "MicroMovementExtended.findAllForConnectIdsBetweenDates";
 
     private MicroMovement microMove;
