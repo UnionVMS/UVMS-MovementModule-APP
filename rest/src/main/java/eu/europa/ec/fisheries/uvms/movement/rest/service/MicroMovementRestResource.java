@@ -65,13 +65,28 @@ public class MicroMovementRestResource {
     @POST
     @Path("/track/asset/{id}/")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackForAsset(@PathParam("id") UUID connectId, @DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, List<String> sources) {
+    public Response getMicroMovementTrackForAssetByDate(@PathParam("id") UUID connectId, @DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, List<String> sources) {
         try {
 
             List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
-            Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
+            Instant startInstant = (startDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
             Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtils.stringToDate(endDate));
             List<MicroMovement> microList = movementDao.getMicroMovementsForAssetAfterDate(connectId, startInstant, endInstant, sourceTypes);
+            return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("Error when getting Micro Movement for connectId: {}", connectId, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+
+    @POST
+    @Path("/track/latest/asset/{id}/")
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public Response getMicroMovementTrackForAssetByNumber(@PathParam("id") UUID connectId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNumber, List<String> sources) {
+        try {
+
+            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
+            List<MicroMovement> microList = movementDao.getLatestNumberOfMicroMovementsForAsset(connectId, maxNumber, sourceTypes);
             return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Micro Movement for connectId: {}", connectId, e);
@@ -95,20 +110,6 @@ public class MicroMovementRestResource {
             return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Micro Movement for connectIds: {}", query.getAssetIds(), e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
-        }
-    }
-
-    @GET
-    @Path("/track/movement/{id}")
-    @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackByMovement(@PathParam("id") UUID id, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNbr) {
-        try {
-            Movement movement = movementDao.getMovementById(id);
-            List<MicroMovement> returnList = movementDao.getMicroMovementsDtoByTrack(movement.getTrack(), maxNbr);
-            return Response.ok(returnList).header("MDC", MDC.get("requestId")).build();
-        } catch (Exception e) {
-            LOG.error("Error when getting track by movement id: {}", id, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }

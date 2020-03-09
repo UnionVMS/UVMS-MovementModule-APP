@@ -243,32 +243,41 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void getTrackForMovementTest() {
+    public void getLatestXNumberOfMovementsForAssetTest() {
         UUID connectId = UUID.randomUUID();
         Movement movementBaseType = MovementTestHelper.createMovement();
         movementBaseType.getMovementConnect().setId(connectId);
+        movementBaseType.setTimestamp(Instant.now().minusSeconds(4));
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
         Movement movementBaseType2 = MovementTestHelper.createMovement();
         movementBaseType2.getMovementConnect().setId(connectId);
+        movementBaseType2.setTimestamp(Instant.now().minusSeconds(2));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
+        Movement movementBaseType3 = MovementTestHelper.createMovement();
+        movementBaseType3.getMovementConnect().setId(connectId);
+        Movement createdMovement3 = movementService.createAndProcessMovement(movementBaseType3);
 
-        List<MicroMovement> track = getWebTarget()
+
+        List<MicroMovement> latestMovements = getWebTarget()
                 .path("micro")
                 .path("track")
-                .path("movement")
-                .path(createdMovement.getId().toString())
+                .path("latest")
+                .path("asset")
+                .path(connectId.toString())
+                .queryParam("maxNbr", 2) //yyyy-MM-dd HH:mm:ss Z
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .get(new GenericType<List<MicroMovement>>() {});
+                .post(Entity.json(""), new GenericType<List<MicroMovement>>() {});
 
-        assertThat(track.size(), CoreMatchers.is(2));
-        assertTrue(track
-                .stream()
-                .anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
-        assertTrue(track
-                .stream()
+        assertFalse(latestMovements.isEmpty());
+        assertTrue(latestMovements.stream().
+                noneMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+        assertTrue(latestMovements.stream()
                 .anyMatch(m -> m.getGuid().equals(createdMovement2.getId().toString())));
+        assertTrue(latestMovements.stream()
+                .anyMatch(m -> m.getGuid().equals(createdMovement3.getId().toString())));
     }
+
 
     @Test
     @OperateOnDeployment("movement")
