@@ -18,6 +18,7 @@ package eu.europa.ec.fisheries.uvms.movement.model.util;
 public enum DateFormats {
 
     FORMAT("yyyy-MM-dd HH:mm:ss Z"),
+    FORMAT_TIME_OFFSET("yyyy-MM-dd HH:mm:ss xxx"),
     FORMAT_2("EEE MMM dd HH:mm:ss z yyyy"),
     DATE_TIME_PATTERN("yyyy-MM-dd HH:mm:ss X"),
     DATE_TIME_PATTERN_UTC("yyyy-MM-dd HH:mm:ss");
