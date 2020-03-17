@@ -219,8 +219,8 @@ public class MovementService {
         if (query.getPagination() == null || query.getPagination().getListSize() == null || query.getPagination().getPage() == null) {
             throw new MovementServiceRuntimeException("Pagination in movementlist query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
-        if (query.getMovementSearchCriteria().isEmpty()) {
-            throw new MovementServiceRuntimeException("No search criterias in MovementList query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+        if (query.getMovementSearchCriteria().isEmpty() && query.getMovementRangeSearchCriteria().isEmpty()) {
+          throw new MovementServiceRuntimeException("No search criterias in MovementList query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         try {
             ListResponseDto response = new ListResponseDto();
