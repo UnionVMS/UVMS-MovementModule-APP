@@ -31,6 +31,7 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -118,13 +119,18 @@ public class MovementDao {
     }
 
     public Movement getPreviousMovement(UUID id, Instant date) {
+        return getPreviousMovement(id, date, Arrays.asList(MovementSourceType.values()));
+    }
+
+    public Movement getPreviousMovement(UUID id, Instant date, List<MovementSourceType> sources) {
         Movement singleResult = null;
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_PREVIOUS, Movement.class);
             query.setParameter("id", id);
             query.setParameter("date", date);
+            query.setParameter("sources", sources);
             singleResult = query.getSingleResult();
-        }catch (NoResultException e){
+        } catch (NoResultException e) {
             LOG.debug("No previous movement found for date: {} and connectedId: {}", date, id);
         }
         return singleResult;

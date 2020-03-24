@@ -285,6 +285,96 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
     @Test
     @OperateOnDeployment("movementservice")
+    public void createMovementVerifyPreviousVMSPosition() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        Double firstLongitude = 3d;
+        Double firstLatitude = 4d;
+        IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        firstIncomingMovement.setMovementSourceType("NAF");
+        firstIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
+        firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        firstIncomingMovement.setLongitude(firstLongitude);
+        firstIncomingMovement.setLatitude(firstLatitude);
+        MovementDetails firstMovementDetails = sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
+
+        assertThat(firstMovementDetails.getPreviousVMSLatitude(), is(nullValue()));
+        assertThat(firstMovementDetails.getPreviousVMSLongitude(), is(nullValue()));
+
+        IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        secondIncomingMovement.setMovementSourceType("NAF");
+        secondIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
+        secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
+
+        assertThat(secondMovementDetails.getPreviousVMSLatitude(), is(firstLatitude));
+        assertThat(secondMovementDetails.getPreviousVMSLongitude(), is(firstLongitude));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createMovementVerifyPreviousVMSPositionWithMixedPositions() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        Double firstLongitude = 3d;
+        Double firstLatitude = 4d;
+        IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        firstIncomingMovement.setMovementSourceType("NAF");
+        firstIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
+        firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        firstIncomingMovement.setLongitude(firstLongitude);
+        firstIncomingMovement.setLatitude(firstLatitude);
+        MovementDetails firstMovementDetails = sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
+
+        assertThat(firstMovementDetails.getPreviousVMSLatitude(), is(nullValue()));
+        assertThat(firstMovementDetails.getPreviousVMSLongitude(), is(nullValue()));
+
+        IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        secondIncomingMovement.setMovementSourceType("AIS");
+        secondIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
+        secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
+
+        assertThat(secondMovementDetails.getPreviousVMSLatitude(), is(nullValue()));
+        assertThat(secondMovementDetails.getPreviousVMSLongitude(), is(nullValue()));
+
+        IncomingMovement thirdIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        thirdIncomingMovement.setMovementSourceType("NAF");
+        thirdIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
+        thirdIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        MovementDetails thirdMovementDetails = sendIncomingMovementAndWaitForResponse(thirdIncomingMovement);
+
+        assertThat(thirdMovementDetails.getPreviousVMSLatitude(), is(firstLatitude));
+        assertThat(thirdMovementDetails.getPreviousVMSLongitude(), is(firstLongitude));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createMovementVerifyPreviousVMSPositionWithAISPositions() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        Double firstLongitude = 3d;
+        Double firstLatitude = 4d;
+        IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        firstIncomingMovement.setMovementSourceType("AIS");
+        firstIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
+        firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        firstIncomingMovement.setLongitude(firstLongitude);
+        firstIncomingMovement.setLatitude(firstLatitude);
+        MovementDetails firstMovementDetails = sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
+
+        assertThat(firstMovementDetails.getPreviousVMSLatitude(), is(nullValue()));
+        assertThat(firstMovementDetails.getPreviousVMSLongitude(), is(nullValue()));
+
+        IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        secondIncomingMovement.setMovementSourceType("AIS");
+        secondIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
+        secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
+
+        assertThat(secondMovementDetails.getPreviousVMSLatitude(), is(nullValue()));
+        assertThat(secondMovementDetails.getPreviousVMSLongitude(), is(nullValue()));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
     public void createMovementVerifySumPositionReport() throws Exception {
         UUID assetHistoryId = UUID.randomUUID();
         IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();

@@ -20,12 +20,13 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.IncomingMovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.ExchangeBean;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementRulesBean;
@@ -62,9 +63,9 @@ public class MovementCreateBean {
                 incomingMovement.setUpdated(Instant.now());
             }
 
-            AssetMTEnrichmentRequest request = createRequest(incomingMovement);
-            AssetMTEnrichmentResponse response = assetClient.collectAssetMT(request);
-            enrichIncomingMovement(incomingMovement, response);
+            AssetMTEnrichmentRequest assetRequest = createAssetRequest(incomingMovement);
+            AssetMTEnrichmentResponse assetResponse = assetClient.collectAssetMT(assetRequest);
+            enrichIncomingMovement(incomingMovement, assetResponse);
 
             incomingMovementBean.checkAndSetDuplicate(incomingMovement);
             if (incomingMovement.isDuplicate() && 
@@ -79,16 +80,27 @@ public class MovementCreateBean {
                 return;
             }
 
-            Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement
-                    .getUpdatedBy());
+            MovementConnect newMovementConnect = IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy());
+            MovementConnect movementConnect = movementService.getOrCreateMovementConnectByConnectId(newMovementConnect);
+
+            Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+            movement.setMovementConnect(movementConnect);
+
+            Movement previousVms = getPreviousVms(movement);
+
             Movement createdMovement = movementService.createAndProcessMovement(movement);
 
             // send to MovementRules
-            MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, response);
+            MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, assetResponse);
             int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetGuid(), incomingMovement.getPositionTime());
             movementDetails.setSumPositionReport(sumPositionReport);
             List<VicinityInfoDTO> vicinityOf = movementService.getVicinityOf(createdMovement);
             movementDetails.setVicinityOf(vicinityOf);
+
+            if (previousVms != null) {
+                movementDetails.setPreviousVMSLatitude(previousVms.getLocation().getY());
+                movementDetails.setPreviousVMSLongitude(previousVms.getLocation().getX());
+            }
 
             movementRulesBean.send(movementDetails);
             // report ok to Exchange...
@@ -96,6 +108,19 @@ public class MovementCreateBean {
             exchangeBean.sendAckToExchange(MovementRefTypeType.MOVEMENT, createdMovement.getId(), incomingMovement.getAckResponseMessageId());
         } catch (Exception e) {
             throw new IllegalStateException("Could not process incoming movement", e);
+        }
+    }
+
+    private Movement getPreviousVms(Movement movement) {
+        if (MovementSourceType.AIS.equals(movement.getMovementSource())) {
+            return null;
+        }
+        Movement currentLatestVMS = movement.getMovementConnect().getLatestVMS();
+        if (currentLatestVMS != null &&
+                currentLatestVMS.getTimestamp().isBefore(movement.getTimestamp())) {
+            return currentLatestVMS;
+        } else {
+            return movementService.getPreviousVMS(movement.getMovementConnect().getId(), movement.getTimestamp());
         }
     }
 
@@ -108,11 +133,7 @@ public class MovementCreateBean {
         im.setFlagState(response.getFlagstate());
     }
 
-    private AssetMTEnrichmentRequest createRequest(IncomingMovement ic) {
-        // OBS OBS OBS
-        // missing in AssetId
-        // GFCM, UVI, ACCAT = > belg req
-
+    private AssetMTEnrichmentRequest createAssetRequest(IncomingMovement ic) {
         AssetMTEnrichmentRequest req = new AssetMTEnrichmentRequest();
         req.setAssetName(ic.getAssetName());
         req.setExternalMarking(ic.getExternalMarking());

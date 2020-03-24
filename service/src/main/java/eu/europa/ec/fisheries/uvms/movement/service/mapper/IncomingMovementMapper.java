@@ -32,15 +32,6 @@ public abstract class IncomingMovementMapper {
         entity.setLesReportTime(ic.getLesReportTime());
         entity.setSourceSatelliteId(ic.getSourceSatelliteId());
 
-        //MovementConnect (aka asset)
-        MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setId(UUID.fromString(ic.getAssetGuid()));
-        movementConnect.setFlagState(ic.getFlagState());
-        movementConnect.setName(ic.getAssetName());
-        movementConnect.setUpdated(Instant.now());
-        movementConnect.setUpdatedBy(username);
-        entity.setMovementConnect(movementConnect);
-
         Coordinate coordinate = new Coordinate(ic.getLongitude(), ic.getLatitude());
         GeometryFactory factory = new GeometryFactory();
         Point point = factory.createPoint(coordinate);
@@ -67,7 +58,16 @@ public abstract class IncomingMovementMapper {
         return entity;
     }
 
-
+    public static MovementConnect mapNewMovementConnect(IncomingMovement ic, String username) {
+        //MovementConnect (aka asset)
+        MovementConnect movementConnect = new MovementConnect();
+        movementConnect.setId(UUID.fromString(ic.getAssetGuid()));
+        movementConnect.setFlagState(ic.getFlagState());
+        movementConnect.setName(ic.getAssetName());
+        movementConnect.setUpdated(Instant.now());
+        movementConnect.setUpdatedBy(username);
+        return movementConnect;
+    }
 
     public static MovementDetails mapMovementDetails(IncomingMovement im, Movement movement, AssetMTEnrichmentResponse response) {
         MovementDetails md = new MovementDetails();
