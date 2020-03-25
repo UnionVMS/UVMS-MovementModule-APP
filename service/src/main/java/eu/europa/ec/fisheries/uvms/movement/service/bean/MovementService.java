@@ -44,8 +44,10 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Stateless
 public class MovementService {
@@ -98,6 +100,7 @@ public class MovementService {
             throw new IllegalArgumentException("No movementConnect ID");
         }
         try {
+            // TODO remove, already called by MovementCreateBean
             MovementConnect moveConnect = getOrCreateMovementConnectByConnectId(movement.getMovementConnect());
 
             movement.setMovementConnect(moveConnect);
@@ -208,7 +211,14 @@ public class MovementService {
     public List<Movement> getLatestMovements(Integer numberOfMovements) {
         return movementDao.getLatestMovements(numberOfMovements);
     }
-	
+
+    public Movement getPreviousVMS(UUID connectId, Instant timestamp) {
+        List<MovementSourceType> sources = Arrays.stream(MovementSourceType.values())
+            .filter(source -> !source.equals(MovementSourceType.AIS))
+            .collect(Collectors.toList());
+        return movementDao.getPreviousMovement(connectId, timestamp, sources);
+    }
+
 	private int getNumberOfPages(Long numberOfMovements, int listSize){
         int numberOfPages = (int) (numberOfMovements / listSize);
         if (numberOfMovements % listSize != 0) {

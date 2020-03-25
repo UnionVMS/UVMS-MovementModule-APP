@@ -48,6 +48,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
         IncomingMovement incomingMovement = createIncomingMovement(asset, positionTime);
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         movementService.createAndProcessMovement(movement);
 
         List<String> connectIds = new ArrayList<>();
@@ -75,6 +76,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
         IncomingMovement incomingMovement = createIncomingMovement(asset, Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         Movement createdMovement = movementService.createAndProcessMovement(movement);
 
         List<String> connectIds = new ArrayList<>();
@@ -96,11 +98,13 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
         IncomingMovement incomingMovement = createIncomingMovement(asset1, Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         movement.setMovementSource(MovementSourceType.OTHER);
         Movement createdMovement1 = movementService.createAndProcessMovement(movement);
 
         incomingMovement = createIncomingMovement(asset2, Instant.now());
         movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         movement.setMovementSource(MovementSourceType.MANUAL);
         Movement createdMovement2 = movementService.createAndProcessMovement(movement);
 
@@ -125,6 +129,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
         IncomingMovement incomingMovement = createIncomingMovement(asset, Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         Movement createdMovement = movementService.createAndProcessMovement(movement);
 
         List<String> connectIds = new ArrayList<>();
@@ -144,6 +149,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         AssetDTO asset = createBasicAsset();
         IncomingMovement incomingMovement = createIncomingMovement(asset, Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         Movement createdMovement = movementService.createAndProcessMovement(movement);
        // When
         MicroMovement movementById = movementRestClient.getMicroMovementById(createdMovement.getId());
