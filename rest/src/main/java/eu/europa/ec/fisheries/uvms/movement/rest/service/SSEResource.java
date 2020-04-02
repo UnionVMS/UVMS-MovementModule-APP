@@ -35,16 +35,10 @@ public class SSEResource {
     private Sse sse;
     private OutboundSseEvent.Builder eventBuilder;
     private SseBroadcaster sseBroadcaster;
-    private Jsonb jsonb;
+    private Jsonb jsonb = new JsonBConfigurator().getContext(null);
 
     public void initAtStartup(@Observes @Initialized(ApplicationScoped.class) Object init) {
         LOG.debug("Starting SSEResource by initAtStartup");
-    }
-
-    @PostConstruct
-    public void init() {
-        LOG.debug("Starting SSEResource by init");
-        jsonb = new JsonBConfigurator().getContext(null);
     }
 
     @Context
