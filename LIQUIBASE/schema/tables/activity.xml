@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <changeSet author="davijo" id="act-01">
-        
+
         <createTable tableName="activity" remarks="Aktivity table.">
             <column name="act_id" type="bigint" remarks="The synthetic key.">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="act_pk"/>
             </column>
             <column name="act_messid" type="varchar(40)" remarks="Activity message-id from the callback webservice."/>
-            <column name="act_callback" type="varchar(400)" remarks="Callback url to webservice."/>         
+            <column name="act_callback" type="varchar(400)" remarks="Callback url to webservice."/>
             <column name="act_acttyp_id" type="bigint" remarks="FK to activitytype.">
                 <constraints nullable="false"/>
             </column>
@@ -21,13 +22,15 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        
-        <addForeignKeyConstraint constraintName="act_actmesstyp_fk" referencedTableName="activitytype" baseColumnNames="act_acttyp_id" baseTableName="activity" referencedColumnNames="acttyp_id"/>
+
+        <addForeignKeyConstraint constraintName="act_actmesstyp_fk" referencedTableName="activitytype"
+                                 baseColumnNames="act_acttyp_id" baseTableName="activity"
+                                 referencedColumnNames="acttyp_id"/>
 
         <rollback>
             <dropTable tableName="activity"/>
         </rollback>
-        
+
     </changeSet>
 
     <changeSet author="stihft" id="addIndexOnTableActivityAndColumnAct_acttyp_id">
@@ -43,5 +46,5 @@
                     tableName="activity"/>
         </rollback>
     </changeSet>
-        
+
 </databaseChangeLog>

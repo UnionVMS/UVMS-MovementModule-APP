@@ -1,81 +1,83 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-	
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
+
     <changeSet id="segcat-init01" author="jojoha">
         <insert tableName="segmentcategory">
             <column name="segcat_id" value="0"/>
             <column name="segcat_name" value="GAP"/>
             <column name="segcat_desc" value="Gap."/>
             <column name="segcat_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="segcat_upuser" value="UVMS"/>			
+            <column name="segcat_upuser" value="UVMS"/>
         </insert>
         <insert tableName="segmentcategory">
             <column name="segcat_id" value="1"/>
             <column name="segcat_name" value="JUMP"/>
             <column name="segcat_desc" value="JUMP"/>
             <column name="segcat_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="segcat_upuser" value="UVMS"/>			
+            <column name="segcat_upuser" value="UVMS"/>
         </insert>
         <insert tableName="segmentcategory">
             <column name="segcat_id" value="2"/>
             <column name="segcat_name" value="IN_PORT"/>
             <column name="segcat_desc" value="Vessel is in port."/>
             <column name="segcat_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="segcat_upuser" value="UVMS"/>			
+            <column name="segcat_upuser" value="UVMS"/>
         </insert>
         <insert tableName="segmentcategory">
             <column name="segcat_id" value="3"/>
             <column name="segcat_name" value="EXIT_PORT"/>
             <column name="segcat_desc" value="Vessel exits port."/>
             <column name="segcat_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="segcat_upuser" value="UVMS"/>			
+            <column name="segcat_upuser" value="UVMS"/>
         </insert>
         <insert tableName="segmentcategory">
             <column name="segcat_id" value="4"/>
             <column name="segcat_name" value="ENTER_PORT"/>
             <column name="segcat_desc" value="Vessel enters port."/>
             <column name="segcat_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="segcat_upuser" value="UVMS"/>			
+            <column name="segcat_upuser" value="UVMS"/>
         </insert>
         <insert tableName="segmentcategory">
             <column name="segcat_id" value="5"/>
             <column name="segcat_name" value="NULL_DUR"/>
             <column name="segcat_desc" value="The duration between points is 0."/>
             <column name="segcat_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="segcat_upuser" value="UVMS"/>			
+            <column name="segcat_upuser" value="UVMS"/>
         </insert>
         <insert tableName="segmentcategory">
             <column name="segcat_id" value="6"/>
             <column name="segcat_name" value="ANCHORED"/>
             <column name="segcat_desc" value="The avg speed between points is 0."/>
             <column name="segcat_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="segcat_upuser" value="UVMS"/>			
+            <column name="segcat_upuser" value="UVMS"/>
         </insert>
         <insert tableName="segmentcategory">
             <column name="segcat_id" value="7"/>
             <column name="segcat_name" value="LOW_SPEED"/>
             <column name="segcat_desc" value="One of the points has 0 speed and the other point has >0 speed"/>
             <column name="segcat_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="segcat_upuser" value="UVMS"/>			
+            <column name="segcat_upuser" value="UVMS"/>
         </insert>
         <insert tableName="segmentcategory">
             <column name="segcat_id" value="8"/>
             <column name="segcat_name" value="OTHER"/>
             <column name="segcat_desc" value="A segment category could not be decided"/>
             <column name="segcat_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="segcat_upuser" value="UVMS"/>			
+            <column name="segcat_upuser" value="UVMS"/>
         </insert>
-        
+
         <rollback>
             <delete tableName="segmentcategory">
                 <where>
-                    segcat_name in ('GAP','JUMP','IN_PORT','EXIT_PORT','ENTER_PORT','NULL_DUR','ANCHORED','LOW_SPEED', 'OTHER')
+                    segcat_name in ('GAP','JUMP','IN_PORT','EXIT_PORT','ENTER_PORT','NULL_DUR','ANCHORED','LOW_SPEED',
+                    'OTHER')
                 </where>
             </delete>
         </rollback>
-        
+
     </changeSet>
 
 </databaseChangeLog>

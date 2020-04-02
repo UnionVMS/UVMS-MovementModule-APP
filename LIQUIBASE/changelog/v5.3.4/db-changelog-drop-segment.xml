@@ -1,30 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
-	logicalFilePath="changelog/v5.3.4/db-changelog-drop-segment.xml">
-    
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+                   logicalFilePath="changelog/v5.3.4/db-changelog-drop-segment.xml">
+
     <changeSet id="add_previous_movement" author="peerik">
-		<addColumn tableName="movement">
+        <addColumn tableName="movement">
             <column name="move_prevmove_id" type="UUID" remarks="Previous movement">
                 <constraints unique="true"/>
             </column>
         </addColumn>
-	</changeSet>
-    
-    <changeSet id="previous_movement_fk" author="peerik">
-        <addForeignKeyConstraint constraintName="move_prevmove_fk" referencedTableName="movement" referencedColumnNames="move_id" baseColumnNames="move_prevmove_id" baseTableName="movement"/>
     </changeSet>
-    
+
+    <changeSet id="previous_movement_fk" author="peerik">
+        <addForeignKeyConstraint constraintName="move_prevmove_fk" referencedTableName="movement"
+                                 referencedColumnNames="move_id" baseColumnNames="move_prevmove_id"
+                                 baseTableName="movement"/>
+    </changeSet>
+
     <changeSet id="set_existing_previous_movement" author="peerik">
         <sql>
             UPDATE movement.movement
-            SET move_prevmove_id = (SELECT s.seg_frommove_id 
-                                      FROM movement.segment s
-                                      WHERE s.seg_tomove_id = move_id);
+            SET move_prevmove_id = (SELECT s.seg_frommove_id
+            FROM movement.segment s
+            WHERE s.seg_tomove_id = move_id);
         </sql>
     </changeSet>
-    
+
     <changeSet id="drop_segment" author="peerik">
         <dropTable tableName="segment"/>
     </changeSet>
-    
+
 </databaseChangeLog>

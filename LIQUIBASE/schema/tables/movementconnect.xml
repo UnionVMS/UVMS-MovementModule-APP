@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <changeSet author="jojoha" id="Create movement connect table">
-        
+
         <createTable tableName="movementconnect" remarks="Movementconnect table.">
-            
+
             <column name="moveconn_id" type="bigint" remarks="The synthetic key.">
                 <constraints primaryKey="true" primaryKeyName="moveconn_pk"/>
             </column>
-            
+
             <column name="moveconn_value" type="varchar(100)" remarks="The connection id."/>
             <!--constraints nullable="false"/>
             </column-->
-            
+
             <column name="moveconn_updattim" type="timestamp" remarks="Last updated date time.">
                 <constraints nullable="false"/>
             </column>
-            
+
             <column name="moveconn_upuser" type="varchar(60)" remarks="Last update userid.">
                 <constraints nullable="false"/>
             </column>
-            
+
         </createTable>
-    
+
         <rollback>
             <dropTable tableName="movementconnect"/>
         </rollback>
-                
+
     </changeSet>
 
     <changeSet author="osdjup" id="Add unique constraint to moveconn_value">
-        <addUniqueConstraint columnNames="moveconn_value" constraintName="moveconn_value_unique" tableName="movementconnect" />
+        <addUniqueConstraint columnNames="moveconn_value" constraintName="moveconn_value_unique"
+                             tableName="movementconnect"/>
     </changeSet>
-    
+
 </databaseChangeLog>

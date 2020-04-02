@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
-	logicalFilePath="changelog/v5.1.6/db-changelog-createTables-5.1.6.xml">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+                   logicalFilePath="changelog/v5.1.6/db-changelog-createTables-5.1.6.xml">
+
     <changeSet author="thofan (generated)" id="1544002649622-1">
         <createSequence sequenceName="activity_seq"/>
     </changeSet>
@@ -294,7 +298,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="movefiltgrp_upuser" type="VARCHAR(100)">
-            <constraints nullable="false"/>
+                <constraints nullable="false"/>
             </column>
             <column name="movefiltgrp_user_id" type="VARCHAR(100)"/>
         </createTable>
@@ -392,7 +396,8 @@
         <addPrimaryKey columnNames="movefilt_id" constraintName="movementfilter_pkey" tableName="movementfilter"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-43">
-        <addPrimaryKey columnNames="movefiltgrp_id" constraintName="movementfiltergroup_pkey" tableName="movementfiltergroup"/>
+        <addPrimaryKey columnNames="movefiltgrp_id" constraintName="movementfiltergroup_pkey"
+                       tableName="movementfiltergroup"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-45">
         <addPrimaryKey columnNames="param_id" constraintName="parameter_pkey" tableName="parameter"/>
@@ -404,13 +409,16 @@
         <addPrimaryKey columnNames="trac_id" constraintName="track_pkey" tableName="track"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-48">
-        <addUniqueConstraint columnNames="seg_frommove_id" constraintName="segment_seg_frommove_id_key" tableName="segment"/>
+        <addUniqueConstraint columnNames="seg_frommove_id" constraintName="segment_seg_frommove_id_key"
+                             tableName="segment"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-49">
-        <addUniqueConstraint columnNames="seg_tomove_id" constraintName="segment_seg_tomove_id_key" tableName="segment"/>
+        <addUniqueConstraint columnNames="seg_tomove_id" constraintName="segment_seg_tomove_id_key"
+                             tableName="segment"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-50">
-        <addUniqueConstraint columnNames="alarmreport_id" constraintName="incomingmovement_uc_alarmreport" tableName="incomingmovement"/>
+        <addUniqueConstraint columnNames="alarmreport_id" constraintName="incomingmovement_uc_alarmreport"
+                             tableName="incomingmovement"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-51">
         <createIndex indexName="activity_activitytype_fk_inx" tableName="activity">
@@ -483,39 +491,74 @@
         </createIndex>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-68">
-        <addForeignKeyConstraint baseColumnNames="seg_tomove_id" baseTableName="segment" constraintName="segment_tomovement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
+        <addForeignKeyConstraint baseColumnNames="seg_tomove_id" baseTableName="segment"
+                                 constraintName="segment_tomovement_fk" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id"
+                                 referencedTableName="movement"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-70">
-        <addForeignKeyConstraint baseColumnNames="seg_trac_id" baseTableName="segment" constraintName="segment_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track"/>
+        <addForeignKeyConstraint baseColumnNames="seg_trac_id" baseTableName="segment" constraintName="segment_track_fk"
+                                 deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="trac_id" referencedTableName="track"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-71">
-        <addForeignKeyConstraint baseColumnNames="movelate_moveconn_id" baseTableName="latestmovement" constraintName="latestmovement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_id" referencedTableName="movementconnect"/>
+        <addForeignKeyConstraint baseColumnNames="movelate_moveconn_id" baseTableName="latestmovement"
+                                 constraintName="latestmovement_moveconn_fk" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="moveconn_id" referencedTableName="movementconnect"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-72">
-        <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="movement" constraintName="movement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_id" referencedTableName="movementconnect"/>
+        <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="movement"
+                                 constraintName="movement_moveconn_fk" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_id"
+                                 referencedTableName="movementconnect"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-73">
-        <addForeignKeyConstraint baseColumnNames="move_act_id" baseTableName="movement" constraintName="movement_activety_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="act_id" referencedTableName="activity"/>
+        <addForeignKeyConstraint baseColumnNames="move_act_id" baseTableName="movement"
+                                 constraintName="movement_activety_fk" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="act_id"
+                                 referencedTableName="activity"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-74">
-        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="alarmitem" constraintName="alarmitem_alarmreport_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="alarmreport"/>
+        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="alarmitem"
+                                 constraintName="alarmitem_alarmreport_fk" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="alarmreport"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-75">
-        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="incomingmovement" constraintName="incomingmovement_alarmreport_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="alarmreport"/>
+        <addForeignKeyConstraint baseColumnNames="alarmreport_id" baseTableName="incomingmovement"
+                                 constraintName="incomingmovement_alarmreport_fk" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="alarmreport"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-76">
-        <addForeignKeyConstraint baseColumnNames="move_trac_id" baseTableName="movement" constraintName="movement_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track"/>
+        <addForeignKeyConstraint baseColumnNames="move_trac_id" baseTableName="movement"
+                                 constraintName="movement_track_fk" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id"
+                                 referencedTableName="track"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-77">
-        <addForeignKeyConstraint baseColumnNames="movefilt_movefiltgrp_id" baseTableName="movementfilter" constraintName="movementfilter_movementfiltergroup_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="movefiltgrp_id" referencedTableName="movementfiltergroup"/>
+        <addForeignKeyConstraint baseColumnNames="movefilt_movefiltgrp_id" baseTableName="movementfilter"
+                                 constraintName="movementfilter_movementfiltergroup_fk" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="movefiltgrp_id" referencedTableName="movementfiltergroup"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-78">
-        <addForeignKeyConstraint baseColumnNames="seg_frommove_id" baseTableName="segment" constraintName="segment_frommovement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
+        <addForeignKeyConstraint baseColumnNames="seg_frommove_id" baseTableName="segment"
+                                 constraintName="segment_frommovement_fk" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id"
+                                 referencedTableName="movement"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-79">
-        <addForeignKeyConstraint baseColumnNames="incomingmovement_id" baseTableName="alarmreport" constraintName="alarmreport_incomingmovement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="incomingmovement"/>
+        <addForeignKeyConstraint baseColumnNames="incomingmovement_id" baseTableName="alarmreport"
+                                 constraintName="alarmreport_incomingmovement_fk" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="incomingmovement"/>
     </changeSet>
     <changeSet author="thofan (generated)" id="1544002649622-80">
-        <addForeignKeyConstraint baseColumnNames="movelate_move_id" baseTableName="latestmovement" constraintName="latestmovement_movement_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="move_id" referencedTableName="movement"/>
+        <addForeignKeyConstraint baseColumnNames="movelate_move_id" baseTableName="latestmovement"
+                                 constraintName="latestmovement_movement_fk" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="move_id" referencedTableName="movement"/>
     </changeSet>
 </databaseChangeLog>

@@ -3,7 +3,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <include file="..\..\schema\tables\movementsource.xml" relativeToChangelogFile="true"/>
     <include file="..\..\schema\tables\movementtype.xml" relativeToChangelogFile="true"/>
@@ -18,12 +18,12 @@
     <include file="..\..\schema\tables\postgres\segment_postgres.xml" relativeToChangelogFile="true"/>
     <include file="..\..\schema\tables\movementfiltertype.xml" relativeToChangelogFile="true"/>
     <include file="..\..\schema\tables\movementfiltergroup.xml" relativeToChangelogFile="true"/>
-    <include file="..\..\schema\tables\movementfilter.xml" relativeToChangelogFile="true"/>                
+    <include file="..\..\schema\tables\movementfilter.xml" relativeToChangelogFile="true"/>
     <include file="..\..\schema\tables\temp_movement.xml" relativeToChangelogFile="true"/>
     <include file="..\..\schema\tables\areatype.xml" relativeToChangelogFile="true"/>
     <include file="..\..\schema\tables\area.xml" relativeToChangelogFile="true"/>
     <include file="..\..\schema\tables\movementarea.xml" relativeToChangelogFile="true"/>
     <include file="..\..\schema\tables\areatransition.xml" relativeToChangelogFile="true"/>
     <include file="..\..\schema\tables\parameter.xml" relativeToChangelogFile="true"/>
-	
+
 </databaseChangeLog>

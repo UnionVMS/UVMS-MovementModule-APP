@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <changeSet author="davijo" id="movefilt-01">
-        
+
         <createTable tableName="movementfilter" remarks="Movements Filter table.">
-            
+
             <column name="movefilt_id" type="bigint" remarks="The synthetic key.">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="movefilt_pk"/>
             </column>
             <column name="movefilt_movefiltgrp_id" type="bigint" remarks="FK to MOVEMENTFILTERGROUP."/>
-            
+
             <column name="movefilt_field" type="varchar(80)" remarks="Filter field.">
                 <constraints nullable="false"/>
             </column>
@@ -27,16 +28,20 @@
             <column name="movefilt_upuser" type="varchar(60)" remarks="Last update userid.">
                 <constraints nullable="false"/>
             </column>
-            
+
         </createTable>
-        
-        <addForeignKeyConstraint constraintName="movefilt_movefiltgrp_fk" referencedTableName="movementfiltergroup" baseColumnNames="movefilt_movefiltgrp_id" baseTableName="movementfilter" referencedColumnNames="movefiltgrp_id"/>
-        <addForeignKeyConstraint constraintName="movefilt_movefilttyp_fk" referencedTableName="movementfiltertype" baseColumnNames="movefilt_movefilttyp_id" baseTableName="movementfilter" referencedColumnNames="movefilttyp_id"/>
-        
+
+        <addForeignKeyConstraint constraintName="movefilt_movefiltgrp_fk" referencedTableName="movementfiltergroup"
+                                 baseColumnNames="movefilt_movefiltgrp_id" baseTableName="movementfilter"
+                                 referencedColumnNames="movefiltgrp_id"/>
+        <addForeignKeyConstraint constraintName="movefilt_movefilttyp_fk" referencedTableName="movementfiltertype"
+                                 baseColumnNames="movefilt_movefilttyp_id" baseTableName="movementfilter"
+                                 referencedColumnNames="movefilttyp_id"/>
+
         <rollback>
             <dropTable tableName="movementfilter"/>
         </rollback>
-        
+
     </changeSet>
 
     <changeSet author="stihft" id="addIndexOnTableMovementfilterAndColumnMovefilt_movefiltgrp_id">
@@ -66,5 +71,5 @@
                     tableName="movementfilter"/>
         </rollback>
     </changeSet>
-    
+
 </databaseChangeLog>

@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <changeSet author="jojoha" id="Create table area">
-        
+
         <createTable tableName="area">
             <column name="area_id" type="bigint" remarks="The synthetic key.">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="area_pk"/>
             </column>
             <column name="area_name" type="varchar(500)" remarks="Name of area."/>
             <column name="area_code" type="varchar(500)" remarks="Code of area."/>
-            <column name="area_remoteid" type="varchar(60)" remarks="If the area is connected to another system the id of that row goes in here."/>
-               
+            <column name="area_remoteid" type="varchar(60)"
+                    remarks="If the area is connected to another system the id of that row goes in here."/>
+
             <column name="area_updattim" type="timestamp" remarks="Last updated date time.">
                 <constraints nullable="false"/>
             </column>
@@ -23,13 +25,15 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        
-        <addForeignKeyConstraint constraintName="area_areatype_fk" referencedTableName="areatype" referencedColumnNames="areatype_id" baseColumnNames="area_areatype_id" baseTableName="area"/>
-        
+
+        <addForeignKeyConstraint constraintName="area_areatype_fk" referencedTableName="areatype"
+                                 referencedColumnNames="areatype_id" baseColumnNames="area_areatype_id"
+                                 baseTableName="area"/>
+
         <rollback>
             <dropTable tableName="area"/>
         </rollback>
-        
+
     </changeSet>
 
     <changeSet author="osdjup" id="addUniqueConstraint-area_code">
@@ -49,5 +53,5 @@
                     tableName="area"/>
         </rollback>
     </changeSet>
-    
+
 </databaseChangeLog>

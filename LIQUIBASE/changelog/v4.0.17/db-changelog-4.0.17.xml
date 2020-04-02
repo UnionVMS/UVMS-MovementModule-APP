@@ -1,5 +1,9 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
+
     <changeSet author="peerik (generated)" id="1538049626880-1">
         <modifyDataType columnName="act_updattim" newDataType="timestamp with time zone" tableName="activity"/>
     </changeSet>
@@ -10,7 +14,8 @@
         <modifyDataType columnName="area_updattim" newDataType="timestamp with time zone" tableName="area"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-4">
-        <modifyDataType columnName="areatran_updattim" newDataType="timestamp with time zone" tableName="areatransition"/>
+        <modifyDataType columnName="areatran_updattim" newDataType="timestamp with time zone"
+                        tableName="areatransition"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-5">
         <modifyDataType columnName="areatype_updattim" newDataType="timestamp with time zone" tableName="areatype"/>
@@ -25,25 +30,32 @@
         <modifyDataType columnName="move_updattim" newDataType="timestamp with time zone" tableName="movement"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-10">
-        <modifyDataType columnName="moveconn_updattim" newDataType="timestamp with time zone" tableName="movementconnect"/>
+        <modifyDataType columnName="moveconn_updattim" newDataType="timestamp with time zone"
+                        tableName="movementconnect"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-11">
-        <modifyDataType columnName="movefilt_updattim" newDataType="timestamp with time zone" tableName="movementfilter"/>
+        <modifyDataType columnName="movefilt_updattim" newDataType="timestamp with time zone"
+                        tableName="movementfilter"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-12">
-        <modifyDataType columnName="movefiltgrp_updattim" newDataType="timestamp with time zone" tableName="movementfiltergroup"/>
+        <modifyDataType columnName="movefiltgrp_updattim" newDataType="timestamp with time zone"
+                        tableName="movementfiltergroup"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-13">
-        <modifyDataType columnName="movefilttyp_updattim" newDataType="timestamp with time zone" tableName="movementfiltertype"/>
+        <modifyDataType columnName="movefilttyp_updattim" newDataType="timestamp with time zone"
+                        tableName="movementfiltertype"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-14">
-        <modifyDataType columnName="movelate_timestamp" newDataType="timestamp with time zone" tableName="latestmovement"/>
+        <modifyDataType columnName="movelate_timestamp" newDataType="timestamp with time zone"
+                        tableName="latestmovement"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-15">
-        <modifyDataType columnName="movemet_updattim" newDataType="timestamp with time zone" tableName="movementmetadata"/>
+        <modifyDataType columnName="movemet_updattim" newDataType="timestamp with time zone"
+                        tableName="movementmetadata"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-16">
-        <modifyDataType columnName="movesour_updattim" newDataType="timestamp with time zone" tableName="movementsource"/>
+        <modifyDataType columnName="movesour_updattim" newDataType="timestamp with time zone"
+                        tableName="movementsource"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-17">
         <modifyDataType columnName="movetyp_updattim" newDataType="timestamp with time zone" tableName="movementtype"/>
@@ -52,7 +64,8 @@
         <modifyDataType columnName="seg_updattim" newDataType="timestamp with time zone" tableName="segment"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-20">
-        <modifyDataType columnName="segcat_updattim" newDataType="timestamp with time zone" tableName="segmentcategory"/>
+        <modifyDataType columnName="segcat_updattim" newDataType="timestamp with time zone"
+                        tableName="segmentcategory"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1538049626880-21">
         <modifyDataType columnName="tmpmove_timestamp" newDataType="timestamp with time zone" tableName="tempmovement"/>
@@ -63,22 +76,22 @@
     <changeSet author="peerik (generated)" id="1538049626880-24">
         <modifyDataType columnName="trac_updattim" newDataType="timestamp with time zone" tableName="track"/>
     </changeSet>
-    
+
     <changeSet id="change_move_guid_to_uuid" author="peerik">
-    	<modifyDataType tableName="movement" columnName="move_guid" newDataType="UUID"/>
+        <modifyDataType tableName="movement" columnName="move_guid" newDataType="UUID"/>
     </changeSet>
     <changeSet id="change_moveconn_value_to_uuid" author="peerik">
-    	<modifyDataType tableName="movementconnect" columnName="moveconn_value" newDataType="UUID"/>
+        <modifyDataType tableName="movementconnect" columnName="moveconn_value" newDataType="UUID"/>
     </changeSet>
     <changeSet id="change_move_duplicate_id_to_uuid" author="peerik">
-    	<modifyDataType tableName="movement" columnName="move_duplicate_id" newDataType="UUID"/>
+        <modifyDataType tableName="movement" columnName="move_duplicate_id" newDataType="UUID"/>
     </changeSet>
     <changeSet id="change_tmpmove_guid_to_uuid_use_as_pk" author="peerik">
-    	<modifyDataType tableName="tempmovement" columnName="tmpmove_guid" newDataType="UUID"/>
-    	<dropColumn tableName="tempmovement" columnName="tmpmove_id"/>
-    	<renameColumn tableName="tempmovement" oldColumnName="tmpmove_guid" newColumnName="tmpmove_id"/>
+        <modifyDataType tableName="tempmovement" columnName="tmpmove_guid" newDataType="UUID"/>
+        <dropColumn tableName="tempmovement" columnName="tmpmove_id"/>
+        <renameColumn tableName="tempmovement" oldColumnName="tmpmove_guid" newColumnName="tmpmove_id"/>
     </changeSet>
-    
+
     <include file="db-changelog-create-seqs.xml" relativeToChangelogFile="true"/>
-    
+
 </databaseChangeLog>

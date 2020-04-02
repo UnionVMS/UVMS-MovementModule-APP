@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <!-- IF changes are made here.... DO NOT FORGET TO MAKE THE SAME CHANGES IN /oracle/latest_movement_postgres.xml -->
     <changeSet author="osdjup" id="Create movement table">
-        <createTable tableName="latestmovement" remarks="The latestmovement table holds the latest reported possitions.">
-            
+        <createTable tableName="latestmovement"
+                     remarks="The latestmovement table holds the latest reported possitions.">
+
             <column name="movelate_id" type="bigint" remarks="The synthetic key.">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="movelate_pk"/>
             </column>
@@ -19,13 +21,17 @@
             <column name="movelate_timestamp" type="timestamp" remarks="Movement report time"/>
         </createTable>
 
-        <addForeignKeyConstraint constraintName="movelate_move_fk" referencedTableName="movement" referencedColumnNames="move_id" baseColumnNames="movelate_move_id " baseTableName="latestmovement" />
-        <addForeignKeyConstraint constraintName="movelate_moveconnect_fk" referencedTableName="movementconnect" referencedColumnNames="moveconn_id" baseColumnNames="movelate_moveconn_id " baseTableName="latestmovement" />
-        
+        <addForeignKeyConstraint constraintName="movelate_move_fk" referencedTableName="movement"
+                                 referencedColumnNames="move_id" baseColumnNames="movelate_move_id "
+                                 baseTableName="latestmovement"/>
+        <addForeignKeyConstraint constraintName="movelate_moveconnect_fk" referencedTableName="movementconnect"
+                                 referencedColumnNames="moveconn_id" baseColumnNames="movelate_moveconn_id "
+                                 baseTableName="latestmovement"/>
+
         <rollback>
             <dropTable tableName="latestmovement"/>
         </rollback>
-        
+
     </changeSet>
-    
+
 </databaseChangeLog>

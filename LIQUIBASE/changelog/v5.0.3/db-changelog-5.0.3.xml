@@ -1,5 +1,8 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <changeSet author="anwall" id="alarmreport-01">
 
@@ -26,7 +29,7 @@
         </createTable>
 
         <rollback>
-            <dropTable tableName="alarmreport" cascadeConstraints="true" />
+            <dropTable tableName="alarmreport" cascadeConstraints="true"/>
         </rollback>
 
     </changeSet>
@@ -60,7 +63,7 @@
         />
 
         <rollback>
-            <dropTable tableName="alarmitem" cascadeConstraints="true" />
+            <dropTable tableName="alarmitem" cascadeConstraints="true"/>
         </rollback>
 
     </changeSet>
@@ -124,7 +127,7 @@
             <column name="plugintype" type="varchar(100)" remarks="Type of the plugin the report came from."/>
 
 
-            <column name="alarmreport_id" type="BIGINT" />
+            <column name="alarmreport_id" type="BIGINT"/>
 
             <column name="status" type="VARCHAR(100)" remarks="???."/>
             <column name="active" type="boolean" remarks="???."/>
@@ -148,25 +151,24 @@
         />
 
         <rollback>
-            <dropTable tableName="rawmovement" cascadeConstraints="true" />
+            <dropTable tableName="rawmovement" cascadeConstraints="true"/>
         </rollback>
     </changeSet>
 
     <changeSet author="joemat" id="area_removal_01">
-        <dropTable tableName="area" cascadeConstraints="true" />
-        <dropTable tableName="areatransition" cascadeConstraints="true" />
-        <dropTable tableName="areatype" cascadeConstraints="true" />
-        <dropTable tableName="movementarea" cascadeConstraints="true" />
-        <dropTable tableName="movementtype" cascadeConstraints="true" />
+        <dropTable tableName="area" cascadeConstraints="true"/>
+        <dropTable tableName="areatransition" cascadeConstraints="true"/>
+        <dropTable tableName="areatype" cascadeConstraints="true"/>
+        <dropTable tableName="movementarea" cascadeConstraints="true"/>
+        <dropTable tableName="movementtype" cascadeConstraints="true"/>
     </changeSet>
 
 
     <changeSet author="joemat" id="Movement_Meta_data_removal_01">
-        <dropTable tableName="movementmetadata" cascadeConstraints="true" />
+        <dropTable tableName="movementmetadata" cascadeConstraints="true"/>
 
         <dropColumn columnName="move_movemet_id" tableName="movement"/>
     </changeSet>
-
 
 
 </databaseChangeLog>
