@@ -33,7 +33,7 @@ public class SegmentRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response createMovementSearchGroup(@PathParam("destination") String destination) {
         try {
-            Movement destinationMovement = movementDao.getMovementByGUID(UUID.fromString(destination));
+            Movement destinationMovement = movementDao.getMovementByGUID(destination);
 
             SegmentDTO returnSeg = SegmentMapper.mapToSegmentDTO(destinationMovement.getFromSegment());
 

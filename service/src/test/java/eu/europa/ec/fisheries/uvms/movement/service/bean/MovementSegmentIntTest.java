@@ -39,7 +39,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     public void createThreeMovementTrackInOrder() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Instant dateFirstMovement = Instant.now();
         Instant dateSecondMovement = dateFirstMovement.plusMillis(300000);
@@ -76,7 +76,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     public void createFourMovementTrackInOrder() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Instant firstMovementDate = Instant.now();
         Instant secondMovementDate = firstMovementDate.plusMillis(300000);
@@ -118,7 +118,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     public void createFourMovementTrackOutOfOrder() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Instant firstMovementDate = Instant.now();
         Instant secondMovementDate = firstMovementDate.plusMillis(300000);
@@ -157,7 +157,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     @Test
     public void createVarbergGrenaNormal() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(ORDER_NORMAL, ALL, connectId);
         for (Movement movement : movementList) {
@@ -178,7 +178,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     private void testVarbergGrenaBasedOnOrdering(int order) throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(order, ALL, connectId);
         for (Movement movement : movementList) {
@@ -213,7 +213,7 @@ public class MovementSegmentIntTest extends TransactionalTests {
     @Test
     public void createFishingTourVarberg() throws MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         List<Movement> movementList = movementHelpers.createFishingTourVarberg(ORDER_NORMAL ,connectId);
         for (Movement movement : movementList) {

@@ -38,10 +38,10 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@Test
 	public void testGetMovementsByGUID() throws MovementServiceException {
-		Movement output = movementDao.getMovementByGUID(UUID.randomUUID());
+		Movement output = movementDao.getMovementByGUID(UUID.randomUUID().toString());
 		assertNull(output);
 		
-		UUID connectId = UUID.randomUUID();
+		String connectId = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		Movement move = movementHelpers.createMovement(20D, 20D, connectId, "TEST", Instant.now());
 		
@@ -52,8 +52,8 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	
 	@Test
 	public void testGetLatestMovementByConnectIdList() throws MovementServiceException {
-		UUID connectID = UUID.randomUUID();
-		UUID connectID2 = UUID.randomUUID();
+		String connectID = UUID.randomUUID().toString();
+		String connectID2 = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
 		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.now().plusSeconds(1));
@@ -63,7 +63,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		incomingMovementBean.processMovement(move2);
 		incomingMovementBean.processMovement(move3);
 		
-		List<UUID> input = new ArrayList<>();
+		List<String> input = new ArrayList<>();
 		input.add(connectID);
 		List<Movement> output = movementDao.getLatestMovementsByConnectIdList(input);
 		assertEquals(1, output.size());
@@ -84,14 +84,14 @@ public class MovementDaoBeanTest extends TransactionalTests {
 			
 		//random input should result in an empty set
 		input = new ArrayList<>();
-		input.add(UUID.randomUUID());
+		input.add(UUID.randomUUID().toString());
 		output = movementDao.getLatestMovementsByConnectIdList(input);
 		assertTrue(output.isEmpty());
 	}
 	
 	@Test
 	public void testGetLatestMovementsByConnectID() throws MovementServiceException {
-		UUID connectID = UUID.randomUUID();
+		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
 		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.now().plusSeconds(1));
@@ -114,11 +114,11 @@ public class MovementDaoBeanTest extends TransactionalTests {
 //		} catch (MovementDomainRuntimeException e) {
 //			assertTrue(true);
 //		}
-		output = movementDao.getLatestMovementsByConnectId(UUID.randomUUID(), 1);
+		output = movementDao.getLatestMovementsByConnectId(UUID.randomUUID().toString(), 1);
 		assertTrue(output.isEmpty());
 		
 		//funnily enough this is only true if you are only expecting 1 result.......
-		output = movementDao.getLatestMovementsByConnectId(UUID.randomUUID(), 2);
+		output = movementDao.getLatestMovementsByConnectId(UUID.randomUUID().toString(), 2);
 		assertTrue(output.isEmpty());
 	}
 
@@ -127,7 +127,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 
 		thrown.expect(EJBTransactionRolledbackException.class);
 
-		UUID connectID = UUID.randomUUID();
+		String connectID = UUID.randomUUID().toString();
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 		Movement move1 = movementHelpers.createMovement(20D, 20D, connectID, "TEST", Instant.now());
 		Movement move2 = movementHelpers.createMovement(21D, 21D, connectID, "TEST", Instant.ofEpochMilli(System.currentTimeMillis() + 100L));
@@ -148,7 +148,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	@Test
 	public void testIsDateAlreadyInserted() {
 		//only testing the no result part since the rest of teh function is tested elsewhere
-		List<Movement> output = movementDao.isDateAlreadyInserted(UUID.randomUUID(), Instant.now());
+		List<Movement> output = movementDao.isDateAlreadyInserted(UUID.randomUUID().toString(), Instant.now());
 		assertTrue(output.isEmpty());
 	}
 }

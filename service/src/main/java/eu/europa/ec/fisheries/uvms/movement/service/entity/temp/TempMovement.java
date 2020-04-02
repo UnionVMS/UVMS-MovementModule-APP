@@ -18,6 +18,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.TempMovementStateEnum;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -78,10 +79,11 @@ public class TempMovement implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
     @Basic(optional = false)
     @Column(name = "tmpmove_id")
-    private UUID id;
+    private String id;
 
     @Size(max = 3)
     @Column(name = "tmpmove_flag")
@@ -144,11 +146,11 @@ public class TempMovement implements Serializable {
     @Column(name = "tmpmove_upuser")
     private String updatedBy;
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 

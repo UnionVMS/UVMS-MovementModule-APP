@@ -78,7 +78,7 @@ public class MovementDao {
         return em.find(Track.class, id);
     }
 
-    public Movement getMovementByGUID(UUID guid) {
+    public Movement getMovementByGUID(String guid) {
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_BY_GUID, Movement.class);
             query.setParameter("guid", guid);
@@ -93,7 +93,7 @@ public class MovementDao {
         return em.find(Movement.class, id);
     }
 
-    public List<Movement> getLatestMovementsByConnectIdList(List<UUID> connectIds) {
+    public List<Movement> getLatestMovementsByConnectIdList(List<String> connectIds) {
         List<Movement> resultList = new ArrayList<>();
         if (connectIds == null || connectIds.isEmpty()) {
             return resultList;
@@ -107,7 +107,7 @@ public class MovementDao {
         return resultList;
     }
 
-    public List<Movement> getLatestMovementsByConnectId(UUID connectId, Integer amount) {
+    public List<Movement> getLatestMovementsByConnectId(String connectId, Integer amount) {
         if(amount < 1) {
             throw new MovementServiceRuntimeException("Amount can't have 0 or negative value.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         } else if (amount == 1) {
@@ -124,7 +124,7 @@ public class MovementDao {
         }
     }
 
-    public List<Movement> isDateAlreadyInserted(UUID id, Instant date) {
+    public List<Movement> isDateAlreadyInserted(String id, Instant date) {
         TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_EXISTING_DATE, Movement.class);
         query.setParameter("date", date);
         query.setParameter("id", id);
@@ -137,7 +137,7 @@ public class MovementDao {
         return latestMovementQuery.getResultList();
     }
 
-    public Movement getPreviousMovement(UUID id, Instant date) {
+    public Movement getPreviousMovement(String id, Instant date) {
         Movement singleResult = null;
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_PREVIOUS, Movement.class);
@@ -164,7 +164,7 @@ public class MovementDao {
         }
     }
 
-    private LatestMovement getLatestMovement(UUID connectId) {
+    private LatestMovement getLatestMovement(String connectId) {
         try {
             TypedQuery<LatestMovement> latestMovementQuery = em.createNamedQuery(LatestMovement.FIND_LATEST_BY_MOVEMENT_CONNECT, LatestMovement.class);
             latestMovementQuery.setParameter("connectId", connectId);
@@ -174,7 +174,7 @@ public class MovementDao {
         }
     }
 
-    public Movement getFirstMovement(UUID movementConnectValue) {
+    public Movement getFirstMovement(String movementConnectValue) {
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_FIRST, Movement.class);
             query.setParameter("id", movementConnectValue);
@@ -185,7 +185,7 @@ public class MovementDao {
         }
     }
 
-    public long countNrOfMovementsForAssetBetween(UUID asset, Instant from, Instant to){
+    public long countNrOfMovementsForAssetBetween(String asset, Instant from, Instant to){
         try{
             Query query = em.createNamedQuery(Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN);
             query.setParameter("asset", asset);
@@ -275,7 +275,7 @@ public class MovementDao {
         }
     }
 
-    public MovementConnect getMovementConnectByConnectId(UUID id) {
+    public MovementConnect getMovementConnectByConnectId(String id) {
         try {
             TypedQuery<MovementConnect> query = em.createNamedQuery(MovementConnect.MOVEMENT_CONNECT_BY_CONNECT_ID, MovementConnect.class);
             query.setParameter("value", id);

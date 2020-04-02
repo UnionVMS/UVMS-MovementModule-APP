@@ -37,8 +37,7 @@ public class WKTUtilTest extends TransactionalTests {
 	@Test
 	public void testGetWKTLineString() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = Instant.now();
+		String connectId = UUID.randomUUID().toString();
 		
 		List<Movement> varbergGrena = movementHelpers.createVarbergGrenaMovements(1, 10, connectId);
 		List<Geometry> input = new LinkedList<>();
@@ -71,8 +70,7 @@ public class WKTUtilTest extends TransactionalTests {
 	@Test
 	public void testGetWktLineStringFromMovementList() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = Instant.now();
+		String connectId = UUID.randomUUID().toString();
 		
 		List<Movement> input = movementHelpers.createVarbergGrenaMovements(1, 10, connectId);
 		
@@ -100,8 +98,7 @@ public class WKTUtilTest extends TransactionalTests {
 	@Test
 	public void testGetWktLineStringFromMovementGeometryList() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		UUID connectId = UUID.randomUUID();
-		Instant dateStartMovement = Instant.now();
+		String connectId = UUID.randomUUID().toString();
 
 		List<Movement> input = movementHelpers.createVarbergGrenaMovements(1, 10, connectId);
 

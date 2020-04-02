@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet id="UNIONVMS-4464-alter_row_types_to_string" author="nomikosi">
+        <modifyDataType tableName="movementconnect" columnName="moveconn_value" newDataType="VARCHAR(36)"/>
+        <modifyDataType tableName="movement" columnName="move_duplicate_id" newDataType="VARCHAR(36)"/>
+        <modifyDataType tableName="tempmovement" columnName="tmpmove_id" newDataType="VARCHAR(36)"/>
+        <rollback>
+            <modifyDataType tableName="movementconnect" columnName="moveconn_value" newDataType="UUID"/>
+            <modifyDataType tableName="movement" columnName="move_duplicate_id" newDataType="UUID"/>
+            <modifyDataType tableName="tempmovement" columnName="tmpmove_id" newDataType="UUID"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="UNIONVMS-4464-alter_move_guid_type_to_string" author="nomikosi">
+        <dropView viewName="LATEST_POS_VIEW"/>
+        <modifyDataType tableName="movement" columnName="move_guid" newDataType="VARCHAR(36)"/>
+        <createView viewName="LATEST_POS_VIEW">
+            SELECT
+            b.move_guid, b.move_heading, b.move_location, b.move_moveconn_id, b.move_timestamp, b.move_speed
+            FROM movement b
+            INNER JOIN (SELECT
+            move_moveconn_id,
+            MAX(move_timestamp) as MaxValue
+            FROM movement
+            WHERE move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1 DAY')
+            GROUP BY move_moveconn_id) a ON a.move_moveconn_id = b.move_moveconn_id AND a.MaxValue = b.move_timestamp
+            WHERE
+            b.move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1 DAY')
+        </createView>
+        <rollback>
+            <dropView viewName="LATEST_POS_VIEW"/>
+            <modifyDataType tableName="movement" columnName="move_guid" newDataType="UUID"/>
+            <createView viewName="LATEST_POS_VIEW">
+                SELECT
+                b.move_guid, b.move_heading, b.move_location, b.move_moveconn_id, b.move_timestamp, b.move_speed
+                FROM movement b
+                INNER JOIN (SELECT
+                move_moveconn_id,
+                MAX(move_timestamp) as MaxValue
+                FROM movement
+                WHERE move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1 DAY')
+                GROUP BY move_moveconn_id) a ON a.move_moveconn_id = b.move_moveconn_id AND a.MaxValue = b.move_timestamp
+                WHERE
+                b.move_timestamp > (CURRENT_TIMESTAMP - INTERVAL '1 DAY')
+            </createView>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

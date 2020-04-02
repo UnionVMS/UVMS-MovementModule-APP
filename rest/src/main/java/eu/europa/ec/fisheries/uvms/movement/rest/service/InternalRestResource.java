@@ -59,7 +59,7 @@ public class InternalRestResource {
 
     @POST
     @Path("/latest")
-    public Response getLatestMovementsByConnectIds(List<UUID> connectIds) {
+    public Response getLatestMovementsByConnectIds(List<String> connectIds) {
         if (connectIds == null || connectIds.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("No connectIds found").build();
         }
@@ -114,7 +114,7 @@ public class InternalRestResource {
         try {
             Instant afterInstant = DateUtil.convertDateTimeInUTC(after);
             Instant yesterday = afterInstant.minusSeconds(60L * 60L * 24L);   //one day in seconds
-            long count = movementDao.countNrOfMovementsForAssetBetween(UUID.fromString(id),yesterday, afterInstant);
+            long count = movementDao.countNrOfMovementsForAssetBetween(id,yesterday, afterInstant);
             return Response.ok().entity(count).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {

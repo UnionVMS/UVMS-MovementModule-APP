@@ -75,15 +75,15 @@ public class TempMovementDaoIntTest extends TransactionalTests {
         TempMovement tempMovement = createTempMovementEntityHelper(LONGITUDE, LATITUDE);
         TempMovement createdTempMovement = tempMovementDao.createTempMovementEntity(tempMovement);
         em.flush();
-        UUID createdTempMovementId = createdTempMovement.getId();
+        String createdTempMovementId = createdTempMovement.getId();
 
-        UUID createdTempMovementGUID = createdTempMovement.getId();
+        String createdTempMovementGUID = createdTempMovement.getId();
         assertNotNull(createdTempMovementGUID);
 
         // then fetch it
         TempMovement fetchedTempMovement =  tempMovementDao.getTempMovementById(createdTempMovementGUID);
         assertNotNull(fetchedTempMovement);
-        UUID fetchedTempMovementId = fetchedTempMovement.getId();
+        String fetchedTempMovementId = fetchedTempMovement.getId();
         assertEquals(createdTempMovementId, fetchedTempMovementId);
     }
 
@@ -94,7 +94,7 @@ public class TempMovementDaoIntTest extends TransactionalTests {
         expectedMessage("Error when fetching temp movement");
 
         // we assume that the probability for zero guid exists in db is so low so we consider this safe
-        tempMovementDao.getTempMovementById(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+        tempMovementDao.getTempMovementById("00000000-0000-0000-0000-000000000000");
     }
 
     @Test

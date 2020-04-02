@@ -38,7 +38,7 @@ public class TempMovementMapper {
         TempMovement tempMovement = new TempMovement();
         
         if (tempMovementType.getGuid() != null) {
-            tempMovement.setId(UUID.fromString(tempMovementType.getGuid()));
+            tempMovement.setId(tempMovementType.getGuid());
         }
         
         // Carrier values

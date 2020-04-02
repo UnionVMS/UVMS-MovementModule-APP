@@ -175,13 +175,13 @@ public class MovementService {
                 movementEntityList = dao.getMovementList(sql, searchKeys);
             }
 
-            Map<UUID, List<Movement>> orderMovementsByConnectId = MovementEntityToModelMapper.orderMovementsByConnectId(movementEntityList);
+            Map<String, List<Movement>> orderMovementsByConnectId = MovementEntityToModelMapper.orderMovementsByConnectId(movementEntityList);
 
-            for (Map.Entry<UUID, List<Movement>> entries : orderMovementsByConnectId.entrySet()) {
+            for (Map.Entry<String, List<Movement>> entries : orderMovementsByConnectId.entrySet()) {
 
                 MovementMapResponseType responseType = new MovementMapResponseType();
 
-                responseType.setKey(entries.getKey().toString());
+                responseType.setKey(entries.getKey());
 
                 ArrayList<Segment> extractSegments = MovementEntityToModelMapper.extractSegments(new ArrayList<>(entries.getValue()), query.isExcludeFirstAndLastSegment());
                 List<MovementSegment> segmentList = MovementEntityToModelMapper.mapToMovementSegment(extractSegments);
@@ -311,7 +311,7 @@ public class MovementService {
      * @return
      * @throws MovementServiceException
      */
-    public Movement getById(UUID id) {
+    public Movement getById(String id) {
         return dao.getMovementByGUID(id);
     }
 
@@ -324,7 +324,7 @@ public class MovementService {
         }
     }
 
-    public List<Movement> getLatestMovementsByConnectIds(List<UUID> connectIds) {
+    public List<Movement> getLatestMovementsByConnectIds(List<String> connectIds) {
         return dao.getLatestMovementsByConnectIdList(connectIds);
     }
 
