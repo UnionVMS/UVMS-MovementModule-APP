@@ -34,7 +34,7 @@ public class TempMovementDao {
         return tempMovement;
     }
 
-    public TempMovement getTempMovementById(UUID id) throws MovementServiceException {
+    public TempMovement getTempMovementById(String id) throws MovementServiceException {
         TempMovement tempMovement = em.find(TempMovement.class, id);
         if (tempMovement == null) {
             throw new MovementServiceException("Error when fetching temp movement", ErrorCode.UNSUCCESSFUL_DB_OPERATION);

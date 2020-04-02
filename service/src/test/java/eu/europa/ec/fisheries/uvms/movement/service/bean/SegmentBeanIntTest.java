@@ -42,7 +42,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void createSegmentOnFirstMovement() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant date2 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
@@ -83,7 +83,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void createSegmentOnFirstMovement_OnlyOneMovement() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();;
 
@@ -132,7 +132,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
 
         Instant date3 = OffsetDateTime.of(1925, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Movement fromMovement = movementHelpers.createMovement(2d, 2d, connectId, "ONE", date1);
         Movement toMovement = movementHelpers.createMovement(3d, 3d, connectId, "TWO", date2);
@@ -188,7 +188,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void createNewTrack() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Instant date1 = OffsetDateTime.of(1920, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
@@ -244,7 +244,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
     public void createNewTrack_onSegmentMovement() throws MovementServiceException, MovementServiceException {
         MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "TEST", DateUtil.nowUTC());
         Movement toMovement = movementHelpers.createMovement(1d, 1d, connectId, "TEST", DateUtil.nowUTC());
@@ -271,7 +271,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Instant date2 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant date3 = OffsetDateTime.of(1935, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "one", date1);
         Movement toMovement = movementHelpers.createMovement(5d, 5d, connectId, "two", date2);
@@ -313,7 +313,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Instant date5 = OffsetDateTime.of(1940, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant date6 = OffsetDateTime.of(1945, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "one", date1);
         Movement toMovement = movementHelpers.createMovement(5d, 5d, connectId, "two", date2);
@@ -364,7 +364,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Instant date2 = OffsetDateTime.of(1925, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant date3 = OffsetDateTime.of(1930, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Movement fromMovement = movementHelpers.createMovement(0d, 0d, connectId, "user1", date1);
         Movement toMovement = movementHelpers.createMovement(5d, 5d, connectId, "user2", date2);
@@ -400,7 +400,7 @@ public class SegmentBeanIntTest extends TransactionalTests {
         Instant date2 = OffsetDateTime.of(1925, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
         Instant date_before = OffsetDateTime.of(1910, 06, 06, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
 
         Movement firstMovement = movementHelpers.createMovement(2d, 2d, connectId, "ONE", date1);
         Movement secondMovement = movementHelpers.createMovement(3d, 3d, connectId, "TWO", date2);

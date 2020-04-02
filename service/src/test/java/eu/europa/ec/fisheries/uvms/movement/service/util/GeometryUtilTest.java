@@ -76,7 +76,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	@Test
 	public void testGetCoordinateSequenceFromMovements() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		UUID connectId = UUID.randomUUID();
+		String connectId = UUID.randomUUID().toString();
 		Instant dateStartMovement = DateUtil.nowUTC();
 		
 		Coordinate[] input = new Coordinate[2];
@@ -102,7 +102,7 @@ public class GeometryUtilTest extends TransactionalTests {
 	@Test
 	public void testGetLineStringFromMovments() throws MovementServiceException {
 		MovementHelpers movementHelpers = new MovementHelpers(movementBatchModelBean);
-		UUID connectId = UUID.randomUUID();
+		String connectId = UUID.randomUUID().toString();
 		
 		List<Movement> varbergGrenaTourReverse = movementHelpers.createVarbergGrenaMovements(2, 100, connectId);
 		LineString output = GeometryUtil.getLineStringFromMovements(varbergGrenaTourReverse);

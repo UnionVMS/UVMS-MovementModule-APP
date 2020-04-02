@@ -255,8 +255,8 @@ public class MovementEntityToModelMapper {
         return movementTrack;
     }
 
-    public static Map<UUID, List<Movement>> orderMovementsByConnectId(List<Movement> movements) {
-        Map<UUID, List<Movement>> orderedMovements = new HashMap<>();
+    public static Map<String, List<Movement>> orderMovementsByConnectId(List<Movement> movements) {
+        Map<String, List<Movement>> orderedMovements = new HashMap<>();
         for (Movement movement : movements) {
             if (orderedMovements.get(movement.getMovementConnect().getValue()) == null) {
                 orderedMovements.put(movement.getMovementConnect().getValue(), new ArrayList<>(Collections.singletonList(movement)));

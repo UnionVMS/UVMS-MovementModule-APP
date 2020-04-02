@@ -62,7 +62,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     @Basic(optional = false)
     @NotNull
     @Column(name = "moveconn_value")
-    private UUID value;
+    private String value;
 
     @JsonSerialize(using = InstantSerializer.class)
     @JsonDeserialize(using = MovementInstantDeserializer.class)
@@ -83,7 +83,7 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         this.id = id;
     }
 
-    public MovementConnect(Long id, UUID value, Instant updated, String updatedBy) {
+    public MovementConnect(Long id, String value, Instant updated, String updatedBy) {
         this.id = id;
         this.value = value;
         this.updated = updated;
@@ -98,11 +98,11 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
         this.id = id;
     }
 
-    public UUID getValue() {
-        return value;
+    public String getValue() {
+        return value ;
     }
 
-    public void setValue(UUID value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

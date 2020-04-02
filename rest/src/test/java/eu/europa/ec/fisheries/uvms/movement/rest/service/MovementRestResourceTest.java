@@ -95,7 +95,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     @Test
     @OperateOnDeployment("movement")
     public void getLatestMovementsByConnectIdsTwoPositions() throws Exception {
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
         
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         movementBaseType1.getMovementConnect().setValue(connectId);
@@ -114,7 +114,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     @Test
     @OperateOnDeployment("movement")
     public void getLatestMovementsByConnectIdsTwoPositionsUnordered() throws Exception {
-        UUID connectId = UUID.randomUUID();
+        String connectId = UUID.randomUUID().toString();
         
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         movementBaseType1.getMovementConnect().setValue(connectId);

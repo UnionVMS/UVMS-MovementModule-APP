@@ -133,18 +133,18 @@ public class MockData {
         return previousMovement;
     }
 
-    public static Movement createMovement(double longitude, double latitude, UUID connectId) {
+    public static Movement createMovement(double longitude, double latitude, String connectId) {
         return createMovement(longitude, latitude, connectId, 0d, "Test");
     }
     
-    public static Movement createMovement(double longitude, double latitude, UUID connectId, double reportedCourse, String username) {
+    public static Movement createMovement(double longitude, double latitude, String connectId, double reportedCourse, String username) {
 
         LatLong latLong = new LatLong(latitude, longitude, DateUtil.nowUTC());
         latLong.bearing = reportedCourse;
         return createMovement(latLong, connectId, username);
     }
 
-    public static Movement createMovement(LatLong latlong, UUID connectId, String username) {
+    public static Movement createMovement(LatLong latlong, String connectId, String username) {
 
         Activity activityType = new Activity();
         activityType.setCallback("TEST");

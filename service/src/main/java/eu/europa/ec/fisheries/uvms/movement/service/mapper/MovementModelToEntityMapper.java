@@ -159,7 +159,7 @@ public class MovementModelToEntityMapper {
 
             // TODO find a better solution to transfer connectid
             MovementConnect movementConnect = new MovementConnect();
-            movementConnect.setValue(UUID.fromString(movement.getConnectId()));
+            movementConnect.setValue(movement.getConnectId());
             entity.setMovementConnect(movementConnect);
             
             entity.setProcessed(false);

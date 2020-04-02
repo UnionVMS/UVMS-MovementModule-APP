@@ -33,7 +33,7 @@ public class MovementBatchModelBean {
     private MovementDao movementDao;
 
     public Movement createMovement(Movement movement) {
-        UUID connectId = movement.getMovementConnect().getValue();
+        String connectId = movement.getMovementConnect().getValue();
         try {
             MovementConnect moveConnect = getMovementConnectByConnectId(connectId);
             if(moveConnect == null) {
@@ -46,7 +46,7 @@ public class MovementBatchModelBean {
         }
     }
     
-    public MovementConnect getMovementConnectByConnectId(UUID connectId) {
+    public MovementConnect getMovementConnectByConnectId(String connectId) {
         MovementConnect movementConnect;
         
         if (connectId == null) {

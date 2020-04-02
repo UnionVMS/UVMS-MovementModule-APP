@@ -19,12 +19,12 @@ import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditOperationEnum;
 
 public class AuditModuleRequestMapper {
 
-    public static String mapAuditLogMovementCreated(UUID guid, String username) throws AuditModelMarshallException {
-        return mapToAuditLog(AuditObjectTypeEnum.AUTOMATIC_POSITION_REPORT.getValue(), AuditOperationEnum.CREATE.getValue(), guid.toString(), username);
+    public static String mapAuditLogMovementCreated(String guid, String username) throws AuditModelMarshallException {
+        return mapToAuditLog(AuditObjectTypeEnum.AUTOMATIC_POSITION_REPORT.getValue(), AuditOperationEnum.CREATE.getValue(), guid, username);
     }
 
-    public static String mapAuditLogManualMovementCreated(UUID guid, String username) throws AuditModelMarshallException {
-        return mapToAuditLog(AuditObjectTypeEnum.MANUAL_POSITION_REPORT.getValue(), AuditOperationEnum.CREATE.getValue(), guid.toString(), username);
+    public static String mapAuditLogManualMovementCreated(String guid, String username) throws AuditModelMarshallException {
+        return mapToAuditLog(AuditObjectTypeEnum.MANUAL_POSITION_REPORT.getValue(), AuditOperationEnum.CREATE.getValue(), guid, username);
     }
 
     public static String mapAuditLogTempMovementCreated(String guid, String username) throws AuditModelMarshallException {

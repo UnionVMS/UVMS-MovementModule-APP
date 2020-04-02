@@ -50,7 +50,7 @@ public class SSEResource {
 
     public void createdMovement(@Observes @CreatedMovement NotificationMessage message){
         try {
-            UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
+            String guid = (String)message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
             Movement move = movementDao.getMovementByGUID(guid);
             if (move != null) {
                 MicroMovementDto micro = new MicroMovementDto(move.getLocation(), move.getHeading(), move.getGuid(), move.getMovementConnect(), move.getTimestamp(), move.getSpeed());

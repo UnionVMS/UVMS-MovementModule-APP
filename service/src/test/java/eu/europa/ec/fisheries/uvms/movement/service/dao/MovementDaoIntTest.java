@@ -263,12 +263,12 @@ public class MovementDaoIntTest extends TransactionalTests {
         assertNotNull(createdMovement);
         assertEquals(createdMovementConnect.getId(), createdMovement.getMovementConnect().getId());
 
-        UUID createdMovementConnectValue = createdMovementConnect.getValue();
+        String createdMovementConnectValue = createdMovementConnect.getValue();
 
         MovementConnect fetchedMovementConnect = movementDao.getMovementConnectByConnectId(createdMovementConnectValue);
         assertNotNull(fetchedMovementConnect);
 
-        UUID fetchedMovementConnectValue = fetchedMovementConnect.getValue();
+        String fetchedMovementConnectValue = fetchedMovementConnect.getValue();
         assertNotNull(fetchedMovementConnectValue);
         assertEquals(createdMovementConnectValue, fetchedMovementConnectValue);
     }
@@ -562,7 +562,7 @@ public class MovementDaoIntTest extends TransactionalTests {
 
     private MovementConnect createMovementConnectHelper() {
         MovementConnect movementConnect = new MovementConnect();
-        movementConnect.setValue(UUID.randomUUID());
+        movementConnect.setValue(UUID.randomUUID().toString());
         movementConnect.setUpdatedBy("Arquillian");
         movementConnect.setUpdated(DateUtil.nowUTC());
         return movementConnect;

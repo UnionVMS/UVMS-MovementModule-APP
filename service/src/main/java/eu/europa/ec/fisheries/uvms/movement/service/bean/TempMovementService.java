@@ -89,7 +89,7 @@ public class TempMovementService {
         }
     }
 
-    public TempMovement archiveTempMovement(UUID guid, String username) throws MovementServiceException {
+    public TempMovement archiveTempMovement(String guid, String username) throws MovementServiceException {
         checkUsernameProvided(username);
         return setTempMovementState(guid, TempMovementStateEnum.DELETED, username);
     }
@@ -148,7 +148,7 @@ public class TempMovementService {
     }
 
     
-    public TempMovement sendTempMovement(UUID guid, String username) throws MovementServiceException {
+    public TempMovement sendTempMovement(String guid, String username) throws MovementServiceException {
         checkUsernameProvided(username);
         try {
             TempMovement movement = setTempMovementState(guid, TempMovementStateEnum.SENT, username);
@@ -165,7 +165,7 @@ public class TempMovementService {
         }
     }
     
-    public TempMovement getTempMovement(UUID guid) throws MovementServiceException {
+    public TempMovement getTempMovement(String guid) throws MovementServiceException {
         try {
             if (guid == null) {
                 throw new MovementServiceRuntimeException("TempMovement GUID cannot be null.", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
@@ -176,7 +176,7 @@ public class TempMovementService {
         }
     }
     
-    private TempMovement setTempMovementState(UUID guid, TempMovementStateEnum state, String username) throws MovementServiceException {
+    private TempMovement setTempMovementState(String guid, TempMovementStateEnum state, String username) throws MovementServiceException {
         try {
             if (guid == null) {
                 throw new IllegalArgumentException("Non valid id of temp movement to update");

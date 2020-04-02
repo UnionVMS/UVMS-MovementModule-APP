@@ -34,14 +34,14 @@ public class MicroMovementDto {
 
     }
 
-    public MicroMovementDto(Geometry geo, double heading, UUID guid, MovementConnect asset, Instant timestamp, Double speed) {
+    public MicroMovementDto(Geometry geo, double heading, String guid, MovementConnect asset, Instant timestamp, Double speed) {
         Point point = (Point)geo;
         location = new MovementPoint();
         location.setLatitude(point.getY());
         location.setLongitude(point.getX());
         this.heading = heading;
-        this.guid = guid.toString();
-        this.asset = asset.getValue().toString();
+        this.guid = guid;
+        this.asset = asset.getValue();
         this.timestamp = timestamp;
         this.speed = speed;
     }

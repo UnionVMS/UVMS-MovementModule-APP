@@ -85,7 +85,7 @@ public class TempMovementResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public ResponseDto get(@PathParam("guid") String guid) {
         try {
-            TempMovement tempMovement = service.getTempMovement(UUID.fromString(guid));
+            TempMovement tempMovement = service.getTempMovement(guid);
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException e) {
@@ -113,7 +113,7 @@ public class TempMovementResource {
     public ResponseDto remove(@PathParam("guid") String guid) {
         LOG.debug("Archive(remove) temp movement invoked in rest layer");
         try {
-            TempMovement tempMovement = service.archiveTempMovement(UUID.fromString(guid), request.getRemoteUser());
+            TempMovement tempMovement = service.archiveTempMovement(guid, request.getRemoteUser());
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
@@ -195,7 +195,7 @@ public class TempMovementResource {
     public ResponseDto send(@PathParam("guid") String guid) {
         LOG.debug("Send temp movement invoked in rest layer");
         try {
-            TempMovement tempMovement = service.sendTempMovement(UUID.fromString(guid), request.getRemoteUser());
+            TempMovement tempMovement = service.sendTempMovement(guid, request.getRemoteUser());
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
@@ -215,7 +215,7 @@ public class TempMovementResource {
     public ResponseDto archiveTempMovement(@PathParam("guid") String guid) {
         LOG.debug("Archive movement");
         try {
-            TempMovement tempMovement = service.archiveTempMovement(UUID.fromString(guid), request.getRemoteUser());
+            TempMovement tempMovement = service.archiveTempMovement(guid, request.getRemoteUser());
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | MovementServiceRuntimeException ex) {

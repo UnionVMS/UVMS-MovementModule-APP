@@ -151,8 +151,7 @@ public class MovementRestResource {
             return new ResponseDto("ConnectIds cannot be empty" , ResponseCode.ERROR);
         }
         try {
-            List<UUID> uuids = connectIds.stream().map(UUID::fromString).collect(Collectors.toList());
-            List<Movement> latestMovements = serviceLayer.getLatestMovementsByConnectIds(uuids);
+            List<Movement> latestMovements = serviceLayer.getLatestMovementsByConnectIds(connectIds);
             List<MovementType> movementTypeList = MovementEntityToModelMapper.mapToMovementType(latestMovements);
             List<MovementDto> movementDtoList = MovementMapper.mapToMovementDtoList(movementTypeList);
             return new ResponseDto<>(movementDtoList, ResponseCode.OK);
@@ -209,7 +208,7 @@ public class MovementRestResource {
     public ResponseDto getById(@PathParam(value = "id") final String id) {
         LOG.debug("Get by id invoked in rest layer");
         try {
-            Movement movement = serviceLayer.getById(UUID.fromString(id));
+            Movement movement = serviceLayer.getById(id);
             MovementType response = MovementEntityToModelMapper.mapToMovementType(movement);
             if (response == null) {
                 throw new MovementServiceRuntimeException("Error when getting movement by id: " + id, ErrorCode.NO_RESULT_ERROR);
