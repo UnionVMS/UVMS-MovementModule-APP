@@ -39,4 +39,6 @@
 
     <include file="v5.5.2\db-changelog-drop-activity.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.5.3\db-changelog-new-index-on-movement.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
