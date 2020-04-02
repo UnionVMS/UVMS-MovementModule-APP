@@ -27,7 +27,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
@@ -58,7 +57,6 @@ public class SpatialRestClient implements SpatialClient {
             @Override
             public ObjectMapper getContext(Class<?> type) {
                 ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JaxbAnnotationModule());
                 mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 return mapper;
             }
