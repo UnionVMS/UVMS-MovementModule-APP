@@ -9,7 +9,9 @@ import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
 import javax.json.bind.Jsonb;
@@ -35,6 +37,10 @@ public class SSEResource {
     private SseBroadcaster sseBroadcaster;
     private Jsonb jsonb = new JsonBConfigurator().getContext(null);
 
+    public void initAtStartup(@Observes @Initialized(ApplicationScoped.class) Object init) {
+        LOG.debug("Starting SSEResource by initAtStartup");
+    }
+
     @Context
     public void setSse(Sse sse) {
         this.sse = sse;
@@ -43,6 +49,7 @@ public class SSEResource {
     }
 
     public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement move){
+        LOG.debug("Movement {} came to SseResource" , move);
         try {
             if (move != null) {
                 MicroMovementExtended micro = new MicroMovementExtended(move.getLocation(),
