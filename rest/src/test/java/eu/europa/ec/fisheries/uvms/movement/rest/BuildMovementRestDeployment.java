@@ -39,10 +39,6 @@ public abstract class BuildMovementRestDeployment {
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
         
-        /*testWar.addAsLibraries(Maven.configureResolver().loadPomFromFile("pom.xml")
-                //.resolve("eu.europa.ec.fisheries.uvms.movement:movement-service")
-                .withoutTransitivity().asFile());*/
-
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.rest");
 
         testWar.delete("/WEB-INF/web.xml");
@@ -65,6 +61,7 @@ public abstract class BuildMovementRestDeployment {
 
         testWar.addClass(UnionVMSMock.class);
         testWar.addClass(SpatialModuleMock.class);
+        testWar.addClass(TestObjectMapperContextResolver.class);
 
         return testWar;
     }
@@ -73,7 +70,7 @@ public abstract class BuildMovementRestDeployment {
 
         ObjectMapper objectMapper = new ObjectMapper();
         Client client = ClientBuilder.newClient();
-        client.register(new JacksonJaxbJsonProvider(objectMapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
+//        client.register(new JacksonJaxbJsonProvider(objectMapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
         return client.target("http://"+HOST+":"+REST_PORT+"/test/rest");
     }
 }

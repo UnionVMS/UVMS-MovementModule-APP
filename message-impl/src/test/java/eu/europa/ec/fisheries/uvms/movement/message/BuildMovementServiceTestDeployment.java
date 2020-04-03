@@ -21,16 +21,6 @@ public abstract class BuildMovementServiceTestDeployment {
                 .resolve()
                 .withTransitivity().asFile();
         testWar.addAsLibraries(files);
-        
-//        File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
-//                .resolve("eu.europa.ec.fisheries.uvms.movement:movement-model",
-//                         "eu.europa.ec.fisheries.uvms.movement:movement-domain",
-//                         "eu.europa.ec.fisheries.uvms.movement:movement-service",
-//                         "eu.europa.ec.fisheries.uvms:uvms-config",
-//                         "eu.europa.ec.fisheries.uvms.commons:uvms-commons-message",
-//                         "org.apache.activemq:activemq-client")
-//                .withTransitivity().asFile();
-//        testWar.addAsLibraries(files);
 
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.message");
         
@@ -52,8 +42,8 @@ public abstract class BuildMovementServiceTestDeployment {
 
         testWar.addClass(UnionVMSMock.class);
         testWar.addClass(SpatialModuleMock.class);
+        testWar.addClass(TestObjectMapperContextResolver.class);
 
         return testWar;
     }
-
 }
