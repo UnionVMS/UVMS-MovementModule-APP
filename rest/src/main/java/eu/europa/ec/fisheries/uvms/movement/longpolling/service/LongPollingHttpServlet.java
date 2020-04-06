@@ -56,13 +56,13 @@ public class LongPollingHttpServlet extends HttpServlet {
     }
 
     public void createdMovement(@Observes @CreatedMovement NotificationMessage message) throws IOException {
-        UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
-        completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(guid.toString()));
+        String guid = (String) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
+        completePoll(LongPollingConstants.MOVEMENT_PATH, createJsonMessage(guid));
     }
 
     public void createdManualMovement(@Observes @CreatedManualMovement NotificationMessage message) throws IOException {
-        UUID guid = (UUID) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
-        completePoll(LongPollingConstants.MANUAL_MOVEMENT_PATH, createJsonMessage(guid.toString()));
+        String guid = (String) message.getProperties().get(LongPollingConstants.MOVEMENT_GUID_KEY);
+        completePoll(LongPollingConstants.MANUAL_MOVEMENT_PATH, createJsonMessage(guid));
     }
 
     private String createJsonMessage(String guid) {
