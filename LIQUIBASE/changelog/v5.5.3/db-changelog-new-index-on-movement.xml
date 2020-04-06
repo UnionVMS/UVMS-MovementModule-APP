@@ -24,13 +24,6 @@
             <column name="move_timestamp" descending="true" />
         </createIndex>
 
-        <createIndex indexName="movement_count_idx" tableName="movement">
-            <column name="move_moveconn_id"/>
-            <column name="move_timestamp"/>
-            <column name="move_movesour_id"/>
-        </createIndex>
-
     </changeSet>
-
 
 </databaseChangeLog>
