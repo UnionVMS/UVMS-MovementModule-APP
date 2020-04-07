@@ -29,11 +29,6 @@
 			<artifactId>uvms-pom-java11-deps</artifactId>
 			<type>pom</type>
 		</dependency>
-		<dependency>
-			<groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
-			<artifactId>uvms-commons-date</artifactId>
-			<version>${uvms.common.version}</version>
-		</dependency>
 	</dependencies>
 
 	<build>

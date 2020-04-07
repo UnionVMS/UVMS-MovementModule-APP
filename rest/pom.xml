@@ -66,11 +66,18 @@
             <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
             <artifactId>uvms-commons-rest</artifactId>
             <version>${uvms.common.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
 			<groupId>org.locationtech.jts</groupId>
 			<artifactId>jts-core</artifactId>
 			<version>1.16.1</version>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>fish.focus.uvms.maven</groupId>
