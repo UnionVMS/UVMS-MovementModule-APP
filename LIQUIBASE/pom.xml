@@ -11,13 +11,7 @@
     <name>liquibase</name>
     <packaging>pom</packaging>
 
-    <properties>
-        <project.scm.id>github</project.scm.id>
-    </properties>
-
-    
     <profiles>
-    
         <profile>
             <id>postgres</id>
             <activation>
