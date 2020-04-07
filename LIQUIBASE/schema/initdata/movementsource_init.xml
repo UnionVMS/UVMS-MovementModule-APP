@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-	
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
+
     <changeSet id="movesour-init01" author="davijo">
         <insert tableName="movementsource">
             <column name="movesour_id" value="0"/>
@@ -11,28 +12,28 @@
             <column name="movesour_updattim" valueDate="CURRENT_TIMESTAMP"/>
             <column name="movesour_upuser" value="UVMS"/>
         </insert>
-         <insert tableName="movementsource">
+        <insert tableName="movementsource">
             <column name="movesour_id" value="1"/>
             <column name="movesour_name" value="AIS"/>
             <column name="movesour_desc" value="AIS"/>
             <column name="movesour_updattim" valueDate="CURRENT_TIMESTAMP"/>
             <column name="movesour_upuser" value="UVMS"/>
         </insert>
-         <insert tableName="movementsource">
+        <insert tableName="movementsource">
             <column name="movesour_id" value="2"/>
             <column name="movesour_name" value="IRIDIUM"/>
             <column name="movesour_desc" value="IRIDIUM"/>
             <column name="movesour_updattim" valueDate="CURRENT_TIMESTAMP"/>
             <column name="movesour_upuser" value="UVMS"/>
         </insert>
-         <insert tableName="movementsource">
+        <insert tableName="movementsource">
             <column name="movesour_id" value="3"/>
             <column name="movesour_name" value="MANUAL"/>
             <column name="movesour_desc" value="MANUAL"/>
             <column name="movesour_updattim" valueDate="CURRENT_TIMESTAMP"/>
             <column name="movesour_upuser" value="UVMS"/>
         </insert>
-         <insert tableName="movementsource">
+        <insert tableName="movementsource">
             <column name="movesour_id" value="4"/>
             <column name="movesour_name" value="OTHER"/>
             <column name="movesour_desc" value="OTHER"/>
@@ -48,7 +49,7 @@
         </rollback>
     </changeSet>
     <changeSet id="movesour-init02" author="osdjup">
-         <insert tableName="movementsource">
+        <insert tableName="movementsource">
             <column name="movesour_id" value="5"/>
             <column name="movesour_name" value="NAF"/>
             <column name="movesour_desc" value="NAF"/>

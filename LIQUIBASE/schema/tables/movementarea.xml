@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <changeSet author="jojoha" id="Add movement area table">
-        
+
         <createTable tableName="movementarea" remarks="Movement area binding table">
-            
+
             <column name="movarea_id" type="bigint" remarks="The synthetic key.">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="movearea_pk"/>
             </column>
@@ -22,12 +23,16 @@
             <column name="movarea_upuser" type="varchar(60)" remarks="Last update userid.">
                 <constraints nullable="false"/>
             </column>
-            
+
         </createTable>
-        
-        <addForeignKeyConstraint constraintName="movarea_area_fk" referencedTableName="area" referencedColumnNames="area_id" baseTableName="movementarea" baseColumnNames="movarea_area_id"/>
-        <addForeignKeyConstraint constraintName="movarea_move_fk" referencedTableName="movement" referencedColumnNames="move_id" baseTableName="movementarea" baseColumnNames="movarea_move_id"/>
-        
+
+        <addForeignKeyConstraint constraintName="movarea_area_fk" referencedTableName="area"
+                                 referencedColumnNames="area_id" baseTableName="movementarea"
+                                 baseColumnNames="movarea_area_id"/>
+        <addForeignKeyConstraint constraintName="movarea_move_fk" referencedTableName="movement"
+                                 referencedColumnNames="move_id" baseTableName="movementarea"
+                                 baseColumnNames="movarea_move_id"/>
+
         <rollback>
             <dropTable tableName="movementarea"/>
         </rollback>

@@ -1,38 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-	
-    <changeSet id="movetyp-init01" author="jojoha">	
-        	
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
+
+    <changeSet id="movetyp-init01" author="jojoha">
+
         <insert tableName="movementtype">
             <column name="movetyp_id" value="0"/>
             <column name="movetyp_name" value="POS"/>
-            <column name="movetyp_desc" value="Message type, message type, POS as Position report/message to be communicated by VMS or other means by vessels with a defective satellite tracking device."/>
+            <column name="movetyp_desc"
+                    value="Message type, message type, POS as Position report/message to be communicated by VMS or other means by vessels with a defective satellite tracking device."/>
             <column name="movetyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="movetyp_upuser" value="UVMS"/>			
+            <column name="movetyp_upuser" value="UVMS"/>
         </insert>
         <insert tableName="movementtype">
             <column name="movetyp_id" value="1"/>
             <column name="movetyp_name" value="ENT"/>
-            <column name="movetyp_desc" value="Type of message shall be ENT for the first VMS message from the Regulatory Area as detected by the FMC of the Contracting Party."/>
+            <column name="movetyp_desc"
+                    value="Type of message shall be ENT for the first VMS message from the Regulatory Area as detected by the FMC of the Contracting Party."/>
             <column name="movetyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="movetyp_upuser" value="UVMS"/>			
+            <column name="movetyp_upuser" value="UVMS"/>
         </insert>
         <insert tableName="movementtype">
             <column name="movetyp_id" value="2"/>
             <column name="movetyp_name" value="EXI"/>
-            <column name="movetyp_desc" value="Type of message shall be EXI for the first VMS message from outside the Regulatory Area as detected by the FMC of the Contracting Party."/>
+            <column name="movetyp_desc"
+                    value="Type of message shall be EXI for the first VMS message from outside the Regulatory Area as detected by the FMC of the Contracting Party."/>
             <column name="movetyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="movetyp_upuser" value="UVMS"/>			
+            <column name="movetyp_upuser" value="UVMS"/>
         </insert>
         <insert tableName="movementtype">
             <column name="movetyp_id" value="3"/>
             <column name="movetyp_name" value="MAN"/>
-            <column name="movetyp_desc" value="Type of message shall be “MAN” for reports communicated by vessels with a defective satellite tracking device."/>
+            <column name="movetyp_desc"
+                    value="Type of message shall be “MAN” for reports communicated by vessels with a defective satellite tracking device."/>
             <column name="movetyp_updattim" valueDate="CURRENT_TIMESTAMP"/>
-            <column name="movetyp_upuser" value="UVMS"/>			
-        </insert>	
+            <column name="movetyp_upuser" value="UVMS"/>
+        </insert>
 
         <rollback>
             <delete tableName="movementtype">
@@ -41,6 +46,6 @@
                 </where>
             </delete>
         </rollback>
-		
+
     </changeSet>
 </databaseChangeLog>

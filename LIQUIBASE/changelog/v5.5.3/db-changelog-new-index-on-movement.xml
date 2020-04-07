@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+                   logicalFilePath="changelog/v5.5.3/db-changelog-new-index-on-movement.xml">
+
+    <changeSet id="Drop unnecessary indexes" author="kasgul">
+        <dropIndex indexName="movement_moveconn_fk_idx" tableName="movement"/>
+        <dropIndex indexName="movement_trac_fk_idx" tableName="movement"/>
+        <dropIndex indexName="movement_count_idx" tableName="movement"/>
+    </changeSet>
+
+    <changeSet id="Create a new index on track id and timestamp" author="kasgul">
+
+        <createIndex indexName="move_track_timestamp_idx" tableName="movement">
+            <column name="move_trac_id"/>
+            <column name="move_timestamp" descending="true" />
+        </createIndex>
+
+        <createIndex indexName="move_by_assetid_idx" tableName="movement">
+            <column name="move_moveconn_id"/>
+            <column name="move_movesour_id"/>
+            <column name="move_timestamp" descending="true" />
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

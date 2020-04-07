@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
-                   http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <!-- IF changes are made here.... DO NOT FORGET TO MAKE THE SAME CHANGES IN /oracle/movement_oracle.xml -->
     <changeSet author="jojoha" id="Create movement table">
         <createTable tableName="movement" remarks="The movment table holds reported possitions.">
-            
+
             <column name="move_id" type="bigint" remarks="The synthetic key.">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="move_pk"/>
             </column>
             <column name="move_altitude" type="integer" remarks="Reported altitude."/>
             <column name="move_speed" type="double" remarks="Repored speed."/>
             <column name="move_heading" type="double" remarks="Reported heading."/>
-            <column name="move_internal_reference_number" type="varchar(12)" remarks="Movement trip number. Used by NAF."/>
-            <column name="move_trip_number" type="double" remarks="Movement external party internal reference number. Used by NAF"/>
+            <column name="move_internal_reference_number" type="varchar(12)"
+                    remarks="Movement trip number. Used by NAF."/>
+            <column name="move_trip_number" type="double"
+                    remarks="Movement external party internal reference number. Used by NAF"/>
             <column name="move_status" type="varchar(60)" remarks="Reported status."/>
             <column name="move_act_id" type="bigint" remarks="FK to Activity."/>
             <column name="move_trac_id" type="bigint" remarks="FK to Track"/>
@@ -42,31 +44,43 @@
                 <constraints nullable="false"/>
             </column>
             <column name="move_timestamp" type="timestamp" remarks="Movement report time"/>
-                  
+
         </createTable>
-        
-        <addForeignKeyConstraint constraintName="move_movesour_fk" referencedTableName="movementsource" referencedColumnNames="movesour_id" baseColumnNames="move_movesour_id" baseTableName="movement"/>
-        <addForeignKeyConstraint constraintName="move_movetyp_fk" referencedTableName="movementtype" referencedColumnNames="movetyp_id" baseColumnNames="move_movetyp_id" baseTableName="movement"/>
-        <addForeignKeyConstraint constraintName="move_act_fk" referencedTableName="activity" baseColumnNames="move_act_id" baseTableName="movement" referencedColumnNames="act_id"/>
-        <addForeignKeyConstraint constraintName="move_movemet_fk" referencedTableName="movementmetadata" baseColumnNames="move_movemet_id " baseTableName="movement" referencedColumnNames="movemet_id"/>
-        <addForeignKeyConstraint constraintName="move_moveconnect_fk" referencedTableName="movementconnect" referencedColumnNames="moveconn_id" baseColumnNames="move_moveconn_id " baseTableName="movement" />
-        <addForeignKeyConstraint constraintName="move_trac_fk" referencedTableName="track" referencedColumnNames="trac_id" baseColumnNames="move_trac_id " baseTableName="movement" />
-        
+
+        <addForeignKeyConstraint constraintName="move_movesour_fk" referencedTableName="movementsource"
+                                 referencedColumnNames="movesour_id" baseColumnNames="move_movesour_id"
+                                 baseTableName="movement"/>
+        <addForeignKeyConstraint constraintName="move_movetyp_fk" referencedTableName="movementtype"
+                                 referencedColumnNames="movetyp_id" baseColumnNames="move_movetyp_id"
+                                 baseTableName="movement"/>
+        <addForeignKeyConstraint constraintName="move_act_fk" referencedTableName="activity"
+                                 baseColumnNames="move_act_id" baseTableName="movement" referencedColumnNames="act_id"/>
+        <addForeignKeyConstraint constraintName="move_movemet_fk" referencedTableName="movementmetadata"
+                                 baseColumnNames="move_movemet_id " baseTableName="movement"
+                                 referencedColumnNames="movemet_id"/>
+        <addForeignKeyConstraint constraintName="move_moveconnect_fk" referencedTableName="movementconnect"
+                                 referencedColumnNames="moveconn_id" baseColumnNames="move_moveconn_id "
+                                 baseTableName="movement"/>
+        <addForeignKeyConstraint constraintName="move_trac_fk" referencedTableName="track"
+                                 referencedColumnNames="trac_id" baseColumnNames="move_trac_id "
+                                 baseTableName="movement"/>
+
         <createSequence sequenceName="movement_move_id_seq"/>
 
         <rollback>
             <dropTable tableName="movement"/>
         </rollback>
-        
+
     </changeSet>
-    
-     <changeSet author="jojoha" id="Remove sequence">
+
+    <changeSet author="jojoha" id="Remove sequence">
         <dropSequence sequenceName="movement_move_id_seq"/>
     </changeSet>
 
     <changeSet author="osdjup" id="Add processed flag">
         <addColumn tableName="movement">
-            <column name="move_processed" type="boolean" remarks="String enum for the state of temp movement, DRAFT, SENT, DELETED"/>
+            <column name="move_processed" type="boolean"
+                    remarks="String enum for the state of temp movement, DRAFT, SENT, DELETED"/>
         </addColumn>
     </changeSet>
     <changeSet author="osdjup" id="Add duplicate flag">
@@ -81,7 +95,7 @@
     <changeSet author="anwall" id="Create index on movement table">
 
         <!-- not unique could be duplicates? -->
-        <createIndex indexName="movement_guid_idx" tableName="movement" >
+        <createIndex indexName="movement_guid_idx" tableName="movement">
             <column name="move_guid" type="varchar(36)"/>
         </createIndex>
 

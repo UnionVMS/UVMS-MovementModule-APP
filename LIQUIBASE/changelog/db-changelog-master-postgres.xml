@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
-         logicalFilePath="changelog/db-changelog-master-postgres.xml">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+                   logicalFilePath="changelog/db-changelog-master-postgres.xml">
 
     <include file="properties.xml" relativeToChangelogFile="true"/>
 
@@ -16,7 +16,7 @@
     <include file="v5.1.20\db-changelog-createIndex-5.1.20.xml" relativeToChangelogFile="true"/>
 
     <include file="v5.1.24\db-changelog-dropIndex-5.1.24.xml" relativeToChangelogFile="true"/>
-    
+
     <include file="v5.2.3\db-changelog-5.2.3.xml" relativeToChangelogFile="true"/>
 
     <include file="v5.2.4\db-changelog-to-geography-5.2.4.xml" relativeToChangelogFile="true"/>
@@ -26,7 +26,7 @@
     <include file="v5.2.17\db-changelog-spatial-index-on-latest-location-5.2.17.xml" relativeToChangelogFile="true"/>
 
     <include file="v5.2.23\db-changelog-index-on-moveconn-updatetime-5.2.17.xml" relativeToChangelogFile="true"/>
-    
+
     <include file="v5.2.26\db-changelog-add-column-in-incomingmovement-5.2.26.xml" relativeToChangelogFile="true"/>
 
     <include file="v5.2.30\db-changelog-add-source-satellite-id-5.2.26.xml" relativeToChangelogFile="true"/>
@@ -38,5 +38,7 @@
     <include file="v5.4.1\db-changelog-latest-vms.xml" relativeToChangelogFile="true"/>
 
     <include file="v5.5.2\db-changelog-drop-activity.xml" relativeToChangelogFile="true"/>
+
+    <include file="v5.5.3\db-changelog-new-index-on-movement.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

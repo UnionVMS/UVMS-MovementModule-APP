@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd">
 
     <changeSet id="tmpmove-01" author="davijo">
-        
+
         <createTable tableName="tempmovement" remarks="Temporary movements table holdning manual movement before sent.">
-            
+
             <column name="tmpmove_id" type="bigint" remarks="The synthetic key.">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="tmpmove_pk"/>
             </column>
@@ -35,19 +36,20 @@
             <dropTable tableName="tempmovement"/>
         </rollback>
     </changeSet>
-	
+
     <changeSet author="nhily" id="tmpmove-02">
-        <dropColumn tableName="tempmovement" columnName="tmpmove_archive" />
+        <dropColumn tableName="tempmovement" columnName="tmpmove_archive"/>
     </changeSet>
-	
+
     <changeSet author="nhily" id="tmpmove-03">
         <addColumn tableName="tempmovement">
-            <column name="tmpmove_state" type="varchar(12)" remarks="String enum for the state of temp movement, DRAFT, SENT, DELETED"/>
+            <column name="tmpmove_state" type="varchar(12)"
+                    remarks="String enum for the state of temp movement, DRAFT, SENT, DELETED"/>
         </addColumn>
         <rollback>
-            <dropColumn tableName="tempmovement" columnName="tmpmove_state" />
+            <dropColumn tableName="tempmovement" columnName="tmpmove_state"/>
         </rollback>
 
     </changeSet>
-    
+
 </databaseChangeLog>
