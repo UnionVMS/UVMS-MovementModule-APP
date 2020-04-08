@@ -65,24 +65,26 @@ public class MovementMessageConsumerBean implements MessageListener {
                 errorEvent.fire(new EventMessage(textMessage, "Error when receiving message in movement: "));
                 return;
             }
+            EventMessage eventMessage = new EventMessage(textMessage,request);
+
             switch (movementMethod) {
                 case MOVEMENT_LIST:
-                    movementEventBean.getMovementListByQuery(textMessage);
+                    movementEventBean.getMovementListByQuery(eventMessage);
                     break;
                 case CREATE:
-                    movementEventBean.createMovement(textMessage);
+                    movementEventBean.createMovement(eventMessage);
                     break;
                 case CREATE_BATCH:
-                    movementEventBean.createMovementBatch(textMessage);
+                    movementEventBean.createMovementBatch(eventMessage);
                     break;
                 case MOVEMENT_MAP:
-                    movementEventBean.getMovementMapByQuery(textMessage);
+                    movementEventBean.getMovementMapByQuery(eventMessage);
                     break;
                 case PING:
                     movementEventBean.ping(textMessage);
                     break;
                 case MOVEMENT_LIST_BY_AREA_TIME_INTERVAL:
-                    movementEventBean.getMovementListByAreaAndTimeInterval(textMessage);
+                    movementEventBean.getMovementListByAreaAndTimeInterval(eventMessage);
                     break;
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:

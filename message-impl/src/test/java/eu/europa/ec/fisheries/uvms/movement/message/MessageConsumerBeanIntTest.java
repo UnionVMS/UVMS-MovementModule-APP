@@ -5,6 +5,8 @@ import static org.mockito.Mockito.when;
 import javax.ejb.EJB;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
@@ -108,7 +110,7 @@ public class MessageConsumerBeanIntTest extends TransactionalTests {
         when(textMessage.getJMSReplyTo()).thenReturn(test);
         when(textMessage.getJMSMessageID()).thenReturn("TESTER1234");
 
-        createMovementBean.createMovement(textMessage);
+        createMovementBean.createMovement(new EventMessage(textMessage));
 
     }
 

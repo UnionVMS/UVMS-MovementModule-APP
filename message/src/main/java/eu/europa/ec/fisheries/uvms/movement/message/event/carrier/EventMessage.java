@@ -12,6 +12,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.message.event.carrier;
 
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -21,9 +23,19 @@ public class EventMessage {
 
     private TextMessage jmsMessage;
     private String errorMessage;
+    private MovementBaseRequest request;
 
     public EventMessage(TextMessage jmsMessage) {
         this.jmsMessage = jmsMessage;
+    }
+
+    public EventMessage(TextMessage jmsMessage,MovementBaseRequest request) {
+        this.jmsMessage = jmsMessage;
+        this.request = request;
+    }
+
+    public MovementBaseRequest getRequest() {
+        return request;
     }
 
     public EventMessage(TextMessage jmsMessage, String errorMessage) {

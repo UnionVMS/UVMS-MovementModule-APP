@@ -68,9 +68,10 @@ public class MovementEventBean {
     private Event<EventMessage> errorEvent;
 
     
-    public void getMovementListByQuery(TextMessage jmsMessage) {
+    public void getMovementListByQuery(EventMessage eventMessage) {
+        TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
-            GetMovementListByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementListByQueryRequest.class);
+            GetMovementListByQueryRequest request =(GetMovementListByQueryRequest) eventMessage.getRequest();
             GetMovementListByQueryResponse movementList = movementService.getList(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapTogetMovementListByQueryResponse(movementList.getMovement());
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
@@ -78,16 +79,16 @@ public class MovementEventBean {
         } catch (MovementModelException | MovementMessageException | MovementServiceException | JMSException ex) {
             LOG.error("[ Error on getMovementListByQuery ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
-                EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
-                errorEvent.fire(eventMessage);
+                errorEvent.fire(new EventMessage(jmsMessage, ex.getMessage()));
             }
             throw new EJBException(ex);
         }
     }
     
-    public void createMovement(TextMessage jmsMessage) {
+    public void createMovement(EventMessage eventMessage) {
+        TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
-            CreateMovementRequest createMovementRequest = JAXBMarshaller.unmarshallTextMessage(jmsMessage, CreateMovementRequest.class);
+            CreateMovementRequest createMovementRequest = (CreateMovementRequest) eventMessage.getRequest();
             Movement movement = MovementModelToEntityMapper.mapNewMovementEntity(createMovementRequest.getMovement(), createMovementRequest.getUsername());
             Movement createdMovement = movementService.createMovement(movement);
             String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(MovementEntityToModelMapper.mapToMovementType(createdMovement));
@@ -97,16 +98,16 @@ public class MovementEventBean {
         } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {
             LOG.error("[ Error when creating movement ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
-                EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
-                errorEvent.fire(eventMessage);
+                errorEvent.fire(new EventMessage(jmsMessage, ex.getMessage()));
             }
             throw new EJBException(ex);
         }
     }
     
-    public void createMovementBatch(TextMessage jmsMessage) {
+    public void createMovementBatch(EventMessage eventMessage) {
+        TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
-            CreateMovementBatchRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, CreateMovementBatchRequest.class);
+            CreateMovementBatchRequest request = (CreateMovementBatchRequest) eventMessage.getRequest();
             List<Movement> movements = new ArrayList<>();
             for (MovementBaseType movementBaseType : request.getMovement()) {
                 movements.add(MovementModelToEntityMapper.mapNewMovementEntity(movementBaseType, request.getUsername()));
@@ -129,10 +130,11 @@ public class MovementEventBean {
         }
     }
     
-    public void getMovementMapByQuery(TextMessage jmsMessage) {
+    public void getMovementMapByQuery(EventMessage eventMessage) {
+        TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
             LOG.debug("Get Movement By Query Received.. processing request in MovementEventServiceBean");
-            GetMovementMapByQueryRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementMapByQueryRequest.class);
+            GetMovementMapByQueryRequest request = (GetMovementMapByQueryRequest) eventMessage.getRequest();
             GetMovementMapByQueryResponse movementList = movementService.getMapByQuery(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapToMovementMapResponse(movementList.getMovementMap());
 
@@ -141,8 +143,7 @@ public class MovementEventBean {
         } catch (MovementModelException | MovementMessageException | MovementServiceException | JMSException ex) {
             LOG.error("[ Error when creating getMovementMapByQuery ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
-                EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
-                errorEvent.fire(eventMessage);
+                errorEvent.fire(new EventMessage(jmsMessage, ex.getMessage()));
             }
             throw new EJBException(ex);
         }
@@ -159,17 +160,17 @@ public class MovementEventBean {
         }
     }
     
-    public void getMovementListByAreaAndTimeInterval(TextMessage jmsMessage) {
+    public void getMovementListByAreaAndTimeInterval(EventMessage eventMessage) {
+        TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
-            GetMovementListByAreaAndTimeIntervalRequest request = JAXBMarshaller.unmarshallTextMessage(jmsMessage, GetMovementListByAreaAndTimeIntervalRequest.class);
+            GetMovementListByAreaAndTimeIntervalRequest request = (GetMovementListByAreaAndTimeIntervalRequest) eventMessage.getRequest();
             eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByAreaAndTimeIntervalResponse response = movementService.getMovementListByAreaAndTimeInterval(request.getMovementAreaAndTimeIntervalCriteria());
             String responseString = MovementModuleResponseMapper.mapTogetMovementListByAreaAndTimeIntervalResponse(response.getMovement());
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
         } catch (MovementMessageException | MovementModelException ex) {
             LOG.error("[ Error in GetMovementListByAreaAndTimeIntervalBean.getMovementListByAreaAndTimeInterval ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
-                EventMessage eventMessage = new EventMessage(jmsMessage, ex.getMessage());
-                errorEvent.fire(eventMessage);
+                errorEvent.fire(new EventMessage(jmsMessage, ex.getMessage()));
             }
             throw new EJBException(ex);
         }
