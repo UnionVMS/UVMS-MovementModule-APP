@@ -178,7 +178,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -196,7 +196,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -214,7 +214,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -232,7 +232,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -250,7 +250,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -268,7 +268,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -286,7 +286,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -304,7 +304,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -322,7 +322,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -340,7 +340,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -358,7 +358,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -376,7 +376,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -394,7 +394,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -412,7 +412,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -430,7 +430,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -448,7 +448,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -466,7 +466,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -484,7 +484,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -502,7 +502,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -520,7 +520,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -538,7 +538,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -556,7 +556,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -574,7 +574,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -592,7 +592,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -610,7 +610,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -628,7 +628,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -646,7 +646,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -664,7 +664,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -682,7 +682,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
@@ -700,7 +700,7 @@
 			<ejb-class>eu.europa.ec.fisheries.uvms.movement.service.message.MovementCreateConsumerBean</ejb-class>
 			<activation-config>
 				<activation-config-property>
-					<activation-config-property-name>destination</activation-config-property-name>
+					<activation-config-property-name>destinationLookup</activation-config-property-name>
 					<activation-config-property-value>jms/queue/UVMSMovementEvent</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
