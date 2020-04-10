@@ -25,6 +25,7 @@ import javax.persistence.TypedQuery;
 
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
@@ -317,6 +318,12 @@ public class MovementDao {
     public MovementConnect createMovementConnect(MovementConnect movementConnect) {
         em.persist(movementConnect);
         return movementConnect;
+    }
+
+    public List<Movement> getMovementsByMatchingArea(String areaId){
+        TypedQuery<Movement> query = em.createNamedQuery(Movementarea.FIND_BY_MOVEMENT_AREA, Movement.class);
+        query.setParameter("areaId",Long.valueOf(areaId));
+        return query.getResultList();
     }
 
     public List<MicroMovementDto> getMicroMovementsAfterDate(Instant date) {

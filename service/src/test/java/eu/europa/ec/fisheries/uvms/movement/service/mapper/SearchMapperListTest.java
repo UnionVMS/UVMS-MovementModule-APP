@@ -138,7 +138,7 @@ public class SearchMapperListTest extends TransactionalTests {
 
         assertTrue(mapSearchField.size() == 1);
 
-        String data = SearchFieldMapper.createMinimalSelectSearchSql(mapSearchField, true);
+        String data = SearchFieldMapper.createMinimalSelectSearchSql(mapSearchField, true,null);
         assertEquals("SELECT DISTINCT  m FROM MinimalMovement m INNER JOIN FETCH m.movementConnect mc  WHERE  ( toSeg.segmentCategory = 6 OR fromSeg.segmentCategory = 6 )  AND  m.duplicate = false  ORDER BY m.timestamp DESC ", data);
     }
 

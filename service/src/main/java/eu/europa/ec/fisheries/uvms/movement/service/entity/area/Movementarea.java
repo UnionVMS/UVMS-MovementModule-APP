@@ -37,12 +37,14 @@ import org.hibernate.annotations.FetchMode;
 })
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Movementarea.findAll", query = "SELECT m FROM Movementarea m")})
+    @NamedQuery(name = "Movementarea.findAll", query = "SELECT m FROM Movementarea m"),
+        @NamedQuery(name = Movementarea.FIND_BY_MOVEMENT_AREA, query = "SELECT mam FROM Movementarea m inner join m.movareaAreaId marea inner join m.movareaMoveId mam where marea.areaId = :areaId")})
 @DynamicUpdate
 @DynamicInsert
 public class Movementarea implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    public static final String FIND_BY_MOVEMENT_AREA = "Movementarea.findByMovementAreaId";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "movarea_seq")

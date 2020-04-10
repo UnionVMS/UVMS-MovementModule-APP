@@ -286,7 +286,8 @@ public class MovementService {
             searchKeyValues.addAll(searchKeyValuesRange);
 
             String countSql = SearchFieldMapper.createCountSearchSql(searchKeyValues, true);
-            String sql = SearchFieldMapper.createMinimalSelectSearchSql(searchKeyValues, true);
+            List<Movement> valuesForNestedQuery = findValuesForNestedQuery(searchKeyValues);
+            String sql = SearchFieldMapper.createMinimalSelectSearchSql(searchKeyValues, true,valuesForNestedQuery);
 
             Long numberMatches = dao.getMovementListSearchCount(countSql, searchKeyValues);
             LOG.debug("Count found {} matches", numberMatches);
@@ -302,6 +303,15 @@ public class MovementService {
         } catch (ParseException | com.vividsolutions.jts.io.ParseException ex) {
             throw new MovementServiceException("Error when getting movement list by query", ex, ErrorCode.PARSING_ERROR);
         }
+    }
+
+    private List<Movement> findValuesForNestedQuery(List<SearchValue> searchKeyValues){
+        for(SearchValue searchValue :searchKeyValues){
+            if(SearchField.AREA_ID.equals(searchValue.getField())){
+                return dao.getMovementsByMatchingArea(searchValue.getValue());
+            }
+        }
+        return new ArrayList<>();
     }
 
     /**

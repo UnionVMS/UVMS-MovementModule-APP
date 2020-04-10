@@ -18,6 +18,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
@@ -74,14 +77,14 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    public static String createMinimalSelectSearchSql(List<SearchValue> searchFields, boolean isDynamic) throws ParseException, MovementServiceException {
+    public static String createMinimalSelectSearchSql(List<SearchValue> searchFields, boolean isDynamic, List<Movement> subqueryMovements) throws ParseException, MovementServiceException {
         StringBuilder selectBuffer = new StringBuilder();
 
         selectBuffer.append(createInitSearchSql(SearchTables.MINIMAL_MOVEMENT));
         selectBuffer.append(createInitFromSearchSql(SearchTables.MINIMAL_MOVEMENT));
 
         if (searchFields != null && !searchFields.isEmpty()) {
-            selectBuffer.append(createMinimalSearchSql(searchFields, isDynamic, true));
+            selectBuffer.append(createMinimalSearchSql(searchFields, isDynamic, true,subqueryMovements));
             selectBuffer.append(" AND ");
         } else {
             selectBuffer.append(" WHERE ");
@@ -203,7 +206,7 @@ public class SearchFieldMapper {
      * @return
      * @throws ParseException
      */
-    private static String createMinimalSearchSql(List<SearchValue> criterias, boolean dynamic, boolean joinFetch) throws ParseException, MovementServiceException {
+    private static String createMinimalSearchSql(List<SearchValue> criterias, boolean dynamic, boolean joinFetch,List<Movement> subqueryMovements) throws ParseException, MovementServiceException {
 
         String OPERATOR = " OR ";
         if (dynamic) {
@@ -223,9 +226,15 @@ public class SearchFieldMapper {
             boolean containsSpecialConditions = checkValidSingleAttributes(orderedValues);
 
             for (Entry<SearchField, List<SearchValue>> criteria : orderedValues.entrySet()) {
-                if (!isKeySpecialCondition(criteria.getKey())) {
+                if (!isKeySpecialCondition(criteria.getKey()) && !isNestedQuery(criteria.getKey())) {
                     first = createOperator(first, builder, OPERATOR);
                     createCriteria(criteria.getValue(), criteria.getKey(), builder);
+                }
+            }
+
+            for (Entry<SearchField, List<SearchValue>> criteria : orderedValues.entrySet()) {
+                if(isNestedQuery(criteria.getKey())) {
+                    handleNestedQueries(criteria.getValue().get(0), builder, subqueryMovements);
                 }
             }
 
@@ -234,6 +243,20 @@ public class SearchFieldMapper {
             }
         }
         return builder.toString();
+    }
+
+    private static boolean isNestedQuery(SearchField field){
+                return field.equals(SearchField.AREA_ID);
+    }
+
+    private static void handleNestedQueries(SearchValue searchValue,StringBuilder builder,List<Movement> subqueryMovements){
+        if (searchValue.getField().equals(SearchField.AREA_ID)) {
+            List<String> movementIds = subqueryMovements.stream().map(s -> s.getId().toString()).collect(Collectors.toList());
+            String join = String.join(",", movementIds);
+            builder.append(" and m.id in (")
+            .append(join)
+            .append(" ) ");
+        }
     }
 
     private static boolean createOperator(boolean first, StringBuilder builder, String OPERATOR) {
