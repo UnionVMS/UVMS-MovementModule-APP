@@ -223,18 +223,20 @@ public class SearchFieldMapper {
             builder.append(" WHERE ");
 
             boolean first = true;
+            boolean hasPrecedingConditions = false;
             boolean containsSpecialConditions = checkValidSingleAttributes(orderedValues);
 
             for (Entry<SearchField, List<SearchValue>> criteria : orderedValues.entrySet()) {
                 if (!isKeySpecialCondition(criteria.getKey()) && !isNestedQuery(criteria.getKey())) {
                     first = createOperator(first, builder, OPERATOR);
                     createCriteria(criteria.getValue(), criteria.getKey(), builder);
+                    hasPrecedingConditions =true;
                 }
             }
 
             for (Entry<SearchField, List<SearchValue>> criteria : orderedValues.entrySet()) {
                 if(isNestedQuery(criteria.getKey())) {
-                    handleNestedQueries(criteria.getValue().get(0), builder, subqueryMovements);
+                    handleNestedQueries(criteria.getValue().get(0), builder, subqueryMovements,hasPrecedingConditions);
                 }
             }
 
@@ -249,11 +251,14 @@ public class SearchFieldMapper {
                 return field.equals(SearchField.AREA_ID);
     }
 
-    private static void handleNestedQueries(SearchValue searchValue,StringBuilder builder,List<Movement> subqueryMovements){
+    private static void handleNestedQueries(SearchValue searchValue,StringBuilder builder,List<Movement> subqueryMovements,boolean hasPrecedingConditions){
         if (searchValue.getField().equals(SearchField.AREA_ID)) {
             List<String> movementIds = subqueryMovements.stream().map(s -> s.getId().toString()).collect(Collectors.toList());
             String join = String.join(",", movementIds);
-            builder.append(" and m.id in (")
+            if(hasPrecedingConditions){
+                builder.append(" and ");
+            }
+            builder.append(" m.id in (")
             .append(join)
             .append(" ) ");
         }
