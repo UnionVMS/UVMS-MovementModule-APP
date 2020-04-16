@@ -77,8 +77,8 @@ public class SearchFieldMapper {
     public static String createMinimalSelectSearchSql(List<SearchValue> searchFields, boolean isDynamic) throws ParseException, MovementServiceException {
         StringBuilder selectBuffer = new StringBuilder();
 
-        selectBuffer.append(createInitSearchSql(SearchTables.MINIMAL_MOVEMENT));
-        selectBuffer.append(createInitFromSearchSql(SearchTables.MINIMAL_MOVEMENT));
+        selectBuffer.append(createInitSearchSql(SearchTables.MOVEMENT));
+        selectBuffer.append(createInitFromSearchSql(SearchTables.MOVEMENT));
 
         if (searchFields != null && !searchFields.isEmpty()) {
             selectBuffer.append(createMinimalSearchSql(searchFields, isDynamic, true));
@@ -90,7 +90,7 @@ public class SearchFieldMapper {
         selectBuffer
                 .append(" m.duplicate = false ")
                 .append(" ORDER BY ")
-                .append(SearchTables.MINIMAL_MOVEMENT.getTableAlias())
+                .append(SearchTables.MOVEMENT.getTableAlias())
                 .append(".")
                 .append(SearchField.DATE.getFieldName())
                 .append(" DESC ");
@@ -396,7 +396,7 @@ public class SearchFieldMapper {
      */
     // TODO: There are some typos in the return value. Check if these has impact on expected result.
     private static String buildJoin(HashMap<SearchField, List<SearchValue>> orderedValues, boolean fetch) {
-        return getJoin(fetch, JoinType.INNER) + SearchTables.MOVEMENT.getTableAlias() + "." + "movementConnect " + SearchTables.MOVEMENT_CONNECT.getTableAlias() + " " +
+        return  getJoin(fetch, JoinType.INNER) + SearchTables.MOVEMENT.getTableAlias() + "." + "movementConnect " + SearchTables.MOVEMENT_CONNECT.getTableAlias() + " " +
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "activity " + SearchTables.ACTIVITY.getTableAlias() + " " +
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "track " + SearchTables.TRACK.getTableAlias() + " " +
                 getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "fromSegment " + SearchTables.FROM_SEGMENT.getTableAlias() + " " +
@@ -416,7 +416,8 @@ public class SearchFieldMapper {
      * @return
      */
     private static String buildMinimalJoin(HashMap<SearchField, List<SearchValue>> orderedValues, boolean fetch) {
-        return getJoin(fetch, JoinType.INNER) + SearchTables.MOVEMENT.getTableAlias() + "." + "movementConnect " + SearchTables.MOVEMENT_CONNECT.getTableAlias() + " ";
+        return  getJoin(fetch, JoinType.INNER) + SearchTables.MOVEMENT.getTableAlias() + "." + "movementConnect " + SearchTables.MOVEMENT_CONNECT.getTableAlias() + " " +
+                getJoin(fetch, JoinType.LEFT) + SearchTables.MOVEMENT.getTableAlias() + "." + "movementareaList " + SearchTables.MOVEMENT_AREA.getTableAlias() + " ";
     }
 
     /**

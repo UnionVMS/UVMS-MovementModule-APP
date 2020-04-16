@@ -152,7 +152,7 @@ public class TempMovementMapper {
         if (tempMovement.getCourse() != null) {
             tempMovementType.setCourse(tempMovement.getCourse());
         }
-        tempMovementType.setGuid(tempMovement.getId().toString());
+        tempMovementType.setGuid(tempMovement.getId());
 
         MovementPoint tempMovementPoint = new MovementPoint();
         tempMovementPoint.setLatitude(tempMovement.getLatitude());

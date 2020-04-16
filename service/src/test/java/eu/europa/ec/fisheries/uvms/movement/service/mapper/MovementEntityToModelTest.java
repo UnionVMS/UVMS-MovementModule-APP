@@ -87,7 +87,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		String connectId = UUID.randomUUID().toString();
 		double lon = 11.641982;
 		double lat = 57.632304;
-		MinimalMovement movement = new MinimalMovement();
+		Movement movement = new Movement();
 		GeometryFactory gf = new GeometryFactory();
 		movement.setLocation(gf.createPoint(new Coordinate(lon, lat)));
 		movement.setMovementSource(MovementSourceType.IRIDIUM);
@@ -96,8 +96,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		movementConnect.setValue(connectId);
         movement.setMovementConnect(movementConnect);
         movement.setTimestamp(Instant.now());
-		//movement.setStatus(status);
-		MovementType movementType = MovementEntityToModelMapper.mapToMovementType(movement);
+		MovementType movementType = MovementEntityToModelMapper.mapToMinimalMovementType(movement);
 		assertEquals(movement.getGuid(), movementType.getGuid());
         assertEquals(lat, movementType.getPosition().getLatitude(), 0D);
         assertEquals(lon, movementType.getPosition().getLongitude(), 0D);
