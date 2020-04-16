@@ -6,6 +6,7 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
@@ -43,7 +44,7 @@ public class EventStreamSenderTest extends BuildMovementServiceTestDeployment {
     public void cleanJMS() {
         jmsHelper = new JMSHelper(connectionFactory);
 
-        jsonb = new JsonBConfigurator().getContext(null);
+        jsonb = new JsonBConfiguratorMovement().getContext(null);
     }
 
     @Test

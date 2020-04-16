@@ -307,6 +307,19 @@ public class MovementDao {
         }
     }
 
+    public List<Movement> getLatestNumberOfMovementsForAsset(UUID id, int number, List<MovementSourceType> sources){
+        try {
+            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST_X_NUMBER_FOR_ASSET, Movement.class);
+            query.setParameter("id", id);
+            query.setParameter("sources", sources);
+            query.setMaxResults(number);
+            return query.getResultList();
+        } catch (NoResultException e) {
+            LOG.debug("No positions found for asset {}");
+            return new ArrayList<>();
+        }
+    }
+
     public List<MicroMovementExtended> getLatestWithLimit(Instant date, List<MovementSourceType> sources) {
         TypedQuery<MicroMovementExtended> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, MicroMovementExtended.class);
         query.setParameter("date", date);

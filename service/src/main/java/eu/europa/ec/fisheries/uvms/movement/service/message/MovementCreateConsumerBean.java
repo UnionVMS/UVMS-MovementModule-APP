@@ -7,6 +7,7 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementCreateBean;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,7 @@ public class MovementCreateConsumerBean implements MessageListener {
 
     @PostConstruct
     private void init() {
-        jsonb = new JsonBConfigurator().getContext(null);
+        jsonb = new JsonBConfiguratorMovement().getContext(null);
     }
 
 

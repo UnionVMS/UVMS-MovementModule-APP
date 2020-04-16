@@ -6,6 +6,7 @@ import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticConte
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +16,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
 import javax.inject.Inject;
-import javax.jms.Destination;
-import javax.jms.JMSConnectionFactory;
-import javax.jms.JMSContext;
-import javax.jms.TextMessage;
+import javax.jms.*;
 import javax.json.bind.Jsonb;
 
 @Stateless
@@ -37,7 +35,7 @@ public class EventStreamSender {
 
     @PostConstruct
     public void init() {
-        jsonb = new JsonBConfigurator().getContext(null);
+        jsonb = new JsonBConfiguratorMovement().getContext(null);
     }
 
     public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement move){
@@ -53,7 +51,7 @@ public class EventStreamSender {
                 message.setStringProperty(MessageConstants.EVENT_STREAM_MOVEMENT_SOURCE, micro.getMicroMove().getSource().value());
                 MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
 
-                context.createProducer().setDeliveryMode(1).send(destination, message);
+                context.createProducer().setDeliveryMode(DeliveryMode.NON_PERSISTENT).send(destination, message);
 
             }
         }catch (Exception e){

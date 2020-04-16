@@ -12,6 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.rest;
 
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
@@ -85,7 +86,7 @@ public abstract class BuildMovementRestDeployment {
     protected WebTarget getWebTarget() {
 
         Client client = ClientBuilder.newClient();
-        client.register(JsonBConfigurator.class);
+        client.register(JsonBConfiguratorMovement.class);
         return client.target("http://localhost:8080/test/rest");
     }
 

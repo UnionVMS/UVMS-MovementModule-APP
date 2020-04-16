@@ -8,6 +8,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -27,7 +28,8 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Arquillian.class)
 public class MovementRestResourceTest extends BuildMovementRestDeployment {
@@ -151,6 +153,43 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         MovementType fetchedMovement = getMovementById(createdMovement.getId().toString());
         assertThat(fetchedMovement, is(notNullValue()));
         assertThat(fetchedMovement.getGuid(), is(createdMovement.getId().toString()));
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
+    public void getLatestXNumberOfMovementsForAssetTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        movementBaseType.getMovementConnect().setId(connectId);
+        movementBaseType.setTimestamp(Instant.now().minusSeconds(4));
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType2.getMovementConnect().setId(connectId);
+        movementBaseType2.setTimestamp(Instant.now().minusSeconds(2));
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
+        Movement movementBaseType3 = MovementTestHelper.createMovement();
+        movementBaseType3.getMovementConnect().setId(connectId);
+        Movement createdMovement3 = movementService.createAndProcessMovement(movementBaseType3);
+
+
+        List<Movement> latestMovements = getWebTarget()
+                .path("movement")
+                .path("track")
+                .path("latest")
+                .path("asset")
+                .path(connectId.toString())
+                .queryParam("maxNbr", 2) 
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .post(Entity.json(""), new GenericType<List<Movement>>() {});
+
+        assertFalse(latestMovements.isEmpty());
+        assertTrue(latestMovements.stream().
+                noneMatch(m -> m.getId().equals(createdMovement.getId())));
+        assertTrue(latestMovements.stream()
+                .anyMatch(m -> m.getId().equals(createdMovement2.getId())));
+        assertTrue(latestMovements.stream()
+                .anyMatch(m -> m.getId().equals(createdMovement3.getId())));
     }
 
     /*

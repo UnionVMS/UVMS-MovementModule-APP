@@ -17,6 +17,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementTestHelper;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import eu.europa.ec.fisheries.uvms.movementrules.model.mapper.JAXBMarshaller;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -57,7 +58,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         jmsHelper = new JMSHelper(connectionFactory);
         jmsHelper.clearQueue("UVMSMovementRulesEvent");
 
-        jsonb = new JsonBConfigurator().getContext(null);
+        jsonb = new JsonBConfiguratorMovement().getContext(null);
     }
 
     @Test

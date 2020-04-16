@@ -4,6 +4,7 @@ import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class SSEResource {
     private Sse sse;
     private OutboundSseEvent.Builder eventBuilder;
     private SseBroadcaster sseBroadcaster;
-    private Jsonb jsonb = new JsonBConfigurator().getContext(null);
+    private Jsonb jsonb = new JsonBConfiguratorMovement().getContext(null);
 
     public void initAtStartup(@Observes @Initialized(ApplicationScoped.class) Object init) {
         LOG.debug("Starting SSEResource by initAtStartup");

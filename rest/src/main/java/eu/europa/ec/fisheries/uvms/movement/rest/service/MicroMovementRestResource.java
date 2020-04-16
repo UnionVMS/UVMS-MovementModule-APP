@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.movement.rest.RestUtilMapper;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.TrackForAssetsQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
@@ -21,6 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -59,7 +61,7 @@ public class MicroMovementRestResource {
 
     @PostConstruct
     public void init(){
-        jsonb = new JsonBConfigurator().getContext(null);
+        jsonb = new JsonBConfiguratorMovement().getContext(null);
     }
 
     @POST
@@ -68,7 +70,7 @@ public class MicroMovementRestResource {
     public Response getMicroMovementTrackForAssetByDate(@PathParam("id") UUID connectId, @DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, List<String> sources) {
         try {
 
-            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
+            List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
             Instant startInstant = (startDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
             Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtils.stringToDate(endDate));
             List<MicroMovement> microList = movementDao.getMicroMovementsForAssetAfterDate(connectId, startInstant, endInstant, sourceTypes);
@@ -85,7 +87,7 @@ public class MicroMovementRestResource {
     public Response getMicroMovementTrackForAssetByNumber(@PathParam("id") UUID connectId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNumber, List<String> sources) {
         try {
 
-            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
+            List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
             List<MicroMovement> microList = movementDao.getLatestNumberOfMicroMovementsForAsset(connectId, maxNumber, sourceTypes);
             return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
@@ -103,7 +105,7 @@ public class MicroMovementRestResource {
                 return Response.ok(Collections.emptyList()).header("MDC", MDC.get("requestId")).build();
             }
 
-            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(query.getSources());
+            List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(query.getSources());
             Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
             Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtils.stringToDate(endDate));
             List<MicroMovementExtended> microList = movementDao.getMicroMovementsForConnectIdsBetweenDates(query.getAssetIds(), startInstant, endInstant, sourceTypes);
@@ -119,7 +121,7 @@ public class MicroMovementRestResource {
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getLastMicroMovementForAllAssets(List<String> sources) {
         try {
-            List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(sources);
+            List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
             List<MicroMovementExtended> microMovements = movementService.getLatestMovementsLast8Hours(sourceTypes);
 
             List<String> assetIdList = new ArrayList<>(microMovements.size());
@@ -138,15 +140,4 @@ public class MicroMovementRestResource {
         }
     }
 
-    private List<MovementSourceType> convertToMovementSourceTypes (List<String> sources) {
-        List<MovementSourceType> sourceTypes = new ArrayList<>();
-        if (sources == null || sources.isEmpty()) {
-            sourceTypes = Arrays.asList(MovementSourceType.values());
-        } else {
-            for (String source : sources) {
-                sourceTypes.add(MovementSourceType.fromValue(source));
-            }
-        }
-        return sourceTypes;
-    }
 }
