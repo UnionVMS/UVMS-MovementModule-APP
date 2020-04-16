@@ -178,8 +178,8 @@ public class MovementRestResource {
         try {
 
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
-            List<Movement> microList = movementDao.getLatestNumberOfMovementsForAsset(connectId, maxNumber, sourceTypes);
-            return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
+            List<Movement> movements = movementDao.getLatestNumberOfMovementsForAsset(connectId, maxNumber, sourceTypes);
+            return Response.ok(movements).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Movement for connectId: {}", connectId, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();

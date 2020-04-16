@@ -88,8 +88,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(columnDefinition = "uuid", name = "move_id")
     private UUID id;
 
-    //@JsonbTypeSerializer(PointSerializer.class)
-    //@JsonbTypeDeserializer(PointDeserializer.class)
     @NotNull
     @Column(name = "move_location", columnDefinition = "Geometry")
     private Point location;
