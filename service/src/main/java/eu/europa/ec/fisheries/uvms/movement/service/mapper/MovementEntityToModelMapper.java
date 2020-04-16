@@ -67,7 +67,7 @@ public class MovementEntityToModelMapper {
         return model;
     }
 
-    public static MovementType mapToMovementType(MinimalMovement movement) {
+    public static MovementType mapToMinimalMovementType(Movement movement) {
 
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
@@ -102,7 +102,7 @@ public class MovementEntityToModelMapper {
         //Previous movement ID is mapped in MovementBatchModelBean
         MovementType model = new MovementType();
         model.setReportedSpeed(movement.getSpeed());
-        model.setGuid(movement.getGuid().toString());
+        model.setGuid(movement.getGuid());
         model.setReportedCourse(movement.getHeading());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setActivity(mapToActivityType(movement.getActivity()));
