@@ -14,6 +14,8 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.service.util.PointDeserializer;
+import eu.europa.ec.fisheries.uvms.movement.service.util.PointSerializer;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -21,6 +23,9 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.locationtech.jts.geom.Point;
 
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.annotation.JsonbTypeDeserializer;
+import javax.json.bind.annotation.JsonbTypeSerializer;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -51,6 +56,7 @@ import java.util.UUID;
     @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect.id, m.timestamp, m.speed, m.movementSource) FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE mc.updated > :date AND m.movementSource in :sources" ),
 
 
+    @NamedQuery(name = Movement.FIND_LATEST_X_NUMBER_FOR_ASSET, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.movementSource in :sources ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"),
     @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.updated DESC"),
@@ -73,6 +79,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST = "Movement.findLatestMovementByMovementConnectList";
     public static final String FIND_LATEST = "Movement.findLatest";
     public static final String FIND_BY_PREVIOUS_MOVEMENT = "Movement.findByPreviousMovement";
+    public static final String FIND_LATEST_X_NUMBER_FOR_ASSET = "Movement.findLatestXNumberForAsset";
 
     private static final long serialVersionUID = 1L;
 
@@ -102,17 +109,20 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_status")
     private String status;
 
+    @JsonbTransient
     @NotNull
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     private MovementConnect movementConnect;
 
+    @JsonbTransient
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "move_trac_id", referencedColumnName = "trac_id")
     @ManyToOne(optional = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Track track;
 
+    @JsonbTransient
     @JoinColumn(name = "move_prevmove_id", referencedColumnName = "move_id")
     @OneToOne(fetch = FetchType.LAZY)
     private Movement previousMovement;

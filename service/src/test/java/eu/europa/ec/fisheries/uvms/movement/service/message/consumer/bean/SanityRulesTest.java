@@ -13,6 +13,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementTestHelper;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import eu.europa.ec.fisheries.uvms.movementrules.model.mapper.JAXBMarshaller;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -52,7 +53,7 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         jmsHelper.clearQueue("UVMSMovementRulesEvent");
         jmsHelper.clearQueue(MessageConstants.QUEUE_EXCHANGE_EVENT_NAME);
 
-        jsonb = new JsonBConfigurator().getContext(null);
+        jsonb = new JsonBConfiguratorMovement().getContext(null);
     }
 
     @Inject

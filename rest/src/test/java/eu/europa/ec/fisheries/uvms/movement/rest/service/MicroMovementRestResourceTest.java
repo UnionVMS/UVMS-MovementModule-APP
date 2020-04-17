@@ -264,7 +264,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .path("latest")
                 .path("asset")
                 .path(connectId.toString())
-                .queryParam("maxNbr", 2) //yyyy-MM-dd HH:mm:ss Z
+                .queryParam("maxNbr", 2)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(""), new GenericType<List<MicroMovement>>() {});

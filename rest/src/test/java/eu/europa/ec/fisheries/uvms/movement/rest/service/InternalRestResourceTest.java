@@ -17,6 +17,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
@@ -51,7 +52,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Before
     public void init(){
-        jsonb = new JsonBConfigurator().getContext(null);
+        jsonb = new JsonBConfiguratorMovement().getContext(null);
     }
 
     @Test

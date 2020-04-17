@@ -16,6 +16,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -45,7 +46,7 @@ public class SpatialRestClient{
     @PostConstruct
     public void initClient() {
         String url = spatialEndpoint + "/spatialnonsecure/json/";
-        JsonBConfigurator jsonBConfigurator = new JsonBConfigurator();
+        JsonBConfiguratorMovement jsonBConfigurator = new JsonBConfiguratorMovement();
         jsonb = jsonBConfigurator.getContext(null);
 
         ClientBuilder clientBuilder = ClientBuilder.newBuilder();

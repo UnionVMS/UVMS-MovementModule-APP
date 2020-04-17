@@ -14,6 +14,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -50,7 +51,7 @@ public class InternalRestResource {
 
     @PostConstruct
     public void init(){
-        jsonb = new JsonBConfigurator().getContext(null);
+        jsonb = new JsonBConfiguratorMovement().getContext(null);
     }
 
     @POST
