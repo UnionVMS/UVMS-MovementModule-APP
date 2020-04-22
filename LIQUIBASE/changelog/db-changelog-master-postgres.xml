@@ -12,5 +12,6 @@
     <include file="v4.0.17\db-changelog-4.0.17.xml" relativeToChangelogFile="true"/>
     <include file="v5.1.1\db-changelog-create-view-5.1.1-postgres.xml" relativeToChangelogFile="true"/>
     <include file="v5.1.8\db-changelog-UNIONVMS-4464-postgres.xml" relativeToChangelogFile="true"/>
+    <include file="v5.1.8\db-changelog-UNIONVMS-4476-postgres.xml" relativeToChangelogFile="true"/>
         
 </databaseChangeLog>
