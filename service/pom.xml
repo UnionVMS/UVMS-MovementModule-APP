@@ -83,6 +83,11 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>eu.europa.ec.fisheries.uvms.service.client.flux</groupId>
+			<artifactId>flux-movement</artifactId>
+			<version>${flux.movement.client.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>movement-message-mock</artifactId>
 			<version>${project.parent.version}</version>
@@ -129,7 +134,7 @@
 			<version>2.6</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<finalName>${project.name}-${project.version}</finalName>

@@ -23,6 +23,10 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.TextMessage;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+
+import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
@@ -51,12 +55,16 @@ import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRun
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementDataSourceResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.TempMovementMapper;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 
 @Stateless
 public class TempMovementService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TempMovementService.class);
 
+    private static final String FR = "FR";
+    private static final String AD = "XEU";
+    private static final String TO = "60";
     private static final Long CREATE_TEMP_MOVEMENT_TIMEOUT = 30000L;
 
     @EJB
@@ -152,16 +160,18 @@ public class TempMovementService {
         checkUsernameProvided(username);
         try {
             TempMovement movement = setTempMovementState(guid, TempMovementStateEnum.SENT, username);
-            SetReportMovementType report = MovementMapper.mapToSetReportMovementType(movement);
-            String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
-                    Date.from(DateUtil.nowUTC()), null, PluginType.MANUAL, username, null);
-            String exchangeMessageId = producer.sendModuleMessage(exchangeRequest, ModuleQueue.EXCHANGE);
-            consumer.getMessage(exchangeMessageId, TextMessage.class, CREATE_TEMP_MOVEMENT_TIMEOUT);
+            FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(movement,guid);
+            String setFLUXMovementReportRequest = ExchangeModuleRequestMapper.createSetFLUXMovementReportRequest(JAXBUtils.marshallJaxBObjectToString(fluxVesselPositionMessage), username, "urn:un:unece:uncefact:fisheries:FLUX:FA:XNE:1",
+                    DateUtils.nowUTC().toDate(), guid, PluginType.MANUAL,
+                    FR, null, guid, "eu.europa.ec.fisheries.uvms.plugins.flux.movement",
+                    AD, TO, (new Date()).toString());
+
+            producer.sendModuleMessage(setFLUXMovementReportRequest, ModuleQueue.EXCHANGE);
+            //Because we were waiting for a response by the consumer, after the fix, the message goes through Rules and we receive a timeout.
+            //The delay is greater than 30 sec and that causes the to UI receive an error. Thus we just return the movement back.
             return movement;
-        }catch (MovementMessageException | MessageException e) {
-            throw new MovementServiceException("Error when sending temp movement status", e, ErrorCode.JMS_SENDING_ERROR);
-        } catch (ExchangeModelMarshallException ex) {
-            throw new MovementServiceException("Error when marshaling exchange request.", ex, ErrorCode.EXCHANGE_MARSHALLING_ERROR);
+        }catch (MovementMessageException | JAXBException e) {
+            throw new MovementServiceException("Error when sending temp movement", e, ErrorCode.JMS_SENDING_ERROR);
         }
     }
     

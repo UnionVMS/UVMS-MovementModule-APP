@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet id="UNIONVMS-4476-insert-FLUX-in-movement-source" author="nomikosi">
+        <insert tableName="movementsource">
+            <column name="movesour_id" value="6"/>
+            <column name="movesour_name" value="FLUX"/>
+            <column name="movesour_desc" value="FLUX"/>
+            <column name="movesour_updattim" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="movesour_upuser" value="UVMS"/>
+        </insert>
+        <rollback>
+            <delete tableName="movementsource">
+                <where>
+                    movesour_name = 'FLUX'
+                </where>
+            </delete>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

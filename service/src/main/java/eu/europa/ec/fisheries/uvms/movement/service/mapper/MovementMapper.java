@@ -11,8 +11,10 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;  //leave be for now
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
@@ -28,15 +30,10 @@ import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
-import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaData;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
@@ -48,34 +45,36 @@ import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRSListElement;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.FLUXPartyType;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.FLUXReportDocumentType;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselCountryType;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselGeographicalCoordinateType;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselPositionEventType;
+import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.VesselTransportMeansType;
+import un.unece.uncefact.data.standard.unqualifieddatatype._18.CodeType;
+import un.unece.uncefact.data.standard.unqualifieddatatype._18.DateTimeType;
+import un.unece.uncefact.data.standard.unqualifieddatatype._18.IDType;
+import un.unece.uncefact.data.standard.unqualifieddatatype._18.MeasureType;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 
 
 public class MovementMapper {
 
+    private static final String PURPOSE_CODE = "9";
+    private static final String FLUX_GP_PARTY = "FLUX_GP_PARTY";
+    public static final String POS = "POS";
     private static final Logger LOG = LoggerFactory.getLogger(MovementMapper.class);
 
-    private MovementMapper() {}
-    
-    public static MovementType mapMovementBaseTypeToMovementType(MovementBaseType movementBaseType) {
-        MovementType movementType = new MovementType();
-        movementType.setGuid(movementBaseType.getGuid());
-        movementType.setConnectId(movementBaseType.getConnectId());
-        movementType.setAssetId(movementBaseType.getAssetId());
-        movementType.setPosition(movementBaseType.getPosition());
-        movementType.setPositionTime(movementBaseType.getPositionTime());
-        movementType.setStatus(movementBaseType.getStatus());
-        movementType.setReportedSpeed(movementBaseType.getReportedSpeed());
-        movementType.setReportedCourse(movementBaseType.getReportedCourse());
-        movementType.setMovementType(movementBaseType.getMovementType());
-        movementType.setSource(movementBaseType.getSource());
-        movementType.setActivity(movementBaseType.getActivity());
-        movementType.setTripNumber(movementBaseType.getTripNumber());
-        movementType.setInternalReferenceNumber(movementBaseType.getInternalReferenceNumber());
-        movementType.setProcessed(movementBaseType.isProcessed());
-        movementType.setDuplicate(movementBaseType.isDuplicate());
-        movementType.setDuplicates(movementBaseType.getDuplicates());
-        return movementType;
+    enum FLUXVesselIDType {
+        CFR,
+        EXT_MARK,
+        IRCS
     }
+
+    private MovementMapper() {}
     
     public static List<MovementDto> mapToMovementDtoList(List<MovementType> movmements) {
         List<MovementDto> mappedMovements = new ArrayList<>();
@@ -102,20 +101,6 @@ public class MovementMapper {
         dto.setTime(movement.getPositionTime());
         dto.setConnectId(movement.getConnectId());
         dto.setMovementGUID(movement.getGuid());
-        return dto;
-    }
-
-    public static MovementListResponseDto mapToMovementListDto(GetMovementListByQueryResponse response) {
-        MovementListResponseDto dto = new MovementListResponseDto();
-        dto.setCurrentPage(response.getCurrentPage());
-        dto.setTotalNumberOfPages(response.getTotalNumberOfPages());
-
-        List<MovementDto> movmements = new ArrayList<>();
-        for (MovementBaseType movement : response.getMovement()) {
-            movmements.add(mapTomovementDto((MovementType) movement));
-        }
-
-        dto.setMovement(movmements);
         return dto;
     }
 
@@ -206,65 +191,10 @@ public class MovementMapper {
         }
     }
 
-    public static SetReportMovementType mapToSetReportMovementType(TempMovement movement) {
-
-        SetReportMovementType report = new SetReportMovementType();
-        report.setPluginName("ManualMovement");
-        report.setPluginType(PluginType.MANUAL);
-        report.setTimestamp(Date.from(DateUtil.nowUTC()));
-
-        eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType exchangeMovementBaseType =
-                new eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType();
-        eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId exchangeAssetId =
-                new eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId();
-
-        exchangeAssetId.setAssetType(AssetType.VESSEL);
-
-        AssetIdList cfr = new AssetIdList();
-        cfr.setIdType(AssetIdType.CFR);
-        cfr.setValue(movement.getCfr());
-
-        AssetIdList ircs = new AssetIdList();
-        ircs.setIdType(AssetIdType.IRCS);
-        ircs.setValue(movement.getIrcs());
-
-        exchangeAssetId.getAssetIdList().add(cfr);
-        exchangeAssetId.getAssetIdList().add(ircs);
-
-        exchangeMovementBaseType.setAssetId(exchangeAssetId);
-
-        eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint exchangeMovementPoint = new MovementPoint();
-        if (movement.getLatitude() != null)
-            exchangeMovementPoint.setLatitude(movement.getLatitude());
-        if (movement.getLongitude() != null)
-            exchangeMovementPoint.setLongitude(movement.getLongitude());
-        exchangeMovementBaseType.setPosition(exchangeMovementPoint);
-
-        exchangeMovementBaseType.setReportedCourse(movement.getCourse());
-        exchangeMovementBaseType.setReportedSpeed(movement.getSpeed());
-        exchangeMovementBaseType.setStatus(movement.getStatus());
-
-        exchangeMovementBaseType.setAssetName(movement.getName());
-        exchangeMovementBaseType.setFlagState(movement.getFlag());
-        exchangeMovementBaseType.setExternalMarking(movement.getExternalMarkings());
-        exchangeMovementBaseType.setMovementType(MovementTypeType.MAN);
-        exchangeMovementBaseType.setSource(MovementSourceType.MANUAL);
-
-        try {
-            Date date = Date.from(movement.getTimestamp());
-            exchangeMovementBaseType.setPositionTime(date);
-        } catch (Exception e) {
-            LOG.error("Error when parsing position date for temp movement continuing ");
-        }
-        exchangeMovementBaseType.setComChannelType(MovementComChannelType.MANUAL);
-        report.setMovement(exchangeMovementBaseType);
-        return report;
-    }
-
 
     public static MicroMovementDto mapToMicroMovement(MicroMovement mm) {
         MicroMovementDto dto = new MicroMovementDto();
-        dto.setAsset(mm.getMovementConnect().getValue().toString());
+        dto.setAsset(mm.getMovementConnect().getValue());
         dto.setGuid(mm.getGuid());
         dto.setHeading(mm.getHeading());
         eu.europa.ec.fisheries.schema.movement.v1.MovementPoint mp = new eu.europa.ec.fisheries.schema.movement.v1.MovementPoint();
@@ -275,4 +205,104 @@ public class MovementMapper {
         dto.setSpeed(mm.getSpeed());
         return dto;
     }
+
+    public static FLUXVesselPositionMessage mapToFLUXVesselPositionMessage(TempMovement movement, String guid){
+        FLUXVesselPositionMessage fluxVesselPositionMessage = new FLUXVesselPositionMessage();
+        fluxVesselPositionMessage.setFLUXReportDocument(mapToReportDocument(guid));
+        fluxVesselPositionMessage.setVesselTransportMeans(mapToVesselTransportMeans(movement));
+        return fluxVesselPositionMessage;
+    }
+
+    private static VesselTransportMeansType mapToVesselTransportMeans(TempMovement movement) {
+        VesselTransportMeansType retVal = new VesselTransportMeansType();
+        addId(retVal.getIDS(), FLUXVesselIDType.IRCS.name(), movement.getIrcs());
+        addId(retVal.getIDS(), FLUXVesselIDType.EXT_MARK.name(), movement.getExternalMarkings());
+        addId(retVal.getIDS(), FLUXVesselIDType.CFR.name(), movement.getCfr());
+        retVal.setRegistrationVesselCountry(mapToVesselCountry(movement.getFlag()));
+        retVal.getSpecifiedVesselPositionEvents().add(mapToVesselPosition(movement));
+        return retVal;
+    }
+
+    private static void addId(List<IDType> ids, String schemeId, String value) {
+        if (value != null) {
+            ids.add(mapToIdType(schemeId, value));
+        }
+    }
+
+    private static IDType mapToIdType(String schemeId, String value) {
+        IDType idType = new IDType();
+        idType.setSchemeID(schemeId);
+        idType.setValue(value);
+        return idType;
+    }
+
+    private static FLUXReportDocumentType mapToReportDocument( String guid) {
+        FLUXReportDocumentType doc = new FLUXReportDocumentType();
+        doc.getIDS().add(mapToIdType(guid));
+        doc.setCreationDateTime(mapToNowDateTime());
+        doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
+        doc.setOwnerFLUXParty(mapToFluxPartyType(FLUX_GP_PARTY));
+        return doc;
+    }
+
+    private static IDType mapToIdType(String value) {
+        IDType id = new IDType();
+        id.setValue(value);
+        return id;
+    }
+
+    private static DateTimeType mapToNowDateTime() {
+        return mapToDateTime(new Date());
+    }
+
+    private static DateTimeType mapToDateTime(Date date) {
+        try {
+            DateTimeType dateTime = new DateTimeType();
+            GregorianCalendar calendar = new GregorianCalendar();
+            calendar.setTime(date);
+            dateTime.setDateTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
+            return dateTime;
+        } catch (DatatypeConfigurationException ex) {
+            return new DateTimeType();
+        }
+    }
+
+    private static CodeType mapToCodeType(String value) {
+        CodeType codeType = new CodeType();
+        codeType.setValue(value);
+        return codeType;
+    }
+
+    private static FLUXPartyType mapToFluxPartyType(String ad) {
+        FLUXPartyType partyType = new FLUXPartyType();
+        partyType.getIDS().add(mapToIdType(ad));
+        return partyType;
+    }
+
+    private static VesselCountryType mapToVesselCountry(String countryCode) {
+        VesselCountryType vesselCountry = new VesselCountryType();
+        vesselCountry.setID(mapToIdType(countryCode));
+        return vesselCountry;
+    }
+
+    private static MeasureType mapToMeasureType(Double measuredSpeed) {
+        MeasureType measureType = new MeasureType();
+        measureType.setValue(measuredSpeed == null ? null: BigDecimal.valueOf(measuredSpeed));
+        return measureType;
+    }
+
+    private static VesselPositionEventType mapToVesselPosition(TempMovement movement) {
+        VesselPositionEventType position = new VesselPositionEventType();
+        position.setObtainedOccurrenceDateTime(mapToDateTime(Date.from(movement.getTimestamp())));
+        position.setCourseValueMeasure(mapToMeasureType(movement.getCourse()));
+        position.setSpeedValueMeasure(mapToMeasureType(movement.getSpeed()));
+        position.setTypeCode(mapToCodeType(POS));
+
+        VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
+        geoType.setLatitudeMeasure(mapToMeasureType(movement.getLatitude()));
+        geoType.setLongitudeMeasure(mapToMeasureType(movement.getLongitude()));
+        position.setSpecifiedVesselGeographicalCoordinate(geoType);
+        return position;
+    }
+
 }
