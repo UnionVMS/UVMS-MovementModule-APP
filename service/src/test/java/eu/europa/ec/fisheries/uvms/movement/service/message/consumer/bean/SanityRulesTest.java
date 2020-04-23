@@ -299,6 +299,8 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.MOVEMENT));
 
+        Thread.sleep(1000); //added delay to avoid the duplication code
+
         incomingMovement.setMovementType(MovementTypeType.EXI.value());
         incomingMovement.setLatitude(null);
         incomingMovement.setLongitude(null);
