@@ -8,6 +8,7 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.*;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
@@ -309,6 +310,36 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
 
         assertThat(secondMovementDetails.getPreviousVMSLatitude(), is(firstLatitude));
         assertThat(secondMovementDetails.getPreviousVMSLongitude(), is(firstLongitude));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createExitMovementVerifyPreviousVMSPositionData() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        Double firstLongitude = 3d;
+        Double firstLatitude = 4d;
+        IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        firstIncomingMovement.setMovementSourceType("NAF");
+        firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        firstIncomingMovement.setLongitude(firstLongitude);
+        firstIncomingMovement.setLatitude(firstLatitude);
+        MovementDetails firstMovementDetails = sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
+
+        assertThat(firstMovementDetails.getLatitude(), is(notNullValue()));
+        assertThat(firstMovementDetails.getLongitude(), is(notNullValue()));
+
+        IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        secondIncomingMovement.setMovementSourceType("NAF");
+        secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        secondIncomingMovement.setMovementType(MovementTypeType.EXI.value());
+        firstIncomingMovement.setLongitude(null);
+        firstIncomingMovement.setLatitude(null);
+        MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
+
+        assertThat(secondMovementDetails.getLatitude(), is(notNullValue()));
+        assertEquals(firstLatitude, secondMovementDetails.getLatitude(), 0);
+        assertThat(secondMovementDetails.getLongitude(), is(notNullValue()));
+        assertEquals(firstLongitude, secondMovementDetails.getLongitude(), 0);
     }
 
     @Test

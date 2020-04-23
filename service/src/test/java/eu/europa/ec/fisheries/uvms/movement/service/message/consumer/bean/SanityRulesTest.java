@@ -3,6 +3,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.message.consumer.bean;
 import eu.europa.ec.fisheries.schema.exchange.module.v1.ProcessedMovementResponse;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
@@ -271,6 +272,41 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportExitReportWOPreviousMovementTest() throws Exception {
+
+        UUID id = UUID.randomUUID();
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetIRCS("TestIrcs:" + id);
+        incomingMovement.setMovementType(MovementTypeType.EXI.value());
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportExitReportWithPreviousMovementTest() throws Exception {
+
+        UUID id = UUID.randomUUID();
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetIRCS("TestIrcs:" + id);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.MOVEMENT));
+
+        incomingMovement.setMovementType(MovementTypeType.EXI.value());
+        incomingMovement.setLatitude(null);
+        incomingMovement.setLongitude(null);
+
+        response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.MOVEMENT));
+
     }
 
     @Test

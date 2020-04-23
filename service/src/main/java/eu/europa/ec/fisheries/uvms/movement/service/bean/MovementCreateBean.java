@@ -17,6 +17,8 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
@@ -74,19 +76,29 @@ public class MovementCreateBean {
                         incomingMovement.getAssetName(), incomingMovement.getAssetMMSI(), incomingMovement.getPositionTime());
                 return;
             }
+
+            Movement previousVms = null;
+            MovementConnect movementConnect = null;
+            if(incomingMovement.getAssetGuid() != null && !incomingMovement.getAssetGuid().isEmpty()) {
+                MovementConnect newMovementConnect = IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy());
+                movementConnect = movementService.getOrCreateMovementConnectByConnectId(newMovementConnect);
+                previousVms = getPreviousVms(incomingMovement, movementConnect);
+                incomingMovement.setHasPreviousVmsMovement(previousVms != null);
+            }
+
+            if(MovementTypeType.EXI.value().equals(incomingMovement.getMovementType()) && previousVms != null){
+                incomingMovement.setLongitude(previousVms.getLocation().getX());
+                incomingMovement.setLatitude(previousVms.getLocation().getY());
+            }
+
             UUID reportId = movementSanityValidatorBean.evaluateSanity(incomingMovement);
             if (reportId != null) {
                 exchangeBean.sendAckToExchange(MovementRefTypeType.ALARM, reportId, incomingMovement.getAckResponseMessageId());
                 return;
             }
 
-            MovementConnect newMovementConnect = IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy());
-            MovementConnect movementConnect = movementService.getOrCreateMovementConnectByConnectId(newMovementConnect);
-
             Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
             movement.setMovementConnect(movementConnect);
-
-            Movement previousVms = getPreviousVms(movement);
 
             Movement createdMovement = movementService.createAndProcessMovement(movement);
 
@@ -111,16 +123,16 @@ public class MovementCreateBean {
         }
     }
 
-    private Movement getPreviousVms(Movement movement) {
-        if (MovementSourceType.AIS.equals(movement.getMovementSource())) {
+    private Movement getPreviousVms(IncomingMovement movement, MovementConnect movementConnect) {
+        if (MovementSourceType.AIS.value().equals(movement.getMovementSourceType())) {
             return null;
         }
-        Movement currentLatestVMS = movement.getMovementConnect().getLatestVMS();
+        Movement currentLatestVMS = movementConnect.getLatestVMS();
         if (currentLatestVMS != null &&
-                currentLatestVMS.getTimestamp().isBefore(movement.getTimestamp())) {
+                currentLatestVMS.getTimestamp().isBefore(movement.getPositionTime())) {
             return currentLatestVMS;
         } else {
-            return movementService.getPreviousVMS(movement.getMovementConnect().getId(), movement.getTimestamp());
+            return movementService.getPreviousVMS(movementConnect.getId(), movement.getPositionTime());
         }
     }
 

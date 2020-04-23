@@ -71,6 +71,8 @@ public class IncomingMovement {
     private String pluginType;
     private boolean active;
     private boolean duplicate = false;
+    @Transient
+    private boolean hasPreviousVmsMovement = false;
 
     @NotNull
     private Instant updated;
@@ -424,5 +426,13 @@ public class IncomingMovement {
 
     public void setDuplicate(boolean duplicate) {
         this.duplicate = duplicate;
+    }
+
+    public boolean isHasPreviousVmsMovement() {
+        return hasPreviousVmsMovement;
+    }
+
+    public void setHasPreviousVmsMovement(boolean hasPreviousVmsMovement) {
+        this.hasPreviousVmsMovement = hasPreviousVmsMovement;
     }
 }
