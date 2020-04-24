@@ -425,4 +425,5 @@ public class IncomingMovement {
     public void setDuplicate(boolean duplicate) {
         this.duplicate = duplicate;
     }
+
 }

@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.validation;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
 public enum SanityRule {
@@ -125,7 +126,13 @@ public enum SanityRule {
         public boolean evaluate(IncomingMovement movement) {
             return movement.isDuplicate();
         }
-    },;
+    },
+    EXIT_REPORT_WITHOUT_PREVIOUS_MOVEMENT("VMS Exit report without previous VMS movement") {
+        @Override
+        public boolean evaluate(IncomingMovement movement) {
+            return MovementTypeType.EXI.value().equals(movement.getMovementType()) && (movement.getLatitude() == null || movement.getLongitude() == null);
+        }
+    };
 
     
     private String ruleName;
