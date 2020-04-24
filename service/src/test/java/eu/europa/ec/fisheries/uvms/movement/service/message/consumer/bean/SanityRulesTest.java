@@ -280,6 +280,8 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
 
         UUID id = UUID.randomUUID();
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setLongitude(null);
+        incomingMovement.setLatitude(null);
         incomingMovement.setAssetIRCS("TestIrcs:" + id);
         incomingMovement.setMovementType(MovementTypeType.EXI.value());
         ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
