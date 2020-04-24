@@ -83,7 +83,6 @@ public class MovementCreateBean {
                 MovementConnect newMovementConnect = IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy());
                 movementConnect = movementService.getOrCreateMovementConnectByConnectId(newMovementConnect);
                 previousVms = getPreviousVms(incomingMovement, movementConnect);
-                incomingMovement.setHasPreviousVmsMovement(previousVms != null);
             }
 
             if(MovementTypeType.EXI.value().equals(incomingMovement.getMovementType()) && previousVms != null){

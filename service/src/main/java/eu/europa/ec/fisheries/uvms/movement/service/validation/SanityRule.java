@@ -130,9 +130,9 @@ public enum SanityRule {
     EXIT_REPORT_WITHOUT_PREVIOUS_MOVEMENT("VMS Exit report without previous VMS movement") {
         @Override
         public boolean evaluate(IncomingMovement movement) {
-            return MovementTypeType.EXI.value().equals(movement.getMovementType()) && !movement.isHasPreviousVmsMovement();
+            return MovementTypeType.EXI.value().equals(movement.getMovementType()) && (movement.getLatitude() == null || movement.getLongitude() == null);
         }
-    },;
+    };
 
     
     private String ruleName;
