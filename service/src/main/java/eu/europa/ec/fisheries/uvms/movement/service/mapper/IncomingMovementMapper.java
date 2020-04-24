@@ -100,10 +100,10 @@ public abstract class IncomingMovementMapper {
         md.setAssetName(response.getAssetName());
         md.setAssetStatus(response.getAssetStatus());
         md.setMmsi(response.getMmsi());
+        md.setImo(response.getImo());
         md.setAssetGroups(response.getAssetGroupList());
         md.setConnectId(response.getAssetUUID());
-        // TODO: missing
-        //md.setAssetType();
+        md.setAssetType(response.getVesselType());
 
         // MobileTerminal
         md.setChannelGuid(response.getChannelGuid());
