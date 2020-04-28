@@ -3,10 +3,12 @@ package eu.europa.ec.fisheries.uvms.movement.client;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -21,6 +23,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.core.GenericType;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -155,6 +159,26 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         MicroMovement movementById = movementRestClient.getMicroMovementById(createdMovement.getId());
         // Then
         assertNotNull(movementById);
+    }
+    
+    @Test
+    public void getMovementListByQueryResponseTest() {
+        // Given
+        AssetDTO asset = createBasicAsset();
+        Instant fourYearsAgo = ZonedDateTime.now(ZoneOffset.UTC).minusYears(4).toInstant();
+        IncomingMovement incomingMovement = createIncomingMovement(asset, fourYearsAgo);
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+       // When 
+        Instant toDate = Instant.now();
+        Instant fromDate = ZonedDateTime.now(ZoneOffset.UTC).minusYears(5).toInstant();
+        GetMovementListByQueryResponse movementListByQuery =  movementRestClient.getMovementList(fromDate, toDate);
+        // Then 
+        List<MovementType> movementTypeList = movementListByQuery.getMovement();
+        assertTrue(movementTypeList.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+        assertTrue(movementTypeList.stream().anyMatch(m -> m.getAssetId().getValue().equals(asset.getId().toString())));
+        assertNotNull(movementListByQuery);
     }
 
     private IncomingMovement createIncomingMovement(AssetDTO testAsset, Instant positionTime) {
