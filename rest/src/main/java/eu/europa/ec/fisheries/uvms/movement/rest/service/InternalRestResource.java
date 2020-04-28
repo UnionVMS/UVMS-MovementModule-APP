@@ -8,6 +8,7 @@ import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
@@ -196,6 +197,35 @@ public class InternalRestResource {
             return ok.header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting micro movements for vessel ids ]", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+    
+    @POST
+    @Path("/movementsForConnectIdsBetweenDates")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getMovementsForConnectIdsBetweenDates(MovementsForConnectIdsBetweenDatesRequest request) {
+        List<String> vesselIds = request.getAssetIds();
+        Instant fromDate = request.getFromDate();
+        Instant toDate = request.getToDate();
+        List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(request.getSources());
+
+        if (vesselIds.isEmpty()) {
+            return Response.ok(Collections.emptyList()).header("MDC", MDC.get("requestId")).build();
+        }
+
+        try {
+            List<UUID> uuids = vesselIds
+                    .stream()
+                    .map(UUID::fromString)
+                    .collect(Collectors.toList());
+
+            List<Movement> movements = movementDao.getMovementsForConnectIdsBetweenDates(uuids, fromDate, toDate, sourceTypes);
+
+            Response.ResponseBuilder ok = Response.ok(movements);
+            return ok.header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when getting movements for asset ids ]", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }

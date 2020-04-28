@@ -1,13 +1,11 @@
 package eu.europa.ec.fisheries.uvms.movement.client;
 
-import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
-import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 
 import javax.annotation.PostConstruct;
@@ -87,25 +85,68 @@ public class MovementRestClient {
 
             return response.readEntity(MicroMovement.class);
     }
-  
-    public GetMovementListByQueryResponse getMovementList(Instant fromDate, Instant toDate){  
-    	//GetMovementListByQueryResponse movementListByQuery = new GetMovementListByQueryResponse();//  movementService.getList(query);
-    
-    	MovementQuery mQuery = new MovementQuery();
-    	RangeCriteria rc = new RangeCriteria();
-    	rc.setKey(RangeKeyType.DATE);
-    	rc.setFrom(fromDate.toString());
-    	rc.setTo(toDate.toString());
-    	
-    	mQuery.getMovementRangeSearchCriteria().add(rc);
-    	
-    	Response response = webTarget
-                .path("internal/list")
+//    public List<MovementType> getMovementList(List<String> connectIds, Instant fromDate, Instant toDate){  
+//    	  // MovementsForConnectIdsBetweenDatesRequest request = new MicroMovementsForConnectIdsBetweenDatesRequest(connectIds, fromDate, toDate);
+//    	   MovementsForConnectIdsBetweenDatesRequest request = new MovementsForConnectIdsBetweenDatesRequest(connectIds, fromDate, toDate);
+//           
+//    	   Response response = webTarget
+//                   .path("internal/movementsForConnectIdsBetweenDates")
+//                   .request(MediaType.APPLICATION_JSON)
+//                   .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+//                   .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
+//
+//           return response.readEntity(new GenericType<List<MovementType>>() {});
+//    }
+    public String getMovementsForConnectIdsBetweenDates(List<String> connectIds, Instant fromDate, Instant toDate) { //, List<String> sources) {
+    	 MovementsForConnectIdsBetweenDatesRequest request = new MovementsForConnectIdsBetweenDatesRequest(connectIds, fromDate, toDate);
+        // request.setSources(sources);
+
+        Response response = webTarget
+                .path("internal/movementsForConnectIdsBetweenDates")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
-                .post(Entity.entity(mQuery, MediaType.APPLICATION_JSON_TYPE));
+                .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
 
-        return response.readEntity(GetMovementListByQueryResponse.class);
+        return response.readEntity(String.class);
     }
+//    public GetMovementListByQueryResponse getMovementList(Instant fromDate, Instant toDate){  
+//    	//GetMovementListByQueryResponse movementListByQuery = new GetMovementListByQueryResponse();//  movementService.getList(query);
+//    
+//    	MovementQuery mQuery = new MovementQuery();
+//    	RangeCriteria rc = new RangeCriteria();
+//    	rc.setKey(RangeKeyType.DATE);
+//    	rc.setFrom(fromDate.toString());
+//    	rc.setTo(toDate.toString());
+//    	
+//    	ListCriteria lc = new ListCriteria();
+//    	lc.setKey(SearchKey.DATE);
+//    	lc.setValue(fromDate.toString());
+//    	
+//    	BigInteger bigInt = new BigInteger("10000000");
+//    	ListPagination lp = new ListPagination();
+//    	lp.setListSize(bigInt);
+//    	lp.setPage(bigInt);
+//    	
+//    	mQuery.getMovementRangeSearchCriteria().add(rc);
+//    	mQuery.getMovementSearchCriteria().add(lc);
+//    	mQuery.setPagination(lp);
+//    	
+////    	private final static long serialVersionUID = 1L;
+////        @XmlElement(required = true)
+////        protected ListPagination pagination;
+////        protected boolean excludeFirstAndLastSegment;
+////        @XmlElement(required = true)
+////        protected List<ListCriteria> movementSearchCriteria;
+////        @XmlElement(required = true)
+////        protected List<RangeCriteria> movementRangeSearchCriteria;
+//        
+//    	Response response = webTarget
+//                .path("internal/list")
+//                .request(MediaType.APPLICATION_JSON)
+//                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+//                .post(Entity.entity(mQuery, MediaType.APPLICATION_JSON_TYPE));
+//
+//        return response.readEntity(GetMovementListByQueryResponse.class);
+//    }
 
 }

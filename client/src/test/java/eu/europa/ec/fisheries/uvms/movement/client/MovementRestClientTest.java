@@ -8,7 +8,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
-import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -21,7 +20,6 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.ws.rs.core.GenericType;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -161,6 +159,26 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         assertNotNull(movementById);
     }
     
+//    @Test
+//    public void getMovementListByQueryResponseTest() {
+//        // Given
+//        AssetDTO asset = createBasicAsset();
+//        Instant fourYearsAgo = ZonedDateTime.now(ZoneOffset.UTC).minusYears(4).toInstant();
+//        IncomingMovement incomingMovement = createIncomingMovement(asset, fourYearsAgo);
+//        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+//        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+//        Movement createdMovement = movementService.createAndProcessMovement(movement);
+//       // When 
+//        Instant toDate = Instant.now();
+//        Instant fromDate = ZonedDateTime.now(ZoneOffset.UTC).minusYears(5).toInstant();
+//        GetMovementListByQueryResponse movementListByQuery =  movementRestClient.getMovementList(fromDate, toDate);
+//        // Then 
+//        List<MovementType> movementTypeList = movementListByQuery.getMovement();
+//        assertTrue(movementTypeList.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+//        assertTrue(movementTypeList.stream().anyMatch(m -> m.getAssetId().getValue().equals(asset.getId().toString())));
+//        assertNotNull(movementListByQuery);
+//    }
+    
     @Test
     public void getMovementListByQueryResponseTest() {
         // Given
@@ -170,15 +188,22 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         Movement createdMovement = movementService.createAndProcessMovement(movement);
-       // When 
+       
+        // When 
         Instant toDate = Instant.now();
         Instant fromDate = ZonedDateTime.now(ZoneOffset.UTC).minusYears(5).toInstant();
-        GetMovementListByQueryResponse movementListByQuery =  movementRestClient.getMovementList(fromDate, toDate);
+        List<String> connectIds = new ArrayList<String>();
+        connectIds.add(asset.getId().toString());
+      //  List<MovementType> movementListBy = movementRestClient.getMovementList(connectIds, fromDate, toDate);
+      //  List<MovementType> 
+        String movementListJson = movementRestClient.getMovementsForConnectIdsBetweenDates(connectIds, fromDate, toDate);
+        // Then
+       	assertNotNull(movementListJson);
+        assertTrue(movementListJson.contains(createdMovement.getId().toString()));
         // Then 
-        List<MovementType> movementTypeList = movementListByQuery.getMovement();
-        assertTrue(movementTypeList.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
-        assertTrue(movementTypeList.stream().anyMatch(m -> m.getAssetId().getValue().equals(asset.getId().toString())));
-        assertNotNull(movementListByQuery);
+      //  assertTrue(movementListBy.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+      //  assertTrue(movementListBy.stream().anyMatch(m -> m.getAssetId().getValue().equals(asset.getId().toString())));
+        
     }
 
     private IncomingMovement createIncomingMovement(AssetDTO testAsset, Instant positionTime) {
