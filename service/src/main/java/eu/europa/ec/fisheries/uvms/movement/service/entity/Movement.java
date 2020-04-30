@@ -14,8 +14,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
-import eu.europa.ec.fisheries.uvms.movement.service.util.PointDeserializer;
-import eu.europa.ec.fisheries.uvms.movement.service.util.PointSerializer;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -24,8 +22,6 @@ import org.hibernate.annotations.FetchMode;
 import org.locationtech.jts.geom.Point;
 
 import javax.json.bind.annotation.JsonbTransient;
-import javax.json.bind.annotation.JsonbTypeDeserializer;
-import javax.json.bind.annotation.JsonbTypeSerializer;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -129,7 +125,7 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     @Column(name = "move_movesour_id")
     @Enumerated(EnumType.ORDINAL)
-    private MovementSourceType movementSource;
+    private MovementSourceType source;
 
     @Column(name = "move_movetyp_id")
     @Enumerated(EnumType.ORDINAL)
@@ -226,12 +222,12 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.movementType = movementType;
     }
 
-    public MovementSourceType getMovementSource() {
-        return movementSource;
+    public MovementSourceType getSource() {
+        return source;
     }
 
-    public void setMovementSource(MovementSourceType movementSource) {
-        this.movementSource = movementSource;
+    public void setSource(MovementSourceType source) {
+        this.source = source;
     }
 
     public Instant getTimestamp() {

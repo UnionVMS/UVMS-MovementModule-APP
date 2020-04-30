@@ -65,9 +65,9 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Track track = firstAfter.getTrack();
 
         List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track, 100);
-        assertThat(movements.get(2).getGuid(), is(firstMovement.getId().toString()));
-        assertThat(movements.get(1).getGuid(), is(secondMovement.getId().toString()));
-        assertThat(movements.get(0).getGuid(), is(thirdMovement.getId().toString()));
+        assertThat(movements.get(2).getId(), is(firstMovement.getId().toString()));
+        assertThat(movements.get(1).getId(), is(secondMovement.getId().toString()));
+        assertThat(movements.get(0).getId(), is(thirdMovement.getId().toString()));
         
         assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
         assertThat(secondAfter.getPreviousMovement(), is(firstAfter));
@@ -104,10 +104,10 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Track track = firstAfter.getTrack();
 
         List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track, 100);
-        assertThat(movements.get(3).getGuid(), is(firstMovement.getId().toString()));
-        assertThat(movements.get(2).getGuid(), is(secondMovement.getId().toString()));
-        assertThat(movements.get(1).getGuid(), is(thirdMovement.getId().toString()));
-        assertThat(movements.get(0).getGuid(), is(fourthMovement.getId().toString()));
+        assertThat(movements.get(3).getId(), is(firstMovement.getId().toString()));
+        assertThat(movements.get(2).getId(), is(secondMovement.getId().toString()));
+        assertThat(movements.get(1).getId(), is(thirdMovement.getId().toString()));
+        assertThat(movements.get(0).getId(), is(fourthMovement.getId().toString()));
         
         assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
         assertThat(secondAfter.getPreviousMovement(), is(firstAfter));
@@ -145,10 +145,10 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Track track = firstAfter.getTrack();
 
         List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track, 100);
-        assertThat(movements.get(3).getGuid(), is(firstMovement.getId().toString()));
-        assertThat(movements.get(2).getGuid(), is(secondMovement.getId().toString()));
-        assertThat(movements.get(1).getGuid(), is(thirdMovement.getId().toString()));
-        assertThat(movements.get(0).getGuid(), is(fourthMovement.getId().toString()));
+        assertThat(movements.get(3).getId(), is(firstMovement.getId().toString()));
+        assertThat(movements.get(2).getId(), is(secondMovement.getId().toString()));
+        assertThat(movements.get(1).getId(), is(thirdMovement.getId().toString()));
+        assertThat(movements.get(0).getId(), is(fourthMovement.getId().toString()));
         
         assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
         assertThat(secondAfter.getPreviousMovement(), is(firstAfter));
@@ -185,10 +185,10 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Track track = firstAfter.getTrack();
 
         List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track, 100);
-        assertThat(movements.get(3).getGuid(), is(firstMovement.getId().toString()));
-        assertThat(movements.get(2).getGuid(), is(secondMovement.getId().toString()));
-        assertThat(movements.get(1).getGuid(), is(thirdMovement.getId().toString()));
-        assertThat(movements.get(0).getGuid(), is(fourthMovement.getId().toString()));
+        assertThat(movements.get(3).getId(), is(firstMovement.getId().toString()));
+        assertThat(movements.get(2).getId(), is(secondMovement.getId().toString()));
+        assertThat(movements.get(1).getId(), is(thirdMovement.getId().toString()));
+        assertThat(movements.get(0).getId(), is(fourthMovement.getId().toString()));
         
         assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
         assertThat(secondAfter.getPreviousMovement(), is(firstAfter));
