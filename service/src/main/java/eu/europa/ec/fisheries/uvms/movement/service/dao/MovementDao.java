@@ -335,13 +335,4 @@ public class MovementDao {
         query.setParameter("sources", sources);
         return query.getResultList();
     }
-    
-    public List<Movement> getMovementsForConnectIdsBetweenDates(List<UUID> connectIds, Instant fromDate, Instant toDate, List<MovementSourceType> sources) {
-        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_MOVEMENTS_FOR_CONNECT_IDS_BETWEEN_DATES, Movement.class);
-        query.setParameter("connectIds", connectIds);
-        query.setParameter("fromDate", fromDate);
-        query.setParameter("toDate", toDate);
-        query.setParameter("sources", sources);
-        return query.getResultList();
-    }
 }

@@ -199,35 +199,6 @@ public class InternalRestResource {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
-    
-    @POST
-    @Path("/movementsForConnectIdsBetweenDates")
-    @RequiresFeature(UnionVMSFeature.manageInternalRest)
-    public Response getMovementsForConnectIdsBetweenDates(MovementsForConnectIdsBetweenDatesRequest request) {
-        List<String> vesselIds = request.getAssetIds();
-        Instant fromDate = request.getFromDate();
-        Instant toDate = request.getToDate();
-        List<MovementSourceType> sourceTypes = convertToMovementSourceTypes(request.getSources());
-
-        if (vesselIds.isEmpty()) {
-            return Response.ok(Collections.emptyList()).header("MDC", MDC.get("requestId")).build();
-        }
-
-        try {
-            List<UUID> uuids = vesselIds
-                    .stream()
-                    .map(UUID::fromString)
-                    .collect(Collectors.toList());
-
-            List<Movement> movements = movementDao.getMovementsForConnectIdsBetweenDates(uuids, fromDate, toDate, sourceTypes);
-
-            Response.ResponseBuilder ok = Response.ok(movements);
-            return ok.header("MDC", MDC.get("requestId")).build();
-        } catch (Exception e) {
-            LOG.error("[ Error when getting movements for asset ids ]", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
-        }
-    }
 
     private List<MovementSourceType> convertToMovementSourceTypes (List<String> sources) {
         List<MovementSourceType> sourceTypes = new ArrayList<>();

@@ -179,15 +179,14 @@ public class MovementRestClientTest extends BuildMovementClientDeployment   {
         IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
-        movement.setTimestamp(Instant.now().minusSeconds(100));
+        movement.setTimestamp(Instant.now());
         Movement createdMovement = movementService.createAndProcessMovement(movement);
    
         MovementQuery movementQuery = new MovementQuery();
         movementQuery.setPagination(listPaginationDefault());
-        movementQuery.getMovementRangeSearchCriteria().add(createRangeCriteriaDate(1000000));
-    	
+        movementQuery.getMovementRangeSearchCriteria().add(createRangeCriteriaDate(1));
         GetMovementListByQueryResponse movementListBy = movementRestClient.getMovementList(movementQuery);
-
+       
         assertNotNull(movementListBy);
         assertTrue(movementListBy.getMovement().size() > 0);
         assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
@@ -202,32 +201,33 @@ public class MovementRestClientTest extends BuildMovementClientDeployment   {
        
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         movement.setTimestamp(Instant.now().minus(730,ChronoUnit.DAYS));
+        movement.setUpdated(Instant.now().minus(730,ChronoUnit.DAYS));
         Movement createdMovement = movementService.createAndProcessMovement(movement);
    
         MovementQuery movementQuery = new MovementQuery();
         movementQuery.setPagination(listPaginationDefault());
-        movementQuery.getMovementRangeSearchCriteria().add(createRangeCriteriaDate(63113955));
+        movementQuery.getMovementRangeSearchCriteria().add(createRangeCriteriaDate(731));
     	
         GetMovementListByQueryResponse movementListBy = movementRestClient.getMovementList(movementQuery);
-
+        
         assertNotNull(movementListBy);
         assertTrue(movementListBy.getMovement().size() > 0);
         assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
-        assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));   
+        assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));  
     }
     
-    private RangeCriteria createRangeCriteriaDate(int secoundsFromNow) {
+    private RangeCriteria createRangeCriteriaDate(int daysFromNow) {
         RangeCriteria rangeCriteria1 = new RangeCriteria();
         rangeCriteria1.setKey(RangeKeyType.DATE);
         rangeCriteria1.setTo(Long.toString(Instant.now().toEpochMilli()));
-        rangeCriteria1.setFrom(Long.toString(Instant.now().minusSeconds(secoundsFromNow).toEpochMilli()));
+        rangeCriteria1.setFrom(Long.toString(Instant.now().minus(daysFromNow,ChronoUnit.DAYS).toEpochMilli()));
         return rangeCriteria1;
     }
     
     private ListPagination listPaginationDefault() {
     	ListPagination pagination = new ListPagination();
         pagination.setPage(BigInteger.ONE);
-        pagination.setListSize(BigInteger.valueOf(10));
+        pagination.setListSize(BigInteger.valueOf(1000));
         return pagination;
     }
     
