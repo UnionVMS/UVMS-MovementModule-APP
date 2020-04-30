@@ -5,7 +5,6 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryRes
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementsForConnectIdsBetweenDatesRequest;
@@ -241,4 +240,5 @@ public class InternalRestResource {
         }
         return sourceTypes;
     }
+
 }

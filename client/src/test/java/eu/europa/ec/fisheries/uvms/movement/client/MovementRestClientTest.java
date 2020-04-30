@@ -1,41 +1,55 @@
 package eu.europa.ec.fisheries.uvms.movement.client;
 
+import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.search.v1.RangeCriteria;
+import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.IncomingMovementMapper;
+import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
+import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
+
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import java.math.BigInteger;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
-public class MovementRestClientTest extends BuildMovementClientDeployment {
+public class MovementRestClientTest extends BuildMovementClientDeployment   {
 
     @Inject
     private MovementRestClient movementRestClient;
 
     @Inject
     private MovementService movementService;
+    @EJB
+    private JwtTokenHandler tokenHandler;
 
+    @EJB
+    private InternalRestTokenHandler internalRestTokenHandler;
+    
     @Before
     public void before() throws NamingException {
         InitialContext ctx = new InitialContext();
@@ -159,53 +173,64 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         assertNotNull(movementById);
     }
     
-//    @Test
-//    public void getMovementListByQueryResponseTest() {
-//        // Given
-//        AssetDTO asset = createBasicAsset();
-//        Instant fourYearsAgo = ZonedDateTime.now(ZoneOffset.UTC).minusYears(4).toInstant();
-//        IncomingMovement incomingMovement = createIncomingMovement(asset, fourYearsAgo);
-//        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
-//        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
-//        Movement createdMovement = movementService.createAndProcessMovement(movement);
-//       // When 
-//        Instant toDate = Instant.now();
-//        Instant fromDate = ZonedDateTime.now(ZoneOffset.UTC).minusYears(5).toInstant();
-//        GetMovementListByQueryResponse movementListByQuery =  movementRestClient.getMovementList(fromDate, toDate);
-//        // Then 
-//        List<MovementType> movementTypeList = movementListByQuery.getMovement();
-//        assertTrue(movementTypeList.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
-//        assertTrue(movementTypeList.stream().anyMatch(m -> m.getAssetId().getValue().equals(asset.getId().toString())));
-//        assertNotNull(movementListByQuery);
-//    }
-    
     @Test
-    public void getMovementListByQueryResponseTest() {
-        // Given
+    public void getMovementListByQueryResponseDateTest() {
         AssetDTO asset = createBasicAsset();
-        Instant fourYearsAgo = ZonedDateTime.now(ZoneOffset.UTC).minusYears(4).toInstant();
-        IncomingMovement incomingMovement = createIncomingMovement(asset, fourYearsAgo);
+        IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        movement.setTimestamp(Instant.now().minusSeconds(100));
         Movement createdMovement = movementService.createAndProcessMovement(movement);
-       
-        // When 
-        Instant toDate = Instant.now();
-        Instant fromDate = ZonedDateTime.now(ZoneOffset.UTC).minusYears(5).toInstant();
-        List<String> connectIds = new ArrayList<String>();
-        connectIds.add(asset.getId().toString());
-      //  List<MovementType> movementListBy = movementRestClient.getMovementList(connectIds, fromDate, toDate);
-      //  List<MovementType> 
-        String movementListJson = movementRestClient.getMovementsForConnectIdsBetweenDates(connectIds, fromDate, toDate);
-        // Then
-       	assertNotNull(movementListJson);
-        assertTrue(movementListJson.contains(createdMovement.getId().toString()));
-        // Then 
-      //  assertTrue(movementListBy.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
-      //  assertTrue(movementListBy.stream().anyMatch(m -> m.getAssetId().getValue().equals(asset.getId().toString())));
-        
-    }
+   
+        MovementQuery movementQuery = new MovementQuery();
+        movementQuery.setPagination(listPaginationDefault());
+        movementQuery.getMovementRangeSearchCriteria().add(createRangeCriteriaDate(1000000));
+    	
+        GetMovementListByQueryResponse movementListBy = movementRestClient.getMovementList(movementQuery);
 
+        assertNotNull(movementListBy);
+        assertTrue(movementListBy.getMovement().size() > 0);
+        assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+        assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));   
+    }
+    
+    @Test
+    public void getMovementListByQueryResponseTwoYearsBackTest() {
+        AssetDTO asset = createBasicAsset();
+        IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+       
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        movement.setTimestamp(Instant.now().minus(730,ChronoUnit.DAYS));
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+   
+        MovementQuery movementQuery = new MovementQuery();
+        movementQuery.setPagination(listPaginationDefault());
+        movementQuery.getMovementRangeSearchCriteria().add(createRangeCriteriaDate(63113955));
+    	
+        GetMovementListByQueryResponse movementListBy = movementRestClient.getMovementList(movementQuery);
+
+        assertNotNull(movementListBy);
+        assertTrue(movementListBy.getMovement().size() > 0);
+        assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+        assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));   
+    }
+    
+    private RangeCriteria createRangeCriteriaDate(int secoundsFromNow) {
+        RangeCriteria rangeCriteria1 = new RangeCriteria();
+        rangeCriteria1.setKey(RangeKeyType.DATE);
+        rangeCriteria1.setTo(Long.toString(Instant.now().toEpochMilli()));
+        rangeCriteria1.setFrom(Long.toString(Instant.now().minusSeconds(secoundsFromNow).toEpochMilli()));
+        return rangeCriteria1;
+    }
+    
+    private ListPagination listPaginationDefault() {
+    	ListPagination pagination = new ListPagination();
+        pagination.setPage(BigInteger.ONE);
+        pagination.setListSize(BigInteger.valueOf(10));
+        return pagination;
+    }
+    
     private IncomingMovement createIncomingMovement(AssetDTO testAsset, Instant positionTime) {
 
         IncomingMovement incomingMovement = new IncomingMovement();

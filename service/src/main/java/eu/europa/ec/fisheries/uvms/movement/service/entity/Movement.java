@@ -55,7 +55,7 @@ import java.util.UUID;
     @NamedQuery(name = MicroMovementExtended.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect.id, m.timestamp, m.speed, m.movementSource) FROM Movement m WHERE m.movementConnect.id in :connectIds AND m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.movementSource in :sources ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect.id, m.timestamp, m.speed, m.movementSource) FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE mc.updated > :date AND m.movementSource in :sources" ),
 
-    @NamedQuery(name = Movement.FIND_ALL_MOVEMENTS_FOR_CONNECT_IDS_BETWEEN_DATES, query = "SELECT m FROM Movement m WHERE m.movementConnect.id in :connectIds AND m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.movementSource in :sources ORDER BY m.timestamp DESC"),
+
     @NamedQuery(name = Movement.FIND_LATEST_X_NUMBER_FOR_ASSET, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.movementSource in :sources ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"),
@@ -80,9 +80,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATEST = "Movement.findLatest";
     public static final String FIND_BY_PREVIOUS_MOVEMENT = "Movement.findByPreviousMovement";
     public static final String FIND_LATEST_X_NUMBER_FOR_ASSET = "Movement.findLatestXNumberForAsset";
-    public static final String FIND_ALL_MOVEMENTS_FOR_CONNECT_IDS_BETWEEN_DATES= "Movement.findAllMovementByMovementConnectListBetweenDates";
-    
-    
+
     private static final long serialVersionUID = 1L;
 
     @Id
