@@ -12,7 +12,7 @@ public enum SatId {
         return value;
     }
 
-    public static SatId fromInt(int code) {
+    public static SatId fromInt(Integer code) {
         for (SatId type : SatId.values()) {
             if (type.value == code) {
                 return type;

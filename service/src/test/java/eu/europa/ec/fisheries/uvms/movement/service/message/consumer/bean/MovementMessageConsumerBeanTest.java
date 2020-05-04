@@ -10,7 +10,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
@@ -139,7 +138,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
-        Short satelliteId = 42;
+        Short satelliteId = 3;
         incomingMovement.setSourceSatelliteId(satelliteId);
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
 
