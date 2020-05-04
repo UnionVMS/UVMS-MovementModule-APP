@@ -2,7 +2,9 @@ package eu.europa.ec.fisheries.uvms.movement.client;
 
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
+import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 
@@ -18,6 +20,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -82,4 +85,16 @@ public class MovementRestClient {
 
             return response.readEntity(MicroMovement.class);
     }
+    
+    public GetMovementListByQueryResponse getMovementList(MovementQuery movementQuery){ 
+        
+    	Response response = webTarget
+                .path("internal/list")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+                .post(Entity.entity(movementQuery, MediaType.APPLICATION_JSON_TYPE));
+
+        return response.readEntity(GetMovementListByQueryResponse.class);
+    }
+
 }
