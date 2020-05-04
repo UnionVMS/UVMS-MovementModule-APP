@@ -285,9 +285,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
         assertThat(trackMovementList.size(), is(3));
 
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getGuid().equals(firstMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getGuid().equals(secondMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getGuid().equals(thirdMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId().toString())));
     }
     
     @Test
@@ -328,9 +328,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         List<MicroMovement> trackMovementList = movementDao.getMicroMovementsDtoByTrack(track,2000);
         assertThat(trackMovementList.size(), is(3));
 
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getGuid().equals(firstMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getGuid().equals(secondMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getGuid().equals(thirdMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId().toString())));
     }
     
     @Test
@@ -371,9 +371,9 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         List<MicroMovement> trackMovementList = movementDao.getMicroMovementsDtoByTrack(track,2000);
         assertThat(trackMovementList.size(), is(3));
 
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getGuid().equals(firstMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getGuid().equals(secondMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getGuid().equals(thirdMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId().toString())));
     }
     
     @Test
@@ -543,7 +543,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
         Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        firstMovement.setMovementSource(MovementSourceType.NAF);
+        firstMovement.setSource(MovementSourceType.NAF);
         firstMovement.setTimestamp(timestamp);
         firstMovement = movementService.createMovement(firstMovement);
         incomingMovementBean.processMovement(firstMovement);
@@ -559,13 +559,13 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
         Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        firstMovement.setMovementSource(MovementSourceType.NAF);
+        firstMovement.setSource(MovementSourceType.NAF);
         firstMovement.setTimestamp(timestamp);
         firstMovement = movementService.createMovement(firstMovement);
         incomingMovementBean.processMovement(firstMovement);
         
         Movement secondMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        secondMovement.setMovementSource(MovementSourceType.NAF);
+        secondMovement.setSource(MovementSourceType.NAF);
         secondMovement.setTimestamp(timestamp.plusSeconds(10));
         secondMovement = movementService.createMovement(secondMovement);
         incomingMovementBean.processMovement(secondMovement);
@@ -581,7 +581,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
         Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        firstMovement.setMovementSource(MovementSourceType.AIS);
+        firstMovement.setSource(MovementSourceType.AIS);
         firstMovement.setTimestamp(timestamp);
         firstMovement = movementService.createMovement(firstMovement);
         incomingMovementBean.processMovement(firstMovement);
@@ -597,19 +597,19 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
         Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        firstMovement.setMovementSource(MovementSourceType.AIS);
+        firstMovement.setSource(MovementSourceType.AIS);
         firstMovement.setTimestamp(timestamp);
         firstMovement = movementService.createMovement(firstMovement);
         incomingMovementBean.processMovement(firstMovement);
 
         Movement secondMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        secondMovement.setMovementSource(MovementSourceType.NAF);
+        secondMovement.setSource(MovementSourceType.NAF);
         secondMovement.setTimestamp(timestamp.plusSeconds(10));
         secondMovement = movementService.createMovement(secondMovement);
         incomingMovementBean.processMovement(secondMovement);
 
         Movement thirdMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        thirdMovement.setMovementSource(MovementSourceType.AIS);
+        thirdMovement.setSource(MovementSourceType.AIS);
         thirdMovement.setTimestamp(timestamp);
         thirdMovement.setTimestamp(timestamp.plusSeconds(20));
         thirdMovement = movementService.createMovement(thirdMovement);
@@ -626,20 +626,20 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
         Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        firstMovement.setMovementSource(MovementSourceType.AIS);
+        firstMovement.setSource(MovementSourceType.AIS);
         firstMovement.setTimestamp(timestamp);
         firstMovement = movementService.createMovement(firstMovement);
         incomingMovementBean.processMovement(firstMovement);
 
         Movement thirdMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        thirdMovement.setMovementSource(MovementSourceType.AIS);
+        thirdMovement.setSource(MovementSourceType.AIS);
         thirdMovement.setTimestamp(timestamp);
         thirdMovement.setTimestamp(timestamp.plusSeconds(20));
         thirdMovement = movementService.createMovement(thirdMovement);
         incomingMovementBean.processMovement(thirdMovement);
 
         Movement secondMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        secondMovement.setMovementSource(MovementSourceType.NAF);
+        secondMovement.setSource(MovementSourceType.NAF);
         secondMovement.setTimestamp(timestamp.plusSeconds(10));
         secondMovement = movementService.createMovement(secondMovement);
         incomingMovementBean.processMovement(secondMovement);
@@ -655,20 +655,20 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         UUID connectId = UUID.randomUUID();
         Instant timestamp = Instant.now();
         Movement secondMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        secondMovement.setMovementSource(MovementSourceType.AIS);
+        secondMovement.setSource(MovementSourceType.AIS);
         secondMovement.setTimestamp(timestamp.plusSeconds(10));
         secondMovement = movementService.createMovement(secondMovement);
         incomingMovementBean.processMovement(secondMovement);
 
         Movement thirdMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        thirdMovement.setMovementSource(MovementSourceType.AIS);
+        thirdMovement.setSource(MovementSourceType.AIS);
         thirdMovement.setTimestamp(timestamp);
         thirdMovement.setTimestamp(timestamp.plusSeconds(20));
         thirdMovement = movementService.createMovement(thirdMovement);
         incomingMovementBean.processMovement(thirdMovement);
 
         Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        firstMovement.setMovementSource(MovementSourceType.NAF);
+        firstMovement.setSource(MovementSourceType.NAF);
         firstMovement.setTimestamp(timestamp);
         firstMovement = movementService.createMovement(firstMovement);
         incomingMovementBean.processMovement(firstMovement);
@@ -694,7 +694,7 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
             
             for (Movement movement : movements) {
                 assertThat(movement.getTrack(), is(track));
-                assertTrue(movementList.stream().anyMatch(item -> item.getGuid().equals(movement.getId().toString())));
+                assertTrue(movementList.stream().anyMatch(item -> item.getId().equals(movement.getId().toString())));
             }
         }
 

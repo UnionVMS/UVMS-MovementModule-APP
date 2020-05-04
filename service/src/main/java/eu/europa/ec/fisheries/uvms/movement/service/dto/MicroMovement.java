@@ -18,7 +18,7 @@ public class MicroMovement implements Serializable {
 
     private Double heading;
 
-    private String guid;
+    private String id;
 
     private Instant timestamp;
 
@@ -36,18 +36,18 @@ public class MicroMovement implements Serializable {
         location.setLatitude(point.getY());
         location.setLongitude(point.getX());
         heading = movement.getHeading().doubleValue();
-        guid = movement.getId().toString();
+        id = movement.getId().toString();
         timestamp = movement.getTimestamp();
         speed = (movement.getSpeed() == null ? null : movement.getSpeed().doubleValue());
     }
 
-    public MicroMovement(Geometry geo, Float heading, UUID guid, Instant timestamp, Float speed, MovementSourceType source) {
+    public MicroMovement(Geometry geo, Float heading, UUID id, Instant timestamp, Float speed, MovementSourceType source) {
         Point point = (Point)geo;
         location = new MovementPoint();
         location.setLatitude(point.getY());
         location.setLongitude(point.getX());
         this.heading = heading.doubleValue();
-        this.guid = guid.toString();
+        this.id = id.toString();
         this.timestamp = timestamp;
         this.speed = (speed == null ? null : speed.doubleValue());
         this.source = source;
@@ -69,12 +69,12 @@ public class MicroMovement implements Serializable {
         this.heading = heading;
     }
 
-    public String getGuid() {
-        return guid;
+    public String getId() {
+        return id;
     }
 
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Instant getTimestamp() {

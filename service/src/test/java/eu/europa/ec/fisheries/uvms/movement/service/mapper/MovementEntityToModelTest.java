@@ -77,7 +77,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 		Movement movement = new Movement();
 		GeometryFactory gf = new GeometryFactory();
 		movement.setLocation(gf.createPoint(new Coordinate(lon, lat)));
-		movement.setMovementSource(MovementSourceType.IRIDIUM);
+		movement.setSource(MovementSourceType.IRIDIUM);
 		movement.setMovementType(MovementTypeType.POS);
 		MovementConnect movementConnect = new MovementConnect();
 		movementConnect.setId(connectId);

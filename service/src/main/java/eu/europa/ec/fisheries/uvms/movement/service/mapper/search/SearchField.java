@@ -91,7 +91,7 @@ public enum SearchField implements SearchFieldType {
     /**
      * The Source where the movement report originates from
      */
-    SOURCE("movementSource", SearchTables.MOVEMENT, MovementSourceType.class),
+    SOURCE("source", SearchTables.MOVEMENT, MovementSourceType.class),
     /**
      * The calculated category of the Segment
      */

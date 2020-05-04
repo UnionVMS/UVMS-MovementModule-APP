@@ -56,7 +56,7 @@ public class MockData {
         movement.setLocation(point);
         movement.setHeading((float)latlong.bearing);
         movement.setSpeed((float)latlong.speed);
-        movement.setMovementSource(MovementSourceType.NAF);
+        movement.setSource(MovementSourceType.NAF);
         movement.setStatus("TEST");
         movement.setUpdated(Instant.now());
         movement.setUpdatedBy(username);
