@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
@@ -42,7 +41,7 @@ public class EventStreamSender {
         try {
             if (move != null) {
                 MicroMovementExtended micro = new MicroMovementExtended(move.getLocation(),
-                        move.getHeading(), move.getId(), move.getMovementConnect().getId(), move.getTimestamp(), move.getSpeed(), move.getMovementSource());
+                        move.getHeading(), move.getId(), move.getMovementConnect().getId(), move.getTimestamp(), move.getSpeed(), move.getSource());
                 String outgoingJson = jsonb.toJson(micro);
 
                 TextMessage message = this.context.createTextMessage(outgoingJson);

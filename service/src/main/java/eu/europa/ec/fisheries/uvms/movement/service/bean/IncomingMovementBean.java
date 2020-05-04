@@ -62,7 +62,7 @@ public class IncomingMovementBean {
     }
 
     private void updateLatestVMS(Movement currentMovement) {
-        if (currentMovement.getMovementSource().equals(MovementSourceType.AIS)) {
+        if (currentMovement.getSource().equals(MovementSourceType.AIS)) {
             return;
         }
         Movement latestVMS = currentMovement.getMovementConnect().getLatestVMS();
@@ -85,7 +85,7 @@ public class IncomingMovementBean {
                 Instant newDate = timeStamp.plusSeconds(1);
                 movement.setPositionTime(newDate);
             } else if (!Objects.equals(movement.getMovementSourceType(), MovementSourceType.AIS.value()) &&
-                    !Objects.equals(movement.getMovementSourceType(), duplicateMovements.get(0).getMovementSource().value())) {
+                    !Objects.equals(movement.getMovementSourceType(), duplicateMovements.get(0).getSource().value())) {
                 // Don't modify NAF/Inmarsat timestamp, add second to AIS position instead 
                 duplicateMovements.get(0).setTimestamp(timeStamp.plusSeconds(1));
             } else {

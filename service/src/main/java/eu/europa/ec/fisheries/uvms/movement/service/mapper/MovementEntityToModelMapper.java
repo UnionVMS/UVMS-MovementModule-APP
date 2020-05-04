@@ -46,7 +46,7 @@ public class MovementEntityToModelMapper {
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setLesReportTime( Date.from(movement.getLesReportTime() ));
         model.setStatus(movement.getStatus());
-        model.setSource(movement.getMovementSource());
+        model.setSource(movement.getSource());
         model.setMovementType(movement.getMovementType());
         model.setActivity(model.getActivity());
         MovementPoint movementPoint = new MovementPoint();
@@ -67,7 +67,7 @@ public class MovementEntityToModelMapper {
         model.setReportedCourse(movement.getHeading() != null ? movement.getHeading().doubleValue() : null);
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
-        model.setSource(movement.getMovementSource());
+        model.setSource(movement.getSource());
         model.setMovementType(movement.getMovementType());
         MovementPoint movementPoint = new MovementPoint();
         Point point = movement.getLocation();
@@ -107,7 +107,7 @@ public class MovementEntityToModelMapper {
         	model.setLesReportTime( Date.from(movement.getLesReportTime() ));
         }
         model.setStatus(movement.getStatus());
-        model.setSource(movement.getMovementSource());
+        model.setSource(movement.getSource());
         model.setMovementType(movement.getMovementType());
 
         MovementPoint movementPoint = new MovementPoint();

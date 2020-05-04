@@ -43,9 +43,9 @@ public abstract class IncomingMovementMapper {
         entity.setUpdatedBy(username);
 
         if (ic.getMovementSourceType() != null) {
-            entity.setMovementSource(MovementSourceType.fromValue(ic.getMovementSourceType()));
+            entity.setSource(MovementSourceType.fromValue(ic.getMovementSourceType()));
         } else {
-            entity.setMovementSource(MovementSourceType.OTHER);
+            entity.setSource(MovementSourceType.OTHER);
         }
 
         entity.setMovementType(MovementTypeType.fromValue(ic.getMovementType()));
@@ -116,7 +116,7 @@ public abstract class IncomingMovementMapper {
         md.setMobileTerminalSerialNumber(response.getSerialNumber());
         //TODO: missing
         //md.setMobileTerminalStatus();
-        md.setSource(movement.getMovementSource().value());
+        md.setSource(movement.getSource().value());
 
         if (previousMovement != null) {
             md.setPreviousLatitude(previousMovement.getLocation().getY());

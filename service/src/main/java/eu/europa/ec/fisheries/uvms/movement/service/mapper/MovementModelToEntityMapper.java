@@ -58,9 +58,9 @@ public class MovementModelToEntityMapper {
         entity.setUpdatedBy(username);
 
         if (movement.getSource() != null) {
-            entity.setMovementSource(movement.getSource());
+            entity.setSource(movement.getSource());
         } else {
-            entity.setMovementSource(MovementSourceType.INMARSAT_C);
+            entity.setSource(MovementSourceType.INMARSAT_C);
         }
 
         if (movement.getMovementType() != null) {
@@ -108,9 +108,9 @@ public class MovementModelToEntityMapper {
         entity.setUpdatedBy(username);
 
         if (movement.getSource() != null) {
-            entity.setMovementSource(movement.getSource());
+            entity.setSource(movement.getSource());
         } else {
-            entity.setMovementSource(MovementSourceType.INMARSAT_C);
+            entity.setSource(MovementSourceType.INMARSAT_C);
         }
 
         if (movement.getMovementType() != null) {
