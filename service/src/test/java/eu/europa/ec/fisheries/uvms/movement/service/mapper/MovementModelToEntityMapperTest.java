@@ -90,7 +90,7 @@ public class MovementModelToEntityMapperTest extends TransactionalTests {
         Movement movement = mapNewMovementEntity(movementType, "testUser");
 
         //Then
-        assertThat(movement.getMovementSource(), is(MovementSourceType.INMARSAT_C));
+        assertThat(movement.getSource(), is(MovementSourceType.INMARSAT_C));
         
     }
 

@@ -80,7 +80,7 @@ public class MovementService {
         createMovement(movement);
         incomingMovementBean.processMovement(movement);
         fireMovementEvent(movement);
-        if (!movement.getMovementSource().equals(MovementSourceType.AIS)) {
+        if (!movement.getSource().equals(MovementSourceType.AIS)) {
             auditService.sendMovementCreatedAudit(movement, movement.getUpdatedBy());
         }
         return movement;
@@ -293,6 +293,6 @@ public class MovementService {
     public MicroMovement getMicroMovementById(UUID movementId) {
         Movement movement = movementDao.getMovementById(movementId);
         return movement == null ? null : new MicroMovement(movement.getLocation(), movement.getHeading(), movement.getId(),
-                movement.getTimestamp(), movement.getSpeed(), movement.getMovementSource());
+                movement.getTimestamp(), movement.getSpeed(), movement.getSource());
     }
 }

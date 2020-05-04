@@ -108,7 +108,7 @@ public class SearchMapperListTest extends TransactionalTests {
 
         String data = SearchFieldMapper.createSelectSearchSql(mapSearchField, false);
         assertThat(data, CoreMatchers.containsString("m.status = '11'"));
-        assertThat(data, CoreMatchers.containsString("m.movementSource = 3"));
+        assertThat(data, CoreMatchers.containsString("m.source = 3"));
     }
     
     @Test
@@ -127,7 +127,7 @@ public class SearchMapperListTest extends TransactionalTests {
 
         String data = SearchFieldMapper.createCountSearchSql(mapSearchField, true);
         String correctOutput = "SELECT COUNT( m) FROM Movement m  INNER JOIN m.movementConnect mc  LEFT JOIN m.track tra "
-        		+ " WHERE m.movementSource = 3";
+        		+ " WHERE m.source = 3";
         assertEquals(correctOutput, data);
     }
 

@@ -41,7 +41,7 @@ public class MovementTestHelper {
         movement.setInternalReferenceNumber("TEST");
         movement.setHeading(0f);
         movement.setSpeed(0f);
-        movement.setMovementSource(MovementSourceType.NAF);
+        movement.setSource(MovementSourceType.NAF);
         movement.setStatus("TEST");
         movement.setTimestamp(Instant.now());
         movement.setTripNumber(0d);

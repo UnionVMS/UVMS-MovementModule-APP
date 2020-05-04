@@ -10,7 +10,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -57,7 +56,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement.getId().toString())));
     }
 
     @Test
@@ -84,10 +83,10 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement1.getId().toString())));
+                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement1.getId().toString())));
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
+                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
     }
 
     @Test
@@ -96,12 +95,12 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         UUID connectId = UUID.randomUUID();
         Movement nafMovement = MovementTestHelper.createMovement();
         nafMovement.getMovementConnect().setId(connectId);
-        nafMovement.setMovementSource(MovementSourceType.NAF);
+        nafMovement.setSource(MovementSourceType.NAF);
         Movement nafCreated = movementService.createAndProcessMovement(nafMovement);
 
         Movement aisMovement = MovementTestHelper.createMovement();
         aisMovement.getMovementConnect().setId(connectId);
-        aisMovement.setMovementSource(MovementSourceType.AIS);
+        aisMovement.setSource(MovementSourceType.AIS);
         Movement aisCreated = movementService.createAndProcessMovement(aisMovement);
 
         OffsetDateTime timestamp = aisCreated.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
@@ -117,11 +116,11 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getGuid().equals(aisCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(aisCreated.getId().toString())));
 
         assertFalse(latestMovements
                 .stream()
-                .anyMatch(m -> m.getGuid().equals(nafCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(nafCreated.getId().toString())));
     }
 
     @Test
@@ -130,17 +129,17 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         UUID connectId = UUID.randomUUID();
         Movement nafMovement = MovementTestHelper.createMovement();
         nafMovement.getMovementConnect().setId(connectId);
-        nafMovement.setMovementSource(MovementSourceType.NAF);
+        nafMovement.setSource(MovementSourceType.NAF);
         Movement nafCreated = movementService.createAndProcessMovement(nafMovement);
 
         Movement aisMovement = MovementTestHelper.createMovement();
         aisMovement.getMovementConnect().setId(connectId);
-        aisMovement.setMovementSource(MovementSourceType.AIS);
+        aisMovement.setSource(MovementSourceType.AIS);
         Movement aisCreated = movementService.createAndProcessMovement(aisMovement);
 
         Movement iridiumMovement = MovementTestHelper.createMovement();
         iridiumMovement.getMovementConnect().setId(connectId);
-        iridiumMovement.setMovementSource(MovementSourceType.IRIDIUM);
+        iridiumMovement.setSource(MovementSourceType.IRIDIUM);
         Movement iridiumCreated = movementService.createAndProcessMovement(iridiumMovement);
 
         OffsetDateTime timestamp = aisCreated.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
@@ -156,26 +155,26 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
         assertFalse(latestMovements
                 .stream()
-                .anyMatch(m -> m.getGuid().equals(aisCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(aisCreated.getId().toString())));
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getGuid().equals(nafCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(nafCreated.getId().toString())));
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getGuid().equals(iridiumCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(iridiumCreated.getId().toString())));
     }
 
     @Test
     @OperateOnDeployment("movement")
     public void getTrackForAssetsAndSourcesTest() {
         Movement movementBaseType1 = MovementTestHelper.createMovement();
-        movementBaseType1.setMovementSource(MovementSourceType.IRIDIUM);
+        movementBaseType1.setSource(MovementSourceType.IRIDIUM);
         Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
 
         Movement movementBaseType2 = MovementTestHelper.createMovement();
-        movementBaseType2.setMovementSource(MovementSourceType.OTHER);
+        movementBaseType2.setSource(MovementSourceType.OTHER);
         Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
 
         OffsetDateTime timestamp = createdMovement1.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
@@ -195,10 +194,10 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement1.getId().toString())));
+                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement1.getId().toString())));
         assertFalse(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
+                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
     }
 
     @Test
@@ -234,11 +233,11 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
         assertFalse(latestMovements.isEmpty());
         assertTrue(latestMovements.stream().
-                noneMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+                noneMatch(m -> m.getId().equals(createdMovement.getId().toString())));
         assertTrue(latestMovements.stream()
-                .anyMatch(m -> m.getGuid().equals(createdMovement2.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement2.getId().toString())));
         assertTrue(latestMovements.stream()
-                .noneMatch(m -> m.getGuid().equals(createdMovement3.getId().toString())));
+                .noneMatch(m -> m.getId().equals(createdMovement3.getId().toString())));
     }
 
     @Test
@@ -271,11 +270,11 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
         assertFalse(latestMovements.isEmpty());
         assertTrue(latestMovements.stream().
-                noneMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+                noneMatch(m -> m.getId().equals(createdMovement.getId().toString())));
         assertTrue(latestMovements.stream()
-                .anyMatch(m -> m.getGuid().equals(createdMovement2.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement2.getId().toString())));
         assertTrue(latestMovements.stream()
-                .anyMatch(m -> m.getGuid().equals(createdMovement3.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement3.getId().toString())));
     }
 
 
@@ -294,7 +293,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
+                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
     }
 
     @Test
@@ -313,7 +312,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         assertTrue(output.getMicroMovements().size() > 0);
         assertTrue(output.getMicroMovements()
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
+                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
         assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
     }
 
@@ -321,11 +320,11 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
     @OperateOnDeployment("movement")
     public void getLastMicroMovementFromOnlyOneSourceTest() {
         Movement nafBaseType = MovementTestHelper.createMovement();
-        nafBaseType.setMovementSource(MovementSourceType.NAF);
+        nafBaseType.setSource(MovementSourceType.NAF);
         Movement nafMovement = movementService.createAndProcessMovement(nafBaseType);
 
         Movement manualBaseType = MovementTestHelper.createMovement();
-        manualBaseType.setMovementSource(MovementSourceType.MANUAL);
+        manualBaseType.setSource(MovementSourceType.MANUAL);
         Movement manualMovement = movementService.createAndProcessMovement(manualBaseType);
 
         RealTimeMapInitialData output = getWebTarget()
@@ -338,10 +337,10 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         assertTrue(output.getMicroMovements().size() > 0);
         assertTrue(output.getMicroMovements()
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getGuid().equals(nafMovement.getId().toString())));
+                .anyMatch(m -> m.getMicroMove().getId().equals(nafMovement.getId().toString())));
         assertFalse(output.getMicroMovements()
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getGuid().equals(manualMovement.getId().toString())));
+                .anyMatch(m -> m.getMicroMove().getId().equals(manualMovement.getId().toString())));
         assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
     }
 

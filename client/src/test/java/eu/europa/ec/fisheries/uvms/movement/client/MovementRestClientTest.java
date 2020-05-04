@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.ws.rs.core.GenericType;
 import java.time.Instant;
 import java.util.*;
 
@@ -99,13 +98,13 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         IncomingMovement incomingMovement = createIncomingMovement(asset1, Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
-        movement.setMovementSource(MovementSourceType.OTHER);
+        movement.setSource(MovementSourceType.OTHER);
         Movement createdMovement1 = movementService.createAndProcessMovement(movement);
 
         incomingMovement = createIncomingMovement(asset2, Instant.now());
         movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
-        movement.setMovementSource(MovementSourceType.MANUAL);
+        movement.setSource(MovementSourceType.MANUAL);
         Movement createdMovement2 = movementService.createAndProcessMovement(movement);
 
         List<String> connectIds = new ArrayList<>();

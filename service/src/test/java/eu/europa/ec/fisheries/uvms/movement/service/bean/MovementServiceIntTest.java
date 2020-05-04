@@ -575,8 +575,8 @@ public class MovementServiceIntTest extends TransactionalTests {
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
         List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES), Arrays.asList(MovementSourceType.values()));
-        assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
-        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
+        assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
+        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
     }
 
     @Test
@@ -593,8 +593,8 @@ public class MovementServiceIntTest extends TransactionalTests {
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
         List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES), Arrays.asList(MovementSourceType.values()));
-        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
-        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
+        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
+        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
     }
 
     @Test
@@ -613,8 +613,8 @@ public class MovementServiceIntTest extends TransactionalTests {
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
         List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(createdMovement2.getMovementConnect().getUpdated(), Arrays.asList(MovementSourceType.values()));
-        assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement.getId().toString())));
-        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getGuid().equals(createdMovement2.getId().toString())));
+        assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
+        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
     }
     
     @Test

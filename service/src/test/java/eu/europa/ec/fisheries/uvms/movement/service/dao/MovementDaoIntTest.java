@@ -496,7 +496,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         GeometryFactory geometryFactory = new GeometryFactory();
         Instant timeStamp = Instant.now();
 
-        movement.setMovementSource(MovementSourceType.NAF);
+        movement.setSource(MovementSourceType.NAF);
         movement.setMovementType(MovementTypeType.MAN);
         movement.setUpdatedBy("Arquillian");
         movement.setTimestamp(timeStamp);
