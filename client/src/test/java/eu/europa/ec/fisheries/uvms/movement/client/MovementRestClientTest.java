@@ -38,7 +38,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
-public class MovementRestClientTest extends BuildMovementClientDeployment   {
+public class MovementRestClientTest extends BuildMovementClientDeployment {
 
     @Inject
     private MovementRestClient movementRestClient;
