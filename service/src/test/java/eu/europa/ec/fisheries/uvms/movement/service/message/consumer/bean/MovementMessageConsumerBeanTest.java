@@ -10,10 +10,10 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
+import eu.europa.ec.fisheries.uvms.movement.service.constant.SatId;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
@@ -139,12 +139,12 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
-        Short satelliteId = 42;
+        Short satelliteId = 3;
         incomingMovement.setSourceSatelliteId(satelliteId);
         MovementDetails movementDetails = sendIncomingMovementAndWaitForResponse(incomingMovement);
 
         Movement createdMovement = movementService.getById(UUID.fromString(movementDetails.getMovementGuid()));
-        assertEquals(satelliteId, createdMovement.getSourceSatelliteId());
+        assertEquals(SatId.fromInt(satelliteId.intValue()), createdMovement.getSourceSatelliteId());
     }
 
     @Test

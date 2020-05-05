@@ -13,7 +13,9 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.movement.service.constant.SatId;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.SatelliteConverter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -138,7 +140,8 @@ public class Movement implements Serializable, Comparable<Movement> {
     private Instant lesReportTime;
 
     @Column(name = "move_satellite_id")
-    private Short sourceSatelliteId;
+    @Convert(converter = SatelliteConverter.class)
+    private SatId sourceSatelliteId;
 
     @NotNull
     @Column(name = "move_updattim")
@@ -278,11 +281,11 @@ public class Movement implements Serializable, Comparable<Movement> {
 		this.lesReportTime = lesReportTime;
 	}
 
-    public Short getSourceSatelliteId() {
+    public SatId getSourceSatelliteId() {
         return sourceSatelliteId;
     }
 
-    public void setSourceSatelliteId(Short sourceSatelliteId) {
+    public void setSourceSatelliteId(SatId sourceSatelliteId) {
         this.sourceSatelliteId = sourceSatelliteId;
     }
 
