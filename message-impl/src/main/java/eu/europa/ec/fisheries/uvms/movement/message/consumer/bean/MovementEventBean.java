@@ -19,6 +19,8 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +121,7 @@ public class MovementEventBean {
             createMovementBatchResponse.setResponse(simpleResponse);
             createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementType(movementBatch));
             String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createMovementBatchResponse);
+            messageProducer.sendModuleMessage(responseString, ModuleQueue.SUBSCRIPTION_DATA);
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {
