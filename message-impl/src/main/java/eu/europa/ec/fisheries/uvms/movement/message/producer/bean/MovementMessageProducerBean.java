@@ -16,6 +16,7 @@ import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JMSUtils;
+import eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -34,17 +36,22 @@ import javax.enterprise.event.Observes;
 import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
+import java.util.Collections;
 
 @Stateless
 public class MovementMessageProducerBean extends AbstractProducer implements MessageProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementMessageProducerBean.class);
 
+    @EJB
+    private ConfigHelper configHelper;
+
     private Queue auditQueue;
     private Queue spatialQueue;
     private Queue exchangeQueue;
     private Queue configQueue;
     private Queue userQueue;
+    private Queue subscriptionDataQueue;
 
     @PostConstruct
     public void init() {
@@ -53,6 +60,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
         configQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_CONFIG);
         spatialQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_MODULE_SPATIAL);
         userQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_USER_IN);
+        subscriptionDataQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_SUBSCRIPTION_DATA);
     }
 
     @Override
@@ -76,6 +84,9 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
                     break;
                 case USER:
                     corrId = sendMessageToSpecificQueue(text, userQueue, movementQueue);
+                    break;
+                case SUBSCRIPTION_DATA:
+                    corrId = sendMessageToSpecificQueueSameTx(text, subscriptionDataQueue, movementQueue, Collections.singletonMap(MessageConstants.JMS_SUBSCRIPTION_SOURCE_PROPERTY, configHelper.getModuleName()));
                     break;
                 default:
                     throw new MovementMessageException("Queue not defined or implemented");
