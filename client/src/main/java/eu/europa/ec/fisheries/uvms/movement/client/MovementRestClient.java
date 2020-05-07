@@ -3,6 +3,7 @@ package eu.europa.ec.fisheries.uvms.movement.client;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
@@ -96,5 +97,4 @@ public class MovementRestClient {
 
         return response.readEntity(GetMovementListByQueryResponse.class);
     }
-
 }

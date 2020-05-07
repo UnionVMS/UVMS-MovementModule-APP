@@ -56,7 +56,8 @@ import java.util.UUID;
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"),
     @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.updated DESC"),
-    @NamedQuery(name = Movement.FIND_BY_PREVIOUS_MOVEMENT, query = "SELECT m FROM Movement m WHERE m.previousMovement = :previousMovement")
+    @NamedQuery(name = Movement.FIND_BY_PREVIOUS_MOVEMENT, query = "SELECT m FROM Movement m WHERE m.previousMovement = :previousMovement"),
+    @NamedQuery(name = Movement.FIND_ALL_BY_SOURCE, query = "SELECT m FROM Movement m WHERE m.source = :source ORDER BY m.timestamp DESC")
 })
 @DynamicUpdate
 @DynamicInsert
@@ -76,7 +77,8 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATEST = "Movement.findLatest";
     public static final String FIND_BY_PREVIOUS_MOVEMENT = "Movement.findByPreviousMovement";
     public static final String FIND_LATEST_X_NUMBER_FOR_ASSET = "Movement.findLatestXNumberForAsset";
-
+    public static final String FIND_ALL_BY_SOURCE = "Movement.findAllBySource";
+    
     private static final long serialVersionUID = 1L;
 
     @Id

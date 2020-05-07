@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
@@ -333,6 +334,12 @@ public class MovementDao {
         query.setParameter("fromDate", fromDate);
         query.setParameter("toDate", toDate);
         query.setParameter("sources", sources);
+        return query.getResultList();
+    }
+    
+    public List<MovementType> getMovementsVMS() {
+        TypedQuery<MovementType> query = em.createNamedQuery(Movement.FIND_ALL_BY_SOURCE, MovementType.class);
+        query.setParameter("source", "NAF");
         return query.getResultList();
     }
 }
