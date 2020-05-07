@@ -295,23 +295,4 @@ public class MovementService {
         return movement == null ? null : new MicroMovement(movement.getLocation(), movement.getHeading(), movement.getId(),
                 movement.getTimestamp(), movement.getSpeed(), movement.getSource());
     }
-    
-    public GetMovementListByQueryResponse getListVMS(){
-        try {
-            ListResponseDto response = new ListResponseDto();
-            List<MovementType> movementList = new ArrayList<>();
-
-            movementList = movementDao.getMovementsVMS();
-            int page = 1;
-            int listSize = movementList.size();
-
-            response.setCurrentPage(BigInteger.valueOf(page));
-            response.setMovementList(movementList);
-            response.setTotalNumberOfPages(BigInteger.valueOf(listSize));
-
-            return MovementResponseMapper.createMovementListResponse(response);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error when getting movement list by query: ParseException", e);
-        }
-    }
 }

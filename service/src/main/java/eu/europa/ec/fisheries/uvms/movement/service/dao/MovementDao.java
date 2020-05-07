@@ -336,10 +336,4 @@ public class MovementDao {
         query.setParameter("sources", sources);
         return query.getResultList();
     }
-    
-    public List<MovementType> getMovementsVMS() {
-        TypedQuery<MovementType> query = em.createNamedQuery(Movement.FIND_ALL_BY_SOURCE, MovementType.class);
-        query.setParameter("source", "NAF");
-        return query.getResultList();
-    }
 }
