@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import javax.ejb.EJB;
@@ -11,15 +12,14 @@ import javax.ejb.EJBException;
 import javax.ejb.EJBTransactionRolledbackException;
 
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementAreaAndTimeIntervalCriteria;
@@ -32,7 +32,6 @@ import eu.europa.ec.fisheries.uvms.movement.message.producer.bean.MessageProduce
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 
@@ -98,8 +97,6 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void createMovement() {
-
-        Instant now = DateUtil.nowUTC();
         double longitude = 9.140625D;
         double latitude = 57.683804D;
 
@@ -163,7 +160,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         MovementQuery query = createMovementQuery(true);
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(createdMovement.getMovementConnect().getValue().toString());
+        criteria.setValue(createdMovement.getMovementConnect().getValue());
         query.getMovementSearchCriteria().add(criteria);
 
         try {
@@ -171,7 +168,7 @@ public class MovementServiceIntTest extends TransactionalTests {
             assertNotNull(list);
             List<MovementType> movementList = list.getMovement();
             assertNotNull(movementList);
-            assertTrue(!movementList.isEmpty());
+            assertFalse(movementList.isEmpty());
             assertEquals(connectId.toString(), movementList.get(0).getConnectId());
         } catch (Exception e) {
             fail(e.getMessage());
@@ -223,16 +220,18 @@ public class MovementServiceIntTest extends TransactionalTests {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "false");
         double longitude = rnd.nextDouble();
         double latitude = rnd.nextDouble();
-        List<Movement> movementTypeList = new ArrayList<>();
+        List<MovementAndBaseType> movementTypeList = new ArrayList<>();
         for(int i = 0 ; i < NumberOfMovements ; i++){
-            movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID().toString()));
+            Movement movement = MockData.createMovement(longitude, latitude, UUID.randomUUID().toString());
+            movementTypeList.add(new MovementAndBaseType(movement, new MovementBaseType()));
             longitude = longitude  + 0.05;
             latitude = latitude +  0.05;
         }
 
-        List<Movement> movementBatch = movementService.createMovementBatch(movementTypeList);
+        List<MovementAndBaseType> movementBatch = movementService.createMovementBatch(movementTypeList);
         assertNotNull(movementBatch);
-        assertTrue(!movementBatch.isEmpty());
+        assertFalse(movementBatch.isEmpty());
+        assertTrue(movementBatch.stream().map(MovementAndBaseType::getBaseType).allMatch(Objects::nonNull));
     }
 
     @Test
@@ -242,9 +241,10 @@ public class MovementServiceIntTest extends TransactionalTests {
         System.setProperty(MessageProducerBean.MESSAGE_PRODUCER_METHODS_FAIL, "true");
         double longitude = rnd.nextDouble();
         double latitude = rnd.nextDouble();
-        List<Movement> movementTypeList = new ArrayList<>();
+        List<MovementAndBaseType> movementTypeList = new ArrayList<>();
         for(int i = 0 ; i < NumberOfMovements ; i++){
-            movementTypeList.add(MockData.createMovement(longitude, latitude, UUID.randomUUID().toString()));
+            Movement movement = MockData.createMovement(longitude, latitude, UUID.randomUUID().toString());
+            movementTypeList.add(new MovementAndBaseType(movement, new MovementBaseType()));
             longitude += 0.05;
             latitude += 0.05;
         }
@@ -266,9 +266,7 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getById() {
-
         try {
-            Instant now = DateUtil.nowUTC();
             double longitude = 9.140625D;
             double latitude = 57.683804D;
 

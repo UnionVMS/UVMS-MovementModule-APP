@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -27,7 +26,6 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -46,7 +44,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
@@ -107,12 +104,12 @@ public class MovementService {
         }
     }
 
-    public List<Movement> createMovementBatch(List<Movement> movements) throws MovementServiceException {
+    public List<MovementAndBaseType> createMovementBatch(List<MovementAndBaseType> movements) throws MovementServiceException {
         try {
-            spatial.enrichMovementBatchWithSpatialData(movements);
-            for (Movement movement : movements) {
-                movementBatch.createMovement(movement);
-                incomingMovementBean.processMovement(movement);
+            spatial.enrichMovementBatchWithSpatialData(movements.stream().map(MovementAndBaseType::getMovement).collect(Collectors.toList()));
+            for (MovementAndBaseType pair : movements) {
+                movementBatch.createMovement(pair.getMovement());
+                incomingMovementBean.processMovement(pair.getMovement());
             }
             return movements;
         } catch (MovementServiceRuntimeException mdre) {

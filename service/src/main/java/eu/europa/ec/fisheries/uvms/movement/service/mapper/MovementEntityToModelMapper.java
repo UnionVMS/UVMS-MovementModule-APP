@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.schema.movement.v1.ClosestLocationType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
@@ -31,6 +33,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementAndBaseType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.LatestMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MinimalMovement;
@@ -207,6 +210,14 @@ public class MovementEntityToModelMapper {
             mappedMovements.add(mapToMovementType(movement));
         }
         return mappedMovements;
+    }
+
+    public static List<MovementType> mapToMovementTypeFromMovementAndBaseType(List<MovementAndBaseType> movements) {
+        return movements.stream().map(m -> {
+            MovementType movementType = mapToMovementType(m.getMovement());
+            movementType.setAssetId(m.getBaseType().getAssetId());
+            return movementType;
+        }).collect(Collectors.toList());
     }
 
     public static List<MovementType> mapToMovementTypeFromLatestMovement(List<LatestMovement> movements) {
