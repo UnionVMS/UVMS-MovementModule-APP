@@ -53,7 +53,7 @@ public class ManualMovementRestResourceTest extends BuildMovementRestDeployment 
     @Test
     @OperateOnDeployment("movement")
     public void createManualMovementOnlySecondsInTimestampTest() {
-        String movement = "{\"movement\":{\"location\":{\"longitude\":0.0,\"latitude\":0.0,\"altitude\":null},\"heading\":0.0,\"timestamp\":\"1575545948\",\"speed\":0.0,\"source\":\"MANUAL\"},\"asset\":{\"ircs\":\"SFD-2008\",\"cfr\":\"SWE000009939\"}}";
+        String movement = "{\"movement\":{\"location\":{\"longitude\":0.0,\"latitude\":0.0,\"altitude\":null},\"heading\":0.0,\"timestamp\":\"1575545948\",\"speed\":0.0,\"source\":\"MANUAL\"},\"asset\":{\"ircs\":\"T\",\"cfr\":\"T\"}}";
 
         Response response = getWebTarget()
                 .path("manualMovement")
