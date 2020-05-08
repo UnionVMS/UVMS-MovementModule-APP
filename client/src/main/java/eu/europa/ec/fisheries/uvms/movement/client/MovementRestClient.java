@@ -91,24 +91,12 @@ public class MovementRestClient {
             return response.readEntity(MicroMovement.class);
     }
     
-//  public GetMovementListByQueryResponse getMovementList(MovementQuery movementQuery){ 
-//        
-//	  GetMovementListByQueryResponse response = webTarget
-//                .path("internal/list")
-//                .request(MediaType.APPLICATION_JSON)
-//                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
-//                .post(Entity.entity(movementQuery, MediaType.APPLICATION_JSON_TYPE), GetMovementListByQueryResponse.class);
-//    			System.out.println("stringresponse " +response.toString());
-//        return response;
-//    }
     public GetMovementListByQueryResponse getMovementList(MovementQuery movementQuery){ 
-        
     	String response = webTarget
                 .path("internal/list")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
                 .post(Entity.entity(movementQuery, MediaType.APPLICATION_JSON_TYPE), String.class);
-    	System.out.println("stringresponse " +response);
     	// json parsning from String to GetMovementListByQueryResponse to avoid time parsing issues
     	GetMovementListByQueryResponse getMovementListByQueryResponse = jsonb.fromJson(response, GetMovementListByQueryResponse.class);
         return getMovementListByQueryResponse;

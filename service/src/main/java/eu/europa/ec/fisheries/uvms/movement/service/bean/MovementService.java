@@ -295,6 +295,4 @@ public class MovementService {
         return movement == null ? null : new MicroMovement(movement.getLocation(), movement.getHeading(), movement.getId(),
                 movement.getTimestamp(), movement.getSpeed(), movement.getSource());
     }
-    
-    
 }
