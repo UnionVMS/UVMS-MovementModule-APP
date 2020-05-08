@@ -3,7 +3,6 @@ package eu.europa.ec.fisheries.uvms.movement.client;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
@@ -13,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -31,7 +31,9 @@ import java.util.concurrent.TimeUnit;
 public class MovementRestClient {
 
     private WebTarget webTarget;
-
+    
+    private Jsonb jsonb;  
+    
     @Resource(name = "java:global/movement_endpoint")
     private String movementEndpoint;
 
@@ -49,6 +51,8 @@ public class MovementRestClient {
 
         client.register(JsonBConfigurator.class);
         webTarget = client.target(url);
+        
+        jsonb = new JsonBConfigurator().getContext(null);
     }
 
     public List<MicroMovementExtended> getMicroMovementsForConnectIdsBetweenDates(List<String> connectIds, Instant fromDate, Instant toDate) {
@@ -87,14 +91,26 @@ public class MovementRestClient {
             return response.readEntity(MicroMovement.class);
     }
     
+//  public GetMovementListByQueryResponse getMovementList(MovementQuery movementQuery){ 
+//        
+//	  GetMovementListByQueryResponse response = webTarget
+//                .path("internal/list")
+//                .request(MediaType.APPLICATION_JSON)
+//                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+//                .post(Entity.entity(movementQuery, MediaType.APPLICATION_JSON_TYPE), GetMovementListByQueryResponse.class);
+//    			System.out.println("stringresponse " +response.toString());
+//        return response;
+//    }
     public GetMovementListByQueryResponse getMovementList(MovementQuery movementQuery){ 
         
-    	Response response = webTarget
+    	String response = webTarget
                 .path("internal/list")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
-                .post(Entity.entity(movementQuery, MediaType.APPLICATION_JSON_TYPE));
-
-        return response.readEntity(GetMovementListByQueryResponse.class);
+                .post(Entity.entity(movementQuery, MediaType.APPLICATION_JSON_TYPE), String.class);
+    	System.out.println("stringresponse " +response);
+    	// json parsning from String to GetMovementListByQueryResponse to avoid time parsing issues
+    	GetMovementListByQueryResponse getMovementListByQueryResponse = jsonb.fromJson(response, GetMovementListByQueryResponse.class);
+        return getMovementListByQueryResponse;
     }
 }
