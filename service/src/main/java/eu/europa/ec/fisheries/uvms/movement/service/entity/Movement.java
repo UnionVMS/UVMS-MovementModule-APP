@@ -78,7 +78,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATEST = "Movement.findLatest";
     public static final String FIND_BY_PREVIOUS_MOVEMENT = "Movement.findByPreviousMovement";
     public static final String FIND_LATEST_X_NUMBER_FOR_ASSET = "Movement.findLatestXNumberForAsset";
-
+    
     private static final long serialVersionUID = 1L;
 
     @Id
