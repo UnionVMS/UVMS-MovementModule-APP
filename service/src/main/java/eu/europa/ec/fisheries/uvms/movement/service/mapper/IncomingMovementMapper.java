@@ -102,7 +102,7 @@ public abstract class IncomingMovementMapper {
         md.setAssetStatus(response.getAssetStatus());
         md.setMmsi(response.getMmsi());
         md.setImo(response.getImo());
-        md.setAssetGroups(response.getAssetGroupList());
+        md.setAssetFilters(response.getAssetFilterList());
         md.setConnectId(response.getAssetUUID());
         md.setAssetType(response.getVesselType());
 
