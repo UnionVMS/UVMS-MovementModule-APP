@@ -21,6 +21,7 @@ import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementAndBaseType;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,16 +111,19 @@ public class MovementEventBean {
         TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
             CreateMovementBatchRequest request = (CreateMovementBatchRequest) eventMessage.getRequest();
-            List<Movement> movements = new ArrayList<>();
+            List<MovementAndBaseType> movements = new ArrayList<>();
             for (MovementBaseType movementBaseType : request.getMovement()) {
-                movements.add(MovementModelToEntityMapper.mapNewMovementEntity(movementBaseType, request.getUsername()));
+                movements.add(new MovementAndBaseType(
+                        MovementModelToEntityMapper.mapNewMovementEntity(movementBaseType, request.getUsername()),
+                        movementBaseType
+                ));
             }
-            List<Movement> movementBatch = movementService.createMovementBatch(movements);
+            List<MovementAndBaseType> movementBatch = movementService.createMovementBatch(movements);
             SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(movementBatch) ? SimpleResponse.OK : SimpleResponse.NOK;
             auditService.sendMovementBatchCreatedAudit(simpleResponse.name(), request.getUsername());
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
             createMovementBatchResponse.setResponse(simpleResponse);
-            createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementType(movementBatch));
+            createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementTypeFromMovementAndBaseType(movementBatch));
             String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createMovementBatchResponse);
             messageProducer.sendModuleMessage(responseString, ModuleQueue.SUBSCRIPTION_DATA);
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
