@@ -117,6 +117,10 @@ public abstract class IncomingMovementMapper {
         //TODO: missing
         //md.setMobileTerminalStatus();
         md.setSource(movement.getSource().value());
+        if (movement.getSourceSatelliteId() != null) {
+            md.setOceanRegion(movement.getSourceSatelliteId().name());
+            md.setSourceSatelliteId(movement.getSourceSatelliteId().getValue());
+        }
 
         if (previousMovement != null) {
             md.setPreviousLatitude(previousMovement.getLocation().getY());
