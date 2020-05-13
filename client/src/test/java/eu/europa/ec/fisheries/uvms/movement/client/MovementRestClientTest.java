@@ -174,7 +174,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
         // Then
         assertNotNull(movementById);
-        assertEquals(createdMovement.getId(), movementById.getId());
+        assertEquals(createdMovement.getId(), UUID.fromString(movementById.getId()));
         assertEquals(createdMovement.getHeading(), movementById.getHeading(), 0);
         assertEquals(incomingMovement.getLatitude(), movementById.getLocation().getLatitude(), 0);
         assertEquals(incomingMovement.getLongitude(), movementById.getLocation().getLongitude(), 0);
