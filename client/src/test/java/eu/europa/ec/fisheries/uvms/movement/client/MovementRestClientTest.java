@@ -168,10 +168,19 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         Movement createdMovement = movementService.createAndProcessMovement(movement);
+
        // When
         MicroMovement movementById = movementRestClient.getMicroMovementById(createdMovement.getId());
+
         // Then
         assertNotNull(movementById);
+        assertEquals(createdMovement.getId(), UUID.fromString(movementById.getId()));
+        assertEquals(createdMovement.getHeading(), movementById.getHeading(), 0);
+        assertEquals(incomingMovement.getLatitude(), movementById.getLocation().getLatitude(), 0);
+        assertEquals(incomingMovement.getLongitude(), movementById.getLocation().getLongitude(), 0);
+        assertEquals(createdMovement.getSource(), movementById.getSource());
+        assertEquals(createdMovement.getSpeed().doubleValue(), movementById.getSpeed().doubleValue(), 0);
+        assertEquals(createdMovement.getTimestamp().truncatedTo(ChronoUnit.MILLIS), movementById.getTimestamp());
     }
     
     @Test

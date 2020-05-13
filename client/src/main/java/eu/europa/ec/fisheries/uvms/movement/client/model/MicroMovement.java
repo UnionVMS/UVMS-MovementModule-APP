@@ -11,7 +11,7 @@ public class MicroMovement {
 
     private Double heading;
 
-    private String guid;
+    private String id;
 
     private Instant timestamp;
 
@@ -37,12 +37,12 @@ public class MicroMovement {
         this.heading = heading;
     }
 
-    public String getGuid() {
-        return guid;
+    public String getId() {
+        return id;
     }
 
-    public void setGuid(String guid) {
-        this.guid = guid;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Instant getTimestamp() {
