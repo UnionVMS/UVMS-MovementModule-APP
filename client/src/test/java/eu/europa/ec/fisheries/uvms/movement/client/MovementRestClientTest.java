@@ -179,8 +179,8 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         assertEquals(incomingMovement.getLatitude(), movementById.getLocation().getLatitude(), 0);
         assertEquals(incomingMovement.getLongitude(), movementById.getLocation().getLongitude(), 0);
         assertEquals(createdMovement.getSource(), movementById.getSource());
-        assertEquals(createdMovement.getSpeed(), movementById.getSpeed());
-        assertEquals(createdMovement.getTimestamp(), movementById.getTimestamp());
+        assertEquals(createdMovement.getSpeed().doubleValue(), movementById.getSpeed().doubleValue(), 0);
+        assertEquals(createdMovement.getTimestamp().truncatedTo(ChronoUnit.MILLIS), movementById.getTimestamp());
     }
     
     @Test
