@@ -71,7 +71,7 @@ public class MovementRestResource {
             return Response.ok(list).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
+            throw ex;
         }
     }
 
@@ -88,7 +88,7 @@ public class MovementRestResource {
             return Response.ok(minimalList).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
+            throw ex;
         }
     }
 
@@ -108,7 +108,7 @@ public class MovementRestResource {
             return Response.ok(movementDtoList).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
+            throw ex;
         }
     }
 
@@ -131,7 +131,7 @@ public class MovementRestResource {
             return Response.ok(response).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
+            throw ex;
         }
     }
 
@@ -148,12 +148,9 @@ public class MovementRestResource {
             MovementType response = MovementEntityToModelMapper.mapToMovementType(movement);
 
             return Response.ok(response).build();
-        } catch (NonUniqueResultException ex) {
-            LOG.error("[ Error when getting by id. ]", ex);
-            return Response.status(Status.CONFLICT).entity(ex).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting by id. ] ", ex);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
+            throw ex;
         }
 
     }
@@ -167,7 +164,7 @@ public class MovementRestResource {
             return Response.ok(mapByQuery).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting movement map. ]", ex);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build();
+            throw ex;
         }
     }
 
@@ -182,7 +179,7 @@ public class MovementRestResource {
             return Response.ok(movements).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Movement for connectId: {}", connectId, e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+            throw e;
         }
     }
 

@@ -53,7 +53,7 @@ public class ManualMovementRestResource {
             return Response.ok().build();
         } catch (Exception e) {
             LOG.error("[ Error when creating a manual movement. ] {} ", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e).build();
+            throw e;
         }
     }
 

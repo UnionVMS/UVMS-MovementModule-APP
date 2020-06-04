@@ -11,7 +11,6 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.rest;
 
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.rest.filter.MovementRestExceptionMapper;
 import eu.europa.ec.fisheries.uvms.movement.rest.service.*;
 import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
