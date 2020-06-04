@@ -219,6 +219,11 @@ public class MovementService {
         return movementDao.getPreviousMovement(connectId, timestamp, sources);
     }
 
+    public Movement getPreviousBySource(UUID connectId, Instant timestamp, MovementSourceType source) {
+        List<MovementSourceType> sources = Arrays.asList(source);
+        return movementDao.getPreviousMovement(connectId, timestamp, sources);
+    }
+
 	private int getNumberOfPages(Long numberOfMovements, int listSize){
         int numberOfPages = (int) (numberOfMovements / listSize);
         if (numberOfMovements % listSize != 0) {

@@ -70,13 +70,13 @@ public abstract class IncomingMovementMapper {
         return movementConnect;
     }
 
-    public static MovementDetails mapMovementDetails(IncomingMovement im, Movement movement, AssetMTEnrichmentResponse response) {
+    public static MovementDetails mapMovementDetails(IncomingMovement im, Movement movement, AssetMTEnrichmentResponse response, Movement previousMovement) {
         MovementDetails md = new MovementDetails();
         md.setMovementGuid(movement.getId().toString());
         md.setLongitude(movement.getLocation().getX());
         md.setLatitude(movement.getLocation().getY());
         md.setMovementType(movement.getMovementType().value());
-        Movement previousMovement = movement.getPreviousMovement();
+
         if(previousMovement != null) {
             SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
             md.setCalculatedCourse(positionCalculations.getCourse());

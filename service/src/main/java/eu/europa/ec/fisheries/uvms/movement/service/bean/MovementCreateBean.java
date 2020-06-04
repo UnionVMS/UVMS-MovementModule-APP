@@ -19,6 +19,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
@@ -49,7 +50,7 @@ public class MovementCreateBean {
 
     @Inject
     private IncomingMovementBean incomingMovementBean;
-    
+
     @EJB
     private AssetClient assetClient;
 
@@ -102,7 +103,8 @@ public class MovementCreateBean {
             Movement createdMovement = movementService.createAndProcessMovement(movement);
 
             // send to MovementRules
-            MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, assetResponse);
+            Movement previousMovementBySource = movementService.getPreviousBySource(movement.getMovementConnect().getId(), movement.getTimestamp(), movement.getSource());
+            MovementDetails movementDetails = IncomingMovementMapper.mapMovementDetails(incomingMovement, createdMovement, assetResponse, previousMovementBySource);
             int sumPositionReport = movementService.countNrOfMovementsLastDayForAsset(incomingMovement.getAssetGuid(), incomingMovement.getPositionTime());
             movementDetails.setSumPositionReport(sumPositionReport);
             List<VicinityInfoDTO> vicinityOf = movementService.getVicinityOf(createdMovement);
