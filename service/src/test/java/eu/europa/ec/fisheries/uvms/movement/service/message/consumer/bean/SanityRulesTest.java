@@ -184,6 +184,7 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
     @Test
     @OperateOnDeployment("movementservice")
     public void setMovementReportCFRAndIRCSMissingWhileManualOrFluxSanityRuleTest() throws Exception {
+        System.setProperty("AssetShouldBeEmpty", "true");
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
@@ -199,6 +200,27 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+        System.clearProperty("AssetShouldBeEmpty");
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportCFRAndIRCSMissingButExistsInAssetTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setPluginType("FLUX");
+        incomingMovement.setAssetCFR(null);
+        incomingMovement.setAssetIRCS(null);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.MOVEMENT));
+
+        incomingMovement.setPluginType("NOT_FLUX");
+        incomingMovement.setComChannelType("MANUAL");
+        response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.MOVEMENT));
     }
 
     @Test

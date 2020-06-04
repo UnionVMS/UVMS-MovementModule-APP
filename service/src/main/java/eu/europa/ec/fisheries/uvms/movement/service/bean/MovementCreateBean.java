@@ -142,6 +142,13 @@ public class MovementCreateBean {
 
         im.setAssetName(response.getAssetName());
         im.setFlagState(response.getFlagstate());
+
+        im.setAssetIRCS(im.getAssetIRCS() != null && !im.getAssetIRCS().isEmpty()
+                ? im.getAssetIRCS() : response.getIrcs());
+        im.setAssetCFR(im.getAssetCFR() != null && !im.getAssetCFR().isEmpty()
+                ? im.getAssetCFR() : response.getCfr());
+        im.setExternalMarking(im.getExternalMarking() != null && !im.getExternalMarking().isEmpty()
+                ? im.getExternalMarking() : response.getExternalMarking());
     }
 
     private AssetMTEnrichmentRequest createAssetRequest(IncomingMovement ic) {
