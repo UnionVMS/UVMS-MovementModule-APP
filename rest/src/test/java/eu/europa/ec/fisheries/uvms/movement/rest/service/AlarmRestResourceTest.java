@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.rest.filter.AppError;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AlarmDAO;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.*;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
@@ -78,7 +79,9 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(new AlarmQuery()));
 
-        assertEquals(500, response.getStatus());
+        assertEquals(200, response.getStatus());
+        AppError appError = response.readEntity(AppError.class);
+        assertEquals(500, appError.code.intValue());
     }
 
     @Test
@@ -110,7 +113,9 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .put(Entity.json(new AlarmReport()));
 
-        assertEquals(500, response.getStatus());
+        assertEquals(200, response.getStatus());
+        AppError appError = response.readEntity(AppError.class);
+        assertEquals(500, appError.code.intValue());
     }
 
     @Test
@@ -140,7 +145,9 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .get();
 
-        assertEquals(500, response.getStatus());
+        assertEquals(200, response.getStatus());
+        AppError appError = response.readEntity(AppError.class);
+        assertEquals(500, appError.code.intValue());
     }
 
     @Test

@@ -48,7 +48,7 @@ public class ConfigResource {
             return Response.ok(MovementTypeType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -59,7 +59,7 @@ public class ConfigResource {
             return Response.ok(SegmentCategoryType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -70,7 +70,7 @@ public class ConfigResource {
             return Response.ok(SearchKeyType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -81,7 +81,7 @@ public class ConfigResource {
             return Response.ok(MovementSourceType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -92,7 +92,7 @@ public class ConfigResource {
             return Response.ok(MovementActivityTypeType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -102,7 +102,7 @@ public class ConfigResource {
             return Response.ok(MovementMockConfig.getValues()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -113,7 +113,7 @@ public class ConfigResource {
             return Response.ok(AlarmStatusType.values()).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting alarm statuses. ] {} ", e.getMessage());
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 }

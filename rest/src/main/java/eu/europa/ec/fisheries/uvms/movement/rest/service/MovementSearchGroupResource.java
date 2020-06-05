@@ -58,7 +58,7 @@ public class MovementSearchGroupResource {
             return Response.ok(movementSearchGroup).build();
         } catch (Exception e) {
             LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -73,7 +73,7 @@ public class MovementSearchGroupResource {
             return Response.ok(searchGroup).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -87,7 +87,7 @@ public class MovementSearchGroupResource {
             return Response.ok(movementSearchGroup).build();
         } catch (Exception e) {
             LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -104,7 +104,7 @@ public class MovementSearchGroupResource {
             return Response.ok(searchGroups).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 
@@ -120,7 +120,7 @@ public class MovementSearchGroupResource {
             return Response.ok(movementSearchGroup).build();
         } catch (Exception e) {
             LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            throw e;
         }
     }
 }
