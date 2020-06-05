@@ -39,7 +39,8 @@ public class AssetMTRestMock {
         try {
 
             AssetMTEnrichmentResponse response = new AssetMTEnrichmentResponse();
-            Asset asset = getBasicAsset();
+            String assetShouldBeEmpty = System.getProperty("AssetShouldBeEmpty");
+            Asset asset = (assetShouldBeEmpty != null && assetShouldBeEmpty.equalsIgnoreCase("true")) ? new Asset() : getBasicAsset();
             MobileTerminalType MT = getBasicMobileTerminalType();
 
             response = enrichementHelper(response, asset);
