@@ -20,6 +20,7 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.context.PropagateFluxEnvelopeData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
@@ -53,6 +54,7 @@ public class MovementMessageConsumerBean implements MessageListener {
     private Event<EventMessage> errorEvent;
 
     @Override
+    @PropagateFluxEnvelopeData
     public void onMessage(Message message) {
         TextMessage textMessage = null;
         try {
