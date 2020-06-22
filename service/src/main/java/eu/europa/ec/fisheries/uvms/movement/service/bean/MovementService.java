@@ -26,6 +26,7 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
@@ -42,6 +43,7 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryRes
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.commons.service.interceptor.SimpleTracingInterceptor;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
@@ -121,7 +123,7 @@ public class MovementService {
             throw new EJBException("createMovementBatch failed", ex);
         }
     }
-
+    
     public GetMovementMapByQueryResponse getMapByQuery(MovementQuery query) throws MovementServiceException {
         if (query == null) {
             throw new MovementServiceRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
@@ -205,6 +207,92 @@ public class MovementService {
         } catch (Exception  ex) {
             throw new MovementServiceException("Error when getting movement map by query", ex, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
         }
+    }
+    
+    @Interceptors(SimpleTracingInterceptor.class)
+    public GetMovementMapByQueryResponse getMapByQueryReporting(MovementQuery query) throws MovementServiceException {
+    	if (query == null) {
+    		throw new MovementServiceRuntimeException("Movement list query is null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+    	}
+    	if (query.getMovementSearchCriteria() == null) {
+    		throw new MovementServiceRuntimeException("No search criterias in MovementList query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+    	}
+    	if (query.getPagination() != null) {
+    		throw new MovementServiceRuntimeException("Pagination not supported in get movement map by query", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+    	}
+    	boolean getLatestReports = query.getMovementSearchCriteria()
+    			.stream()
+    			.anyMatch(criteria -> criteria.getKey().equals(SearchKey.NR_OF_LATEST_REPORTS));
+    	
+    	int numberOfLatestReports = 0;
+    	
+    	if (getLatestReports) {
+    		Optional<String> first = query.getMovementSearchCriteria()
+    				.stream()
+    				.filter(criteria -> criteria.getKey().equals(SearchKey.NR_OF_LATEST_REPORTS))
+    				.map(ListCriteria::getValue)
+    				.findFirst();
+    		if (first.isPresent()) {
+    			numberOfLatestReports = Integer.parseInt(first.get());
+    		} else {
+    			throw new MovementServiceRuntimeException(SearchKey.NR_OF_LATEST_REPORTS.name()
+    					+ " is in the query but no value could be found!, VALUE = null", ErrorCode.ILLEGAL_ARGUMENT_ERROR);
+    		}
+    	}
+    	try {
+    		List<MovementMapResponseType> mapResponse = new ArrayList<>();
+    		
+    		List<SearchValue> searchKeys = new ArrayList<>();
+    		List<SearchValue> searchKeyValuesList = SearchFieldMapper.mapListCriteriaToSearchValue(query.getMovementSearchCriteria());
+    		List<SearchValue> searchKeyValuesRange = SearchFieldMapper.mapRangeCriteriaToSearchField(query.getMovementRangeSearchCriteria());
+    		
+    		searchKeys.addAll(searchKeyValuesList);
+    		searchKeys.addAll(searchKeyValuesRange);
+    		
+    		String sql = SearchFieldMapper.createSelectSearchSql(searchKeys, true);
+    		List<Movement> movementEntityList = new ArrayList<>();
+    		
+    		if ( numberOfLatestReports > 0) {
+    			List<SearchValue> connectedIdsFromSearchKeyValues = getConnectedIdsFromSearchKeyValues(searchKeyValuesList);
+    			if(!connectedIdsFromSearchKeyValues.isEmpty() && connectedIdsFromSearchKeyValues.size()>1) {
+    				getMovementsByConnectedIds(numberOfLatestReports, searchKeys, movementEntityList, connectedIdsFromSearchKeyValues);
+    			}else{
+    				movementEntityList = dao.getMovementList(sql, searchKeys, numberOfLatestReports);
+    			}
+    		} else {
+    			movementEntityList = dao.getMovementList(sql, searchKeys);
+    		}
+    		
+    		Map<String, List<Movement>> orderMovementsByConnectId = MovementEntityToModelMapper.orderMovementsByConnectId(movementEntityList);
+    		
+    		for (Map.Entry<String, List<Movement>> entries : orderMovementsByConnectId.entrySet()) {
+    			
+    			MovementMapResponseType responseType = new MovementMapResponseType();
+    			
+    			responseType.setKey(entries.getKey());
+    			
+    			ArrayList<Segment> extractSegments = MovementEntityToModelMapper.extractSegments(new ArrayList<>(entries.getValue()), query.isExcludeFirstAndLastSegment());
+    			List<MovementSegment> segmentList = MovementEntityToModelMapper.mapToMovementSegment(extractSegments);
+    			List<MovementSegment> filteredSegments = filterSegments(segmentList, searchKeyValuesRange);
+    			
+    			responseType.getSegments().addAll(filteredSegments);
+    			
+    			List<MovementType> mapToMovementType = MovementEntityToModelMapper.mapToMovementType(entries.getValue());
+    			responseType.getMovements().addAll(mapToMovementType);
+    			
+    			List<MovementTrack> extractTracks = MovementEntityToModelMapper.extractTracks(extractSegments);
+    			// In the rare event of segments that are attached to two different tracks, the track that is not
+    			//connected to the any relevant Movement should be removed from the search result.
+    			removeTrackMismatches(extractTracks, entries.getValue());
+    			responseType.getTracks().addAll(extractTracks);
+    			
+    			mapResponse.add(responseType);
+    			
+    		}
+    		return MovementDataSourceResponseMapper.createMovementMapResponse(mapResponse);
+    	} catch (Exception  ex) {
+    		throw new MovementServiceException("Error when getting movement map by query", ex, ErrorCode.UNSUCCESSFUL_DB_OPERATION);
+    	}
     }
     
     /**

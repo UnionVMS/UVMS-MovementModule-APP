@@ -24,6 +24,7 @@
                 <xsd:restriction base="xsd:string">
                     <xsd:enumeration value="MOVEMENT_LIST"/>
                     <xsd:enumeration value="MOVEMENT_MAP"/>
+                    <xsd:enumeration value="MOVEMENT_MAP_RPT"/>
                     <xsd:enumeration value="CREATE"/>
                     <xsd:enumeration value="CREATE_BATCH"/>
                     <xsd:enumeration value="GET_TRIP_BY_ID"/>

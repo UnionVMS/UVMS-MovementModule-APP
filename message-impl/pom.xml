@@ -113,6 +113,7 @@
                     <ejbVersion>3.1</ejbVersion>
                 </configuration>
             </plugin>
+            <!-- TODO: do we need this? -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>

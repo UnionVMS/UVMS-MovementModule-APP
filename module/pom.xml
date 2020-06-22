@@ -153,16 +153,36 @@
                     <plugin>
                         <groupId>org.wildfly.plugins</groupId>
                         <artifactId>wildfly-maven-plugin</artifactId>
-                        <version>1.0.2.Final</version>
-                        <configuration>
-                            <filename>${project.build.finalName}.${project.packaging}</filename>
-                            <targetDir>${project.build.directory}</targetDir>
-                            <hostname>${hostname}</hostname>
-                            <port>${port}</port>
-                            <username>${username}</username>
-                            <password>${password}</password>
-                            <force>true</force>
-                        </configuration>
+                        <version>2.1.0.Beta1</version>
+						<executions>
+							<!-- Undeploy the application on clean -->
+							<execution>
+								<id>undeploy</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>undeploy</goal>
+								</goals>
+								<configuration>
+									<ignoreMissingDeployment>true</ignoreMissingDeployment>
+								</configuration>
+							</execution>
+							<execution>
+								<id>deploy</id>
+								<phase>install</phase>
+								<goals>
+									<goal>deploy</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<filename>${project.build.finalName}.${project.packaging}</filename>
+							<targetDir>${project.build.directory}</targetDir>
+							<hostname>${hostname}</hostname>
+							<port>${port}</port>
+							<username>${username}</username>
+							<password>${password}</password>
+							<force>true</force>
+						</configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -224,37 +244,5 @@
 				</plugins>
 			</build>
 		</profile>
-        <profile>
-            <id>copy-ear</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <version>2.10</version>
-                        <executions>
-                            <execution>
-                                <id>copy-installed</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>${project.groupId}</groupId>
-                                            <artifactId>${project.artifactId}</artifactId>
-                                            <version>${project.version}</version>
-                                            <type>${project.packaging}</type>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>C:\dev\WebLogic\domain1213\servers\AdminServer\upload</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 </project>

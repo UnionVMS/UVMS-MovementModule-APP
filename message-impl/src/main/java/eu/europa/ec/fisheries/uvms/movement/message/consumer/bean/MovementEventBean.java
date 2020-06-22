@@ -201,6 +201,25 @@ public class MovementEventBean {
         }
     }
 
+    public void getMovementMapByQueryReporting(EventMessage eventMessage) {
+    	TextMessage jmsMessage = eventMessage.getJmsMessage();
+    	try {
+    		LOG.debug("Get Movement By Query Received.. processing request in MovementEventServiceBean");
+    		GetMovementMapByQueryRequest request = (GetMovementMapByQueryRequest) eventMessage.getRequest();
+    		GetMovementMapByQueryResponse movementList = movementService.getMapByQueryReporting(request.getQuery());
+    		String responseString = MovementModuleResponseMapper.mapToMovementMapResponse(movementList.getMovementMap());
+    		
+    		messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
+    		LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
+    	} catch (MovementModelException | MovementMessageException | MovementServiceException | JMSException ex) {
+    		LOG.error("[ Error when creating getMovementMapByQuery ] ", ex);
+    		if (maxRedeliveriesReached(jmsMessage)) {
+    			errorEvent.fire(new EventMessage(jmsMessage, ex.getMessage()));
+    		}
+    		throw new EJBException(ex);
+    	}
+    }
+
     public void ping(TextMessage message) {
         try {
             PingResponse pingResponse = new PingResponse();
@@ -275,6 +294,4 @@ public class MovementEventBean {
             throw new EJBException(ex);
         }
     }
-
-
 }

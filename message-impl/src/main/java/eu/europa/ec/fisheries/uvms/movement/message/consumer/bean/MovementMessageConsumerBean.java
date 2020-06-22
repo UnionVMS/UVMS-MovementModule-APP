@@ -68,6 +68,9 @@ public class MovementMessageConsumerBean implements MessageListener {
                 case MOVEMENT_MAP:
                     movementEventBean.getMovementMapByQuery(eventMessage);
                     break;
+                case MOVEMENT_MAP_RPT:
+                	movementEventBean.getMovementMapByQueryReporting(eventMessage);
+                	break;
                 case PING:
                     movementEventBean.ping(textMessage);
                     break;

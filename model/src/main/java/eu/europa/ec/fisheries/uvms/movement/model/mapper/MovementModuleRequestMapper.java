@@ -66,6 +66,13 @@ public class MovementModuleRequestMapper {
         request.setQuery(query);
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
+    
+    public static String mapToGetMovementMapByQueryRequestReporting(MovementQuery query) throws MovementModelException {
+    	GetMovementMapByQueryRequest request = new GetMovementMapByQueryRequest();
+    	request.setMethod(MovementModuleMethod.MOVEMENT_MAP_RPT);
+    	request.setQuery(query);
+    	return JAXBMarshaller.marshallJaxBObjectToString(request);
+    }
 
     public static String mapToGetMovementListByQueryRequest(MovementQuery query) throws MovementModelException {
         GetMovementListByQueryRequest request = new GetMovementListByQueryRequest();
