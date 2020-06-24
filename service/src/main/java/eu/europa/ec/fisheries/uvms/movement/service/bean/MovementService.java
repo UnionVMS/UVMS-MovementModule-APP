@@ -295,4 +295,8 @@ public class MovementService {
         return movement == null ? null : new MicroMovement(movement.getLocation(), movement.getHeading(), movement.getId(),
                 movement.getTimestamp(), movement.getSpeed(), movement.getSource());
     }
+    
+    public List<MicroMovement> getMovementsByMoveIds(List<UUID> moveIds) {
+        return movementDao.getMovementsByMoveIdList(moveIds);
+    }
 }

@@ -101,4 +101,15 @@ public class MovementRestClient {
     	GetMovementListByQueryResponse getMovementListByQueryResponse = jsonb.fromJson(response, GetMovementListByQueryResponse.class);
         return getMovementListByQueryResponse;
     }
+    
+    public List<MicroMovement> getMicroMovementByIdList(List<UUID> ids) {
+        Response response = webTarget
+                .path("internal/getMicroMovementList")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+                .post(Entity.entity(ids, MediaType.APPLICATION_JSON_TYPE));
+
+        return response.readEntity(new GenericType<List<MicroMovement>>() {});
+    }
+    
 }
