@@ -19,9 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Path("/asset/rest/internal")
@@ -95,18 +93,8 @@ public class AssetMTRestMock {
 
     private static final String DNID = "DNID";
     private static final String MEMBER_NUMBER = "MEMBER_NUMBER";
-    private static final String GUID = "GUID";
-    private static final String IMO = "IMO";
-    private static final String IRCS = "IRCS";
-    private static final String MMSI = "MMSI";
-    private static final String CFR = "CFR";
-    private static final String GFCM = "GFCM";
-    private static final String UVI = "UVI";
-    private static final String ICCAT = "ICCAT";
 
     private AssetMTEnrichmentResponse enrichementHelper(AssetMTEnrichmentResponse resp, Asset asset) {
-        Map<String, String> assetId = createAssetId(asset);
-        resp.setAssetId(assetId);
         resp.setAssetUUID(asset.getAssetId() == null ? null : asset.getAssetId().getGuid());
         resp.setAssetName(asset.getName());
         resp.setAssetHistoryId(asset.getEventHistory() == null ? null : asset.getEventHistory().getEventId());
@@ -121,36 +109,6 @@ public class AssetMTRestMock {
 
 
         return resp;
-    }
-
-    private Map<String, String> createAssetId(Asset asset) {
-        Map<String, String> assetId = new HashMap<>();
-
-        if (asset.getCfr() != null && asset.getCfr().length() > 0) {
-            assetId.put(CFR, asset.getCfr());
-        }
-        if (asset.getAssetId() != null) {
-            assetId.put(GUID, asset.getAssetId().getGuid());
-        }
-        if (asset.getImo() != null && asset.getImo().length() > 0) {
-            assetId.put(IMO, asset.getImo());
-        }
-        if (asset.getIrcs() != null && asset.getIrcs().length() > 0) {
-            assetId.put(IRCS, asset.getIrcs());
-        }
-        if (asset.getMmsiNo() != null && asset.getMmsiNo().length() > 0) {
-            assetId.put(MMSI, asset.getMmsiNo());
-        }
-        if (asset.getGfcm() != null && asset.getGfcm().length() > 0) {
-            assetId.put(GFCM, asset.getGfcm());
-        }
-        if (asset.getUvi() != null && asset.getUvi().length() > 0) {
-            assetId.put(UVI, asset.getUvi());
-        }
-        if (asset.getIccat() != null && asset.getIccat().length() > 0) {
-            assetId.put(ICCAT, asset.getIccat());
-        }
-        return assetId;
     }
 
     private AssetMTEnrichmentResponse enrichementHelper(AssetMTEnrichmentRequest req, AssetMTEnrichmentResponse resp, MobileTerminalType mobTerm) {
