@@ -3,7 +3,7 @@ package eu.europa.ec.fisheries.uvms.movement.model.exception;
 import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
 
 /**
- * The MovementModelException wraps all checked standard Java runtime exception and enriches them with a custom error code.
+ * The MovementModelRuntimeException wraps all unchecked standard Java runtime exception and enriches them with a custom error code.
  * You can use this code to retrieve localized error messages from online documentation. (If implemented)
  *
  * @author Kasim Gul

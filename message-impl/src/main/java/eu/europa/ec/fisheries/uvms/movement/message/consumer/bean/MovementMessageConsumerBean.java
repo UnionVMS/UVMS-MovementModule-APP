@@ -88,6 +88,9 @@ public class MovementMessageConsumerBean implements MessageListener {
                 case MOVEMENT_LIST_BY_AREA_TIME_INTERVAL:
                     movementEventBean.getMovementListByAreaAndTimeInterval(eventMessage);
                     break;
+                case FILTER_GUID_LIST_FOR_DATE_BY_AREA:
+                    movementEventBean.filterGuidListByDateAndAreas(eventMessage);
+                    break;
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:
                 default:

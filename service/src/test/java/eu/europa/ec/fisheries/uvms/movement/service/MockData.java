@@ -43,9 +43,11 @@ public class MockData {
     }
 
     public static AreaType createAreaType() {
+        return createAreaType("TestAreaType");
+    }
+    public static AreaType createAreaType(String name) {
         AreaType areaType = new AreaType();
-        String input = "TestAreaType";
-        areaType.setName(input);
+        areaType.setName(name);
         areaType.setUpdatedTime(Instant.now());
         areaType.setUpdatedUser("TestUser");
         return areaType;
@@ -64,16 +66,20 @@ public class MockData {
     }
     
     public static Area createArea(AreaType areaType) {
+        return createArea(areaType,"TestRemoteId");
+    }
+
+    public static Area createArea(AreaType areaType,String remoteId) {
         Area area = new Area();
         area.setAreaName("TestArea");
         area.setAreaCode("AreaCode" + MovementHelpers.getRandomIntegers(10));
-        area.setRemoteId("TestRemoteId");
+        area.setRemoteId(remoteId);
         area.setAreaUpdattim(Instant.now());
         area.setAreaUpuser("TestUser");
         area.setAreaType(areaType);
         return area;
     }
-    
+
     public static Movementarea getMovementArea(Area area, Movement movement) {
         Movementarea movementArea = new Movementarea();
         movementArea.setMovareaAreaId(area);

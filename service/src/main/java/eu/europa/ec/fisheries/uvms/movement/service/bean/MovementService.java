@@ -14,6 +14,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.bean;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -451,5 +454,13 @@ public class MovementService {
             }
         }
         return true;
+    }
+
+    public List<Long> findMovementAreaIdsByAreaRemoteIdAndNameList(List<AreaType> areaTypes)  {
+        return dao.findMovementAreaIdsByAreaRemoteIdAndNameList(areaTypes);
+    }
+
+    public boolean checkMovementExistence(String connectId, Date startDate, Date endDate, List<Long> movementAreaIds) throws MovementModelRuntimeException {
+        return dao.checkMovementExistence(connectId,startDate,endDate,movementAreaIds);
     }
 }
