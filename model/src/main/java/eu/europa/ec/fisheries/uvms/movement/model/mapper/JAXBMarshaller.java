@@ -78,7 +78,7 @@ public class JAXBMarshaller {
      * @throws
      * eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException
      */
-    public static <R> R unmarshallTextMessage(TextMessage textMessage, Class clazz) throws MovementModelException {
+    public static <R> R unmarshallTextMessage(TextMessage textMessage, Class<R> clazz) throws MovementModelException {
         try {
             JAXBContext jc = contexts.get(clazz.getName());
             if (jc == null) {

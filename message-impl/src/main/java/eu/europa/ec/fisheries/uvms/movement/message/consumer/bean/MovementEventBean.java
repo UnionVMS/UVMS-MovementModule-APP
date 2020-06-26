@@ -20,8 +20,13 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
+import eu.europa.ec.fisheries.schema.movement.area.v1.GuidListForAreaFilteringQuery;
+import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateResponse;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementAndBaseType;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementFiltererBean;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +70,9 @@ public class MovementEventBean {
     
     @Inject
     private AuditService auditService;
+
+    @Inject
+    private MovementFiltererBean movementFiltererBean;
 
     @Inject
     @ErrorEvent
@@ -182,7 +190,7 @@ public class MovementEventBean {
             throw new EJBException(ex);
         }
     }
-    
+
     private boolean maxRedeliveriesReached(TextMessage message) {
         try {
             if (message != null) {
@@ -191,6 +199,24 @@ public class MovementEventBean {
             return false;
         } catch (JMSException e) {
             return false;
+        }
+    }
+
+    public void filterGuidListByDateAndAreas(EventMessage eventMessage) {
+        TextMessage jmsMessage = eventMessage.getJmsMessage();
+        try {
+            FilterGuidListByAreaAndDateRequest actualRequest = (FilterGuidListByAreaAndDateRequest) eventMessage.getRequest();
+            GuidListForAreaFilteringQuery query = actualRequest.getQuery();
+            List<String> filteredList  = movementFiltererBean.filterGuidListForPeriodAndAreaTypesByArea(query.getGuidList(),query.getStartDate(),query.getEndDate(),query.getAreas());
+
+            FilterGuidListByAreaAndDateResponse response = new FilterGuidListByAreaAndDateResponse();
+            response.getFilteredList().addAll(filteredList);
+            messageProducer.sendMessageBackToRecipient(jmsMessage, JAXBMarshaller.marshallJaxBObjectToString(response));
+        }
+        catch (MovementModelException | MovementMessageException | MovementModelRuntimeException ex) {
+            LOG.error("[ Error in filterGuidListByDateAndAreas.filterGuidListForPeriodAndAreaTypesByArea ] ", ex);
+            errorEvent.fire(new EventMessage(jmsMessage, ex.getMessage()));
+            throw new EJBException(ex);
         }
     }
 }

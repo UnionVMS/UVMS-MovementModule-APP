@@ -13,8 +13,10 @@ package eu.europa.ec.fisheries.uvms.movement.service.dao;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -22,9 +24,15 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Root;
 
+import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
@@ -46,7 +54,7 @@ public class MovementDao {
 
     @PersistenceContext
     private EntityManager em;
-    
+
     @Inject
     private AreaDao areaDao;
 
@@ -225,6 +233,38 @@ public class MovementDao {
         return query.getSingleResult();
     }
 
+    public List<Long> findMovementAreaIdsByAreaRemoteIdAndNameList(List<AreaType> areaTypes)  {
+
+        StringBuilder queryBuilder = new StringBuilder("SELECT ma.movareaAreaId.areaId FROM Movementarea ma WHERE ");
+        for(int i=0; i < areaTypes.size(); i++){
+            queryBuilder.append("(ma.movareaAreaId.remoteId=:remoteId").append(i).append(" AND ma.movareaAreaId.areaType.name=:areaName").append(i).append(") OR ");
+        }
+        TypedQuery<Long> typedQuery = em.createQuery(queryBuilder.substring(0,queryBuilder.lastIndexOf(" OR ")), Long.class);
+
+        for(int i=0; i < areaTypes.size(); i++){
+            AreaType areaType = areaTypes.get(i);
+            typedQuery.setParameter("remoteId"+i, String.valueOf(areaType.getAreaId()));
+            typedQuery.setParameter("areaName"+i, areaType.getAreaName());
+        }
+
+        return typedQuery.getResultList();
+    }
+
+    public boolean checkMovementExistence(String connectId, Date startDate, Date endDate, List<Long> movementAreaIds)  {
+
+        TypedQuery<Movement> typedQuery = em.createNamedQuery(Movement.FIND_BY_CONNECTID_FOR_AREAS_IN_A_PERIOD, Movement.class).setMaxResults(1);
+        typedQuery.setParameter("connectId", connectId);
+        typedQuery.setParameter("startDate", startDate.toInstant());
+        typedQuery.setParameter("endDate", endDate.toInstant());
+        typedQuery.setParameter("movementAreaIds", movementAreaIds);
+        try{
+            return typedQuery.getSingleResult() != null;
+        }
+        catch (NoResultException e){
+            LOG.debug("On checkMovementExistence [{}]",e.getMessage());
+            return false;
+        }
+    }
 
     private void setTypedQueryMovementParams(List<SearchValue> searchKeyValues, Query query) throws ParseException {
         for (SearchValue searchValue : searchKeyValues) {
@@ -294,7 +334,7 @@ public class MovementDao {
         em.persist(segment);
         return segment;
     }
-    
+
     public Segment updateSegment(Segment segment) {
         Segment updated = em.merge(segment);
         em.flush();

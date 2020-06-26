@@ -4,6 +4,7 @@
              xmlns:search="urn:search.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:common="urn:common.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:movement="urn:movement.schema.fisheries.ec.europa.eu:v1"
+             xmlns:area="urn:area.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
              xmlns="http://schemas.xmlsoap.org/wsdl/">
@@ -14,7 +15,8 @@
             <xsd:import namespace="urn:common.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="MovementCommon.xsd"/>
             <xsd:import namespace="urn:search.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="MovementSearch.xsd"/>
             <xsd:import namespace="urn:movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Movement.xsd"/>
-            
+            <xsd:import namespace="urn:area.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Area.xsd"/>
+
             <!-- Mobile Terminal Base Request -->
             <xsd:simpleType name="MovementModuleMethod">
                 <xsd:restriction base="xsd:string">
@@ -26,6 +28,7 @@
                     <xsd:enumeration value="GET_SEGMENT_BY_ID"/>
                     <xsd:enumeration value="PING"/>
                     <xsd:enumeration value="MOVEMENT_LIST_BY_AREA_TIME_INTERVAL"/>
+                    <xsd:enumeration value="FILTER_GUID_LIST_FOR_DATE_BY_AREA"/>
                 </xsd:restriction>
             </xsd:simpleType>
             
@@ -162,7 +165,28 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            
+
+            <!-- filter guid list by area and date -->
+            <xsd:element name="FilterGuidListByAreaAndDateRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="module:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="query" type="area:GuidListForAreaFilteringQuery"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="FilterGuidListByAreaAndDateResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="filteredList" type="xsd:string"  minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
             <!-- Ping -->
             <xsd:element name="pingRequest">
                 <xsd:complexType>
@@ -272,6 +296,13 @@
         <part name="body" element="module:getMovementListByAreaAndTimeIntervalResponse"/>
     </message>
 
+    <message name="FilterGuidListByAreaAndDateRequestMessage">
+        <part name="body" element="module:FilterGuidListByAreaAndDateRequest"/>
+    </message>
+    <message name="FilterGuidListByAreaAndDateResponseMessage">
+        <part name="body" element="module:FilterGuidListByAreaAndDateResponse"/>
+    </message>
+
     <message name="ProcessedMovementAck">
         <part name="body" element="module:ProcessedMovementAck"/>
     </message>
@@ -331,6 +362,11 @@
             <fault name="MovementException" message="module:MovementException"/>
         </operation>
 
+        <operation name="FilterGuidListByAreaAndDateOperation">
+            <input message="module:FilterGuidListByAreaAndDateRequestMessage"/>
+            <output message="module:FilterGuidListByAreaAndDateResponseMessage"/>
+            <fault name="MovementException" message="module:MovementException"/>
+        </operation>
     </portType>
 
     <binding name="MovementModuleSoapBinding" type="module:MovementModulePortType">
@@ -438,6 +474,17 @@
             </fault>
         </operation>
 
+        <operation name="FilterGuidListByAreaAndDateOperation">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
     </binding>
 
     <service name="MovementModuleService">
