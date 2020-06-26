@@ -28,6 +28,11 @@ import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import java.math.BigInteger;
 
@@ -224,6 +229,23 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         assertTrue(movementListBy.getMovement().size() > 0);
         assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
         assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));  
+    }
+    
+    @Test
+    public void getMicroMovementByIdListTest() {
+        AssetDTO asset = createBasicAsset();
+        IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());    
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+        
+        List<UUID> ids = new ArrayList<UUID>();
+        ids.add(createdMovement.getId());
+        List<MicroMovement> microMovementList = movementRestClient.getMicroMovementByIdList(ids);
+        assertNotNull(microMovementList);
+        assertTrue(microMovementList.size() > 0);
+        assertTrue( microMovementList.get(0).getId().equals(createdMovement.getId().toString() ) );
+        assertTrue(microMovementList.get(0).getHeading() == (double)createdMovement.getHeading());
     }
     
     private RangeCriteria createRangeCriteriaDate(int daysFromNow) {

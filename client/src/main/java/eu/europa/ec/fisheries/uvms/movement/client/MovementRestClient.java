@@ -111,5 +111,4 @@ public class MovementRestClient {
 
         return response.readEntity(new GenericType<List<MicroMovement>>() {});
     }
-    
 }
