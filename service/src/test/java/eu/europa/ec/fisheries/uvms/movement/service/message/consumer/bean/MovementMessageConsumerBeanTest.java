@@ -158,6 +158,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(movementDetails.getMovementGuid(), is(notNullValue()));
         assertNotNull(movementDetails.getConnectId());
         assertNotNull(movementDetails.getAssetGuid());
+        assertTrue(movementDetails.isLongTermParked());
 
         assertThat(movementDetails.getLongitude(), is(incomingMovement.getLongitude()));
         assertThat(movementDetails.getLatitude(), is(incomingMovement.getLatitude()));
