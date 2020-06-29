@@ -43,4 +43,6 @@
 
     <include file="v5.5.6\db-changelog-new-index-on-movement.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.5.11\db-changelog-movement-partition.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

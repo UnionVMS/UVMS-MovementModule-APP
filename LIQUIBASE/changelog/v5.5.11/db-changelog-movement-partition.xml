@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+                   logicalFilePath="changelog/v5.5.11/db-changelog-movement-partition.xml">
+
+    <changeSet id="drop movement index" author="peerik">
+        <dropIndex tableName="movement" indexName="move_by_assetid_idx"/>
+        <dropIndex tableName="movement" indexName="move_connectid_timestamp_idx"/>
+        <dropIndex tableName="movement" indexName="move_track_timestamp_idx"/>
+    </changeSet>
+
+    <changeSet id="rename movement table" author="peerik">
+        <renameTable newTableName="movement_old" oldTableName="movement"/>
+    </changeSet>
+    
+    <changeSet id="create movement partition table" author="peerik">
+        <createTable tableName="movement">
+            <column name="move_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="movement_pk"/>
+            </column>
+            <column name="move_heading" type="FLOAT4"/>
+            <column name="move_internal_reference_number" type="VARCHAR(12)"/>
+            <column name="move_location" type="PUBLIC.GEOGRAPHY">
+                <constraints nullable="false"/>
+            </column>
+            <column name="move_movesour_id" type="SMALLINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="movement_pk"/>
+            </column>
+            <column name="move_movetyp_id" type="SMALLINT"/>
+            <column name="move_speed" type="FLOAT4"/>
+            <column name="move_status" type="VARCHAR(60)"/>
+            <column name="move_timestamp" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="movement_pk"/>
+            </column>
+            <column name="move_trip_number" type="FLOAT8"/>
+            <column name="move_updattim" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="move_upuser" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="move_moveconn_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="move_trac_id" type="UUID"/>
+            <column name="move_lesreporttime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="move_satellite_id" type="SMALLINT"/>
+            <column name="move_prevmove_id" type="UUID"/>
+        </createTable>
+        <modifySql>
+            <append value=" PARTITION BY LIST (move_movesour_id)"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet id="create movement ais partition table" author="peerik">
+        <sql>
+            CREATE TABLE movement_ais
+            PARTITION OF movement
+            FOR VALUES IN (1)
+            PARTITION BY RANGE (move_timestamp)
+        </sql>
+    </changeSet>
+
+    <changeSet id="create movement vms partition table" author="peerik">
+        <sql>
+            CREATE TABLE movement_vms
+            PARTITION OF movement
+            FOR VALUES IN (0,2,3,4,5,6)
+            PARTITION BY RANGE (move_timestamp)
+        </sql>
+    </changeSet>
+
+    <changeSet id="create vms partitions" author="peerik">
+        <sql>
+            CREATE TABLE movement_vms_2018 PARTITION OF movement_vms FOR VALUES FROM ('2018-01-01') TO ('2019-01-01');
+            CREATE TABLE movement_vms_2019 PARTITION OF movement_vms FOR VALUES FROM ('2019-01-01') TO ('2020-01-01');
+            CREATE TABLE movement_vms_2020 PARTITION OF movement_vms FOR VALUES FROM ('2020-01-01') TO ('2021-01-01');
+            CREATE TABLE movement_vms_2021 PARTITION OF movement_vms FOR VALUES FROM ('2021-01-01') TO ('2022-01-01');
+        </sql>
+    </changeSet>
+
+    <changeSet id="create ais partitions" author="peerik">
+        <sql>
+            CREATE TABLE movement_ais_2019_01 PARTITION OF movement_ais FOR VALUES FROM ('2019-01-01') TO ('2019-02-01');
+            CREATE TABLE movement_ais_2019_02 PARTITION OF movement_ais FOR VALUES FROM ('2019-02-01') TO ('2019-03-01');
+            CREATE TABLE movement_ais_2019_03 PARTITION OF movement_ais FOR VALUES FROM ('2019-03-01') TO ('2019-04-01');
+            CREATE TABLE movement_ais_2019_04 PARTITION OF movement_ais FOR VALUES FROM ('2019-04-01') TO ('2019-05-01');
+            CREATE TABLE movement_ais_2019_05 PARTITION OF movement_ais FOR VALUES FROM ('2019-05-01') TO ('2019-06-01');
+            CREATE TABLE movement_ais_2019_06 PARTITION OF movement_ais FOR VALUES FROM ('2019-06-01') TO ('2019-07-01');
+            CREATE TABLE movement_ais_2019_07 PARTITION OF movement_ais FOR VALUES FROM ('2019-07-01') TO ('2019-08-01');
+            CREATE TABLE movement_ais_2019_08 PARTITION OF movement_ais FOR VALUES FROM ('2019-08-01') TO ('2019-09-01');
+            CREATE TABLE movement_ais_2019_09 PARTITION OF movement_ais FOR VALUES FROM ('2019-09-01') TO ('2019-10-01');
+            CREATE TABLE movement_ais_2019_10 PARTITION OF movement_ais FOR VALUES FROM ('2019-10-01') TO ('2019-11-01');
+            CREATE TABLE movement_ais_2019_11 PARTITION OF movement_ais FOR VALUES FROM ('2019-11-01') TO ('2019-12-01');
+            CREATE TABLE movement_ais_2019_12 PARTITION OF movement_ais FOR VALUES FROM ('2019-12-01') TO ('2020-01-01');
+            
+            CREATE TABLE movement_ais_2020_01 PARTITION OF movement_ais FOR VALUES FROM ('2020-01-01') TO ('2020-02-01');
+            CREATE TABLE movement_ais_2020_02 PARTITION OF movement_ais FOR VALUES FROM ('2020-02-01') TO ('2020-03-01');
+            CREATE TABLE movement_ais_2020_03 PARTITION OF movement_ais FOR VALUES FROM ('2020-03-01') TO ('2020-04-01');
+            CREATE TABLE movement_ais_2020_04 PARTITION OF movement_ais FOR VALUES FROM ('2020-04-01') TO ('2020-05-01');
+            CREATE TABLE movement_ais_2020_05 PARTITION OF movement_ais FOR VALUES FROM ('2020-05-01') TO ('2020-06-01');
+            CREATE TABLE movement_ais_2020_06 PARTITION OF movement_ais FOR VALUES FROM ('2020-06-01') TO ('2020-07-01');
+            CREATE TABLE movement_ais_2020_07 PARTITION OF movement_ais FOR VALUES FROM ('2020-07-01') TO ('2020-08-01');
+            CREATE TABLE movement_ais_2020_08 PARTITION OF movement_ais FOR VALUES FROM ('2020-08-01') TO ('2020-09-01');
+            CREATE TABLE movement_ais_2020_09 PARTITION OF movement_ais FOR VALUES FROM ('2020-09-01') TO ('2020-10-01');
+            CREATE TABLE movement_ais_2020_10 PARTITION OF movement_ais FOR VALUES FROM ('2020-10-01') TO ('2020-11-01');
+            CREATE TABLE movement_ais_2020_11 PARTITION OF movement_ais FOR VALUES FROM ('2020-11-01') TO ('2020-12-01');
+            CREATE TABLE movement_ais_2020_12 PARTITION OF movement_ais FOR VALUES FROM ('2020-12-01') TO ('2021-01-01');
+            
+            CREATE TABLE movement_ais_2021_01 PARTITION OF movement_ais FOR VALUES FROM ('2021-01-01') TO ('2021-02-01');
+            CREATE TABLE movement_ais_2021_02 PARTITION OF movement_ais FOR VALUES FROM ('2021-02-01') TO ('2021-03-01');
+            CREATE TABLE movement_ais_2021_03 PARTITION OF movement_ais FOR VALUES FROM ('2021-03-01') TO ('2021-04-01');
+            CREATE TABLE movement_ais_2021_04 PARTITION OF movement_ais FOR VALUES FROM ('2021-04-01') TO ('2021-05-01');
+            CREATE TABLE movement_ais_2021_05 PARTITION OF movement_ais FOR VALUES FROM ('2021-05-01') TO ('2021-06-01');
+            CREATE TABLE movement_ais_2021_06 PARTITION OF movement_ais FOR VALUES FROM ('2021-06-01') TO ('2021-07-01');
+            CREATE TABLE movement_ais_2021_07 PARTITION OF movement_ais FOR VALUES FROM ('2021-07-01') TO ('2021-08-01');
+            CREATE TABLE movement_ais_2021_08 PARTITION OF movement_ais FOR VALUES FROM ('2021-08-01') TO ('2021-09-01');
+            CREATE TABLE movement_ais_2021_09 PARTITION OF movement_ais FOR VALUES FROM ('2021-09-01') TO ('2021-10-01');
+            CREATE TABLE movement_ais_2021_10 PARTITION OF movement_ais FOR VALUES FROM ('2021-10-01') TO ('2021-11-01');
+            CREATE TABLE movement_ais_2021_11 PARTITION OF movement_ais FOR VALUES FROM ('2021-11-01') TO ('2021-12-01');
+            CREATE TABLE movement_ais_2021_12 PARTITION OF movement_ais FOR VALUES FROM ('2021-12-01') TO ('2022-01-01');
+        </sql>
+    </changeSet>
+
+    <changeSet author="peerik (generated)" id="1593163328053-22">
+        <addForeignKeyConstraint baseColumnNames="move_trac_id" baseTableName="movement" constraintName="movement_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track" validate="true"/>
+    </changeSet>
+    <changeSet author="peerik (generated)" id="1593163328053-25">
+        <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="movement" constraintName="movement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_id" referencedTableName="movementconnect" validate="true"/>
+    </changeSet>
+
+    <changeSet id="copy old data to new partition" author="peerik">
+        <sql>insert into movement select * from movement_old</sql>
+    </changeSet>
+
+    <changeSet author="peerik (generated)" id="1593163328053-18">
+        <createIndex indexName="move_by_assetid_idx" tableName="movement">
+            <column name="move_moveconn_id"/>
+            <column name="move_movesour_id"/>
+            <column descending="true" name="move_timestamp"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="peerik (generated)" id="1593163328053-19">
+        <createIndex indexName="move_connectid_timestamp_idx" tableName="movement">
+            <column name="move_moveconn_id"/>
+            <column descending="true" name="move_timestamp"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="peerik (generated)" id="1593163328053-20">
+        <createIndex indexName="move_track_timestamp_idx" tableName="movement">
+            <column name="move_trac_id"/>
+            <column descending="true" name="move_timestamp"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="peerik" id="prevmove_idx">
+        <createIndex tableName="movement" indexName="move_prevmove_idx">
+            <column name="move_prevmove_id"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet id="drop old table" author="peerik">
+        <dropTable tableName="movement_old"/>
+    </changeSet>
+</databaseChangeLog>
