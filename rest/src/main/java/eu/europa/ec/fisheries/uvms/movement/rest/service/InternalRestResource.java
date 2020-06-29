@@ -210,5 +210,18 @@ public class InternalRestResource {
         }
         return sourceTypes;
     }
-
+    
+    @POST
+    @Path("/getMicroMovementList")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getMicroMovementByIdList(List<UUID> moveIds) {
+        try {
+            List<MicroMovement> microMovement = movementService.getMovementsByMoveIds(moveIds);
+            return Response.ok(microMovement).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when counting movements. ]", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
 }
