@@ -335,4 +335,14 @@ public class MovementDao {
         query.setParameter("sources", sources);
         return query.getResultList();
     }
+    
+    public List<MicroMovement> getMovementsByMoveIdList(List<UUID> moveIds) {
+        if (moveIds == null || moveIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        TypedQuery<MicroMovement> latestMovementQuery =
+                em.createNamedQuery(Movement.FIND_MOVEMENT_BY_ID_LIST, MicroMovement.class);
+        latestMovementQuery.setParameter("moveIds", moveIds);
+        return latestMovementQuery.getResultList();
+    }
 }
