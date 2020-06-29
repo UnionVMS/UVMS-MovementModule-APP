@@ -9,7 +9,7 @@
 
 	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
 	<artifactId>movement</artifactId>
-	<version>5.5.12-UVMS</version>
+	<version>5.5.13-UVMS-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Maven project-archetype for UnionVms modules</description>
 
@@ -108,7 +108,7 @@
 
 	<scm>
 		<connection>scm:git:https://github.com/UnionVMS/UVMS-MovementModule-APP.git</connection>
-		<tag>movement-5.5.12-UVMS</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<modules>
