@@ -124,15 +124,15 @@
         </sql>
     </changeSet>
 
+    <changeSet id="copy old data to new partition" author="peerik">
+        <sql>insert into movement select * from movement_old</sql>
+    </changeSet>
+
     <changeSet author="peerik (generated)" id="1593163328053-22">
         <addForeignKeyConstraint baseColumnNames="move_trac_id" baseTableName="movement" constraintName="movement_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track" validate="true"/>
     </changeSet>
     <changeSet author="peerik (generated)" id="1593163328053-25">
         <addForeignKeyConstraint baseColumnNames="move_moveconn_id" baseTableName="movement" constraintName="movement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_id" referencedTableName="movementconnect" validate="true"/>
-    </changeSet>
-
-    <changeSet id="copy old data to new partition" author="peerik">
-        <sql>insert into movement select * from movement_old</sql>
     </changeSet>
 
     <changeSet author="peerik (generated)" id="1593163328053-18">
