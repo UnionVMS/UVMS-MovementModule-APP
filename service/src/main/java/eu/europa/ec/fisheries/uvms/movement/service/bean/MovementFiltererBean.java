@@ -12,12 +12,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.InvalidArgumentException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +33,7 @@ public class MovementFiltererBean {
 
         List<Long> movementAreaIds = movementService.findMovementAreaIdsByAreaRemoteIdAndNameList(areaTypes);
         if (movementAreaIds == null || movementAreaIds.isEmpty()) {
-            return Collections.emptyList();
+            throw new MovementModelRuntimeException("No movement area ids found", ErrorCode.MOVEMENT_DAO_ERROR);
         }
 
         return guidList.stream()
