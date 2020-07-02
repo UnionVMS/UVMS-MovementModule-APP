@@ -32,6 +32,7 @@ public abstract class IncomingMovementMapper {
         entity.setStatus(ic.getStatus());
         entity.setLesReportTime(ic.getLesReportTime());
         entity.setSourceSatelliteId(ic.getSourceSatelliteId() != null ? SatId.fromInt(ic.getSourceSatelliteId().intValue()) : null);
+        entity.setAisPositionAccuracy(ic.getAisPositionAccuracy());
 
         Coordinate coordinate = new Coordinate(ic.getLongitude(), ic.getLatitude());
         GeometryFactory factory = new GeometryFactory();

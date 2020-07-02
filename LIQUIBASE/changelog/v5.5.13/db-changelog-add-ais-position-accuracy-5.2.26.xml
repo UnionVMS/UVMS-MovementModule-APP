@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+				   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+				   logicalFilePath="changelog/v5.5.13/db-changelog-add-ais-position-accuracy-5.2.26.xml">
+
+    <changeSet id="update_incomingmovement_with_ais_position_accuracy" author="joemat" runInTransaction="false">
+        <addColumn tableName="incomingmovement">
+            <column name="ais_position_accuracy" type="tinyint" remarks="See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="update_movement_with_ais_position_accuracy" author="joemat" runInTransaction="false">
+        <addColumn tableName="movement">
+            <column name="ais_position_accuracy" type="tinyint" remarks="See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

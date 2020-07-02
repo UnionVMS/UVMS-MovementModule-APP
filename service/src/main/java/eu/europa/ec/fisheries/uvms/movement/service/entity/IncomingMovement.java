@@ -77,6 +77,9 @@ public class IncomingMovement {
     @NotNull
     private String updatedBy;
 
+    @Column(name = "ais_position_accuracy")     //See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info
+    private Short aisPositionAccuracy;
+
     @JsonbTransient
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)    //DB is set to allow null values here since, for some reason, hibernate passes a null that is later changed into the correct value.
     private AlarmReport alarmReport;
@@ -426,4 +429,11 @@ public class IncomingMovement {
         this.duplicate = duplicate;
     }
 
+    public Short getAisPositionAccuracy() {
+        return aisPositionAccuracy;
+    }
+
+    public void setAisPositionAccuracy(Short aisPositionAccuracy) {
+        this.aisPositionAccuracy = aisPositionAccuracy;
+    }
 }
