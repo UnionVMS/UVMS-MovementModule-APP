@@ -154,7 +154,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_upuser")
     private String updatedBy;
 
-    @Column(name = "ais_position_accuracy")     //See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info
+    @Column(name = "ais_position_accuracy")     //Value can be 0 (>10m) and 1 (<10m). See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info
     private Short aisPositionAccuracy;
 
 
