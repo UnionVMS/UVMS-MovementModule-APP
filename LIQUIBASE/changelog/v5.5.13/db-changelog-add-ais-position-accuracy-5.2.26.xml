@@ -7,13 +7,13 @@
 
     <changeSet id="update_incomingmovement_with_ais_position_accuracy" author="joemat" runInTransaction="false">
         <addColumn tableName="incomingmovement">
-            <column name="ais_position_accuracy" type="tinyint" remarks="Value can be 0 (>10m) and 1 (<10m). See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info"/>
+            <column name="ais_position_accuracy" type="tinyint" remarks="Value can be 0 (greater then 10m) and 1 (lesser then 10m). See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info"/>
         </addColumn>
     </changeSet>
 
     <changeSet id="update_movement_with_ais_position_accuracy" author="joemat" runInTransaction="false">
         <addColumn tableName="movement">
-            <column name="ais_position_accuracy" type="tinyint" remarks="Value can be 0 (>10m) and 1 (<10m). See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info"/>
+            <column name="ais_position_accuracy" type="tinyint" remarks="Value can be 0 (greater then 10m) and 1 (lesser then 10m). See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info"/>
         </addColumn>
     </changeSet>
 
