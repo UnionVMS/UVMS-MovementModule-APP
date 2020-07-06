@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.jms.Connection;
@@ -23,6 +24,8 @@ import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.schema.movement.module.v1.ForwardPositionResponse;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -91,6 +94,13 @@ public class JMSHelper {
         String correlationId = sendMovementMessage(request, movementBaseType.get(0).getConnectId());
         Message response = listenForResponse(correlationId);
         return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, CreateMovementBatchResponse.class);
+    }
+
+    public ForwardPositionResponse forwardPosition(Map<String, String> vesselIdentifiers, String vesselFlagState, List<String> movementGuids, String username) throws Exception {
+        String request = MovementModuleRequestMapper.mapToForwardPositionRequest(vesselIdentifiers, vesselFlagState, movementGuids, username);
+        String correlationId = sendMovementMessage(request, null);
+        Message response = listenForResponse(correlationId);
+        return JAXBMarshaller.unmarshallTextMessage((TextMessage) response, ForwardPositionResponse.class);
     }
     
     public GetMovementListByQueryResponse getMovementListByQuery(MovementQuery movementQuery, String groupId) throws Exception {

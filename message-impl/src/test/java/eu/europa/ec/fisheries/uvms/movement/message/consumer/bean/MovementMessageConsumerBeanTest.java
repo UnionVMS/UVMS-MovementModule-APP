@@ -2,7 +2,9 @@ package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import java.math.BigInteger;
 import java.sql.Date;
@@ -11,10 +13,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.jms.Message;
 import javax.jms.TextMessage;
+
+import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
+import eu.europa.ec.fisheries.schema.movement.module.v1.ForwardPositionResponse;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Ignore;
@@ -214,6 +221,22 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(createdMovement.get(0).getMetaData().getAreas().get(0).getCode(), is("AREA0"));
         assertThat(createdMovement.get(1).getMetaData().getAreas().get(0).getCode(), is("AREA1"));
         assertThat(createdMovement.get(2).getMetaData().getAreas().get(0).getCode(), is("AREA2"));
+    }
+
+    @Test
+    @RunAsClient
+    public void forwardPositionTest() throws Exception {
+        MovementBaseType movementBaseType = MovementTestHelper.createMovementBaseType();
+        CreateMovementResponse createdMovement = jmsHelper.createMovement(movementBaseType, "test user");
+        Map<String, String> vesselIdentifiers = new HashMap<>();
+        vesselIdentifiers.put("IRCS", "IRCS_VALUE");
+        vesselIdentifiers.put("CFR", "CFR_VALUE");
+        String countryCode = "GRC";
+        List<String> movementGuids = Collections.singletonList(createdMovement.getMovement().getGuid());
+        ForwardPositionResponse response = jmsHelper.forwardPosition(vesselIdentifiers, countryCode, movementGuids, "test user");
+        assertNotNull(response.getMessageId());
+        assertEquals(SimpleResponse.OK, response.getResponse());
+
     }
 
     @Test

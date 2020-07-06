@@ -35,6 +35,12 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.rules</groupId>
+            <artifactId>rules-model</artifactId>
+            <version>${rules.model.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
             <artifactId>config-library</artifactId>
             <version>${uvms.config.version}</version>

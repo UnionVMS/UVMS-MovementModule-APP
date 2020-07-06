@@ -52,6 +52,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
     private Queue configQueue;
     private Queue userQueue;
     private Queue subscriptionDataQueue;
+    private Queue rulesQueue;
 
     @PostConstruct
     public void init() {
@@ -61,6 +62,8 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
         spatialQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_MODULE_SPATIAL);
         userQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_USER_IN);
         subscriptionDataQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_SUBSCRIPTION_DATA);
+        rulesQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_MODULE_RULES);
+
     }
 
     @Override
@@ -87,6 +90,9 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
                     break;
                 case SUBSCRIPTION_DATA:
                     corrId = sendMessageToSpecificQueueSameTx(text, subscriptionDataQueue, movementQueue, Collections.singletonMap(MessageConstants.JMS_SUBSCRIPTION_SOURCE_PROPERTY, configHelper.getModuleName()));
+                    break;
+                case RULES:
+                    corrId = sendMessageToSpecificQueueSameTx(text, rulesQueue, movementQueue);
                     break;
                 default:
                     throw new MovementMessageException("Queue not defined or implemented");

@@ -19,16 +19,16 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.commons.message.context.PropagateFluxEnvelopeData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.context.PropagateFluxEnvelopeData;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @MessageDriven(mappedName = MessageConstants.QUEUE_MODULE_MOVEMENT, activationConfig = {
@@ -90,6 +90,9 @@ public class MovementMessageConsumerBean implements MessageListener {
                     break;
                 case FILTER_GUID_LIST_FOR_DATE_BY_AREA:
                     movementEventBean.filterGuidListByDateAndAreas(eventMessage);
+                    break;
+                case FORWARD_POSITION:
+                    movementEventBean.forwardPosition(eventMessage);
                     break;
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:

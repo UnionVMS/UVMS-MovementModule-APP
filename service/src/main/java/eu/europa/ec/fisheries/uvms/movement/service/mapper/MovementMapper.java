@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.Date;  //leave be for now
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselIdentifyingProperties;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
 import org.slf4j.Logger;
@@ -213,6 +215,14 @@ public class MovementMapper {
         return fluxVesselPositionMessage;
     }
 
+    public static FLUXVesselPositionMessage mapToFLUXVesselPositionMessage(String guid, VesselIdentifyingProperties vesselIdentifyingProperties, List<Movement> movements){
+        FLUXVesselPositionMessage fluxVesselPositionMessage = new FLUXVesselPositionMessage();
+        fluxVesselPositionMessage.setFLUXReportDocument(mapToReportDocument(guid));
+        fluxVesselPositionMessage.setVesselTransportMeans(mapToVesselTransportMeans(vesselIdentifyingProperties, movements));
+
+        return fluxVesselPositionMessage;
+    }
+
     private static VesselTransportMeansType mapToVesselTransportMeans(TempMovement movement) {
         VesselTransportMeansType retVal = new VesselTransportMeansType();
         addId(retVal.getIDS(), FLUXVesselIDType.IRCS.name(), movement.getIrcs());
@@ -220,6 +230,21 @@ public class MovementMapper {
         addId(retVal.getIDS(), FLUXVesselIDType.CFR.name(), movement.getCfr());
         retVal.setRegistrationVesselCountry(mapToVesselCountry(movement.getFlag()));
         retVal.getSpecifiedVesselPositionEvents().add(mapToVesselPosition(movement));
+        return retVal;
+    }
+
+    private static VesselTransportMeansType mapToVesselTransportMeans(VesselIdentifyingProperties vesselIdentifyingProperties, List<Movement> movements) {
+        VesselTransportMeansType retVal = new VesselTransportMeansType();
+        addId(retVal.getIDS(), FLUXVesselIDType.IRCS.name(), vesselIdentifyingProperties.getIrcs());
+        addId(retVal.getIDS(), FLUXVesselIDType.EXT_MARK.name(), vesselIdentifyingProperties.getExtMarking());
+        addId(retVal.getIDS(), FLUXVesselIDType.CFR.name(), vesselIdentifyingProperties.getCfr());
+        retVal.setRegistrationVesselCountry(mapToVesselCountry(vesselIdentifyingProperties.getFlagState()));
+
+        List<VesselPositionEventType> vesselPositionEventTypes = movements.stream()
+                .map(MovementMapper::mapToVesselPosition)
+                .collect(Collectors.toList());
+        retVal.getSpecifiedVesselPositionEvents().addAll(vesselPositionEventTypes);
+
         return retVal;
     }
 
@@ -285,9 +310,9 @@ public class MovementMapper {
         return vesselCountry;
     }
 
-    private static MeasureType mapToMeasureType(Double measuredSpeed) {
+    private static MeasureType mapToMeasureType(Double measuredValue) {
         MeasureType measureType = new MeasureType();
-        measureType.setValue(measuredSpeed == null ? null: BigDecimal.valueOf(measuredSpeed));
+        measureType.setValue(measuredValue == null ? null: BigDecimal.valueOf(measuredValue));
         return measureType;
     }
 
@@ -301,6 +326,20 @@ public class MovementMapper {
         VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
         geoType.setLatitudeMeasure(mapToMeasureType(movement.getLatitude()));
         geoType.setLongitudeMeasure(mapToMeasureType(movement.getLongitude()));
+        position.setSpecifiedVesselGeographicalCoordinate(geoType);
+        return position;
+    }
+
+    private static VesselPositionEventType mapToVesselPosition(Movement movement) {
+        VesselPositionEventType position = new VesselPositionEventType();
+        position.setObtainedOccurrenceDateTime(mapToDateTime(Date.from(movement.getTimestamp())));
+        position.setCourseValueMeasure(mapToMeasureType(movement.getHeading()));
+        position.setSpeedValueMeasure(mapToMeasureType(movement.getSpeed()));
+        position.setTypeCode(mapToCodeType(POS));
+
+        VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
+        geoType.setLatitudeMeasure(mapToMeasureType(movement.getLocation().getX()));
+        geoType.setLongitudeMeasure(mapToMeasureType(movement.getLocation().getY()));
         position.setSpecifiedVesselGeographicalCoordinate(geoType);
         return position;
     }
