@@ -11,29 +11,27 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.GuidListForAreaFilteringQuery;
-import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateResponse;
-import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementAndBaseType;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementFiltererBean;
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateResponse;
+import eu.europa.ec.fisheries.schema.movement.module.v1.ForwardPositionRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.ForwardPositionResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByAreaAndTimeIntervalRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryRequest;
@@ -41,25 +39,38 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.rules.exchange.v1.PluginType;
+import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.AuditService;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementAndBaseType;
+import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementFiltererBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper;
+import eu.europa.ec.fisheries.uvms.rules.model.exception.RulesModelMapperException;
+import eu.europa.ec.fisheries.uvms.rules.model.mapper.RulesModuleRequestMapper;
+import org.apache.commons.collections.CollectionUtils;
+import org.joda.time.DateTimeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 
 @Stateless
 public class MovementEventBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(MovementEventBean.class);
-    
+
     private static final int MAXIMUM_REDELIVERIES = 6;
 
     @Inject
@@ -67,7 +78,7 @@ public class MovementEventBean {
 
     @Inject
     private MessageProducer messageProducer;
-    
+
     @Inject
     private AuditService auditService;
 
@@ -78,15 +89,15 @@ public class MovementEventBean {
     @ErrorEvent
     private Event<EventMessage> errorEvent;
 
-    
+
     public void getMovementListByQuery(EventMessage eventMessage) {
         TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
-            GetMovementListByQueryRequest request =(GetMovementListByQueryRequest) eventMessage.getRequest();
+            GetMovementListByQueryRequest request = (GetMovementListByQueryRequest) eventMessage.getRequest();
             GetMovementListByQueryResponse movementList = movementService.getList(request.getQuery());
             String responseString = MovementModuleResponseMapper.mapTogetMovementListByQueryResponse(movementList.getMovement());
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
-            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
+            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage != null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (MovementModelException | MovementMessageException | MovementServiceException | JMSException ex) {
             LOG.error("[ Error on getMovementListByQuery ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
@@ -95,7 +106,7 @@ public class MovementEventBean {
             throw new EJBException(ex);
         }
     }
-    
+
     public void createMovement(EventMessage eventMessage) {
         TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
@@ -105,7 +116,7 @@ public class MovementEventBean {
             String responseString = MovementModuleResponseMapper.mapToCreateMovementResponse(MovementEntityToModelMapper.mapToMovementType(createdMovement));
 
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
-            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
+            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage != null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {
             LOG.error("[ Error when creating movement ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
@@ -114,7 +125,7 @@ public class MovementEventBean {
             throw new EJBException(ex);
         }
     }
-    
+
     public void createMovementBatch(EventMessage eventMessage) {
         TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
@@ -135,16 +146,50 @@ public class MovementEventBean {
             String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createMovementBatchResponse);
             messageProducer.sendModuleMessage(responseString, ModuleQueue.SUBSCRIPTION_DATA);
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
-            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
+            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage != null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {
             LOG.error("[ Error when creating movement batch ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
                 errorEvent.fire(new EventMessage(jmsMessage, "Error when receiving message in movement: " + ex.getMessage()));
-            }            
+            }
             throw new EJBException(ex);
         }
     }
-    
+
+    public void forwardPosition(EventMessage eventMessage) {
+        TextMessage jmsMessage = eventMessage.getJmsMessage();
+        try {
+            ForwardPositionRequest request = (ForwardPositionRequest) eventMessage.getRequest();
+            String messageId = UUID.randomUUID().toString();
+            List<Movement> movements = findMovementsByGuidList(request.getMovementGuids());
+
+            FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(messageId, request.getVesselIdentifyingProperties(), movements);
+            String serializedRulesRequest = RulesModuleRequestMapper.createSendFluxMovementReportMessageRequest(
+                    PluginType.FLUX, JAXBMarshaller.marshallJaxBObjectToString(fluxVesselPositionMessage),
+                    "FLUX", messageId, request.getDataflow(), request.getReceiver());
+            messageProducer.sendModuleMessage(serializedRulesRequest, ModuleQueue.RULES);
+
+            ForwardPositionResponse forwardPositionResponse = new ForwardPositionResponse();
+            forwardPositionResponse.setResponse(SimpleResponse.OK);
+            forwardPositionResponse.setMessageId(messageId);
+            messageProducer.sendMessageBackToRecipient(jmsMessage, JAXBMarshaller.marshallJaxBObjectToString(forwardPositionResponse));
+
+        } catch (EJBException | MovementMessageException | MovementModelException | IllegalStateException | RulesModelMapperException ex) {
+            LOG.error("[ Error when forwarding position ] ", ex);
+            if (maxRedeliveriesReached(jmsMessage)) {
+                errorEvent.fire(new EventMessage(jmsMessage, "Error when receiving message in movement: " + ex.getMessage()));
+            }
+            throw new EJBException(ex);
+        }
+    }
+
+    private List<Movement> findMovementsByGuidList(List<String> movementGuids) {
+        return movementGuids.stream()
+                .map(movementGuid -> Optional.ofNullable(movementService.getById(movementGuid)) // todo get movements with batches
+                        .orElseThrow(() -> new IllegalStateException("movementGuid (" + movementGuid + ") was not found in Database")))
+                .collect(Collectors.toList());
+    }
+
     public void getMovementMapByQuery(EventMessage eventMessage) {
         TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
@@ -154,7 +199,7 @@ public class MovementEventBean {
             String responseString = MovementModuleResponseMapper.mapToMovementMapResponse(movementList.getMovementMap());
 
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
-            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage!= null ? jmsMessage.getJMSReplyTo() : "Null!!!");
+            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage != null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (MovementModelException | MovementMessageException | MovementServiceException | JMSException ex) {
             LOG.error("[ Error when creating getMovementMapByQuery ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
@@ -163,7 +208,7 @@ public class MovementEventBean {
             throw new EJBException(ex);
         }
     }
-    
+
     public void ping(TextMessage message) {
         try {
             PingResponse pingResponse = new PingResponse();
@@ -174,7 +219,7 @@ public class MovementEventBean {
             errorEvent.fire(new EventMessage(message, "Error when responding to ping CD ..SSS: " + e.getMessage()));
         }
     }
-    
+
     public void getMovementListByAreaAndTimeInterval(EventMessage eventMessage) {
         TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
@@ -207,13 +252,12 @@ public class MovementEventBean {
         try {
             FilterGuidListByAreaAndDateRequest actualRequest = (FilterGuidListByAreaAndDateRequest) eventMessage.getRequest();
             GuidListForAreaFilteringQuery query = actualRequest.getQuery();
-            List<String> filteredList  = movementFiltererBean.filterGuidListForPeriodAndAreaTypesByArea(query.getGuidList(),query.getStartDate(),query.getEndDate(),query.getAreas());
+            List<String> filteredList = movementFiltererBean.filterGuidListForPeriodAndAreaTypesByArea(query.getGuidList(), query.getStartDate(), query.getEndDate(), query.getAreas());
 
             FilterGuidListByAreaAndDateResponse response = new FilterGuidListByAreaAndDateResponse();
             response.getFilteredList().addAll(filteredList);
             messageProducer.sendMessageBackToRecipient(jmsMessage, JAXBMarshaller.marshallJaxBObjectToString(response));
-        }
-        catch (MovementModelException | MovementMessageException | MovementModelRuntimeException ex) {
+        } catch (MovementModelException | MovementMessageException | MovementModelRuntimeException ex) {
             LOG.error("[ Error in filterGuidListByDateAndAreas.filterGuidListForPeriodAndAreaTypesByArea ] ", ex);
             errorEvent.fire(new EventMessage(jmsMessage, ex.getMessage()));
             throw new EJBException(ex);

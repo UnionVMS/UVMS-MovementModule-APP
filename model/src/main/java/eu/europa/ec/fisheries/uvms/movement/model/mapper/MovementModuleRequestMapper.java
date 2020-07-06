@@ -11,8 +11,10 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.model.mapper;
 
+import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselIdentifyingProperties;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.ForwardPositionRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
@@ -22,6 +24,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 import java.util.List;
+import java.util.Map;
 
 public class MovementModuleRequestMapper {
 
@@ -41,6 +44,19 @@ public class MovementModuleRequestMapper {
         if (baseTypeList != null) {
             request.getMovement().addAll(baseTypeList);
         }
+        return JAXBMarshaller.marshallJaxBObjectToString(request);
+    }
+
+    public static String mapToForwardPositionRequest(Map<String, String> vesselIdentifiers, String countryCode, List<String> movementGuids, String username) throws MovementModelException {
+        ForwardPositionRequest request = new ForwardPositionRequest();
+        request.setMethod(MovementModuleMethod.FORWARD_POSITION);
+        request.setUsername(username);
+        VesselIdentifyingProperties properties = new VesselIdentifyingProperties();
+        properties.setIrcs(vesselIdentifiers.get("IRCS"));
+        properties.setCfr(vesselIdentifiers.get("CFR"));
+        properties.setFlagState(countryCode);
+        request.setVesselIdentifyingProperties(properties);
+        request.getMovementGuids().addAll(movementGuids);
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
 

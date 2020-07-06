@@ -42,6 +42,17 @@
             <xsd:element name="name" type="xsd:string"/>
         </xsd:sequence>
     </xsd:complexType>
-    
+
+    <xsd:complexType name="VesselIdentifyingProperties">
+        <xsd:sequence>
+            <xsd:element name="flagState" type="xsd:string"/>
+            <xsd:element name="ircs" type="xsd:string"/>
+            <xsd:element name="iccat" type="xsd:string"/>
+            <xsd:element name="cfr" type="xsd:string"/>
+            <xsd:element name="uvi" type="xsd:string"/>
+            <xsd:element name="extMarking" type="xsd:string"/>
+            <xsd:element name="name" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
     
 </xsd:schema>

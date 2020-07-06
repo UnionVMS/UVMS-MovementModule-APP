@@ -4,6 +4,7 @@
              xmlns:search="urn:search.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:common="urn:common.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:movement="urn:movement.schema.fisheries.ec.europa.eu:v1"
+             xmlns:asset="urn:asset.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:area="urn:area.movement.schema.fisheries.ec.europa.eu:v1"
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
@@ -16,6 +17,7 @@
             <xsd:import namespace="urn:search.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="MovementSearch.xsd"/>
             <xsd:import namespace="urn:movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Movement.xsd"/>
             <xsd:import namespace="urn:area.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Area.xsd"/>
+            <xsd:import namespace="urn:asset.movement.schema.fisheries.ec.europa.eu:v1" schemaLocation="Asset.xsd"/>
 
             <!-- Mobile Terminal Base Request -->
             <xsd:simpleType name="MovementModuleMethod">
@@ -29,6 +31,7 @@
                     <xsd:enumeration value="PING"/>
                     <xsd:enumeration value="MOVEMENT_LIST_BY_AREA_TIME_INTERVAL"/>
                     <xsd:enumeration value="FILTER_GUID_LIST_FOR_DATE_BY_AREA"/>
+                    <xsd:enumeration value="FORWARD_POSITION"/>
                 </xsd:restriction>
             </xsd:simpleType>
             
@@ -123,7 +126,32 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            
+
+            <!-- forward position -->
+            <xsd:element name="forwardPositionRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="module:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="movementGuids" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+                                <xsd:element name="vesselIdentifyingProperties" type="asset:VesselIdentifyingProperties" minOccurs="1" maxOccurs="1"/>
+                                <xsd:element name="receiver" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                                <xsd:element name="dataflow" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="forwardPositionResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="response" type="common:SimpleResponse" minOccurs="1" maxOccurs="1"/>
+                        <xsd:element name="messageId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
             <!-- Get movement trip by id -->
             <xsd:element name="getMovementTripByIdRequest">
                 <xsd:complexType>
@@ -267,6 +295,13 @@
     <message name="CreateMovementBatchResponse">
         <part name="body" element="module:createMovementBatchResponse"/>
     </message>
+
+    <message name="ForwardPositionRequest">
+        <part name="body" element="module:forwardPositionRequest"/>
+    </message>
+    <message name="ForwardPositionResponse">
+        <part name="body" element="module:forwardPositionResponse"/>
+    </message>
     
     <message name="GetMovementTripByIdRequest">
         <part name="body" element="module:getMovementTripByIdRequest"/>
@@ -330,6 +365,12 @@
         <operation name="CreateMovementBatch">
             <input message="module:CreateMovementBatchRequest"/>
             <output message="module:CreateMovementBatchResponse"/>
+            <fault name="MovementException" message="module:MovementException"/>
+        </operation>
+
+        <operation name="ForwardPosition">
+            <input message="module:ForwardPositionRequest"/>
+            <output message="module:ForwardPositionResponse"/>
             <fault name="MovementException" message="module:MovementException"/>
         </operation>
         
@@ -397,6 +438,18 @@
         </operation>
         
         <operation name="CreateMovementBatch">
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="MovementException">
+                <soap:fault name="MovementException" use="literal"/>
+            </fault>
+        </operation>
+
+        <operation name="ForwardPosition">
             <input>
                 <soap:body use="literal"/>
             </input>
