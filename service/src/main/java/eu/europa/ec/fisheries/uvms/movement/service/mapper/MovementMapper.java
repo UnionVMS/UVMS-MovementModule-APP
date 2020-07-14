@@ -210,7 +210,7 @@ public class MovementMapper {
 
     public static FLUXVesselPositionMessage mapToFLUXVesselPositionMessage(TempMovement movement, String guid){
         FLUXVesselPositionMessage fluxVesselPositionMessage = new FLUXVesselPositionMessage();
-        fluxVesselPositionMessage.setFLUXReportDocument(mapToReportDocument(guid));
+        fluxVesselPositionMessage.setFLUXReportDocument(mapToMovementReportDocument(guid));
         fluxVesselPositionMessage.setVesselTransportMeans(mapToVesselTransportMeans(movement));
         return fluxVesselPositionMessage;
     }
@@ -270,10 +270,25 @@ public class MovementMapper {
         return doc;
     }
 
+    private static FLUXReportDocumentType mapToMovementReportDocument( String guid) {
+        FLUXReportDocumentType doc = new FLUXReportDocumentType();
+        doc.getIDS().add(mapToIdType(guid));
+        doc.setCreationDateTime(mapToNowDateTime());
+        doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
+        doc.setOwnerFLUXParty( mapToFluxOwnerPartyType(FLUX_GP_PARTY));
+        return doc;
+    }
+
     private static IDType mapToIdType(String value) {
         IDType id = new IDType();
         id.setValue(value);
         return id;
+    }
+
+    private static FLUXPartyType mapToFluxOwnerPartyType(String ad) {
+        FLUXPartyType partyType = new FLUXPartyType();
+        partyType.getIDS().add(mapToIdType(ad,"SRC"));
+        return partyType;
     }
 
     private static DateTimeType mapToNowDateTime() {
