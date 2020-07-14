@@ -23,15 +23,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementComChannelType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
-import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
@@ -208,9 +199,9 @@ public class MovementMapper {
         return dto;
     }
 
-    public static FLUXVesselPositionMessage mapToFLUXVesselPositionMessage(TempMovement movement, String guid){
+    public static FLUXVesselPositionMessage mapToFLUXVesselPositionMessage(TempMovement movement, String guid, String party) {
         FLUXVesselPositionMessage fluxVesselPositionMessage = new FLUXVesselPositionMessage();
-        fluxVesselPositionMessage.setFLUXReportDocument(mapToReportDocument(guid));
+        fluxVesselPositionMessage.setFLUXReportDocument(mapToMovementReportDocument(guid,party));
         fluxVesselPositionMessage.setVesselTransportMeans(mapToVesselTransportMeans(movement));
         return fluxVesselPositionMessage;
     }
@@ -270,10 +261,25 @@ public class MovementMapper {
         return doc;
     }
 
+    private static FLUXReportDocumentType mapToMovementReportDocument(String guid, String party) {
+        FLUXReportDocumentType doc = new FLUXReportDocumentType();
+        doc.getIDS().add(mapToIdType(guid));
+        doc.setCreationDateTime(mapToNowDateTime());
+        doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
+        doc.setOwnerFLUXParty( mapToFluxOwnerPartyType(FLUX_GP_PARTY,party));
+        return doc;
+    }
+
     private static IDType mapToIdType(String value) {
         IDType id = new IDType();
         id.setValue(value);
         return id;
+    }
+
+    private static FLUXPartyType mapToFluxOwnerPartyType(String ad, String party) {
+        FLUXPartyType partyType = new FLUXPartyType();
+        partyType.getIDS().add(mapToIdType(ad,party));
+        return partyType;
     }
 
     private static DateTimeType mapToNowDateTime() {

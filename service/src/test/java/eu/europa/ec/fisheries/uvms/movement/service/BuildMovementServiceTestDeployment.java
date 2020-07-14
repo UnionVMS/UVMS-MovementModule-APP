@@ -28,6 +28,7 @@ public abstract class BuildMovementServiceTestDeployment {
         testWar.addAsLibraries(files);
         
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.service");
+        testWar.addClass(MockParameterService.class);
         
         testWar.deleteClass(SpatialRestClient.class);
         testWar.addClass(SpatialClientMock.class);
