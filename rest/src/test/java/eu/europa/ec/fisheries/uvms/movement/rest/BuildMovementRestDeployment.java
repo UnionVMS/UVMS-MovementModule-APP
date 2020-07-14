@@ -40,6 +40,7 @@ public abstract class BuildMovementRestDeployment {
         testWar.addAsLibraries(files);
         
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.rest");
+        testWar.addClass(MockParameterService.class);
 
         testWar.delete("/WEB-INF/web.xml");
         testWar.addAsWebInfResource("mock-web.xml", "web.xml");

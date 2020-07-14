@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
@@ -27,6 +28,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import eu.europa.ec.fisheries.uvms.commons.message.impl.JAXBUtils;
+import eu.europa.ec.fisheries.uvms.config.exception.ConfigServiceException;
+import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
@@ -62,6 +65,7 @@ public class TempMovementService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TempMovementService.class);
 
+    private static final String FLUX_LOCAL_NATION_CODE = "flux_local_nation_code";
     private static final String FR = "FR";
     private static final String AD = "XEU";
     private static final String TO = "60";
@@ -82,6 +86,20 @@ public class TempMovementService {
     @Inject
     @CreatedManualMovement
     private Event<NotificationMessage> createdManualMovement;
+
+    @Inject
+    ParameterService parameterService;
+
+    private String localNodeName;
+
+    @PostConstruct
+    void init() {
+        try {
+            localNodeName = parameterService.getParamValueById(FLUX_LOCAL_NATION_CODE);
+        } catch (ConfigServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     
     public TempMovement createTempMovement(TempMovement tempMovement, String username) throws MovementServiceException {
@@ -160,7 +178,7 @@ public class TempMovementService {
         checkUsernameProvided(username);
         try {
             TempMovement movement = setTempMovementState(guid, TempMovementStateEnum.SENT, username);
-            FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(movement,guid);
+            FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(movement,guid,localNodeName);
             String setFLUXMovementReportRequest = ExchangeModuleRequestMapper.createSetFLUXMovementReportRequest(JAXBUtils.marshallJaxBObjectToString(fluxVesselPositionMessage), username, "urn:un:unece:uncefact:fisheries:FLUX:FA:XNE:1",
                     DateUtils.nowUTC().toDate(), guid, PluginType.MANUAL,
                     FR, null, guid, "eu.europa.ec.fisheries.uvms.plugins.flux.movement",
