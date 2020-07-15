@@ -97,6 +97,12 @@ public class MovementDao {
         }
     }
 
+    public List<Movement> findMovementsByGUIDList(List<String> guidList) {
+        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_BY_GUID_LIST, Movement.class);
+        query.setParameter("guidList", guidList);
+        return query.getResultList();
+    }
+
     public Movement getMovementById(Long id) {
         return em.find(Movement.class, id);
     }

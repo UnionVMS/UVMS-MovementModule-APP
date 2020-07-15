@@ -32,6 +32,7 @@
                     <xsd:enumeration value="MOVEMENT_LIST_BY_AREA_TIME_INTERVAL"/>
                     <xsd:enumeration value="FILTER_GUID_LIST_FOR_DATE_BY_AREA"/>
                     <xsd:enumeration value="FORWARD_POSITION"/>
+                    <xsd:enumeration value="FIND_RAW_MOVEMENTS"/>
                 </xsd:restriction>
             </xsd:simpleType>
             
@@ -123,6 +124,26 @@
                     <xsd:sequence>
                         <xsd:element name="response" type="common:SimpleResponse" minOccurs="1" maxOccurs="1"/>
                         <xsd:element name="movements" type="movement:MovementType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="FindRawMovementsRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="module:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="movementGuids" type="xsd:string" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="FindRawMovementsResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="response" type="movement:MovementBaseType" maxOccurs="unbounded"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
