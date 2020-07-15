@@ -362,7 +362,9 @@ public class MovementMapper {
     private static Function<Movement,MovementBaseType> toMovementBaseType(){
         return movement -> {
             MovementBaseType movementBaseType = new MovementBaseType();
-            movementBaseType.setActivity(toActivityType(movement.getActivity()));
+            if(movement.getActivity() != null){
+                movementBaseType.setActivity(toActivityType(movement.getActivity()));
+            }
             movementBaseType.setConnectId(movement.getMovementConnect().getValue());
             movementBaseType.setDuplicate(movement.getDuplicate());
             movementBaseType.setDuplicates(movement.getDuplicateId());
@@ -371,7 +373,9 @@ public class MovementMapper {
             movementBaseType.setMovementType(movement.getMovementType());
 
             eu.europa.ec.fisheries.schema.movement.v1.MovementPoint movementPoint = new MovementPoint();
-            movementPoint.setAltitude(movement.getAltitude().doubleValue());
+            if(movement.getAltitude() != null){
+                movementPoint.setAltitude(movement.getAltitude().doubleValue());
+            }
             movementPoint.setLatitude(movement.getLocation().getY());
             movementPoint.setLongitude(movement.getLocation().getX());
             movementBaseType.setPosition(movementPoint);
