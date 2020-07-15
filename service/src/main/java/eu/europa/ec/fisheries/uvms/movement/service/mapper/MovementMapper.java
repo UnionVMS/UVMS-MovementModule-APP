@@ -16,10 +16,15 @@ import java.util.ArrayList;
 import java.util.Date;  //leave be for now
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselIdentifyingProperties;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -350,4 +355,40 @@ public class MovementMapper {
         return position;
     }
 
+    public static List<MovementBaseType> toMovementBaseTypes(List<Movement> movements){
+        return movements.stream().map(toMovementBaseType()).collect(Collectors.toList());
+    }
+
+    private static Function<Movement,MovementBaseType> toMovementBaseType(){
+        return movement -> {
+            MovementBaseType movementBaseType = new MovementBaseType();
+            movementBaseType.setActivity(toActivityType(movement.getActivity()));
+            movementBaseType.setConnectId(movement.getMovementConnect().getValue());
+            movementBaseType.setDuplicate(movement.getDuplicate());
+            movementBaseType.setDuplicates(movement.getDuplicateId());
+            movementBaseType.setGuid(movement.getGuid());
+            movementBaseType.setInternalReferenceNumber(movement.getInternalReferenceNumber());
+            movementBaseType.setMovementType(movement.getMovementType());
+
+            eu.europa.ec.fisheries.schema.movement.v1.MovementPoint movementPoint = new MovementPoint();
+            movementPoint.setAltitude(movement.getAltitude().doubleValue());
+            movementPoint.setLatitude(movement.getLocation().getY());
+            movementPoint.setLongitude(movement.getLocation().getX());
+            movementBaseType.setPosition(movementPoint);
+            movementBaseType.setProcessed(movement.isProcessed());
+            movementBaseType.setStatus(movement.getStatus());
+            movementBaseType.setReportedSpeed(movement.getSpeed());
+            movementBaseType.setReportedCourse(movement.getHeading());
+            movementBaseType.setTripNumber(movement.getTripNumber());
+            return movementBaseType;
+        };
+    }
+
+    private static MovementActivityType toActivityType(Activity activity){
+        MovementActivityType movementActivityType = new MovementActivityType();
+        movementActivityType.setCallback(activity.getCallback());
+        movementActivityType.setMessageId(activity.getMessageId());
+        movementActivityType.setMessageType(activity.getActivityType());
+        return movementActivityType;
+    }
 }
