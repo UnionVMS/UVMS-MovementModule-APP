@@ -315,6 +315,12 @@ public class MovementService {
         return dao.getMovementByGUID(id);
     }
 
+    public List<Movement> findMovementsByGUIDList(List<String> guidList) {
+        List<Movement> movements = dao.findMovementsByGUIDList(guidList);
+
+        return movements;
+    }
+
 
     private void fireMovementEvent(Movement createdMovement) {
         try {

@@ -94,6 +94,9 @@ public class MovementMessageConsumerBean implements MessageListener {
                 case FORWARD_POSITION:
                     movementEventBean.forwardPosition(eventMessage);
                     break;
+                case FIND_RAW_MOVEMENTS:
+                    movementEventBean.findRawMovements(eventMessage);
+                    break;
                 case GET_SEGMENT_BY_ID:
                 case GET_TRIP_BY_ID:
                 default:

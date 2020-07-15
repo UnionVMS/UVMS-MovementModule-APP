@@ -19,9 +19,7 @@ import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.GuidListForAreaFilteringQuery;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
@@ -30,6 +28,8 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchRespo
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateResponse;
+import eu.europa.ec.fisheries.schema.movement.module.v1.FindRawMovementsRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.FindRawMovementsResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.ForwardPositionRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.ForwardPositionResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByAreaAndTimeIntervalRequest;
@@ -61,7 +61,6 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntity
 import eu.europa.ec.fisheries.uvms.rules.model.exception.RulesModelMapperException;
 import eu.europa.ec.fisheries.uvms.rules.model.mapper.RulesModuleRequestMapper;
 import org.apache.commons.collections.CollectionUtils;
-import org.joda.time.DateTimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
@@ -161,7 +160,7 @@ public class MovementEventBean {
         try {
             ForwardPositionRequest request = (ForwardPositionRequest) eventMessage.getRequest();
             String messageId = UUID.randomUUID().toString();
-            List<Movement> movements = findMovementsByGuidList(request.getMovementGuids());
+            List<Movement> movements = movementService.findMovementsByGUIDList(request.getMovementGuids());
 
             FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(messageId, request.getVesselIdentifyingProperties(), movements);
             String serializedRulesRequest = RulesModuleRequestMapper.createSendFluxMovementReportMessageRequest(
@@ -181,13 +180,6 @@ public class MovementEventBean {
             }
             throw new EJBException(ex);
         }
-    }
-
-    private List<Movement> findMovementsByGuidList(List<String> movementGuids) {
-        return movementGuids.stream()
-                .map(movementGuid -> Optional.ofNullable(movementService.getById(movementGuid)) // todo get movements with batches
-                        .orElseThrow(() -> new IllegalStateException("movementGuid (" + movementGuid + ") was not found in Database")))
-                .collect(Collectors.toList());
     }
 
     public void getMovementMapByQuery(EventMessage eventMessage) {
@@ -263,4 +255,26 @@ public class MovementEventBean {
             throw new EJBException(ex);
         }
     }
+
+    public void findRawMovements(EventMessage eventMessage) {
+        TextMessage jmsMessage = eventMessage.getJmsMessage();
+        try {
+            FindRawMovementsRequest request = (FindRawMovementsRequest) eventMessage.getRequest();
+            List<Movement> movements = movementService.findMovementsByGUIDList(request.getMovementGuids());
+
+            FindRawMovementsResponse response = new FindRawMovementsResponse();
+            List<MovementBaseType> responseItems = MovementMapper.toMovementBaseTypes(movements);
+            response.getResponse().addAll(responseItems);
+            messageProducer.sendMessageBackToRecipient(jmsMessage, JAXBMarshaller.marshallJaxBObjectToString(response));
+
+        } catch (EJBException | MovementMessageException | MovementModelException | IllegalStateException ex) {
+            LOG.error("[ Error when forwarding position ] ", ex);
+            if (maxRedeliveriesReached(jmsMessage)) {
+                errorEvent.fire(new EventMessage(jmsMessage, "Error when receiving message in movement: " + ex.getMessage()));
+            }
+            throw new EJBException(ex);
+        }
+    }
+
+
 }
