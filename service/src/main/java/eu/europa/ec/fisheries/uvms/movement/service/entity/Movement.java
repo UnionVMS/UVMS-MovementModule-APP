@@ -154,6 +154,9 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Column(name = "move_upuser")
     private String updatedBy;
 
+    @Column(name = "ais_position_accuracy")     //Value can be 0 (>10m) and 1 (<10m). See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info
+    private Short aisPositionAccuracy;
+
 
     public UUID getId() {
         return id;
@@ -289,6 +292,14 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setSourceSatelliteId(SatId sourceSatelliteId) {
         this.sourceSatelliteId = sourceSatelliteId;
+    }
+
+    public Short getAisPositionAccuracy() {
+        return aisPositionAccuracy;
+    }
+
+    public void setAisPositionAccuracy(Short aisPositionAccuracy) {
+        this.aisPositionAccuracy = aisPositionAccuracy;
     }
 
     @Override
