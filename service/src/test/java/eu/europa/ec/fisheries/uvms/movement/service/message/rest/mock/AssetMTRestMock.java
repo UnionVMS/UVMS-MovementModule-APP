@@ -32,8 +32,6 @@ public class AssetMTRestMock {
     @Consumes(value = {MediaType.APPLICATION_JSON})
     @Produces(value = {MediaType.APPLICATION_JSON})
     public Response collectAssetMT(AssetMTEnrichmentRequest request) {
-
-
         try {
 
             AssetMTEnrichmentResponse response = new AssetMTEnrichmentResponse();

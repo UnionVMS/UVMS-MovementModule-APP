@@ -121,6 +121,12 @@ public enum SanityRule {
             return movement.getAssetGuid() == null || movement.getAssetGuid().isEmpty();
         }
     },
+    MMSI_TO_LONG("Mmsi is longer then 9 characters") {
+        @Override
+        public boolean evaluate(IncomingMovement movement) {
+            return movement.getAssetMMSI() != null && movement.getAssetMMSI().length() > 9;
+        }
+    },
     DUPLICATE_MOVEMENT("Movement is a duplicate") {
         @Override
         public boolean evaluate(IncomingMovement movement) {
