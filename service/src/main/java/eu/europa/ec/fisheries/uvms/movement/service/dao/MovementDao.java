@@ -113,9 +113,16 @@ public class MovementDao {
     }
     
     public Movement getMovementByPrevious(Movement previousMovement) {
-        return em.createNamedQuery(Movement.FIND_BY_PREVIOUS_MOVEMENT, Movement.class)
-                .setParameter("previousMovement", previousMovement)
-                .getSingleResult();
+        try {
+            return em.createNamedQuery(Movement.FIND_BY_PREVIOUS_MOVEMENT, Movement.class)
+                    .setParameter("previousMovement", previousMovement)
+                    .getSingleResult();
+        }catch (NoResultException e) {
+            LOG.info("No movement found with previousMovement as movement.previousMovement. Trying to find it by MC and date");
+            Movement nextMovement = getNextMovement(previousMovement.getMovementConnect().getId(), previousMovement.getTimestamp());
+            nextMovement.setPreviousMovement(previousMovement);
+            return nextMovement;
+        }
     }
 
     public Movement getPreviousMovement(UUID id, Instant date) {
@@ -126,6 +133,24 @@ public class MovementDao {
         Movement singleResult = null;
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_PREVIOUS, Movement.class);
+            query.setParameter("id", id);
+            query.setParameter("date", date);
+            query.setParameter("sources", sources);
+            singleResult = query.getSingleResult();
+        } catch (NoResultException e) {
+            LOG.debug("No previous movement found for date: {} and connectedId: {}", date, id);
+        }
+        return singleResult;
+    }
+
+    public Movement getNextMovement(UUID id, Instant date) {
+        return getNextMovement(id, date, Arrays.asList(MovementSourceType.values()));
+    }
+
+    public Movement getNextMovement(UUID id, Instant date, List<MovementSourceType> sources) {
+        Movement singleResult = null;
+        try {
+            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_NEXT, Movement.class);
             query.setParameter("id", id);
             query.setParameter("date", date);
             query.setParameter("sources", sources);
