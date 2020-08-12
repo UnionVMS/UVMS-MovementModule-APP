@@ -148,8 +148,8 @@ public class InternalRestResource {
     public Response remapMovementConnectInMovement(@QueryParam(value = "MovementConnectFrom") String movementConnectFrom,
                                                    @QueryParam(value = "MovementConnectTo") String movementConnectTo) {
         try {
-            movementService.remapMovementConnectInMovement(movementConnectFrom, movementConnectTo);
-            return Response.ok()
+            int remappedMovements = movementService.remapMovementConnectInMovement(movementConnectFrom, movementConnectTo);
+            return Response.ok(remappedMovements)
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when remapping movements. ]", e);

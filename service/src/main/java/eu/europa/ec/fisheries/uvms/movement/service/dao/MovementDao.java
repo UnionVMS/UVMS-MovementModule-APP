@@ -54,6 +54,7 @@ public class MovementDao {
     public List<Movement> getMovementListByMovementConnect(MovementConnect movementConnect) {
         TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_BY_MOVEMENTCONNECT, Movement.class);
         query.setParameter("movementConnect", movementConnect);
+        query.setMaxResults(1000);
         return query.getResultList();
     }
 
