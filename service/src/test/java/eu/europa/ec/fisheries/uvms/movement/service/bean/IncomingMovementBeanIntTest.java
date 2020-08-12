@@ -402,6 +402,35 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         
         assertRelationsAndTrack(movementList);
     }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void testProcessingThreeMovementsIn132OrderWithBrokenPreviousMovement() {
+        UUID connectId = UUID.randomUUID();
+        Instant timestamp = Instant.now();
+        Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
+        firstMovement.setTimestamp(timestamp);
+
+        Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
+        secondMovement.setTimestamp(timestamp.plusSeconds(10));
+
+        Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
+        thirdMovement.setTimestamp(timestamp.plusSeconds(20));
+
+        firstMovement = movementService.createMovement(firstMovement);
+        incomingMovementBean.processMovement(firstMovement);
+
+        thirdMovement = movementService.createMovement(thirdMovement);
+        incomingMovementBean.processMovement(thirdMovement);
+        thirdMovement.setPreviousMovement(null);
+
+        secondMovement = movementService.createMovement(secondMovement);
+        incomingMovementBean.processMovement(secondMovement);
+
+        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
+        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
+        assertThat(movementList.size(), is(3));
+    }
     
     @Test
     @OperateOnDeployment("movementservice")
