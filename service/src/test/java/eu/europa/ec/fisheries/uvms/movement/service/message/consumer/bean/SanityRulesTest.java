@@ -280,6 +280,18 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
 
     @Test
     @OperateOnDeployment("movementservice")
+    public void setMovementReportMemberMmsiLongerThen9CharsSanityRuleTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(null);
+        incomingMovement.setAssetMMSI("1024307102");
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
     public void setMovementReportDuplicateMovementSanityRuleTest() throws Exception {
 
         UUID id = UUID.randomUUID();
