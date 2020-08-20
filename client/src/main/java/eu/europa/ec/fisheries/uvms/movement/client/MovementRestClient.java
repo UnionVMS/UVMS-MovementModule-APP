@@ -121,7 +121,6 @@ public class MovementRestClient {
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
                 .post(Entity.entity(cursorPagination, MediaType.APPLICATION_JSON_TYPE), String.class);
-        System.out.println(response);
         return jsonb.fromJson(response, new ArrayList<MovementType>(){}.getClass().getGenericSuperclass());
     }
 }
