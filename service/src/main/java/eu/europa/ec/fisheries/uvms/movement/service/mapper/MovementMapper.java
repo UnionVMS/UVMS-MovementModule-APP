@@ -211,9 +211,9 @@ public class MovementMapper {
         return fluxVesselPositionMessage;
     }
 
-    public static FLUXVesselPositionMessage mapToFLUXVesselPositionMessage(String guid, VesselIdentifyingProperties vesselIdentifyingProperties, List<Movement> movements){
+    public static FLUXVesselPositionMessage mapToFLUXVesselPositionMessage(String guid, VesselIdentifyingProperties vesselIdentifyingProperties, List<Movement> movements, String party){
         FLUXVesselPositionMessage fluxVesselPositionMessage = new FLUXVesselPositionMessage();
-        fluxVesselPositionMessage.setFLUXReportDocument(mapToReportDocument(guid));
+        fluxVesselPositionMessage.setFLUXReportDocument(mapToMovementReportDocument(guid, party));
         fluxVesselPositionMessage.setVesselTransportMeans(mapToVesselTransportMeans(vesselIdentifyingProperties, movements));
 
         return fluxVesselPositionMessage;
@@ -349,8 +349,8 @@ public class MovementMapper {
         position.setTypeCode(mapToCodeType(POS));
 
         VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
-        geoType.setLatitudeMeasure(mapToMeasureType(movement.getLocation().getX()));
-        geoType.setLongitudeMeasure(mapToMeasureType(movement.getLocation().getY()));
+        geoType.setLatitudeMeasure(mapToMeasureType(movement.getLocation().getY()));
+        geoType.setLongitudeMeasure(mapToMeasureType(movement.getLocation().getX()));
         position.setSpecifiedVesselGeographicalCoordinate(geoType);
         return position;
     }

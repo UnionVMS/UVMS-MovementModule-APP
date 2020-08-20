@@ -162,7 +162,7 @@ public class MovementEventBean {
             String messageId = UUID.randomUUID().toString();
             List<Movement> movements = movementService.findMovementsByGUIDList(request.getMovementGuids());
 
-            FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(messageId, request.getVesselIdentifyingProperties(), movements);
+            FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(messageId, request.getVesselIdentifyingProperties(), movements, "XEU");
             String serializedRulesRequest = RulesModuleRequestMapper.createSendFluxMovementReportMessageRequest(
                     PluginType.FLUX, JAXBMarshaller.marshallJaxBObjectToString(fluxVesselPositionMessage),
                     "FLUX", messageId, request.getDataflow(), request.getReceiver());
