@@ -12,6 +12,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -28,6 +29,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -280,6 +286,49 @@ public class MovementDao {
             movements = query.getResultList();
         }
         return movements;
+    }
+
+    public List<Movement> getCursorBasedList(CursorPagination cursorPagination) {
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Movement> cq = criteriaBuilder.createQuery(Movement.class);
+        Root<Movement> movement = cq.from(Movement.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (cursorPagination.getTimestampCursor() != null && cursorPagination.getIdCursor() != null) {
+            predicates.add(criteriaBuilder.or(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThan(movement.get("timestamp"), cursorPagination.getTimestampCursor()),
+                            criteriaBuilder.lessThanOrEqualTo(movement.get("timestamp"), cursorPagination.getTo())
+                            ),
+                    criteriaBuilder.and(
+                            criteriaBuilder.equal(movement.get("timestamp"), cursorPagination.getTimestampCursor()),
+                            criteriaBuilder.greaterThan(movement.get("id"), cursorPagination.getIdCursor())
+                            )
+                    ));
+        } else {
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(movement.get("timestamp"), cursorPagination.getFrom()));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(movement.get("timestamp"), cursorPagination.getTo()));
+        }
+
+        if (cursorPagination.getConnectIds() != null) {
+            Join<Movement, MovementConnect> movementConnect = movement.join("movementConnect");
+            predicates.add(criteriaBuilder.in(movementConnect.get("id")).value(cursorPagination.getConnectIds()));
+        }
+
+        if (cursorPagination.getSources() != null) {
+            predicates.add(criteriaBuilder.in(movement.get("source")).value(cursorPagination.getSources()));
+        }
+
+        cq.where(criteriaBuilder.and(predicates.stream().toArray(Predicate[]::new)));
+
+        cq.orderBy(criteriaBuilder.asc(movement.get("timestamp")), criteriaBuilder.asc(movement.get("id")));
+        TypedQuery<Movement> query = em.createQuery(cq);
+        if (cursorPagination.getLimit() != null) {
+            query.setMaxResults(cursorPagination.getLimit()); // limit
+        }
+
+        return query.getResultList();
     }
 
     public MovementConnect getMovementConnectByConnectId(UUID id) {

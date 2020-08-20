@@ -7,8 +7,10 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
+import eu.europa.ec.fisheries.uvms.movement.client.model.CursorPagination;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
@@ -229,6 +231,27 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         assertTrue(movementListBy.getMovement().size() > 0);
         assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
         assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));  
+    }
+    
+    @Test
+    public void getCursorBasedListTest() {
+        AssetDTO asset = createBasicAsset();
+        IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        movement.setTimestamp(Instant.now());
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+   
+        CursorPagination cursorPagination = new CursorPagination();
+        cursorPagination.setFrom(createdMovement.getTimestamp().minus(1, ChronoUnit.HOURS));
+        cursorPagination.setTo(createdMovement.getTimestamp().plus(1, ChronoUnit.HOURS));
+        cursorPagination.setConnectIds(Arrays.asList(createdMovement.getMovementConnect().getId()));
+        List<MovementType> movements = movementRestClient.getCursorBasedList(cursorPagination);
+       
+        assertNotNull(movements);
+        assertTrue(movements.size() > 0);
+        assertTrue(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+        assertTrue(movements.stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));   
     }
     
     @Test

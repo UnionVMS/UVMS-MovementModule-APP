@@ -9,6 +9,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -221,6 +222,18 @@ public class InternalRestResource {
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when counting movements. ]", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+    
+    @POST
+    @Path("/list/cursor")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getCursorBasedList(CursorPagination cursorPagination) {
+        try {
+            List<MovementType> list = movementService.getCursorBasedList(cursorPagination);
+            return Response.ok(list).build();
+        } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }

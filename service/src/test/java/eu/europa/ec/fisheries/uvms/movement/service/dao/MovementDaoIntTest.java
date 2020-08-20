@@ -4,11 +4,13 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.core.StringContains;
 import org.hibernate.HibernateException;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -27,6 +29,7 @@ import javax.ejb.EJBTransactionRolledbackException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -464,6 +467,111 @@ public class MovementDaoIntTest extends TransactionalTests {
 
         String sql = SearchFieldMapper.createCountSearchSql(null, true);
         movementDao.getMovementListSearchCount(sql,null);
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getCursorBasedListTest() throws Exception{
+        MovementConnect movementConnect = createMovementConnectHelper();
+        movementDao.createMovementConnect(movementConnect);
+        Movement movement = createMovementHelper();
+        movement.setMovementConnect(movementConnect);
+        movementDao.createMovement(movement);
+        
+        CursorPagination cursorPagination = new CursorPagination();
+        cursorPagination.setFrom(movement.getTimestamp().minus(1, ChronoUnit.HOURS));
+        cursorPagination.setTo(movement.getTimestamp().plus(1, ChronoUnit.HOURS));
+        cursorPagination.setConnectIds(Arrays.asList(movementConnect.getId()));
+        cursorPagination.setSources(Arrays.asList(MovementSourceType.AIS, MovementSourceType.NAF));
+        cursorPagination.setLimit(10);
+        
+        List<Movement> movements = movementDao.getCursorBasedList(cursorPagination);
+        
+        assertThat(movements.size(), CoreMatchers.is(1));
+        assertThat(movements.get(0).getId(), CoreMatchers.is(movement.getId()));
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getCursorBasedListPaginationTest() throws Exception{
+        MovementConnect movementConnect = createMovementConnectHelper();
+        movementDao.createMovementConnect(movementConnect);
+        Movement movement = createMovementHelper();
+        movement.setTimestamp(Instant.now().minus(2, ChronoUnit.HOURS));
+        movement.setMovementConnect(movementConnect);
+        movementDao.createMovement(movement);
+        Movement movement2 = createMovementHelper();
+        movement2.setTimestamp(Instant.now());
+        movement2.setMovementConnect(movementConnect);
+        movementDao.createMovement(movement2);
+        
+        Instant from = movement.getTimestamp().minus(1, ChronoUnit.HOURS);
+        Instant to = movement2.getTimestamp().plus(1, ChronoUnit.HOURS);
+
+        CursorPagination cursorPagination = new CursorPagination();
+        cursorPagination.setFrom(from);
+        cursorPagination.setTo(to);
+        cursorPagination.setConnectIds(Arrays.asList(movementConnect.getId()));
+        cursorPagination.setSources(Arrays.asList(movement.getSource()));
+        cursorPagination.setLimit(1);
+        
+        List<Movement> movements = movementDao.getCursorBasedList(cursorPagination);
+        
+        assertThat(movements.size(), CoreMatchers.is(1));
+        assertThat(movements.get(0).getId(), CoreMatchers.is(movement.getId()));
+        
+        cursorPagination.setTimestampCursor(movements.get(0).getTimestamp());
+        cursorPagination.setIdCursor(movements.get(0).getId());
+        
+        List<Movement> movements2 = movementDao.getCursorBasedList(cursorPagination);
+        
+        assertThat(movements2.size(), CoreMatchers.is(1));
+        assertThat(movements2.get(0).getId(), CoreMatchers.is(movement2.getId()));
+    }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getCursorBasedListPaginationSameTimestampTest() throws Exception{
+        Instant timestamp = Instant.now();
+
+        MovementConnect movementConnect = createMovementConnectHelper();
+        movementDao.createMovementConnect(movementConnect);
+        Movement movement = createMovementHelper();
+        movement.setTimestamp(timestamp);
+        movement.setMovementConnect(movementConnect);
+        movementDao.createMovement(movement);
+        MovementConnect movementConnect2 = createMovementConnectHelper();
+        movementDao.createMovementConnect(movementConnect2);
+        Movement movement2 = createMovementHelper();
+        movement2.setTimestamp(timestamp);
+        movement2.setMovementConnect(movementConnect2);
+        movementDao.createMovement(movement2);
+        
+        List<UUID> sortedIds = Arrays.asList(movement.getId(), movement2.getId());
+        sortedIds.sort(UUID::compareTo);
+        
+        Instant from = movement.getTimestamp().minus(1, ChronoUnit.HOURS);
+        Instant to = movement.getTimestamp().plus(1, ChronoUnit.HOURS);
+
+        CursorPagination cursorPagination = new CursorPagination();
+        cursorPagination.setFrom(from);
+        cursorPagination.setTo(to);
+        cursorPagination.setConnectIds(Arrays.asList(movementConnect.getId(), movementConnect2.getId()));
+        cursorPagination.setSources(Arrays.asList(movement.getSource()));
+        cursorPagination.setLimit(1);
+        
+        List<Movement> movements = movementDao.getCursorBasedList(cursorPagination);
+        
+        assertThat(movements.size(), CoreMatchers.is(1));
+        assertThat(movements.get(0).getId(), CoreMatchers.is(sortedIds.get(0)));
+        
+        cursorPagination.setTimestampCursor(movements.get(0).getTimestamp());
+        cursorPagination.setIdCursor(movements.get(0).getId());
+        
+        List<Movement> movements2 = movementDao.getCursorBasedList(cursorPagination);
+        
+        assertThat(movements2.size(), CoreMatchers.is(1));
+        assertThat(movements2.get(0).getId(), CoreMatchers.is(sortedIds.get(1)));
     }
 
     /******************************************************************************************************************
