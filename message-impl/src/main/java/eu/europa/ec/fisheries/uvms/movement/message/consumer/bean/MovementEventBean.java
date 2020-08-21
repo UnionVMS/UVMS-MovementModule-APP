@@ -250,6 +250,7 @@ public class MovementEventBean {
             }
             return false;
         } catch (JMSException e) {
+            LOG.error("Could not retrieve JMSXDeliveryCount property",e);
             return false;
         }
     }

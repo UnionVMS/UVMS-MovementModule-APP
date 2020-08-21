@@ -112,7 +112,7 @@ public class DateUtil {
             try {
                 return getDateFromString(dateTimeInUTC, pattern);
             } catch (DateTimeParseException e) {
-                LOG.info("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern: " + pattern + ". Trying next pattern");
+                LOG.info("Could not parse dateTimeInUTC: " + dateTimeInUTC + " with pattern: " + pattern + ". Trying next pattern",e);
             }
         }
         return null;

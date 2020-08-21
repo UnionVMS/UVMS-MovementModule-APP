@@ -92,10 +92,10 @@ public class MovementRestResource {
         try {
             return new ResponseDto(serviceLayer.getList(query), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
-            LOG.error("[ Error when getting list. {}] {}",query, ex);
+            LOG.error("Error when getting list." + query, ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
-            LOG.error("[ Error when getting list. ]", ex);
+            LOG.error("Error when getting list.", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -257,10 +257,10 @@ public class MovementRestResource {
         try {
             return new ResponseDto(serviceLayer.getMapByQuery(query), ResponseCode.OK);
         } catch (MovementServiceException | MovementServiceRuntimeException ex) {
-            LOG.error("[ Error when getting movement map. {}] {}",query, ex);
+            LOG.error("Error when getting movement map. " + query, ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
-            LOG.error("[ Error when getting movement map. ]", ex);
+            LOG.error("Error when getting movement map. ", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }

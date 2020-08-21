@@ -71,10 +71,10 @@ public class MovementSearchGroupResource {
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(createdFilterGroup);
             return new ResponseDto(movementSearchGroup, ResponseCode.OK);
         } catch (MovementServiceException e) {
-            LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when creating movement search group. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         } catch (Exception e) {
-            LOG.error("[ Error when creating movement search group. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when creating movement search group. ] ",  e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -96,10 +96,10 @@ public class MovementSearchGroupResource {
             MovementSearchGroup searchGroup = MovementGroupMapper.toMovementSearchGroup(filterGroup);
             return new ResponseDto(searchGroup, ResponseCode.OK);
         } catch (MovementServiceException e) {
-            LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when getting movement search group. ]", e);
             return new ResponseDto(e.getMessage() + ": " + e.getCause().getMessage(), ResponseCode.ERROR);
         } catch (Exception e) {
-            LOG.error("[ Error when getting movement search group. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when getting movement search group. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -121,10 +121,10 @@ public class MovementSearchGroupResource {
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(updatedFilterGroup);
             return new ResponseDto(movementSearchGroup, ResponseCode.OK);
         } catch (MovementServiceException e) {
-            LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when updating movement search group. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         } catch (Exception e) {
-            LOG.error("[ Error when updating movement search group. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when updating movement search group. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -149,10 +149,10 @@ public class MovementSearchGroupResource {
             }
             return new ResponseDto(searchGroups, ResponseCode.OK);
         } catch (MovementServiceException e) {
-            LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when getting movement search groups by user. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         } catch (Exception e) {
-            LOG.error("[ Error when getting movement search groups by user. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when getting movement search groups by user. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -173,10 +173,10 @@ public class MovementSearchGroupResource {
             MovementSearchGroup movementSearchGroup = MovementGroupMapper.toMovementSearchGroup(deletedSearchGroup);
             return new ResponseDto(movementSearchGroup, ResponseCode.OK);
         } catch (MovementServiceException e) {
-            LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when deleting movement search group. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         } catch (Exception e) {
-            LOG.error("[ Error when deleting movement search group. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when deleting movement search group. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }

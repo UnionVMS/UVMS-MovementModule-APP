@@ -302,6 +302,7 @@ public class MovementMapper {
             dateTime.setDateTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
             return dateTime;
         } catch (DatatypeConfigurationException ex) {
+            LOG.warn("Could not map Date: " + date,ex);
             return new DateTimeType();
         }
     }

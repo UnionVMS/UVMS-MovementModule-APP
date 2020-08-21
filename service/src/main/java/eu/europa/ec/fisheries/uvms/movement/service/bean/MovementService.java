@@ -325,7 +325,7 @@ public class MovementService {
         try {
             createdMovementEvent.fire(new NotificationMessage("movementGuid", createdMovement.getGuid()));
         } catch (Exception e) {
-            LOG.error("[ Error when firing notification of created temp movement. ] {}", e.getMessage());
+            LOG.error("[ Error when firing notification of created temp movement. ] ", e);
         }
     }
 

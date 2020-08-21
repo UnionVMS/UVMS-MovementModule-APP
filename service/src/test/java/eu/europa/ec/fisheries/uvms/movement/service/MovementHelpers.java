@@ -15,10 +15,13 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MovementHelpers {
 
     private final MovementBatchModelBean movementBatchModelBean;
+    private static final Logger LOG = LoggerFactory.getLogger(MovementHelpers.class);
 
     private Random rnd = new Random();
 
@@ -260,6 +263,7 @@ public class MovementHelpers {
             double speedMPerHour = speedMeterPerSecond * 3600;
             return speedMPerHour / 1000;
         } catch (RuntimeException e) {
+            LOG.error("Runtime exception returning 0",e);
             return 0.0;
         }
     }

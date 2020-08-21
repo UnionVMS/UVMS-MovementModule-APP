@@ -50,7 +50,6 @@ public class UserServiceBean {
             String organizationName = getUserOrganizationName(username);
             return getOrganizationNation(organizationName);
         } catch (ModelMarshallException | MovementMessageException | MessageException e) {
-            LOG.error("[ Error when getting user nationality. ] {}", e);
             throw new MovementServiceException("Error when getting user nationality.", e, ErrorCode.DATA_RETRIEVING_ERROR);
         }
     }

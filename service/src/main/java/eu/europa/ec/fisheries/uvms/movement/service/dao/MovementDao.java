@@ -84,7 +84,7 @@ public class MovementDao {
             query.setParameter("guid", guid);
             return query.getSingleResult();
         } catch (NoResultException e) {
-            LOG.debug("No result when retrieving movements by GUID: {}", guid);
+            LOG.debug("No result when retrieving movements by GUID: " + guid,e);
             return null;
         }
     }
@@ -151,7 +151,7 @@ public class MovementDao {
             query.setParameter("date", date);
             singleResult = query.getSingleResult();
         }catch (NoResultException e){
-            LOG.debug("No previous movement found for date: {} and connectedId: {}", date, id);
+            LOG.debug("No previous movement found for date: " + date + " and connectedId: " + id,e);
         }
         return singleResult;
     }
@@ -176,6 +176,7 @@ public class MovementDao {
             latestMovementQuery.setParameter("connectId", connectId);
             return latestMovementQuery.getSingleResult();
         } catch (NoResultException nre) {
+            LOG.warn("No result found",nre);
             return null;
         }
     }
@@ -186,7 +187,7 @@ public class MovementDao {
             query.setParameter("id", movementConnectValue);
             return query.getSingleResult();
         } catch (NoResultException e) {
-            LOG.debug("Could not get first position, no result of id: {}", movementConnectValue);
+            LOG.debug("Could not get first position, no result of id: " + movementConnectValue,e);
             return null;
         }
     }
@@ -201,7 +202,7 @@ public class MovementDao {
             Long count = (Long)query.getSingleResult();
             return count;
         }catch (NoResultException e) {
-            LOG.debug("No valid position in DB for {}, between {} and {}", asset, from, to);
+            LOG.debug("No valid position in DB for " + asset+ ", between " + from + " and " + to,e);
             return 0;
         }
     }
@@ -314,6 +315,7 @@ public class MovementDao {
             query.setParameter("value", id);
             return query.getSingleResult();
         } catch (NoResultException ex) {
+            LOG.warn("No results found",ex);
             return null;
         }
     }
@@ -358,7 +360,7 @@ public class MovementDao {
             query.setParameter("date", date);
             return query.getResultList();
         } catch (NoResultException e) {
-            LOG.debug("No positions found after date: {}", date);
+            LOG.debug("No positions found after date: " + date,e);
             return new ArrayList<>();
         }
     }
@@ -368,7 +370,7 @@ public class MovementDao {
             TypedQuery<MicroMovement> query = em.createQuery("FROM MicroMovement",MicroMovement.class);
             return query.getResultList();
         } catch (NoResultException e) {
-            LOG.debug("No positions found while searching for last position of all assets");
+            LOG.debug("No positions found while searching for last position of all assets",e);
             return new ArrayList<>();
         }
     }

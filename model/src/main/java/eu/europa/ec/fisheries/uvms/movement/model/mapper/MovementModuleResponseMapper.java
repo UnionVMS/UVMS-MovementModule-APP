@@ -21,6 +21,8 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.ErrorCode;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,8 @@ import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
 public class MovementModuleResponseMapper {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MovementModuleResponseMapper.class);
 
     private static void validateResponse(TextMessage response, String correlationId) throws JMSException {
 
@@ -48,11 +52,7 @@ public class MovementModuleResponseMapper {
             }
             throw new MovementModelException(response.getText(), movementFault, ErrorCode.MOVEMENT_FAULT_ERROR);
         } catch (MovementModelException e) {
-            if(e.getCode().equals(ErrorCode.MODEL_MARSHALL_ERROR)) {
-                // All is well
-            } else {
-                // TODO: Error; unmarshalling 'ExceptionType.class' went through.
-            }
+                LOG.error("Error of type: " + e.getCode() + " for response: " + response,e);
         }
     }
  

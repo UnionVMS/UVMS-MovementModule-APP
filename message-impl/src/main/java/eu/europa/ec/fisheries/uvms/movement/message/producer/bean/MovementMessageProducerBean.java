@@ -99,8 +99,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
             }
             return corrId;
         } catch (MessageException e) {
-            LOG.error("[ Error when sending data source message. ] {}", e.getMessage());
-            throw new MovementMessageException(e.getMessage());
+            throw new MovementMessageException("Error when sending data source message",e);
         }
     }
 
@@ -112,14 +111,13 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
             try {
                 errorCode = Integer.parseInt(message.getErrorMessage());
             } catch (NumberFormatException e) {
-                LOG.error("[ERROR] NumberFormatException while truying to parse int from errorMessage!");
+                LOG.error("[ERROR] NumberFormatException while truying to parse int from errorMessage!",e);
             }
             exception.setCode(errorCode);
             exception.setFault(message.getErrorMessage());
             String text = JAXBMarshaller.marshallJaxBObjectToString(exception);
             sendResponseMessageToSender(message.getJmsMessage(), text);
         } catch (MessageException | MovementModelException e) {
-            LOG.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MovementMessageException("[ Error when sending message. ]", e);
         }
     }
@@ -130,7 +128,6 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
         try {
             sendResponseMessageToSender(requestMessage, returnMessage);
         } catch (Exception e) {
-            LOG.error("[ Error when sending message. ] {}", e.getMessage());
             throw new MovementMessageException("[ Error when sending message. ]", e);
         }
     }

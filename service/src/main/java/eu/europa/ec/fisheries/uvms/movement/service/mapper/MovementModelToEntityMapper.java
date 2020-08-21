@@ -97,7 +97,6 @@ public class MovementModelToEntityMapper {
 
             return entity;
         } catch (Exception e) {
-            LOG.error("[ ERROR when mapping to Movement entity: < mapNewMovementEntity > ]");
             throw new MovementServiceException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
     }
@@ -166,7 +165,6 @@ public class MovementModelToEntityMapper {
 
             return entity;
         } catch (Exception e) {
-            LOG.error("[ ERROR when mapping to Movement entity: < mapNewMovementEntity > ]");
             throw new MovementServiceException("Error when mapping to Movement Entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
     }
@@ -204,7 +202,6 @@ public class MovementModelToEntityMapper {
             activity.setUpdatedBy("UVMS");
             return activity;
         } catch (Exception e) {
-            LOG.error("[ ERROR when mapping to Activity entity: < createActivity > ]");
             throw new MovementServiceException("ERROR when mapping to Activity entity ", e, ErrorCode.DAO_MAPPING_ERROR);
         }
     }
