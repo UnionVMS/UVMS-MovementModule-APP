@@ -61,7 +61,7 @@ public class JMSHelper {
             try {
 				properties.load(is);
             } catch (IOException e) {
-            	LOG.warn("Failed to load class-path resource:'{}'. Using default values", PROPERTIES_FILE, e);
+            	LOG.warn("Failed to load class-path resource: " + PROPERTIES_FILE + ". Using default values", e);
             }
         } else {
         	LOG.debug("Class-path resource: '{}' does not exist. Using default values", PROPERTIES_FILE);

@@ -62,7 +62,6 @@ public class JAXBMarshaller {
             LOG.debug("StringWriter time: {}", (System.currentTimeMillis() - before));
             return marshalled;
         } catch (JAXBException ex) {
-            LOG.error("[ Error when marshalling object to string ] {} ", ex.getMessage());
             throw new MovementModelException("[ Error when marshalling Object to String ]", ex, ErrorCode.MODEL_MARSHALL_ERROR);
         }
     }

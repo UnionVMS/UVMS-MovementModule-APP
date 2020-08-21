@@ -25,8 +25,7 @@ public class MovementConfigRegistrationConsumerBean extends AbstractConsumer imp
         try {
             return getMessage(correlationId, type);
         } catch (MessageException e) {
-            LOG.error("[ERROR] Error when getting config message {}", e.getMessage());
-            throw new ConfigMessageException("[ Error when getting config message. ]");
+            throw new ConfigMessageException("[ Error when getting config message. ]",e);
         }
     }
 

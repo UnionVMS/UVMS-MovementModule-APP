@@ -35,7 +35,7 @@ public class MovementConfigRegistrationProducerBean extends AbstractProducer imp
         try {
             return sendModuleMessage(textMsg, movRespQueue);
         } catch (MessageException e) {
-            LOG.error("[ERROR] Error while trying to send message to Config! Check MdrConfigProducerBeanImpl..");
+            LOG.error("[ERROR] Error while trying to send message to Config! Check MdrConfigProducerBeanImpl..",e);
         }
         return StringUtils.EMPTY;
     }

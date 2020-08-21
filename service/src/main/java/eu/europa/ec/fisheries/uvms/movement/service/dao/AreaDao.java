@@ -52,7 +52,7 @@ public class AreaDao {
             query.setParameter("code", code);
             return query.getSingleResult();
         } catch (NoResultException e) {
-            LOG.debug("No result when retrieving AreaType By code: {}", code);
+            LOG.debug("No result when retrieving AreaType By code: " + code,e);
             return null;
         }
     }
@@ -67,7 +67,7 @@ public class AreaDao {
             query.setParameter("code", code);
             return query.getSingleResult();
         } catch (NoResultException e) {
-            LOG.debug("Could not get Area by code: {}", code);
+            LOG.debug("Could not get Area by code: " + code,e);
             return null;
         }
     }

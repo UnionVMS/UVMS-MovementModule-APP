@@ -80,7 +80,7 @@ public class SegmentCalculationUtil {
             }
 
         } catch (NullPointerException e) {
-            LOG.error("[ Got nullpointer exception on line {} when trying to decide SegmentCategoryType, returning SegmentCategoryType.OTHER ]", e.getStackTrace()[0].getLineNumber());
+            LOG.error("[ Got nullpointer exception on line " +  e.getStackTrace()[0].getLineNumber() + " when trying to decide SegmentCategoryType, returning SegmentCategoryType.OTHER ]",e);
         }
 
         return SegmentCategoryType.OTHER;

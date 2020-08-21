@@ -42,7 +42,7 @@ public class AuditService {
             }
             producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
         } catch (AuditModelMarshallException | MovementMessageException e) {
-            LOG.error("Failed to send audit log message! Movement with guid {} was created ", movement.getGuid(), e);
+            LOG.error("Failed to send audit log message! Movement with guid " + movement.getGuid() + " was created ", e);
         }
     }
     
@@ -52,7 +52,7 @@ public class AuditService {
             String auditData = AuditModuleRequestMapper.mapAuditLogMovementBatchCreated(guid, username);
             producer.sendModuleMessage(auditData, ModuleQueue.AUDIT);
         } catch (AuditModelMarshallException | MovementMessageException e) {
-            LOG.error("Failed to send audit log message! Movement batch with guid {} was created ", guid, e);
+            LOG.error("Failed to send audit log message! Movement batch with guid " + guid + " was created ", e);
         }
     }
 
@@ -62,7 +62,7 @@ public class AuditService {
                     username);
             producer.sendModuleMessage(auditRequest, ModuleQueue.AUDIT);
         } catch (MovementMessageException | AuditModelMarshallException e) {
-            LOG.error("Failed to send audit log message! TempMovement with guid {} was created ", tempMovement.getId(), e);
+            LOG.error("Failed to send audit log message! TempMovement with guid " + tempMovement.getId() + " was created ", e);
         }
     }
 }

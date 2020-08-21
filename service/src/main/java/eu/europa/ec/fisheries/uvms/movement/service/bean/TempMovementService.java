@@ -223,7 +223,7 @@ public class TempMovementService {
         try {
             createdManualMovement.fire(new NotificationMessage("movementGuid", createdMovement.getId()));
         } catch (Exception e) {
-            LOG.error("Error when firing notification of created temp movement. {}", e.getMessage());
+            LOG.error("Error when firing notification of created temp movement. ", e);
         }
     }
 

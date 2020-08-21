@@ -46,7 +46,7 @@ public class TrackRestResource {
                     .header("MDC", MDC.get("requestId")).build();
 
         } catch (Exception e) {
-            LOG.error("[ Error when getting segment. ] {}", e.getMessage(), e);
+            LOG.error("[ Error when getting segment. ] ", e);
             return Response.status(500).entity(e).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         }

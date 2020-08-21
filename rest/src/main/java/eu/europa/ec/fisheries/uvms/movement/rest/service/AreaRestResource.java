@@ -49,7 +49,7 @@ public class AreaRestResource {
             List<AreaType> response = AreaMapper.mapToAreaTypes(areas);
             return new ResponseDto<>(response, ResponseCode.OK);
         } catch (Exception e) {
-            LOG.error("[ Error when getting areas. ] {}", e);
+            LOG.error("[ Error when getting areas. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
     }
@@ -63,7 +63,7 @@ public class AreaRestResource {
             AreaType response = AreaMapper.mapToAreaType(area);
             return new ResponseDto<>(response, ResponseCode.OK);
         } catch (Exception e) {
-            LOG.error("[ Error when getting AreaType. ] {}", e);
+            LOG.error("[ Error when getting AreaType. ] ", e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
     }

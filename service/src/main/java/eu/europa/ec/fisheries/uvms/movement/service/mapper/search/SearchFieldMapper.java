@@ -666,7 +666,7 @@ public class SearchFieldMapper {
                 SearchField field = mapCriteria(criteria.getKey());
                 searchFields.add(new SearchValue(field, criteria.getValue()));
             } catch (MovementServiceException e) {
-                LOG.debug("Error when mapping to search field.. continuing with other criterias. {}", e.getMessage());
+                LOG.debug("Error when mapping to search field.. continuing with other criterias. ", e);
             }
         }
         return searchFields;

@@ -47,7 +47,7 @@ public class ConfigResource {
         try {
             return new ResponseDto<>(MovementTypeType.values(), ResponseCode.OK);
         } catch (Exception e) {
-            LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
+            LOG.error("[ Error when getting config search fields. ] " + e.getLocalizedMessage(), e);
             return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         }
     }
@@ -60,7 +60,7 @@ public class ConfigResource {
         try {
             return new ResponseDto<>(SegmentCategoryType.values(), ResponseCode.OK);
         } catch (Exception e) {
-            LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
+            LOG.error("[ Error when getting config search fields. ] " + e.getLocalizedMessage(), e);
             return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         }
     }
@@ -73,7 +73,7 @@ public class ConfigResource {
         try {
             return new ResponseDto<>(SearchKeyType.values(), ResponseCode.OK);
         } catch (Exception e) {
-            LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
+            LOG.error("[ Error when getting config search fields. ] " + e.getLocalizedMessage(), e);
             return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         }
     }
@@ -86,7 +86,7 @@ public class ConfigResource {
         try {
             return new ResponseDto<>(MovementSourceType.values(), ResponseCode.OK);
         } catch (Exception e) {
-            LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
+            LOG.error("[ Error when getting config search fields. ] " + e.getLocalizedMessage(), e);
             return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         }
     }
@@ -99,7 +99,7 @@ public class ConfigResource {
         try {
             return new ResponseDto(MovementActivityTypeType.values(), ResponseCode.OK);
         } catch (Exception e) {
-            LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
+            LOG.error("[ Error when getting config search fields. ] " + e.getLocalizedMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
     }
@@ -111,7 +111,7 @@ public class ConfigResource {
         try {
             return new ResponseDto(MovementMockConfig.getValues(), ResponseCode.OK);
         } catch (Exception e) {
-            LOG.error("[ Error when getting config search fields. ] {} {}", e.getLocalizedMessage(), e.getStackTrace());
+            LOG.error("[ Error when getting config search fields. ] " + e.getLocalizedMessage(), e);
             return new ResponseDto(e.getMessage(), ResponseCode.ERROR);
         }
     }

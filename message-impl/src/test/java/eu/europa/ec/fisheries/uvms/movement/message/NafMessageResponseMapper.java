@@ -100,7 +100,7 @@ public class NafMessageResponseMapper {
                     movementType.setTimestamp(new Date());
                 }
             } catch (UnsupportedEncodingException e) {
-                throw new Exception(e.getMessage());
+                throw new Exception(e.getMessage(),e);
             }
         }
         return movementType;
@@ -175,7 +175,7 @@ public class NafMessageResponseMapper {
             Double tripNumber = Double.valueOf(value);
             movement.setTripNumber(tripNumber);
         } catch (NumberFormatException e) {
-            LOG.error("Received malformed TN: {}", value);
+            LOG.error("Received malformed TN: " + value,e);
         }
     }
 

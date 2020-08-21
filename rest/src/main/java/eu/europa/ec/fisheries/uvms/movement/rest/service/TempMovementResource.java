@@ -74,7 +74,7 @@ public class TempMovementResource {
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (Throwable throwable) {
-            LOG.error("[ Error when creating. ] {} ", throwable);
+            LOG.error("[ Error when creating. ]  ", throwable);
             return new ResponseDto<>(throwable.getMessage(), ResponseCode.ERROR);
         }
     }
@@ -89,10 +89,10 @@ public class TempMovementResource {
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException e) {
-            LOG.error("[ Error when getting temp movement with GUID. ] {} ", e.getStackTrace());
+            LOG.error("[ Error when getting temp movement with GUID. ]  ", e);
             return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
-            LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when creating. ]  ", ex);
             return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -117,10 +117,10 @@ public class TempMovementResource {
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
-            LOG.error("[ Error when archiving temp movement. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when archiving temp movement. ]  ", ex);
             return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
-            LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when creating. ]  ", ex);
             return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -145,10 +145,10 @@ public class TempMovementResource {
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
-            LOG.error("[ Error when updating temp movement. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when updating temp movement. ] ", ex);
             return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
-            LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when creating. ] ", ex);
             return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -171,10 +171,10 @@ public class TempMovementResource {
         try {
             return new ResponseDto<>(service.getTempMovements(query), ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
-            LOG.error("[ Error when listing active temp movements. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when listing active temp movements. ]  ", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception ex) {
-            LOG.error("[ Error when creating. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when creating. ] ", ex);
             return new ResponseDto(ex.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -199,10 +199,10 @@ public class TempMovementResource {
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | NullPointerException ex) {
-            LOG.error("[ Error when sending temp movement. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when sending temp movement. ] ", ex);
             return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception e) {
-            LOG.error("[ Error: Cannot create duplicate movement] {} ", e.getStackTrace());
+            LOG.error("[ Error: Cannot create duplicate movement] ", e);
             return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
@@ -219,10 +219,10 @@ public class TempMovementResource {
             TempMovementType tempMovementType = TempMovementMapper.toTempMovement(tempMovement);
             return new ResponseDto<>(tempMovementType, ResponseCode.OK);
         } catch (MovementServiceException | MovementServiceRuntimeException ex) {
-            LOG.error("[ Error when sending temp movement. ] {} ", ex.getStackTrace());
+            LOG.error("[ Error when sending temp movement. ]  ", ex);
             return new ResponseDto<>(ex.getMessage(), ResponseCode.ERROR);
         } catch (Exception e) {
-            LOG.error("[ Error: Cannot create duplicate movement] {} ", e.getStackTrace());
+            LOG.error("[ Error: Cannot create duplicate movement] ", e);
             return new ResponseDto<>(e.getMessage(), ResponseCode.ERROR_DUPLICTAE);
         }
     }
