@@ -513,15 +513,15 @@ public class MovementDaoIntTest extends TransactionalTests {
         cursorPagination.setTo(to);
         cursorPagination.setConnectIds(Arrays.asList(movementConnect.getId()));
         cursorPagination.setSources(Arrays.asList(movement.getSource()));
-        cursorPagination.setLimit(1);
+        cursorPagination.setLimit(2);
         
         List<Movement> movements = movementDao.getCursorBasedList(cursorPagination);
         
-        assertThat(movements.size(), CoreMatchers.is(1));
+        assertThat(movements.size(), CoreMatchers.is(2));
         assertThat(movements.get(0).getId(), CoreMatchers.is(movement.getId()));
         
-        cursorPagination.setTimestampCursor(movements.get(0).getTimestamp());
-        cursorPagination.setIdCursor(movements.get(0).getId());
+        cursorPagination.setTimestampCursor(movements.get(1).getTimestamp());
+        cursorPagination.setIdCursor(movements.get(1).getId());
         
         List<Movement> movements2 = movementDao.getCursorBasedList(cursorPagination);
         
@@ -558,15 +558,15 @@ public class MovementDaoIntTest extends TransactionalTests {
         cursorPagination.setTo(to);
         cursorPagination.setConnectIds(Arrays.asList(movementConnect.getId(), movementConnect2.getId()));
         cursorPagination.setSources(Arrays.asList(movement.getSource()));
-        cursorPagination.setLimit(1);
+        cursorPagination.setLimit(2);
         
         List<Movement> movements = movementDao.getCursorBasedList(cursorPagination);
         
-        assertThat(movements.size(), CoreMatchers.is(1));
+        assertThat(movements.size(), CoreMatchers.is(2));
         assertThat(movements.get(0).getId(), CoreMatchers.is(sortedIds.get(0)));
         
-        cursorPagination.setTimestampCursor(movements.get(0).getTimestamp());
-        cursorPagination.setIdCursor(movements.get(0).getId());
+        cursorPagination.setTimestampCursor(movements.get(1).getTimestamp());
+        cursorPagination.setIdCursor(movements.get(1).getId());
         
         List<Movement> movements2 = movementDao.getCursorBasedList(cursorPagination);
         

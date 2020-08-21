@@ -303,7 +303,7 @@ public class MovementDao {
                             ),
                     criteriaBuilder.and(
                             criteriaBuilder.equal(movement.get("timestamp"), cursorPagination.getTimestampCursor()),
-                            criteriaBuilder.greaterThan(movement.get("id"), cursorPagination.getIdCursor())
+                            criteriaBuilder.greaterThanOrEqualTo(movement.get("id"), cursorPagination.getIdCursor())
                             )
                     ));
         } else {
