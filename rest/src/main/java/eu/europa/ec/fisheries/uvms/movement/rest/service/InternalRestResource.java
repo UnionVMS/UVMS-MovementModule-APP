@@ -54,6 +54,13 @@ public class InternalRestResource {
         jsonb = new JsonBConfiguratorMovement().getContext(null);
     }
 
+    @GET
+    @Path("/ping")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response ping() {
+        return Response.ok("pong").build();
+    }
+
     @POST
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)

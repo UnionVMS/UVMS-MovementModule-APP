@@ -23,7 +23,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import org.slf4j.MDC;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +56,14 @@ public class MovementRestClient {
         webTarget = client.target(url);
         
         jsonb = new JsonBConfigurator().getContext(null);
+    }
+
+    public String ping() {
+        return webTarget
+            .path("internal/ping")
+            .request(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+            .get(String.class);
     }
 
     public List<MicroMovementExtended> getMicroMovementsForConnectIdsBetweenDates(List<String> connectIds, Instant fromDate, Instant toDate) {
@@ -120,7 +128,8 @@ public class MovementRestClient {
                 .path("internal/list/cursor")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
-                .post(Entity.entity(cursorPagination, MediaType.APPLICATION_JSON_TYPE), String.class);
+                .header("requestId", MDC.get("requestId"))
+                .post(Entity.json(cursorPagination), String.class);
         return jsonb.fromJson(response, new ArrayList<MovementType>(){}.getClass().getGenericSuperclass());
     }
 }

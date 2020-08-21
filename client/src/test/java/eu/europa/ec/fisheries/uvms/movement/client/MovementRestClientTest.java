@@ -20,7 +20,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.IncomingMovementMapper;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
-
+import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +30,6 @@ import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import java.math.BigInteger;
 
@@ -62,6 +57,13 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
     public void before() throws NamingException {
         InitialContext ctx = new InitialContext();
         ctx.rebind("java:global/movement_endpoint", "http://localhost:8080/movement/rest");
+    }
+
+    @Test
+    public void pingTest() {
+        String expected = "pong";
+        String ping = movementRestClient.ping();
+        assertThat(ping, CoreMatchers.is(expected));
     }
 
     @Test
