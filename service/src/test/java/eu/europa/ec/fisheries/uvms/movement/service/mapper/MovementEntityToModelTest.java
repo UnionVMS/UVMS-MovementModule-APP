@@ -70,30 +70,6 @@ public class MovementEntityToModelTest extends TransactionalTests {
 	
 	@Test
     @OperateOnDeployment("movementservice")
-	public void testMapToMovementTypeWithMinimalMovementInput() {
-		UUID connectId = UUID.randomUUID();
-		double lon = 11.641982;
-		double lat = 57.632304;
-		Movement movement = new Movement();
-		GeometryFactory gf = new GeometryFactory();
-		movement.setLocation(gf.createPoint(new Coordinate(lon, lat)));
-		movement.setSource(MovementSourceType.IRIDIUM);
-		movement.setMovementType(MovementTypeType.POS);
-		MovementConnect movementConnect = new MovementConnect();
-		movementConnect.setId(connectId);
-        movement.setMovementConnect(movementConnect);
-        movement.setTimestamp(Instant.now());
-        movement.setId(UUID.randomUUID());
-		//movement.setStatus(status);
-		MovementType movementType = MovementEntityToModelMapper.mapToMinimalMovementType(movement);
-		assertEquals(movement.getId().toString(), movementType.getGuid());
-        assertEquals(lat, movementType.getPosition().getLatitude(), 0D);
-        assertEquals(lon, movementType.getPosition().getLongitude(), 0D);
-        assertEquals(connectId.toString(), movementType.getConnectId());
-	}
-	
-	@Test
-    @OperateOnDeployment("movementservice")
 	public void testMapToMovementTypeWithMovementInput() {
 		MovementHelpers movementHelpers = new MovementHelpers(movementService);
 		UUID connectId = UUID.randomUUID();

@@ -76,23 +76,6 @@ public class MovementRestResource {
     }
 
     @POST
-    @Path("/list/minimal")
-    @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMinimalListByQuery(MovementQuery query) {
-        LOG.debug("Get list invoked in rest layer");
-        try {
-            long start = System.currentTimeMillis();
-            GetMovementListByQueryResponse minimalList = serviceLayer.getMinimalList(query);
-            long end = System.currentTimeMillis();
-            LOG.debug("GET MINIMAL MOVEMENT: {} ms", (end - start));
-            return Response.ok(minimalList).build();
-        } catch (Exception ex) {
-            LOG.error("[ Error when getting list. ]", ex);
-            throw ex;
-        }
-    }
-
-    @POST
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getLatestMovementsByConnectIds(List<String> connectIds) {
