@@ -564,13 +564,14 @@ public class MovementDaoIntTest extends TransactionalTests {
         
         assertThat(movements.size(), CoreMatchers.is(2));
         assertTrue(sortedIds.contains(movements.get(0).getId()));
+      //  assertThat(movements.get(0).getId(), CoreMatchers.is(sortedIds.get(0)));
         
         cursorPagination.setTimestampCursor(movements.get(1).getTimestamp());
         cursorPagination.setIdCursor(movements.get(1).getId());
         
         List<Movement> movements2 = movementDao.getCursorBasedList(cursorPagination);
-        
-        assertTrue(movements2.size() >=1);
+        assertTrue(movements2.size() == 1);
+        assertTrue(movements2.get(0).equals(movements.get(1)));
         assertTrue(sortedIds.contains(movements2.get(0).getId()));
     }
 
