@@ -58,35 +58,6 @@ public class MovementEntityToModelMapper {
         return model;
     }
 
-    public static MovementType mapToMinimalMovementType(Movement movement) {
-
-        //Previous movement ID is mapped in MovementBatchModelBean
-        MovementType model = new MovementType();
-        model.setReportedSpeed(movement.getSpeed() != null ? movement.getSpeed().doubleValue() : null);
-        model.setGuid(movement.getId().toString());
-        model.setReportedCourse(movement.getHeading() != null ? movement.getHeading().doubleValue() : null);
-        model.setPositionTime(Date.from(movement.getTimestamp()));
-        model.setStatus(movement.getStatus());
-        model.setSource(movement.getSource());
-        model.setMovementType(movement.getMovementType());
-        MovementPoint movementPoint = new MovementPoint();
-        Point point = movement.getLocation();
-        movementPoint.setLatitude(point.getY());
-        movementPoint.setLongitude(point.getX());
-        model.setPosition(movementPoint);
-        model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-
-        Movement previousMovement = movement.getPreviousMovement();
-        if (previousMovement != null) {
-            SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
-            model.setCalculatedSpeed(positionCalculations.getAvgSpeed());
-            model.setCalculatedCourse(positionCalculations.getCourse());
-        }
-        
-        model.setWkt(WKTUtil.getWktPointFromMovement(movement));
-        return model;
-    }
-
     public static MovementType mapToMovementType(Movement movement) {
 
         if (movement == null) {

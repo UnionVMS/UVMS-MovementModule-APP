@@ -137,15 +137,9 @@ public class MovementService {
         return movementMapResponseHelper.getMapByQuery(query);
     }
 
+
+
     public GetMovementListByQueryResponse getList(MovementQuery query){
-        return getList(query, false);
-    }
-
-    public GetMovementListByQueryResponse getMinimalList(MovementQuery query){
-        return getList(query, true);
-    }
-
-    private GetMovementListByQueryResponse getList(MovementQuery query, boolean minimalResponseType){
         if (query == null) {
             throw new IllegalArgumentException("Movement list query is null");
         }
@@ -175,11 +169,7 @@ public class MovementService {
             Long numberMatches = movementDao.getMovementListSearchCount(countSql, searchKeyValues);
             List<Movement> movementEntityList = movementDao.getMovementListPaginated(page, listSize, sql, searchKeyValues);
 
-            if (minimalResponseType) {
-                movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMinimalMovementType(movement)));
-            } else {
-                movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMovementType(movement)));
-            }
+            movementEntityList.forEach(movement -> movementList.add(MovementEntityToModelMapper.mapToMovementType(movement)));
 
             response.setCurrentPage(BigInteger.valueOf(page));
             response.setMovementList(movementList);
