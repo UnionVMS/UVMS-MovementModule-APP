@@ -13,7 +13,7 @@ import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.constant.SatId;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;

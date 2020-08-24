@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -26,6 +27,8 @@ public class MicroMovement implements Serializable {
 
     private MovementSourceType source;
 
+    private SatId sourceSatelliteId;
+
     public MicroMovement() {
 
     }
@@ -39,9 +42,10 @@ public class MicroMovement implements Serializable {
         id = movement.getId().toString();
         timestamp = movement.getTimestamp();
         speed = (movement.getSpeed() == null ? null : movement.getSpeed().doubleValue());
+        sourceSatelliteId = movement.getSourceSatelliteId();
     }
 
-    public MicroMovement(Geometry geo, Float heading, UUID id, Instant timestamp, Float speed, MovementSourceType source) {
+    public MicroMovement(Geometry geo, Float heading, UUID id, Instant timestamp, Float speed, MovementSourceType source, SatId sourceSatelliteId) {
         Point point = (Point)geo;
         location = new MovementPoint();
         location.setLatitude(point.getY());
@@ -51,6 +55,7 @@ public class MicroMovement implements Serializable {
         this.timestamp = timestamp;
         this.speed = (speed == null ? null : speed.doubleValue());
         this.source = source;
+        this.sourceSatelliteId = sourceSatelliteId;
     }
 
     public MovementPoint getLocation() {
@@ -99,5 +104,13 @@ public class MicroMovement implements Serializable {
 
     public void setSource(MovementSourceType source) {
         this.source = source;
+    }
+
+    public SatId getSourceSatelliteId() {
+        return sourceSatelliteId;
+    }
+
+    public void setSourceSatelliteId(SatId sourceSatelliteId) {
+        this.sourceSatelliteId = sourceSatelliteId;
     }
 }

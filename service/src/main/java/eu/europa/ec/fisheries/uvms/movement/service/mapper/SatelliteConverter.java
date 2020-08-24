@@ -1,6 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
-import eu.europa.ec.fisheries.uvms.movement.service.constant.SatId;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
