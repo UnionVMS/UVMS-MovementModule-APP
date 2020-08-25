@@ -22,6 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -189,6 +190,16 @@ public class MovementService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Error when getting movement list by query: ParseException", e);
         }
+    }
+    
+    public List<MovementType> getCursorBasedList(CursorPagination cursorPagination) {
+        List<Movement> movementEntityList = movementDao.getCursorBasedList(cursorPagination);
+
+        List<MovementType> movementList = new ArrayList<>();
+        for (Movement movement : movementEntityList) {
+            movementList.add(MovementEntityToModelMapper.mapToMovementType(movement));
+        }
+        return movementList;
     }
 
     public Movement getById(UUID id) {
