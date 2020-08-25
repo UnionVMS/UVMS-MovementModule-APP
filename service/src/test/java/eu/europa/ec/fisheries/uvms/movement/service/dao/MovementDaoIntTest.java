@@ -31,6 +31,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -547,8 +548,10 @@ public class MovementDaoIntTest extends TransactionalTests {
         movement2.setMovementConnect(movementConnect2);
         movementDao.createMovement(movement2);
         
-        List<UUID> sortedIds = Arrays.asList(movement.getId(), movement2.getId());
-        sortedIds.sort(UUID::compareTo);
+        List<String> stringUUIDList = Arrays.asList(movement.getId().toString(), movement2.getId().toString());
+        Collections.sort(stringUUIDList);
+        List<UUID> sortedIds = stringUUIDList.stream().map(str ->  UUID.fromString(str)).collect(Collectors 
+                .toCollection(ArrayList::new)); 
         
         Instant from = movement.getTimestamp().minus(1, ChronoUnit.HOURS);
         Instant to = movement.getTimestamp().plus(1, ChronoUnit.HOURS);
@@ -563,16 +566,18 @@ public class MovementDaoIntTest extends TransactionalTests {
         List<Movement> movements = movementDao.getCursorBasedList(cursorPagination);
         
         assertThat(movements.size(), CoreMatchers.is(2));
-        assertTrue(sortedIds.contains(movements.get(0).getId()));
-      //  assertThat(movements.get(0).getId(), CoreMatchers.is(sortedIds.get(0)));
-        
+        assertThat(movements.get(0).getId(), CoreMatchers.is(sortedIds.get(0)));
+
         cursorPagination.setTimestampCursor(movements.get(1).getTimestamp());
         cursorPagination.setIdCursor(movements.get(1).getId());
-        
+
         List<Movement> movements2 = movementDao.getCursorBasedList(cursorPagination);
-        assertTrue(movements2.size() == 1);
+
+        assertThat(movements2.size(), CoreMatchers.is(1));
+        assertThat(movements2.get(0).getId(), CoreMatchers.is(sortedIds.get(1)));
+        
         assertTrue(movements2.get(0).equals(movements.get(1)));
-        assertTrue(sortedIds.contains(movements2.get(0).getId()));
+        
     }
 
     /******************************************************************************************************************
@@ -583,7 +588,6 @@ public class MovementDaoIntTest extends TransactionalTests {
      *
      * @return
      */
-
     private Movement createMovementHelper() {
         // delegate to generic
         double longitude = 9.140625D;
@@ -653,4 +657,5 @@ public class MovementDaoIntTest extends TransactionalTests {
     private void expectedMessage(String message) {
         thrown.expect(new ThrowableMessageMatcher(new StringContains(message)));
     }
+
 }
