@@ -80,29 +80,6 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void getMovementMinimalListByQuery() {
-        Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
-
-        assertNotNull(createdMovement.getId());
-
-        MovementQuery query = createMovementQuery(null);
-
-        String response = getWebTarget()
-                .path("internal/list/minimal")
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
-                .post(Entity.json(query), String.class);
-        assertNotNull(response);
-
-        GetMovementListByQueryResponse movList =
-                jsonb.fromJson(response, GetMovementListByQueryResponse.class);
-        assertNotNull(movList);
-        assertTrue(movList.getMovement().size() > 0);
-    }
-
-    @Test
-    @OperateOnDeployment("movement")
     public void getLatestMovementsByConnectIds() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
