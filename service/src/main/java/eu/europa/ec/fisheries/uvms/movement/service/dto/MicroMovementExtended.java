@@ -1,6 +1,8 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
 
+import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.locationtech.jts.geom.Geometry;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 
@@ -23,8 +25,13 @@ public class MicroMovementExtended implements Serializable {
 
     }
 
-    public MicroMovementExtended(Geometry geo, Float heading, UUID guid, UUID assetGuid, Instant timestamp, Float speed, MovementSourceType source) {
-        microMove = new MicroMovement(geo, heading, guid, timestamp, speed, source);
+    public MicroMovementExtended(Movement movement) {
+        microMove = new MicroMovement(movement);
+        this.asset = movement.getMovementConnect().getId().toString();
+    }
+
+    public MicroMovementExtended(Geometry geo, Float heading, UUID guid, UUID assetGuid, Instant timestamp, Float speed, MovementSourceType source, SatId sourceSatelliteId) {
+        microMove = new MicroMovement(geo, heading, guid, timestamp, speed, source, sourceSatelliteId);
         this.asset = assetGuid.toString();
     }
 

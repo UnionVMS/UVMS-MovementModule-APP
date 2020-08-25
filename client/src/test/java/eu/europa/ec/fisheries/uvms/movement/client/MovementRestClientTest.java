@@ -12,6 +12,7 @@ import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -69,6 +70,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         Instant positionTime = Instant.parse("2019-01-24T09:00:00Z");
 
         IncomingMovement incomingMovement = createIncomingMovement(asset, positionTime);
+        incomingMovement.setSourceSatelliteId((short)3);
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         movementService.createAndProcessMovement(movement);
@@ -88,6 +90,8 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
         assertEquals(incomingMovement.getLatitude(), location.getLatitude());
         assertEquals(incomingMovement.getLongitude(), location.getLongitude());
+
+        assertEquals(SatId.IOR, microMove.getSourceSatelliteId());
     }
 
     @Test

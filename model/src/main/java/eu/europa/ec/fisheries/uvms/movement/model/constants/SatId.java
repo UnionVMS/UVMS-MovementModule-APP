@@ -1,4 +1,4 @@
-package eu.europa.ec.fisheries.uvms.movement.service.constant;
+package eu.europa.ec.fisheries.uvms.movement.model.constants;
 
 public enum SatId {
     AORE(1), AORW(0), POR(2), IOR(3);
