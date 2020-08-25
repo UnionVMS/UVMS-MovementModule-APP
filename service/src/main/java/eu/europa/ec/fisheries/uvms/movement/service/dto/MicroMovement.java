@@ -13,8 +13,6 @@ import java.util.UUID;
 
 public class MicroMovement implements Serializable {
 
-    public static final String FIND_ALL_AFTER_DATE = "MicroMovementDtoV2.findAllAfterDate";
-
     private MovementPoint location;   //vivid solution point causes infinite json recursion ;(
 
     private Double heading;
@@ -42,6 +40,7 @@ public class MicroMovement implements Serializable {
         id = movement.getId().toString();
         timestamp = movement.getTimestamp();
         speed = (movement.getSpeed() == null ? null : movement.getSpeed().doubleValue());
+        source = movement.getSource();
         sourceSatelliteId = movement.getSourceSatelliteId();
     }
 
