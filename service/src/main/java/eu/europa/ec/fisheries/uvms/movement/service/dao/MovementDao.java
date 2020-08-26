@@ -60,8 +60,15 @@ public class MovementDao {
     public List<Movement> getMovementListByMovementConnect(MovementConnect movementConnect) {
         TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_BY_MOVEMENTCONNECT, Movement.class);
         query.setParameter("movementConnect", movementConnect);
-        query.setMaxResults(1000);
         return query.getResultList();
+    }
+
+    public int updateToNewMovementConnect(UUID oldMovementConnect, UUID newMovementConnect, int limit) {
+        Query query = em.createNamedQuery(Movement.UPDATE_TO_NEW_MOVEMENTCONNECT);
+        query.setParameter("oldMC", oldMovementConnect);
+        query.setParameter("newMC", newMovementConnect);
+        query.setParameter("limit", limit);
+        return query.executeUpdate();
     }
 
     public List<MicroMovement> getMicroMovementsDtoByTrack(Track track, int maxResults) {

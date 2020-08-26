@@ -288,12 +288,14 @@ public class MovementService {
             newMovementConnect = movementDao.createMovementConnect(newMovementConnect);
         }
 
-        List<Movement> movements = movementDao.getMovementListByMovementConnect(oldMovementConnect);
+        /*List<Movement> movements = movementDao.getMovementListByMovementConnect(oldMovementConnect);
         for (Movement move : movements) {
             move.setMovementConnect(newMovementConnect);
-        }
+        }*/
 
-        return movements.size();
+        int numberOfChanged = movementDao.updateToNewMovementConnect(oldMovementConnect.getId(), newMovementConnect.getId(), 1000);
+
+        return numberOfChanged;
     }
 
     public void removeMovementConnect(String movementConnectId){
