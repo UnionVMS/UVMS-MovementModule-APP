@@ -8,6 +8,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 
 import javax.annotation.PostConstruct;
@@ -100,6 +101,17 @@ public class MovementRestClient {
                     .get();
 
             return response.readEntity(MicroMovement.class);
+    }
+
+    public MovementDto getMovementById(UUID id) {
+        Response response = webTarget
+                .path("internal/getMovement")
+                .path(id.toString())
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+                .get();
+
+        return response.readEntity(MovementDto.class);
     }
     
     public GetMovementListByQueryResponse getMovementList(MovementQuery movementQuery){ 

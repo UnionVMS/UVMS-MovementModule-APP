@@ -17,9 +17,10 @@ import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetType;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.*;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import org.locationtech.jts.geom.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,31 +48,41 @@ public class MovementMapper {
         return movementType;
     }
     
-    public static List<MovementDto> mapToMovementDtoList(List<MovementType> movmements) {
+    public static List<MovementDto> mapToMovementDtoList(List<Movement> movmements) {
         List<MovementDto> mappedMovements = new ArrayList<>();
-        for (MovementType mappedMovement : movmements) {
-            mappedMovements.add(mapTomovementDto(mappedMovement));
+        for (Movement mappedMovement : movmements) {
+            mappedMovements.add(mapToMovementDto(mappedMovement));
         }
         return mappedMovements;
     }
 
-    private static MovementDto mapTomovementDto(MovementType movement) {
+    public static MovementDto mapToMovementDto(Movement movement) {
         MovementDto dto = new MovementDto();
-        dto.setCalculatedSpeed(movement.getCalculatedSpeed());
-        dto.setCourse(movement.getCalculatedCourse());
+        dto.setHeading(movement.getHeading());
 
-        if (movement.getPosition() != null) {
-            dto.setLatitude(movement.getPosition().getLatitude());
-            dto.setLongitude(movement.getPosition().getLongitude());
+        if (movement.getLocation() != null) {
+            Point point = movement.getLocation();
+            eu.europa.ec.fisheries.schema.movement.v1.MovementPoint location = new eu.europa.ec.fisheries.schema.movement.v1.MovementPoint();
+            location.setLatitude(point.getY());
+            location.setLongitude(point.getX());
+            dto.setLocation(location);
         }
 
-        dto.setMeasuredSpeed(movement.getReportedSpeed());
+        dto.setSpeed(movement.getSpeed());
         dto.setMovementType(movement.getMovementType());
         dto.setSource(movement.getSource());
         dto.setStatus(movement.getStatus());
-        dto.setTime(movement.getPositionTime());
-        dto.setConnectId(movement.getConnectId());
-        dto.setMovementGUID(movement.getGuid());
+        dto.setTimestamp(movement.getTimestamp());
+        dto.setAsset(movement.getMovementConnect().getId().toString());
+        dto.setId(movement.getId());
+
+        dto.setAisPositionAccuracy(movement.getAisPositionAccuracy());
+        dto.setInternalReferenceNumber(movement.getInternalReferenceNumber());
+        dto.setLesReportTime(movement.getLesReportTime());
+        dto.setSourceSatelliteId(movement.getSourceSatelliteId());
+        dto.setTripNumber(movement.getTripNumber());
+        dto.setUpdated(movement.getUpdated());
+        dto.setUpdatedBy(movement.getUpdatedBy());
         return dto;
     }
 
