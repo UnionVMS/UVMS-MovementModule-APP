@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.5.14-UVMS-SNAPSHOT</version>
+        <version>5.5.16-UVMS-SNAPSHOT</version>
     </parent>
 
 	<artifactId>movement-model</artifactId>
@@ -43,7 +43,7 @@
 			<plugin>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-codegen-plugin</artifactId>
-				<version>3.3.7</version>
+				<version>3.4.0</version>
 				<executions>
 					<execution>
 						<id>generate-vessel-module</id>

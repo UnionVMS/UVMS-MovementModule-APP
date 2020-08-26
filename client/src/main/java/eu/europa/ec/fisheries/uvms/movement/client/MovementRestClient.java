@@ -1,8 +1,10 @@
 package eu.europa.ec.fisheries.uvms.movement.client;
 
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
+import eu.europa.ec.fisheries.uvms.movement.client.model.CursorPagination;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
@@ -21,8 +23,9 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import org.slf4j.MDC;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -53,6 +56,14 @@ public class MovementRestClient {
         webTarget = client.target(url);
         
         jsonb = new JsonBConfigurator().getContext(null);
+    }
+
+    public String ping() {
+        return webTarget
+            .path("internal/ping")
+            .request(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+            .get(String.class);
     }
 
     public List<MicroMovementExtended> getMicroMovementsForConnectIdsBetweenDates(List<String> connectIds, Instant fromDate, Instant toDate) {
@@ -110,5 +121,15 @@ public class MovementRestClient {
                 .post(Entity.entity(ids, MediaType.APPLICATION_JSON_TYPE));
 
         return response.readEntity(new GenericType<List<MicroMovement>>() {});
+    }
+    
+    public List<MovementType> getCursorBasedList(CursorPagination cursorPagination){ 
+        String response = webTarget
+                .path("internal/list/cursor")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+                .header("requestId", MDC.get("requestId"))
+                .post(Entity.json(cursorPagination), String.class);
+        return jsonb.fromJson(response, new ArrayList<MovementType>(){}.getClass().getGenericSuperclass());
     }
 }

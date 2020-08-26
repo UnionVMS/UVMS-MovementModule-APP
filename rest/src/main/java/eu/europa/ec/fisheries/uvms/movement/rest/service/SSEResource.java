@@ -51,8 +51,7 @@ public class SSEResource {
         LOG.debug("Movement {} came to SseResource" , move);
         try {
             if (move != null) {
-                MicroMovementExtended micro = new MicroMovementExtended(move.getLocation(),
-                        move.getHeading(), move.getId(), move.getMovementConnect().getId(), move.getTimestamp(), move.getSpeed(), move.getSource());
+                MicroMovementExtended micro = new MicroMovementExtended(move);
                 String outboundJson = jsonb.toJson(micro);
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")

@@ -7,18 +7,21 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.RangeKeyType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
+import eu.europa.ec.fisheries.uvms.movement.client.model.CursorPagination;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.IncomingMovementMapper;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
-
+import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,11 +31,6 @@ import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import java.math.BigInteger;
 
@@ -63,12 +61,20 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
     }
 
     @Test
+    public void pingTest() {
+        String expected = "pong";
+        String ping = movementRestClient.ping();
+        assertThat(ping, CoreMatchers.is(expected));
+    }
+
+    @Test
     public void getMicroMovementsForConnectIdsBetweenDates() {
         // Given
         AssetDTO asset = createBasicAsset();
         Instant positionTime = Instant.parse("2019-01-24T09:00:00Z");
 
         IncomingMovement incomingMovement = createIncomingMovement(asset, positionTime);
+        incomingMovement.setSourceSatelliteId((short)3);
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
         movementService.createAndProcessMovement(movement);
@@ -88,6 +94,8 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
         assertEquals(incomingMovement.getLatitude(), location.getLatitude());
         assertEquals(incomingMovement.getLongitude(), location.getLongitude());
+
+        assertEquals(SatId.IOR, microMove.getSourceSatelliteId());
     }
 
     @Test
@@ -229,6 +237,27 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         assertTrue(movementListBy.getMovement().size() > 0);
         assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
         assertTrue(movementListBy.getMovement().stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));  
+    }
+    
+    @Test
+    public void getCursorBasedListTest() {
+        AssetDTO asset = createBasicAsset();
+        IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        movement.setTimestamp(Instant.now());
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+   
+        CursorPagination cursorPagination = new CursorPagination();
+        cursorPagination.setFrom(createdMovement.getTimestamp().minus(1, ChronoUnit.HOURS));
+        cursorPagination.setTo(createdMovement.getTimestamp().plus(1, ChronoUnit.HOURS));
+        cursorPagination.setConnectIds(Arrays.asList(createdMovement.getMovementConnect().getId()));
+        List<MovementType> movements = movementRestClient.getCursorBasedList(cursorPagination);
+       
+        assertNotNull(movements);
+        assertTrue(movements.size() > 0);
+        assertTrue(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
+        assertTrue(movements.stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));   
     }
     
     @Test

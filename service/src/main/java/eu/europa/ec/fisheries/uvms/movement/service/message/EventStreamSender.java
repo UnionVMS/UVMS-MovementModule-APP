@@ -40,8 +40,7 @@ public class EventStreamSender {
     public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement move){
         try {
             if (move != null) {
-                MicroMovementExtended micro = new MicroMovementExtended(move.getLocation(),
-                        move.getHeading(), move.getId(), move.getMovementConnect().getId(), move.getTimestamp(), move.getSpeed(), move.getSource());
+                MicroMovementExtended micro = new MicroMovementExtended(move);
                 String outgoingJson = jsonb.toJson(micro);
 
                 TextMessage message = this.context.createTextMessage(outgoingJson);

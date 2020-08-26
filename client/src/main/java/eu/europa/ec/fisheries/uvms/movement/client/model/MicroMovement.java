@@ -2,6 +2,7 @@ package eu.europa.ec.fisheries.uvms.movement.client.model;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
 
 import java.time.Instant;
 
@@ -18,6 +19,8 @@ public class MicroMovement {
     private Double speed;
 
     private MovementSourceType source;
+
+    private SatId sourceSatelliteId;
 
     public MicroMovement() {}
 
@@ -67,5 +70,13 @@ public class MicroMovement {
 
     public void setSource(MovementSourceType source) {
         this.source = source;
+    }
+
+    public SatId getSourceSatelliteId() {
+        return sourceSatelliteId;
+    }
+
+    public void setSourceSatelliteId(SatId sourceSatelliteId) {
+        this.sourceSatelliteId = sourceSatelliteId;
     }
 }

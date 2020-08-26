@@ -50,7 +50,7 @@ public class IncomingMovementBean {
                     firstMovement.setPreviousMovement(currentMovement);
                     trackService.upsertTrack(latestMovement, currentMovement);
                 } else { // Between two positions
-                    Movement nextMovement = dao.getMovementByPrevious(previousMovement);
+                    Movement nextMovement = dao.getNextMovement(previousMovement);
                     nextMovement.setPreviousMovement(currentMovement);
                     dao.flush();
                     currentMovement.setPreviousMovement(previousMovement);

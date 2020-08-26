@@ -22,6 +22,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -190,6 +191,16 @@ public class MovementService {
             throw new IllegalArgumentException("Error when getting movement list by query: ParseException", e);
         }
     }
+    
+    public List<MovementType> getCursorBasedList(CursorPagination cursorPagination) {
+        List<Movement> movementEntityList = movementDao.getCursorBasedList(cursorPagination);
+
+        List<MovementType> movementList = new ArrayList<>();
+        for (Movement movement : movementEntityList) {
+            movementList.add(MovementEntityToModelMapper.mapToMovementType(movement));
+        }
+        return movementList;
+    }
 
     public Movement getById(UUID id) {
         return movementDao.getMovementById(id);
@@ -294,8 +305,7 @@ public class MovementService {
 
     public MicroMovement getMicroMovementById(UUID movementId) {
         Movement movement = movementDao.getMovementById(movementId);
-        return movement == null ? null : new MicroMovement(movement.getLocation(), movement.getHeading(), movement.getId(),
-                movement.getTimestamp(), movement.getSpeed(), movement.getSource());
+        return movement == null ? null : new MicroMovement(movement);
     }
     
     public List<MicroMovement> getMovementsByMoveIds(List<UUID> moveIds) {

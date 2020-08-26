@@ -3,7 +3,7 @@
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
-        <version>5.5.14-UVMS-SNAPSHOT</version>
+        <version>5.5.16-UVMS-SNAPSHOT</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
@@ -27,7 +27,7 @@
                 <db.outputFile>changelog/generatedChangelog.xml</db.outputFile>
                 <driver.groupId>org.postgresql</driver.groupId>
                 <driver.artifactId>postgresql</driver.artifactId>
-                <driver.version>42.2.14</driver.version>
+                <driver.version>42.2.16</driver.version>
             </properties>
             <dependencies>
 		        <dependency>
