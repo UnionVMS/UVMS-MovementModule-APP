@@ -170,7 +170,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         Movement createdMovement3 = movementService.createAndProcessMovement(movementBaseType3);
 
 
-        List<Movement> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("movement")
                 .path("track")
                 .path("latest")
@@ -179,7 +179,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .queryParam("maxNbr", 2) 
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(""), new GenericType<List<Movement>>() {});
+                .post(Entity.json(""), new GenericType<List<MovementDto>>() {});
 
         assertFalse(latestMovements.isEmpty());
         assertTrue(latestMovements.stream().

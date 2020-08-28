@@ -166,12 +166,13 @@ public class MovementRestResource {
     @POST
     @Path("/track/latest/asset/{id}/")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackForAssetByNumber(@PathParam("id") UUID connectId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNumber, List<String> sources) {
+    public Response getMovementTrackForAssetByNumber(@PathParam("id") UUID connectId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNumber, List<String> sources) {
         try {
 
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
             List<Movement> movements = movementDao.getLatestNumberOfMovementsForAsset(connectId, maxNumber, sourceTypes);
-            return Response.ok(movements).header("MDC", MDC.get("requestId")).build();
+            List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
+            return Response.ok(movementDtos).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Movement for connectId: {}", connectId, e);
             throw e;
