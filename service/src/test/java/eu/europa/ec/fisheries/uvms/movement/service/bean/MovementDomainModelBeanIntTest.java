@@ -104,14 +104,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
         movementService.getLatestMovements(-5);
     }
 
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getMinimalMovementListByQuery_NULL() {
-        thrown.expect(EJBTransactionRolledbackException.class);
-        expectedMessage("Movement list query is null");
-
-        movementService.getMinimalList(null);
-    }
 
     @Test
     @OperateOnDeployment("movementservice")
@@ -269,89 +261,6 @@ public class MovementDomainModelBeanIntTest extends TransactionalTests {
 		movementService.getList(input);
 	}
 
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testGetMinimalMovementListByQuery_WillFailWithNullAsQuery() {
-		thrown.expect(EJBTransactionRolledbackException.class);
-		expectedMessage("Movement list query is null");
-
-		movementService.getMinimalList(null);
-	}
-
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testGetMinimalMovementListByQuery_WillFailNoPaginationSet() {
-    	thrown.expect(EJBTransactionRolledbackException.class);
-		expectedMessage("Pagination in movementlist query is null");
-
-		MovementQuery input = new MovementQuery();
-		input.setExcludeFirstAndLastSegment(true);
-
-		movementService.getMinimalList(input);
-	}
-
-	@Test
-    @OperateOnDeployment("movementservice")
-	public void testGetMinimalMovementListByQuery_WillFailNoSearchCriteriaSet() {
-		thrown.expect(EJBTransactionRolledbackException.class);
-
-		MovementQuery input = new MovementQuery();
-		input.setExcludeFirstAndLastSegment(true);
-
-		ListPagination listPagination = new ListPagination();
-		listPagination.setListSize(new BigInteger("100"));
-		listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
-		input.setPagination(listPagination);
-		input.getMovementRangeSearchCriteria().add(new RangeCriteria());
-
-		movementService.getMinimalList(input);
-	}
-    
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void testGetMinimalMovementListByQuery() {
-    	GetMovementListByQueryResponse output;
-    	
-    	MovementQuery input = new MovementQuery();
-    	input.setExcludeFirstAndLastSegment(true);
-
-    	ListPagination listPagination = new ListPagination();
-    	listPagination.setListSize(new BigInteger("100"));
-    	listPagination.setPage(new BigInteger("1")); //this can not be 0 or lower....
-    	input.setPagination(listPagination);
-
-
-    	UUID connectID = UUID.randomUUID();
-    	UUID connectID2 = UUID.randomUUID();
-    	createAndProcess10MovementsFromVarbergGrena(connectID);
-    	createAndProcess10MovementsFromVarbergGrena(connectID2);
-    	
-    	ListCriteria listCriteria = new ListCriteria();
-    	listCriteria.setKey(SearchKey.CONNECT_ID);
-    	listCriteria.setValue(connectID.toString());
-    	input.getMovementSearchCriteria().add(listCriteria);
-    	
-    	output = movementService.getMinimalList(input);
-    	assertEquals(10, output.getMovement().size());
-    	
-    	listCriteria = new ListCriteria();
-    	listCriteria.setKey(SearchKey.CONNECT_ID);
-    	listCriteria.setValue(connectID2.toString());
-    	input.getMovementSearchCriteria().add(listCriteria);
-    	output = movementService.getMinimalList(input);
-    	assertEquals(20, output.getMovement().size());
-    	
-    	input.getMovementSearchCriteria().remove(listCriteria);
-    	
-    	RangeCriteria rangeCriteria = new RangeCriteria();
-    	rangeCriteria.setKey(RangeKeyType.DATE);
-		rangeCriteria.setFrom(DateUtils.dateToEpochMilliseconds(Instant.now()));
-		rangeCriteria.setTo(DateUtils.dateToEpochMilliseconds(Instant.now().plusSeconds(1800))); //1 800 000 is the time for 6 of the movements in the list  aka 1 800
-    	input.getMovementRangeSearchCriteria().add(rangeCriteria);
-    	
-    	output = movementService.getMinimalList(input);
-    	assertEquals(6, output.getMovement().size());
-    }
 
 	@Test
     @OperateOnDeployment("movementservice")

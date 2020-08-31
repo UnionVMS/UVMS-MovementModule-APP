@@ -55,28 +55,28 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         
         assertThat(movements.get(0).getGuid(), is(createdMovement.getId().toString()));
     }
-    
+
     @Test
     @OperateOnDeployment("movement")
     public void getMinimalListByQueryByConnectId() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
-        
+
         MovementQuery query = MovementTestHelper.createMovementQuery();
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
         criteria.setValue(createdMovement.getMovementConnect().getId().toString());
         query.getMovementSearchCriteria().add(criteria);
-        
+
         GetMovementListByQueryResponse queryResponse = getMinimalListByQuery(query);
-        
+
         assertThat(queryResponse, is(notNullValue()));
         List<MovementType> movements = queryResponse.getMovement();
         assertThat(movements.size(), is(1));
-        
+
         assertThat(movements.get(0).getGuid(), is(createdMovement.getId().toString()));
     }
-    
+
     @Test
     @OperateOnDeployment("movement")
     public void getLatestMovementsByConnectIds() {
@@ -201,7 +201,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(query), GetMovementListByQueryResponse.class);
     }
-    
+
     private GetMovementListByQueryResponse getMinimalListByQuery(MovementQuery query) {
         return getWebTarget()
                 .path("movement")
@@ -212,6 +212,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .post(Entity.json(query), GetMovementListByQueryResponse.class);
     }
     
+
     private List<MovementDto> getLatestMovementsByConnectIds(List<String> connectIds) {
          return getWebTarget()
                 .path("movement")

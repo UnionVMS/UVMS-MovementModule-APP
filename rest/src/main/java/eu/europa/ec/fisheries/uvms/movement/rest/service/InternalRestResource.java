@@ -77,19 +77,6 @@ public class InternalRestResource {
     }
 
     @POST
-    @Path("/list/minimal")
-    @RequiresFeature(UnionVMSFeature.manageInternalRest)
-    public Response getMinimalListByQuery(MovementQuery query) {
-        try {
-            GetMovementListByQueryResponse minimalList = movementService.getMinimalList(query);
-            String jsonString = jsonb.toJson(minimalList);
-            return Response.ok(jsonString).build();
-        } catch (Exception e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
-        }
-    }
-
-    @POST
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getLatestMovementsByConnectIds(List<UUID> connectIds) {
