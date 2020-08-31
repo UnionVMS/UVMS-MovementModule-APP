@@ -25,8 +25,8 @@
 		<user.model.version>2.1.5</user.model.version>
 		<audit.model.version>4.3.5</audit.model.version>
 		<exchange.model.version>5.3.2-UVMS</exchange.model.version>
-		<asset.client.version>6.7.19</asset.client.version>
-		<movement-rules.model.version>2.3.16</movement-rules.model.version>
+		<asset.client.version>6.7.20</asset.client.version>
+		<movement-rules.model.version>2.3.17</movement-rules.model.version>
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
