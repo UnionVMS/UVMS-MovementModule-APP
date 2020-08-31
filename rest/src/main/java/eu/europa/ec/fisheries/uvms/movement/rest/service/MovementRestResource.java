@@ -76,6 +76,20 @@ public class MovementRestResource {
     }
 
     @POST
+    @Path("/list/minimal")          //Used by a position part in old frontend, use until we have moved that functionality to new frontend
+    @RequiresFeature(UnionVMSFeature.viewMovements)
+    public Response getMinimalListByQuery(MovementQuery query) {
+        LOG.debug("Get list invoked in rest layer");
+        try {
+            GetMovementListByQueryResponse minimalList = serviceLayer.getList(query);
+            return Response.ok(minimalList).header("MDC", MDC.get("requestId")).build();
+        } catch (Exception ex) {
+            LOG.error("[ Error when getting list. ]", ex);
+            throw ex;
+        }
+    }
+
+    @POST
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getLatestMovementsByConnectIds(List<String> connectIds) {
