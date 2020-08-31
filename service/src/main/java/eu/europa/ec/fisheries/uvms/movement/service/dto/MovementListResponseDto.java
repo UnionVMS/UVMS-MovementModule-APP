@@ -11,6 +11,8 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
+
 import java.math.BigInteger;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;

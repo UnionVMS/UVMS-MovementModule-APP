@@ -5,11 +5,10 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -29,7 +28,6 @@ import java.util.UUID;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(Arquillian.class)
 public class MovementRestResourceTest extends BuildMovementRestDeployment {
@@ -88,7 +86,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         List<MovementDto> latestMovements = getLatestMovementsByConnectIds(
                 Collections.singletonList(createdMovement.getMovementConnect().getId().toString()));
         assertThat(latestMovements.size(), is(1));
-        assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement.getId().toString()));
+        assertThat(latestMovements.get(0).getId(), is(createdMovement.getId()));
     }
     
     @Test
@@ -108,7 +106,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         List<MovementDto> latestMovements = getLatestMovementsByConnectIds(
                 Collections.singletonList(createdMovement2.getMovementConnect().getId().toString()));
         assertThat(latestMovements.size(), is(1));
-        assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement2.getId().toString()));
+        assertThat(latestMovements.get(0).getId(), is(createdMovement2.getId()));
     }
     
     @Test
@@ -128,7 +126,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         List<MovementDto> latestMovements = getLatestMovementsByConnectIds(
                 Collections.singletonList(createdMovement1.getMovementConnect().getId().toString()));
         assertThat(latestMovements.size(), is(1));
-        assertThat(latestMovements.get(0).getMovementGUID(), is(createdMovement1.getId().toString()));
+        assertThat(latestMovements.get(0).getId(), is(createdMovement1.getId()));
     }
     
     @Test
@@ -172,7 +170,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         Movement createdMovement3 = movementService.createAndProcessMovement(movementBaseType3);
 
 
-        List<Movement> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("movement")
                 .path("track")
                 .path("latest")
@@ -181,7 +179,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .queryParam("maxNbr", 2) 
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(""), new GenericType<List<Movement>>() {});
+                .post(Entity.json(""), new GenericType<List<MovementDto>>() {});
 
         assertFalse(latestMovements.isEmpty());
         assertTrue(latestMovements.stream().
