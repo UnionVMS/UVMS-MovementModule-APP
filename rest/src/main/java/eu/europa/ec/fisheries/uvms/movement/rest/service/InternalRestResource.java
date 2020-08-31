@@ -7,6 +7,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
@@ -14,6 +15,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
@@ -75,19 +77,6 @@ public class InternalRestResource {
     }
 
     @POST
-    @Path("/list/minimal")
-    @RequiresFeature(UnionVMSFeature.manageInternalRest)
-    public Response getMinimalListByQuery(MovementQuery query) {
-        try {
-            GetMovementListByQueryResponse minimalList = movementService.getMinimalList(query);
-            String jsonString = jsonb.toJson(minimalList);
-            return Response.ok(jsonString).build();
-        } catch (Exception e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
-        }
-    }
-
-    @POST
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getLatestMovementsByConnectIds(List<UUID> connectIds) {
@@ -128,7 +117,21 @@ public class InternalRestResource {
             return Response.ok(byId).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
-            LOG.error("[ Error when counting movements. ]", e);
+            LOG.error("[ Error when getting microMovement. ]", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+
+    @GET
+    @Path("/getMovement/{movementId}")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getMovementById(@PathParam("movementId") UUID movementId) {
+        try {
+            MovementDto byId = MovementMapper.mapToMovementDto(movementService.getById(movementId));
+            return Response.ok(byId).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when getting movement. ]", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
@@ -239,9 +242,10 @@ public class InternalRestResource {
     public Response getCursorBasedList(CursorPagination cursorPagination) {
         try {
             List<MovementType> list = movementService.getCursorBasedList(cursorPagination);
-            return Response.ok(list).build();
+            return Response.ok(list).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e))
+                    .header("MDC", MDC.get("requestId")).build();
         }
     }
 }

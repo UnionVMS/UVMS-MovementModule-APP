@@ -15,6 +15,7 @@ import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -188,6 +189,29 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         // Then
         assertNotNull(movementById);
         assertEquals(createdMovement.getId(), UUID.fromString(movementById.getId()));
+        assertEquals(createdMovement.getHeading(), movementById.getHeading(), 0);
+        assertEquals(incomingMovement.getLatitude(), movementById.getLocation().getLatitude(), 0);
+        assertEquals(incomingMovement.getLongitude(), movementById.getLocation().getLongitude(), 0);
+        assertEquals(createdMovement.getSource(), movementById.getSource());
+        assertEquals(createdMovement.getSpeed().doubleValue(), movementById.getSpeed().doubleValue(), 0);
+        assertEquals(createdMovement.getTimestamp().truncatedTo(ChronoUnit.MILLIS), movementById.getTimestamp());
+    }
+
+    @Test
+    public void getMovementById() {
+        // Given
+        AssetDTO asset = createBasicAsset();
+        IncomingMovement incomingMovement = createIncomingMovement(asset, Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+
+        // When
+        MovementDto movementById = movementRestClient.getMovementById(createdMovement.getId());
+
+        // Then
+        assertNotNull(movementById);
+        assertEquals(createdMovement.getId(), movementById.getId());
         assertEquals(createdMovement.getHeading(), movementById.getHeading(), 0);
         assertEquals(incomingMovement.getLatitude(), movementById.getLocation().getLatitude(), 0);
         assertEquals(incomingMovement.getLongitude(), movementById.getLocation().getLongitude(), 0);

@@ -16,17 +16,15 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryRes
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.RestUtilMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -34,7 +32,6 @@ import org.slf4j.MDC;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.NonUniqueResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -76,16 +73,13 @@ public class MovementRestResource {
     }
 
     @POST
-    @Path("/list/minimal")
+    @Path("/list/minimal")          //Used by a position part in old frontend, use until we have moved that functionality to new frontend
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getMinimalListByQuery(MovementQuery query) {
         LOG.debug("Get list invoked in rest layer");
         try {
-            long start = System.currentTimeMillis();
-            GetMovementListByQueryResponse minimalList = serviceLayer.getMinimalList(query);
-            long end = System.currentTimeMillis();
-            LOG.debug("GET MINIMAL MOVEMENT: {} ms", (end - start));
-            return Response.ok(minimalList).build();
+            GetMovementListByQueryResponse minimalList = serviceLayer.getList(query);
+            return Response.ok(minimalList).header("MDC", MDC.get("requestId")).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
             throw ex;
@@ -103,8 +97,7 @@ public class MovementRestResource {
         try {
             List<UUID> uuids = connectIds.stream().map(UUID::fromString).collect(Collectors.toList());
             List<Movement> latestMovements = serviceLayer.getLatestMovementsByConnectIds(uuids);
-            List<MovementType> movementTypeList = MovementEntityToModelMapper.mapToMovementType(latestMovements);
-            List<MovementDto> movementDtoList = MovementMapper.mapToMovementDtoList(movementTypeList);
+            List<MovementDto> movementDtoList = MovementMapper.mapToMovementDtoList(latestMovements);
             return Response.ok(movementDtoList).build();
         } catch (Exception ex) {
             LOG.error("[ Error when getting list. ]", ex);
@@ -125,8 +118,7 @@ public class MovementRestResource {
         }
         try {
             List<Movement> movements = serviceLayer.getLatestMovements(numberOfMovements);
-            List<MovementType> latestMovements = MovementEntityToModelMapper.mapToMovementType(movements);
-            List<MovementDto> response = MovementMapper.mapToMovementDtoList(latestMovements);
+            List<MovementDto> response = MovementMapper.mapToMovementDtoList(movements);
             LOG.debug("GET LATEST MOVEMENTS TIME: {}", (System.currentTimeMillis() - start));
             return Response.ok(response).build();
         } catch (Exception ex) {
@@ -171,12 +163,13 @@ public class MovementRestResource {
     @POST
     @Path("/track/latest/asset/{id}/")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackForAssetByNumber(@PathParam("id") UUID connectId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNumber, List<String> sources) {
+    public Response getMovementTrackForAssetByNumber(@PathParam("id") UUID connectId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNumber, List<String> sources) {
         try {
 
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
             List<Movement> movements = movementDao.getLatestNumberOfMovementsForAsset(connectId, maxNumber, sourceTypes);
-            return Response.ok(movements).header("MDC", MDC.get("requestId")).build();
+            List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
+            return Response.ok(movementDtos).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Movement for connectId: {}", connectId, e);
             throw e;
