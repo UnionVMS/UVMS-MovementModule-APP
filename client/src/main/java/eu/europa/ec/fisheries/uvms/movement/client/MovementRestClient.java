@@ -134,6 +134,16 @@ public class MovementRestClient {
 
         return response.readEntity(new GenericType<List<MicroMovement>>() {});
     }
+
+    public List<MovementDto> getMovementDtoByIdList(List<UUID> ids) {
+        Response response = webTarget
+                .path("internal/getMicroMovementList")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+                .post(Entity.entity(ids, MediaType.APPLICATION_JSON_TYPE));
+
+        return response.readEntity(new GenericType<List<MovementDto>>() {});
+    }
     
     public List<MovementType> getCursorBasedList(CursorPagination cursorPagination){ 
         String response = webTarget

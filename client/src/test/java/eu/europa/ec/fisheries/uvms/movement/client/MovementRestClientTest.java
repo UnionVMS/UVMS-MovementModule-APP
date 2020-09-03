@@ -322,6 +322,45 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         assertNotNull(microMovementList);
         assertTrue(microMovementList.size() == 2);
     }
+
+    @Test
+    public void getMovementDtoByIdListTest() {
+        AssetDTO asset = createBasicAsset();
+        IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+
+        List<UUID> ids = new ArrayList<UUID>();
+        ids.add(createdMovement.getId());
+        List<MovementDto> MovementDtoList = movementRestClient.getMovementDtoByIdList(ids);
+        assertNotNull(MovementDtoList);
+        assertTrue(MovementDtoList.size() == 1);
+        assertTrue( MovementDtoList.get(0).getId().equals(createdMovement.getId() ) );
+        assertTrue(MovementDtoList.get(0).getHeading() == (double)createdMovement.getHeading());
+    }
+
+    @Test
+    public void getMovementDtoByIdListTwoIdsTest() {
+        AssetDTO asset = createBasicAsset();
+        IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
+        Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
+        movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        Movement createdMovement = movementService.createAndProcessMovement(movement);
+
+        AssetDTO asset2 = createBasicAsset();
+        IncomingMovement incomingMovement2 = createIncomingMovement(asset2,  Instant.now());
+        Movement movement2 = IncomingMovementMapper.mapNewMovementEntity(incomingMovement2, incomingMovement2.getUpdatedBy());
+        movement2.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement2, incomingMovement2.getUpdatedBy()));
+        Movement createdMovement2 = movementService.createAndProcessMovement(movement2);
+
+        List<UUID> ids = new ArrayList<UUID>();
+        ids.add(createdMovement.getId());
+        ids.add(createdMovement2.getId());
+        List<MovementDto> movementDtoList = movementRestClient.getMovementDtoByIdList(ids);
+        assertNotNull(movementDtoList);
+        assertTrue(movementDtoList.size() == 2);
+    }
     
     private RangeCriteria createRangeCriteriaDate(int daysFromNow) {
         RangeCriteria rangeCriteria1 = new RangeCriteria();

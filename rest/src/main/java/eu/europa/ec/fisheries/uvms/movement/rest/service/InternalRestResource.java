@@ -227,11 +227,25 @@ public class InternalRestResource {
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getMicroMovementByIdList(List<UUID> moveIds) {
         try {
-            List<MicroMovement> microMovement = movementService.getMovementsByMoveIds(moveIds);
+            List<MicroMovement> microMovement = movementService.getMicroMovementsByMoveIds(moveIds);
             return Response.ok(microMovement).type(MediaType.APPLICATION_JSON)
                     .header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
-            LOG.error("[ Error when counting movements. ]", e);
+            LOG.error("[ Error when getting microMovements. ]", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
+        }
+    }
+
+    @POST
+    @Path("/getMovementList")
+    @RequiresFeature(UnionVMSFeature.manageInternalRest)
+    public Response getMovementDtoByIdList(List<UUID> moveIds) {
+        try {
+            List<MovementDto> MovementDtos = movementService.getMovementsByMoveIds(moveIds);
+            return Response.ok(MovementDtos).type(MediaType.APPLICATION_JSON)
+                    .header("MDC", MDC.get("requestId")).build();
+        } catch (Exception e) {
+            LOG.error("[ Error when getting movementDtos. ]", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
         }
     }
