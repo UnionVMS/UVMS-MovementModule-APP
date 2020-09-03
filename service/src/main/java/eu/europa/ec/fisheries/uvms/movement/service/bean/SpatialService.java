@@ -12,14 +12,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
+
+import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRSListElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialClient;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
@@ -48,7 +48,7 @@ public class SpatialService {
     
     public Movement enrichMovementWithSpatialData(Movement movement) throws MovementServiceException {
         try {
-            SpatialEnrichmentRS enrichment = spatialClient.getEnrichment(movement.getLocation());
+            SpatialEnrichmentRS enrichment = spatialClient.getEnrichment(movement.getLocation(), Date.from(movement.getTimestamp()));
             MovementMapper.enrichMovement(movement, enrichment);
             mapAreas(movement, enrichment.getAreasByLocation());
             return movement;
@@ -58,13 +58,18 @@ public class SpatialService {
     }
 
     public List<Movement> enrichMovementBatchWithSpatialData(List<Movement> movements) throws MovementServiceException {
-        List<Point> locations = movements.stream().map(Movement::getLocation).collect(Collectors.toList());
         try {
-            BatchSpatialEnrichmentRS enrichment = spatialClient.getBatchEnrichment(locations);
+            BatchSpatialEnrichmentRS enrichment = spatialClient.getBatchEnrichment(movements);
             MovementMapper.enrichAndMapToMovementTypes(movements, enrichment);
-            // Assume movements and enrichments are ordered?
-            for (int i = 0; i < movements.size(); i++) {
-                mapAreas(movements.get(i), enrichment.getEnrichmentRespLists().get(i).getAreasByLocation());
+            List<SpatialEnrichmentRSListElement> enrichmentRespLists = enrichment.getEnrichmentRespLists();
+            for (Movement movement : movements) {
+                SpatialEnrichmentRSListElement enrichmentRSListElement = enrichmentRespLists.stream()
+                        .filter(el->el.getGuid().equals(movement.getMovementConnect().getValue()))
+                        .findFirst().orElse(null);
+                if(enrichmentRSListElement == null) {
+                    continue;
+                }
+                mapAreas(movement, enrichmentRSListElement.getAreasByLocation());
             }
             return movements;
         } catch (Exception ex) {

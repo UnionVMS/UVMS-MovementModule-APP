@@ -11,12 +11,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.clients;
 
+import java.util.Date;
 import java.util.List;
 import com.vividsolutions.jts.geom.Point;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
 
 public interface SpatialClient {
-    SpatialEnrichmentRS getEnrichment(Point location);
-    BatchSpatialEnrichmentRS getBatchEnrichment(List<Point> locations);
+    SpatialEnrichmentRS getEnrichment(Point location, Date userAreaActiveDate);
+    BatchSpatialEnrichmentRS getBatchEnrichment(List<Movement> movements);
 }
