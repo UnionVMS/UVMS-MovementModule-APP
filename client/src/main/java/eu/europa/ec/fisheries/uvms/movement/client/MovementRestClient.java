@@ -137,7 +137,7 @@ public class MovementRestClient {
 
     public List<MovementDto> getMovementDtoByIdList(List<UUID> ids) {
         Response response = webTarget
-                .path("internal/getMicroMovementList")
+                .path("internal/getMovementList")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
                 .post(Entity.entity(ids, MediaType.APPLICATION_JSON_TYPE));
