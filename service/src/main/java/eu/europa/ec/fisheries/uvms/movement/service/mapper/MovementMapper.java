@@ -125,11 +125,15 @@ public class MovementMapper {
     }
 
     public static List<Movement> enrichAndMapToMovementTypes(List<Movement> movements, BatchSpatialEnrichmentRS enrichment) {
-        int index = 0;
         List<SpatialEnrichmentRSListElement> enrichmentRespLists = enrichment.getEnrichmentRespLists();
         List<Movement> enrichedList = new ArrayList<>();
         for (Movement movement : movements) {
-            SpatialEnrichmentRSListElement enrichmentRSListElement = enrichmentRespLists.get(index);
+            SpatialEnrichmentRSListElement enrichmentRSListElement = enrichmentRespLists.stream()
+                                                                    .filter(el->el.getGuid().equals(movement.getMovementConnect().getValue()))
+                                                                    .findFirst().orElse(null);
+            if(enrichmentRSListElement == null) {
+                continue;
+            }
             Movementmetadata metadata = new Movementmetadata();
             if (enrichmentRSListElement.getClosestLocations() != null) {
                 enrichWithPortData(enrichmentRSListElement.getClosestLocations().getClosestLocations(), LocationType.PORT, metadata);
@@ -141,7 +145,6 @@ public class MovementMapper {
             } else {
                 LOG.error("NO CLOSEST AREAS FOUND IN RESPONSE FROM SPATIAL ");
             }
-            index++;
             
             metadata.setMovemetUpdattim(DateUtil.nowUTC());
             metadata.setMovemetUpuser("UVMS");

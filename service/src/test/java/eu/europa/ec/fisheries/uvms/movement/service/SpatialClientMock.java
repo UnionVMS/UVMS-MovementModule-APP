@@ -1,10 +1,12 @@
 package eu.europa.ec.fisheries.uvms.movement.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import com.vividsolutions.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.service.clients.SpatialClient;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
@@ -30,7 +32,7 @@ public class SpatialClientMock implements SpatialClient {
     }
 
     @Override
-    public SpatialEnrichmentRS getEnrichment(Point location) {
+    public SpatialEnrichmentRS getEnrichment(Point location, Date userAreaActiveDate) {
         shouldIFail();
         
         SpatialEnrichmentRS spatialEnrichmentRS = new SpatialEnrichmentRS();
@@ -43,12 +45,13 @@ public class SpatialClientMock implements SpatialClient {
     }
 
     @Override
-    public BatchSpatialEnrichmentRS getBatchEnrichment(List<Point> locations) {
+    public BatchSpatialEnrichmentRS getBatchEnrichment(List<Movement> movements) {
         shouldIFail();
         
         BatchSpatialEnrichmentRS batchSpatialEnrichmentRS = new BatchSpatialEnrichmentRS();
         
-        for (Point point : locations) {
+        for (Movement movement : movements) {
+            Point point = movement.getLocation();
             SpatialEnrichmentRSListElement spatialEnrichmentRS = new SpatialEnrichmentRSListElement();
             
             populateClosestAreas(spatialEnrichmentRS);
@@ -150,5 +153,4 @@ public class SpatialClientMock implements SpatialClient {
         areasByLocationType.setAreas(areas);
         spatialEnrichmentRS.setAreasByLocation(areasByLocationType);
     }
-
 }
