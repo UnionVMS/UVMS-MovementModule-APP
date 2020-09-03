@@ -13,6 +13,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.clients;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -25,9 +26,12 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Point;
+import eu.europa.ec.fisheries.uvms.commons.date.XMLDateUtils;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.spatial.model.mapper.SpatialModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.BatchSpatialEnrichmentRQ;
@@ -64,7 +68,8 @@ public class SpatialRestClient implements SpatialClient {
         webTarget = client.target(url);
     }
     
-    public SpatialEnrichmentRS getEnrichment(Point location) {
+    @Override
+    public SpatialEnrichmentRS getEnrichment(Point location, Date userAreaActiveDate) {
         PointType point = new PointType();
         point.setCrs(4326); //this magical int is the World Geodetic System 1984, aka EPSG:4326. See: https://en.wikipedia.org/wiki/World_Geodetic_System or http://spatialreference.org/ref/epsg/wgs-84/
         point.setLatitude(location.getY());
@@ -72,7 +77,9 @@ public class SpatialRestClient implements SpatialClient {
         List<LocationType> locationTypes = Collections.singletonList(LocationType.PORT);
         List<AreaType> areaTypes = Collections.singletonList(AreaType.COUNTRY);
         SpatialEnrichmentRQ request = mapToCreateSpatialEnrichmentRequest(point, UnitType.NAUTICAL_MILES, locationTypes, areaTypes);
-        
+        if(userAreaActiveDate != null){
+            request.setUserAreaActiveDate(XMLDateUtils.dateToXmlGregorian(userAreaActiveDate));
+        }
         Response response =  webTarget
                 .path("getEnrichment")
                 .request(MediaType.APPLICATION_JSON)
@@ -83,9 +90,12 @@ public class SpatialRestClient implements SpatialClient {
         return spatialEnrichments;
     }
     
-    public BatchSpatialEnrichmentRS getBatchEnrichment(List<Point> locations) {
+    @Override
+    public BatchSpatialEnrichmentRS getBatchEnrichment(List<Movement> movements) {
         List<SpatialEnrichmentRQListElement> batchReqElements = new ArrayList<>();
-        for (Point location : locations) {
+        
+        for (Movement movement : movements) {
+            Point location = movement.getLocation();
             PointType point = new PointType();
             point.setCrs(4326);
             point.setLatitude(location.getY());
@@ -93,6 +103,8 @@ public class SpatialRestClient implements SpatialClient {
             List<LocationType> locationTypes = Collections.singletonList(LocationType.PORT);
             List<AreaType> areaTypes = Collections.singletonList(AreaType.COUNTRY);
             SpatialEnrichmentRQListElement spatialEnrichmentRQListElement = SpatialModuleRequestMapper.mapToCreateSpatialEnrichmentRQElement(point, UnitType.NAUTICAL_MILES, locationTypes, areaTypes);
+            spatialEnrichmentRQListElement.setUserAreaActiveDate(XMLDateUtils.dateToXmlGregorian(Date.from(movement.getTimestamp())));
+            spatialEnrichmentRQListElement.setGuid(movement.getMovementConnect().getValue());
             batchReqElements.add(spatialEnrichmentRQListElement);
         }
         BatchSpatialEnrichmentRQ request = mapToCreateBatchSpatialEnrichmentRequest(batchReqElements);
