@@ -329,6 +329,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
         movement.setMovementConnect(IncomingMovementMapper.mapNewMovementConnect(incomingMovement, incomingMovement.getUpdatedBy()));
+        movement.setMovementType(MovementTypeType.EXI);
         Movement createdMovement = movementService.createAndProcessMovement(movement);
 
         List<UUID> ids = new ArrayList<UUID>();
@@ -338,6 +339,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         assertTrue(MovementDtoList.size() == 1);
         assertTrue( MovementDtoList.get(0).getId().equals(createdMovement.getId() ) );
         assertTrue(MovementDtoList.get(0).getHeading() == (double)createdMovement.getHeading());
+        assertEquals(createdMovement.getMovementType(), MovementDtoList.get(0).getMovementType());
     }
 
     @Test
