@@ -12,5 +12,5 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.message.constants;
 
 public enum ModuleQueue {
-    AUDIT, SPATIAL, CONFIG, EXCHANGE, USER, SUBSCRIPTION_DATA, RULES;
+    AUDIT, SPATIAL, CONFIG, EXCHANGE, USER, SUBSCRIPTION_DATA, MOVEMENT_TOPIC, RULES;
 }

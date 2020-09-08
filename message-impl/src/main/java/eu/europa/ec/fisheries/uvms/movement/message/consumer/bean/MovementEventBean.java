@@ -18,8 +18,10 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.GuidListForAreaFilteringQuery;
@@ -36,10 +38,15 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.GetConnectIdsByDateAndGe
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByAreaAndTimeIntervalRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.GetSegmentsAndTrackBySegmentIdsRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.GetSegmentsAndTrackBySegmentIdsResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentAndTrack;
 import eu.europa.ec.fisheries.schema.rules.exchange.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigServiceException;
 import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
@@ -55,6 +62,8 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.AuditService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementAndBaseType;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
@@ -159,6 +168,7 @@ public class MovementEventBean {
             createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementTypeFromMovementAndBaseType(movementBatch));
             String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createMovementBatchResponse);
             messageProducer.sendModuleMessage(responseString, ModuleQueue.SUBSCRIPTION_DATA);
+            messageProducer.sendModuleMessage(responseString, ModuleQueue.MOVEMENT_TOPIC);
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage != null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {
@@ -284,7 +294,7 @@ public class MovementEventBean {
             messageProducer.sendMessageBackToRecipient(jmsMessage, JAXBMarshaller.marshallJaxBObjectToString(response));
 
         } catch (EJBException | MovementMessageException | MovementModelException | IllegalStateException ex) {
-            LOG.error("[ Error when forwarding position ] ", ex);
+            LOG.error("[ Error when finding raw movements ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
                 errorEvent.fire(new EventMessage(jmsMessage, "Error when receiving message in movement: " + ex.getMessage()));
             }
@@ -292,5 +302,19 @@ public class MovementEventBean {
         }
     }
 
-
+    public void getSegmentsAndTrackBySegmentIds(EventMessage eventMessage) {
+        TextMessage jmsMessage = eventMessage.getJmsMessage();
+        try {
+            GetSegmentsAndTrackBySegmentIdsRequest request = (GetSegmentsAndTrackBySegmentIdsRequest) eventMessage.getRequest();
+            List<Segment> segments = movementService.findSegmentsBySegmentIds(request.getSegmentIds());
+            GetSegmentsAndTrackBySegmentIdsResponse response = MovementMapper.toGetSegmentsAndTrackBySegmentIdsResponse(segments);
+            messageProducer.sendMessageBackToRecipient(jmsMessage, JAXBMarshaller.marshallJaxBObjectToString(response));
+        } catch (EJBException | MovementMessageException | MovementModelException | IllegalStateException ex) {
+            LOG.error("[ Error when trying to get segment and track by segmentId ] ", ex);
+            if (maxRedeliveriesReached(jmsMessage)) {
+                errorEvent.fire(new EventMessage(jmsMessage, "Error when receiving message in movement: " + ex.getMessage()));
+            }
+            throw new EJBException(ex);
+        }
+    }
 }
