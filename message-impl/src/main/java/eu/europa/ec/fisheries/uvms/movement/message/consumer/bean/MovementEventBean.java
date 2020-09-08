@@ -270,7 +270,7 @@ public class MovementEventBean {
         try {
             GetConnectIdsByDateAndGeometryRequest actualRequest = (GetConnectIdsByDateAndGeometryRequest) eventMessage.getRequest();
             GuidListForAreaFilteringQuery query = actualRequest.getQuery();
-            List<String> connectIds = movementService.findConnectIdsByDateAndGeometry(query.getGuidList(), query.getStartDate(), query.getEndDate(), 
+            List<String> connectIds = movementService.findConnectIdsByDateAndGeometry(query.getGuidList(), query.getStartDate(), query.getEndDate(),
                     query.getAreasGeometryUnion(),query.getPage(),query.getLimit());
             GetConnectIdsByDateAndGeometryResponse response = new GetConnectIdsByDateAndGeometryResponse();
             response.getConnectIds().addAll(connectIds);
