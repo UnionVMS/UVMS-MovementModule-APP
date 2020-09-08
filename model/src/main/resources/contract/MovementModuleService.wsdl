@@ -28,6 +28,7 @@
                     <xsd:enumeration value="CREATE_BATCH"/>
                     <xsd:enumeration value="GET_TRIP_BY_ID"/>
                     <xsd:enumeration value="GET_SEGMENT_BY_ID"/>
+                    <xsd:enumeration value="GET_SEGMENTS_AND_TRACK_BY_SEGMENT_IDS"/>
                     <xsd:enumeration value="PING"/>
                     <xsd:enumeration value="MOVEMENT_LIST_BY_AREA_TIME_INTERVAL"/>
                     <xsd:enumeration value="FIND_CONNECT_IDS_BY_DATE_AND_GEOMETRY"/>
@@ -212,6 +213,27 @@
                 <xsd:complexType>
                     <xsd:sequence>
                         <xsd:element name="movement" type="movement:MovementSegment"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!-- Get segment and track by segmentId -->
+            <xsd:element name="getSegmentsAndTrackBySegmentIdsRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="module:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="segmentIds" type="movement:SegmentIds" minOccurs="1" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getSegmentsAndTrackBySegmentIdsResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="segmentAndTrackList" type="movement:SegmentAndTrackList" minOccurs="0" maxOccurs="unbounded"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
