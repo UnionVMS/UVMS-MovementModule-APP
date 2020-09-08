@@ -238,6 +238,27 @@
                 </xsd:complexType>
             </xsd:element>
 
+            <!-- Get segment and track by segmentId -->
+            <xsd:element name="getSegmentsAndTrackBySegmentIdsRequest">
+                <xsd:complexType>
+                    <xsd:complexContent>
+                        <xsd:extension base="module:MovementBaseRequest">
+                            <xsd:sequence>
+                                <xsd:element name="segmentIds" type="xsd:long" minOccurs="1" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:extension>
+                    </xsd:complexContent>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="getSegmentsAndTrackBySegmentIdsResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="segmentAndTrackList" type="movement:SegmentAndTrack" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
             <!-- find guid list by area and date -->
             <xsd:element name="GetConnectIdsByDateAndGeometryRequest">
                 <xsd:complexType>

@@ -486,4 +486,8 @@ public class MovementService {
     public List<Segment> findSegmentsBySegmentIds(List<Long> segmentIds) {
         return dao.getSegmentsBySegmentIds(segmentIds);
     }
+
+    public List<Segment> findSegmentsBySegmentIds(List<Long> segmentIds) {
+        return dao.getSegmentsBySegmentIds(segmentIds);
+    }
 }
