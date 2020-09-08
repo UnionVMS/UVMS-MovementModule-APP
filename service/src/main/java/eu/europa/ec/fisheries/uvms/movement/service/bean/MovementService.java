@@ -469,4 +469,8 @@ public class MovementService {
     public boolean checkMovementExistence(String connectId, Date startDate, Date endDate, List<Long> movementAreaIds) throws MovementModelRuntimeException {
         return dao.checkMovementExistence(connectId,startDate,endDate,movementAreaIds);
     }
+
+    public List<Segment> findSegmentsBySegmentIds(List<Long> segmentIds) {
+        return dao.getSegmentsBySegmentIds(segmentIds);
+    }
 }
