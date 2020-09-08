@@ -32,6 +32,7 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentAndTrack;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentAndTrackList;
 import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
@@ -406,10 +407,13 @@ public class MovementMapper {
         movementActivityType.setMessageType(activity.getActivityType());
         return movementActivityType;
     }
-
-    public static GetSegmentsAndTrackBySegmentIdsResponse toGetSegmentsAndTrackBySegmentIdsResponse(List<Segment> segments) {
+    public static GetSegmentsAndTrackBySegmentIdsResponse toGetSegmentsAndTrackBySegmentIdsResponse(List<SegmentAndTrackList> segmentAndTracks) {
         GetSegmentsAndTrackBySegmentIdsResponse response = new GetSegmentsAndTrackBySegmentIdsResponse();
-        List<SegmentAndTrack> segmentAndTrackList = response.getSegmentAndTrackList();
+        response.getSegmentAndTrackList().addAll(segmentAndTracks);
+        return response;
+    }
+    public static List<SegmentAndTrack> toSegmentAndTrackList(List<Segment> segments) {
+        List<SegmentAndTrack> segmentAndTrackList = new ArrayList<>();
 
         segments.forEach(s -> {
             SegmentAndTrack segmentAndTrack = new SegmentAndTrack();
@@ -424,7 +428,7 @@ public class MovementMapper {
             movementSegment.setTrackId(Optional.ofNullable(s.getTrack()).map(t -> t.getId().toString()).orElse(null));
 
             segmentAndTrack.setSegment(movementSegment);
-
+            
             MovementTrack movementTrack = new MovementTrack();
             Track track = s.getTrack();
             if (track != null) {
@@ -435,10 +439,10 @@ public class MovementMapper {
                 movementTrack.setWkt(WKTUtil.getWktLineStringFromTrack(track));
             }
             segmentAndTrack.setTrack(movementTrack);
-
+            
             segmentAndTrackList.add(segmentAndTrack);
         });
-        return response;
+        return segmentAndTrackList;
     }
 
 

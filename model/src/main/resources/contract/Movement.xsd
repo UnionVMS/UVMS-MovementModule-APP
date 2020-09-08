@@ -220,6 +220,18 @@
         </xsd:sequence>
     </xsd:complexType>
 
+    <xsd:complexType name="SegmentIds">
+        <xsd:sequence>
+            <xsd:element name="segmentIds" type="xsd:long" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:element name="moveGuid" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="SegmentAndTrackList">
+        <xsd:sequence>
+            <xsd:element name="segmentAndTrackList" type="movement:SegmentAndTrack" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:element name="moveGuid" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
     <xsd:complexType name="SegmentAndTrack">
         <xsd:sequence>
             <xsd:element name="segment" type="movement:MovementSegment"/>
