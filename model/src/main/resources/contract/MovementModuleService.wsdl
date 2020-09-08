@@ -222,7 +222,7 @@
                     <xsd:complexContent>
                         <xsd:extension base="module:MovementBaseRequest">
                             <xsd:sequence>
-                                <xsd:element name="segmentIds" type="xsd:long" minOccurs="1" maxOccurs="unbounded"/>
+                                <xsd:element name="segmentIds" type="movement:SegmentIds" minOccurs="1" maxOccurs="unbounded"/>
                             </xsd:sequence>
                         </xsd:extension>
                     </xsd:complexContent>
@@ -232,7 +232,7 @@
             <xsd:element name="getSegmentsAndTrackBySegmentIdsResponse">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="segmentAndTrackList" type="movement:SegmentAndTrack" minOccurs="0" maxOccurs="unbounded"/>
+                        <xsd:element name="segmentAndTrackList" type="movement:SegmentAndTrackList" minOccurs="0" maxOccurs="unbounded"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
