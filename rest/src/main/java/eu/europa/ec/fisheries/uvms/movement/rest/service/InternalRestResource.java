@@ -258,6 +258,7 @@ public class InternalRestResource {
             List<MovementType> list = movementService.getCursorBasedList(cursorPagination);
             return Response.ok(list).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
+            LOG.error("[ Error when getting movements by list cursor. ]", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e))
                     .header("MDC", MDC.get("requestId")).build();
         }

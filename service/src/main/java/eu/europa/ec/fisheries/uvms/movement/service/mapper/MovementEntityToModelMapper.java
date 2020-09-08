@@ -95,7 +95,8 @@ public class MovementEntityToModelMapper {
         if (previousMovement != null) {
             SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
             model.setCalculatedCourse(positionCalculations.getCourse());
-            model.setCalculatedSpeed(positionCalculations.getAvgSpeed());
+            Double calculatedSpeed = positionCalculations.getAvgSpeed();
+            model.setCalculatedSpeed(calculatedSpeed != null && !calculatedSpeed.isInfinite() && !calculatedSpeed.isNaN() ? calculatedSpeed : null);
         }
         if (movement.getTrack() != null) {
             // Investigate if segmentsIds can be removed
