@@ -74,6 +74,12 @@ public class MovementDao {
         return query.getResultList();
     }
 
+    public List<Segment> getSegmentsBySegmentIds(List<Long> segmentIds) {
+        TypedQuery<Segment> query = em.createNamedQuery(Segment.FIND_BY_IDS, Segment.class);
+        query.setParameter("ids", segmentIds);
+        return query.getResultList();
+    }
+
     public Track getTrackById(Long id){
         return em.find(Track.class, id);
     }

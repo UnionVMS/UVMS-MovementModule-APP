@@ -482,4 +482,8 @@ public class MovementService {
         if(startDate.toInstant().isAfter(endDate.toInstant())) throw new InvalidArgumentException("Start date cannot be after end date");
         if(areasGeometryUnion == null) throw new InvalidArgumentException("AreasGeometryUnion was null");
     }
+
+    public List<Segment> findSegmentsBySegmentIds(List<Long> segmentIds) {
+        return dao.getSegmentsBySegmentIds(segmentIds);
+    }
 }
