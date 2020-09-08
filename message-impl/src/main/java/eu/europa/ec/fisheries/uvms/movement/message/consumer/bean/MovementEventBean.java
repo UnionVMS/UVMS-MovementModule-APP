@@ -45,6 +45,7 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryRe
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentAndTrackList;
 import eu.europa.ec.fisheries.schema.rules.exchange.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigServiceException;
@@ -338,7 +339,7 @@ public class MovementEventBean {
         TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
             GetSegmentsAndTrackBySegmentIdsRequest request = (GetSegmentsAndTrackBySegmentIdsRequest) eventMessage.getRequest();
-            List<Segment> segments = movementService.findSegmentsBySegmentIds(request.getSegmentIds());
+            List<SegmentAndTrackList> segments = movementService.findSegmentsBySegmentIds(request.getSegmentIds());
             GetSegmentsAndTrackBySegmentIdsResponse response = MovementMapper.toGetSegmentsAndTrackBySegmentIdsResponse(segments);
             messageProducer.sendMessageBackToRecipient(jmsMessage, JAXBMarshaller.marshallJaxBObjectToString(response));
         } catch (EJBException | MovementMessageException | MovementModelException | IllegalStateException ex) {
