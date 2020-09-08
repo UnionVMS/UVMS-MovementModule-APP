@@ -11,30 +11,39 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;  //leave be for now
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselIdentifyingProperties;
+import eu.europa.ec.fisheries.schema.movement.module.v1.GetSegmentsAndTrackBySegmentIdsResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementActivityType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentAndTrack;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentAndTrackList;
+import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Activity;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MicroMovement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementMetaDataAreaType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
-import eu.europa.ec.fisheries.uvms.movement.model.util.DateUtil;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movementmetadata;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Segment;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.temp.TempMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Area;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaExtendedIdentifierType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.AreaType;
@@ -43,6 +52,8 @@ import eu.europa.ec.fisheries.uvms.spatial.model.schemas.Location;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.LocationType;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRS;
 import eu.europa.ec.fisheries.uvms.spatial.model.schemas.SpatialEnrichmentRSListElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import un.unece.uncefact.data.standard.fluxvesselpositionmessage._4.FLUXVesselPositionMessage;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.FLUXPartyType;
 import un.unece.uncefact.data.standard.reusableaggregatebusinessinformationentity._18.FLUXReportDocumentType;
@@ -54,9 +65,6 @@ import un.unece.uncefact.data.standard.unqualifieddatatype._18.CodeType;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.DateTimeType;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.IDType;
 import un.unece.uncefact.data.standard.unqualifieddatatype._18.MeasureType;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
 
 public class MovementMapper {
@@ -407,4 +415,43 @@ public class MovementMapper {
         movementActivityType.setMessageType(activity.getActivityType());
         return movementActivityType;
     }
+    public static GetSegmentsAndTrackBySegmentIdsResponse toGetSegmentsAndTrackBySegmentIdsResponse(List<SegmentAndTrackList> segmentAndTracks) {
+        GetSegmentsAndTrackBySegmentIdsResponse response = new GetSegmentsAndTrackBySegmentIdsResponse();
+        response.getSegmentAndTrackList().addAll(segmentAndTracks);
+        return response;
+    }
+    public static List<SegmentAndTrack> toSegmentAndTrackList(List<Segment> segments) {
+        List<SegmentAndTrack> segmentAndTrackList = new ArrayList<>();
+
+        segments.forEach(s -> {
+            SegmentAndTrack segmentAndTrack = new SegmentAndTrack();
+            MovementSegment movementSegment = new MovementSegment();
+            movementSegment.setId(s.getId().toString());
+            movementSegment.setCategory(s.getSegmentCategory());
+            movementSegment.setDistance(s.getDistance());
+            movementSegment.setDuration(s.getDuration());
+            movementSegment.setCourseOverGround(s.getCourseOverGround());
+            movementSegment.setSpeedOverGround(s.getSpeedOverGround());
+            movementSegment.setWkt(WKTUtil.getWktLineStringFromSegment(s));
+            movementSegment.setTrackId(Optional.ofNullable(s.getTrack()).map(t -> t.getId().toString()).orElse(null));
+
+            segmentAndTrack.setSegment(movementSegment);
+            
+            MovementTrack movementTrack = new MovementTrack();
+            Track track = s.getTrack();
+            if (track != null) {
+                movementTrack.setId(track.getId().toString());
+                movementTrack.setDistance(track.getDistance());
+                movementTrack.setDuration(track.getDuration());
+                movementTrack.setTotalTimeAtSea(track.getTotalTimeAtSea());
+                movementTrack.setWkt(WKTUtil.getWktLineStringFromTrack(track));
+            }
+            segmentAndTrack.setTrack(movementTrack);
+            
+            segmentAndTrackList.add(segmentAndTrack);
+        });
+        return segmentAndTrackList;
+    }
+
+
 }
