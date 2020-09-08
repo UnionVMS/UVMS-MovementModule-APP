@@ -36,7 +36,10 @@ import javax.enterprise.event.Observes;
 import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
+import javax.jms.Topic;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Stateless
 public class MovementMessageProducerBean extends AbstractProducer implements MessageProducer {
@@ -53,6 +56,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
     private Queue userQueue;
     private Queue subscriptionDataQueue;
     private Queue rulesQueue;
+    private Topic movementTopic;
     private Queue subscriptionPermissionQueue;
 
     @PostConstruct
@@ -65,6 +69,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
         subscriptionDataQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_SUBSCRIPTION_DATA);
         subscriptionPermissionQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_SUBSCRIPTION_PERMISSION);
         rulesQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_MODULE_RULES);
+        movementTopic = JMSUtils.lookupTopic("jms/topic/EventMessageTopic");
 
     }
 
@@ -95,6 +100,12 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
                     break;
                 case SUBSCRIPTION_PERMISSION:
                     corrId = sendMessageToSpecificQueueSameTx(text, subscriptionPermissionQueue, movementQueue, Collections.singletonMap(MessageConstants.JMS_SUBSCRIPTION_SOURCE_PROPERTY, configHelper.getModuleName()));
+                    break;
+                case MOVEMENT_TOPIC:
+                    Map<String, String> params = new HashMap<>();
+                    params.put("ServiceName", "MOVEMENT");
+                    params.put(MessageConstants.JMS_SUBSCRIPTION_SOURCE_PROPERTY, configHelper.getModuleName());
+                    corrId = sendMessageToSpecificQueueSameTx(text, movementTopic, movementQueue, params);
                     break;
                 case RULES:
                     corrId = sendMessageToSpecificQueueSameTx(text, rulesQueue, movementQueue);
