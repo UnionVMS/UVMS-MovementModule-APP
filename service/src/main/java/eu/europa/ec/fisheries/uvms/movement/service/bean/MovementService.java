@@ -28,7 +28,11 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentAndTrack;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentAndTrackList;
+import eu.europa.ec.fisheries.schema.movement.v1.SegmentIds;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -470,7 +474,14 @@ public class MovementService {
         return dao.checkMovementExistence(connectId,startDate,endDate,movementAreaIds);
     }
 
-    public List<Segment> findSegmentsBySegmentIds(List<Long> segmentIds) {
-        return dao.getSegmentsBySegmentIds(segmentIds);
+    public List<SegmentAndTrackList>  findSegmentsBySegmentIds(List<SegmentIds> segmentIds) {
+        return segmentIds.stream().map(segmentId -> {
+            List<Segment> segments = dao.getSegmentsBySegmentIds(segmentId.getSegmentIds());
+            List<SegmentAndTrack> segmentAndTracks = MovementMapper.toSegmentAndTrackList(segments);
+            SegmentAndTrackList stl = new SegmentAndTrackList();
+            stl.setMoveGuid(segmentId.getMoveGuid());
+            stl.getSegmentAndTrackList().addAll(segmentAndTracks);
+            return stl;
+        }).collect(Collectors.toList());
     }
 }
