@@ -71,6 +71,7 @@ public class AssetMTRestMock {
         channelAttribute2.setValue("TEST_MEMBER_NUMBER");
         channel.getAttributes().add(channelAttribute2);
         mobileTerminal.getChannels().add(channel);
+        mobileTerminal.setInactive(false);
         return mobileTerminal;
     }
 
