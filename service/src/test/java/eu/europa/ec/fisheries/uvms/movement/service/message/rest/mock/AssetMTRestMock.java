@@ -147,6 +147,9 @@ public class AssetMTRestMock {
                 }
             }
         }
+        if (req.getLesValue().equals("inactive")) {
+            resp.setMobileTerminalIsInactive(true);
+        }
         return resp;
     }
 

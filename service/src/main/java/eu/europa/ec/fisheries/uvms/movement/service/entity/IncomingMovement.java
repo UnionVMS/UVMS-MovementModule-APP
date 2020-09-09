@@ -66,10 +66,11 @@ public class IncomingMovement {
     private String mobileTerminalLES;
     private String mobileTerminalDNID;
     private String mobileTerminalMemberNumber;
+    @Column(name = "active")
+    private boolean mobileTerminalActive;
     private Short sourceSatelliteId;
 
     private String pluginType;
-    private boolean active;
     private boolean duplicate = false;
 
     @NotNull
@@ -373,6 +374,14 @@ public class IncomingMovement {
         this.mobileTerminalMemberNumber = mobileTerminalMemberNumber;
     }
 
+    public boolean isMobileTerminalActive() {
+        return mobileTerminalActive;
+    }
+
+    public void setMobileTerminalActive(boolean mobileTerminalActive) {
+        this.mobileTerminalActive = mobileTerminalActive;
+    }
+
     public Short getSourceSatelliteId() {
         return sourceSatelliteId;
     }
@@ -411,14 +420,6 @@ public class IncomingMovement {
 
     public void setAlarmReport(AlarmReport alarmReport) {
         this.alarmReport = alarmReport;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public boolean isDuplicate() {
