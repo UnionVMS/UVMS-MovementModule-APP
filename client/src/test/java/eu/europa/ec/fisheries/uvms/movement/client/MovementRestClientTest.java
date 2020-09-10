@@ -20,15 +20,12 @@ import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.IncomingMovementMapper;
-import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
-import eu.europa.ec.mare.usm.jwt.JwtTokenHandler;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -49,12 +46,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
     @Inject
     private MovementService movementService;
-    @EJB
-    private JwtTokenHandler tokenHandler;
 
-    @EJB
-    private InternalRestTokenHandler internalRestTokenHandler;
-    
     @Before
     public void before() throws NamingException {
         InitialContext ctx = new InitialContext();
@@ -156,7 +148,6 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
     public void getMicroMovementsForConnectIdsBetweenDatesNullDates() {
         // Given
         AssetDTO asset = createBasicAsset();
-        Instant positionTime = Instant.now();
 
         IncomingMovement incomingMovement = createIncomingMovement(asset, Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
