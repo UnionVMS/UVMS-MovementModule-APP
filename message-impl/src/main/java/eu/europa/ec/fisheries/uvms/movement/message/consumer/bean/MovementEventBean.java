@@ -168,7 +168,7 @@ public class MovementEventBean {
             createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementTypeFromMovementAndBaseType(movementBatch));
             String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createMovementBatchResponse);
             messageProducer.sendModuleMessage(responseString, ModuleQueue.SUBSCRIPTION_DATA);
-            messageProducer.sendModuleMessage(responseString, ModuleQueue.MOVEMENT_TOPIC);
+            messageProducer.sendModuleMessage(responseString, ModuleQueue.EVENT_MESSAGE_TOPIC);
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
             LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage != null ? jmsMessage.getJMSReplyTo() : "Null!!!");
         } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {

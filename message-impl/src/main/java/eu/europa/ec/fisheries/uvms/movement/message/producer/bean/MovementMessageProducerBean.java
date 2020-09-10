@@ -11,6 +11,20 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.producer.bean;
 
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.enterprise.event.Observes;
+import javax.jms.Destination;
+import javax.jms.Queue;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import eu.europa.ec.fisheries.schema.movement.common.v1.ExceptionType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
@@ -27,20 +41,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.enterprise.event.Observes;
-import javax.jms.Destination;
-import javax.jms.Queue;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 @Stateless
 public class MovementMessageProducerBean extends AbstractProducer implements MessageProducer {
 
@@ -56,7 +56,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
     private Queue userQueue;
     private Queue subscriptionDataQueue;
     private Queue rulesQueue;
-    private Topic movementTopic;
+    private Topic eventMessageTopic;
 
     @PostConstruct
     public void init() {
@@ -67,7 +67,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
         userQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_USER_IN);
         subscriptionDataQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_SUBSCRIPTION_DATA);
         rulesQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_MODULE_RULES);
-        movementTopic = JMSUtils.lookupTopic("jms/topic/EventMessageTopic");
+        eventMessageTopic = JMSUtils.lookupTopic("jms/topic/EventMessageTopic");
 
     }
 
@@ -96,11 +96,11 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
                 case SUBSCRIPTION_DATA:
                     corrId = sendMessageToSpecificQueueSameTx(text, subscriptionDataQueue, movementQueue, Collections.singletonMap(MessageConstants.JMS_SUBSCRIPTION_SOURCE_PROPERTY, configHelper.getModuleName()));
                     break;
-                case MOVEMENT_TOPIC:
+                case EVENT_MESSAGE_TOPIC:
                     Map<String, String> params = new HashMap<>();
-                    params.put("ServiceName", "MOVEMENT");
-                    params.put(MessageConstants.JMS_SUBSCRIPTION_SOURCE_PROPERTY, configHelper.getModuleName());
-                    corrId = sendMessageToSpecificQueueSameTx(text, movementTopic, movementQueue, params);
+                    params.put("mainTopic", "reporting");
+                    params.put("subTopic", "movement");
+                    corrId = sendMessageToSpecificQueueSameTx(text, eventMessageTopic, movementQueue, params);
                     break;
                 case RULES:
                     corrId = sendMessageToSpecificQueueSameTx(text, rulesQueue, movementQueue);
