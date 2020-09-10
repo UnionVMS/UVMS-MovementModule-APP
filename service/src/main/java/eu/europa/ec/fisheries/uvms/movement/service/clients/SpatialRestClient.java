@@ -103,7 +103,6 @@ public class SpatialRestClient implements SpatialClient {
             List<LocationType> locationTypes = Collections.singletonList(LocationType.PORT);
             List<AreaType> areaTypes = Collections.singletonList(AreaType.COUNTRY);
             SpatialEnrichmentRQListElement spatialEnrichmentRQListElement = SpatialModuleRequestMapper.mapToCreateSpatialEnrichmentRQElement(point, UnitType.NAUTICAL_MILES, locationTypes, areaTypes);
-            spatialEnrichmentRQListElement.setUserAreaActiveDate(XMLDateUtils.dateToXmlGregorian(Date.from(movement.getTimestamp())));
             spatialEnrichmentRQListElement.setGuid(movement.getMovementConnect().getValue());
             batchReqElements.add(spatialEnrichmentRQListElement);
         }
