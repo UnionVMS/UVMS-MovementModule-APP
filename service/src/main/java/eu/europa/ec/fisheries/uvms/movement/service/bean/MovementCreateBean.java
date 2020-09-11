@@ -50,7 +50,7 @@ public class MovementCreateBean {
     @Inject
     private IncomingMovementBean incomingMovementBean;
     
-    @EJB
+    @Inject
     private AssetClient assetClient;
 
     @EJB
