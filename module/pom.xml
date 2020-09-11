@@ -37,6 +37,7 @@
                     </modules>
                     <skinnyWars>true</skinnyWars>
                     <defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
+                    <includeLibInApplicationXml>true</includeLibInApplicationXml>
                 </configuration>
             </plugin>
         </plugins>
