@@ -280,7 +280,7 @@ public class MovementService {
             newMovementConnect = movementDao.createMovementConnect(newMovementConnect);
         }
 
-        int numberOfChanged = movementDao.updateToNewMovementConnect(oldMovementConnect.getId(), newMovementConnect.getId(), 1000);
+        int numberOfChanged = movementDao.updateToNewMovementConnect(oldMovementConnect.getId(), newMovementConnect.getId(), 10000);
 
         return numberOfChanged;
     }
