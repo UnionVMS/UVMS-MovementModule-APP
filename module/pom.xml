@@ -11,7 +11,7 @@
         <artifactId>movement</artifactId>
         <version>5.5.19-UVMS-SNAPSHOT</version>
     </parent>
-
+    
     <build>
         <finalName>${project.name}</finalName>
         <plugins>
@@ -38,6 +38,11 @@
                     <skinnyWars>true</skinnyWars>
                     <defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
                     <includeLibInApplicationXml>true</includeLibInApplicationXml>
+                    <archive>
+                        <manifestEntries>
+                            <Logging-Profile>movement</Logging-Profile>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>
