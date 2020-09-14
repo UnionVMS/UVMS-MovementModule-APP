@@ -63,6 +63,14 @@ import java.util.UUID;
     @NamedQuery(name = Movement.FIND_MICRO_MOVEMENT_BY_ID_LIST, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.source, m.sourceSatelliteId) FROM Movement m WHERE m.id in :moveIds"),
     @NamedQuery(name = Movement.FIND_MOVEMENT_BY_ID_LIST, query = "SELECT m FROM Movement m WHERE m.id in :moveIds"),
 })
+@NamedNativeQueries({
+        @NamedNativeQuery(name = Movement.UPDATE_TO_NEW_MOVEMENTCONNECT, query = "WITH subRequest as (" +
+                                                                                    "SELECT move_id FROM movement.movement WHERE move_moveconn_id = :oldMC LIMIT :limit FOR UPDATE) " +
+                                                                                        "UPDATE movement.movement as m " +
+                                                                                        "SET move_moveconn_id = :newMC " +
+                                                                                        "FROM subRequest " +
+                                                                                        "WHERE m.move_id = subRequest.move_id"),
+})
 @DynamicUpdate
 @DynamicInsert
 public class Movement implements Serializable, Comparable<Movement> {
@@ -84,6 +92,8 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATEST_X_NUMBER_FOR_ASSET = "Movement.findLatestXNumberForAsset";
     public static final String FIND_MICRO_MOVEMENT_BY_ID_LIST = "Movement.findMicroMovementByMovementIdList";
     public static final String FIND_MOVEMENT_BY_ID_LIST = "Movement.findMovementByMovementIdList";
+
+    public static final String UPDATE_TO_NEW_MOVEMENTCONNECT = "Movement.updateToNewMovementConnect";
     
     private static final long serialVersionUID = 1L;
 

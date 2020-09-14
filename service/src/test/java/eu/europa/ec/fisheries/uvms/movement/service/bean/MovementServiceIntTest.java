@@ -699,7 +699,8 @@ public class MovementServiceIntTest extends TransactionalTests {
         Movement createdMovement1 = movementService.createAndProcessMovement(movementType1);
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        movementService.remapMovementConnectInMovement(connectIdOld.toString(), connectIdNew.toString());
+        int remappedMovements = movementService.remapMovementConnectInMovement(connectIdOld.toString(), connectIdNew.toString());
+        assertEquals(1, remappedMovements);
 
         MovementConnect getTheRightMovementConnect = new MovementConnect();
         getTheRightMovementConnect.setId(connectIdNew);

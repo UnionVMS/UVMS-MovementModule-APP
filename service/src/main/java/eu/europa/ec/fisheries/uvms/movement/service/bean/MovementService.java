@@ -257,7 +257,7 @@ public class MovementService {
         return assetClient.getMicroAssetList(assetIds);
     }
 
-    public void remapMovementConnectInMovement(String oldMovementConnectId, String newMovementConnectId){
+    public int remapMovementConnectInMovement(String oldMovementConnectId, String newMovementConnectId){
         if(oldMovementConnectId == null || oldMovementConnectId.isEmpty()){
             throw new IllegalArgumentException("OldMovementConnectString is null or empty");
         }
@@ -280,10 +280,9 @@ public class MovementService {
             newMovementConnect = movementDao.createMovementConnect(newMovementConnect);
         }
 
-        List<Movement> movements = movementDao.getMovementListByMovementConnect(oldMovementConnect);
-        for (Movement move : movements) {
-            move.setMovementConnect(newMovementConnect);
-        }
+        int numberOfChanged = movementDao.updateToNewMovementConnect(oldMovementConnect.getId(), newMovementConnect.getId(), 10000);
+
+        return numberOfChanged;
     }
 
     public void removeMovementConnect(String movementConnectId){
