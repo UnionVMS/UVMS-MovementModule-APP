@@ -428,12 +428,22 @@ public class MovementDao {
         return query.getResultList();
     }
     
-    public List<MicroMovement> getMovementsByMoveIdList(List<UUID> moveIds) {
+    public List<MicroMovement> getMicroMovementsByMoveIdList(List<UUID> moveIds) {
         if (moveIds == null || moveIds.isEmpty()) {
             return new ArrayList<>();
         }
         TypedQuery<MicroMovement> latestMovementQuery =
-                em.createNamedQuery(Movement.FIND_MOVEMENT_BY_ID_LIST, MicroMovement.class);
+                em.createNamedQuery(Movement.FIND_MICRO_MOVEMENT_BY_ID_LIST, MicroMovement.class);
+        latestMovementQuery.setParameter("moveIds", moveIds);
+        return latestMovementQuery.getResultList();
+    }
+
+    public List<Movement> getMovementsByMoveIdList(List<UUID> moveIds) {
+        if (moveIds == null || moveIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        TypedQuery<Movement> latestMovementQuery =
+                em.createNamedQuery(Movement.FIND_MOVEMENT_BY_ID_LIST, Movement.class);
         latestMovementQuery.setParameter("moveIds", moveIds);
         return latestMovementQuery.getResultList();
     }

@@ -4,19 +4,19 @@
 	<parent>
 		<groupId>fish.focus.uvms.maven</groupId>
 		<artifactId>uvms-pom</artifactId>
-		<version>3.3</version>
+		<version>3.4</version>
 	</parent>
 
 	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
 	<artifactId>movement</artifactId>
-	<version>5.5.16-UVMS-SNAPSHOT</version>
+	<version>5.5.19-UVMS-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Maven project-archetype for UnionVms modules</description>
 
 	<properties>
 		<movement.api.check.against.version>4.0.0</movement.api.check.against.version>
 
-		<uvms.pom.version>3.3</uvms.pom.version>
+		<uvms.pom.version>3.4</uvms.pom.version>
 		<docker.dev.version>3.43.9</docker.dev.version>
 		<docker.liquibase.changeLogFile>LIQUIBASE/changelog/db-changelog-master-postgres.xml</docker.liquibase.changeLogFile>
         <docker.liquibase.db.user>movement</docker.liquibase.db.user>
@@ -24,15 +24,15 @@
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.1.5</user.model.version>
 		<audit.model.version>4.3.5</audit.model.version>
-		<exchange.model.version>5.3.2-UVMS</exchange.model.version>
-		<asset.client.version>6.7.19</asset.client.version>
-		<movement-rules.model.version>2.3.16</movement-rules.model.version>
+		<exchange.model.version>5.3.3-UVMS</exchange.model.version>
+		<asset.client.version>6.7.23</asset.client.version>
+		<movement-rules.model.version>2.4.0</movement-rules.model.version>
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->
 		<uvms.common.version>4.1.7</uvms.common.version>
-		<usm4uvms.version>4.1.1</usm4uvms.version>
-		<uvms.config.version>4.1.2</uvms.config.version>
+		<usm4uvms.version>4.1.2</usm4uvms.version>
+		<uvms.config.version>4.1.3</uvms.config.version>
 
 	</properties>
 
@@ -49,12 +49,6 @@
 			<dependency>
 				<groupId>fish.focus.uvms.maven</groupId>
 				<artifactId>uvms-pom-gis-deps</artifactId>
-				<version>${uvms.pom.version}</version>
-				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>fish.focus.uvms.maven</groupId>
-				<artifactId>uvms-pom-logging-deps</artifactId>
 				<version>${uvms.pom.version}</version>
 				<type>pom</type>
 			</dependency>

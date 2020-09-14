@@ -20,6 +20,7 @@ import eu.europa.ec.fisheries.uvms.config.exception.ConfigServiceException;
 import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.ListResponseDto;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
@@ -29,6 +30,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
@@ -67,7 +69,7 @@ public class MovementService {
     @Inject
     private MovementMapResponseHelper movementMapResponseHelper;
 
-    @EJB
+    @Inject
     private AssetClient assetClient;
 
     @EJB
@@ -300,7 +302,12 @@ public class MovementService {
         return movement == null ? null : new MicroMovement(movement);
     }
     
-    public List<MicroMovement> getMovementsByMoveIds(List<UUID> moveIds) {
-        return movementDao.getMovementsByMoveIdList(moveIds);
+    public List<MicroMovement> getMicroMovementsByMoveIds(List<UUID> moveIds) {
+        return movementDao.getMicroMovementsByMoveIdList(moveIds);
+    }
+
+    public List<MovementDto> getMovementsByMoveIds(List<UUID> moveIds) {
+        List<Movement> movementsByMoveIdList = movementDao.getMovementsByMoveIdList(moveIds);
+        return MovementMapper.mapToMovementDtoList(movementsByMoveIdList);
     }
 }

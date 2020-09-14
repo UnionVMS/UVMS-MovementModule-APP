@@ -102,7 +102,7 @@ public class AssetMTRestMock {
         resp.setCfr(asset.getCfr());
         resp.setIrcs(asset.getIrcs());
         resp.setMmsi(asset.getMmsiNo());
-        resp.setLongTermParked(true);
+        resp.setParked(true);
 
         // resp.setAssetStatus(asset.get);
 

@@ -13,7 +13,7 @@ import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 import javax.ws.rs.client.Client;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@Stateless
+@RequestScoped
 public class MovementRestClient {
 
     private WebTarget webTarget;
@@ -133,6 +133,16 @@ public class MovementRestClient {
                 .post(Entity.entity(ids, MediaType.APPLICATION_JSON_TYPE));
 
         return response.readEntity(new GenericType<List<MicroMovement>>() {});
+    }
+
+    public List<MovementDto> getMovementDtoByIdList(List<UUID> ids) {
+        Response response = webTarget
+                .path("internal/getMovementList")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
+                .post(Entity.entity(ids, MediaType.APPLICATION_JSON_TYPE));
+
+        return response.readEntity(new GenericType<List<MovementDto>>() {});
     }
     
     public List<MovementType> getCursorBasedList(CursorPagination cursorPagination){ 

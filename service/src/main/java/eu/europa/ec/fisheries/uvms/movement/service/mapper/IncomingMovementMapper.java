@@ -106,7 +106,7 @@ public abstract class IncomingMovementMapper {
         md.setAssetFilters(response.getAssetFilterList());
         md.setConnectId(response.getAssetUUID());
         md.setAssetType(response.getVesselType());
-        md.setLongTermParked(response.getLongTermParked());
+        md.setParked(response.getParked());
 
         // MobileTerminal
         md.setChannelGuid(response.getChannelGuid());
