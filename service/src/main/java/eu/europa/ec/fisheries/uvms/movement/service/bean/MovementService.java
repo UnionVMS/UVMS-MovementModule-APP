@@ -280,11 +280,6 @@ public class MovementService {
             newMovementConnect = movementDao.createMovementConnect(newMovementConnect);
         }
 
-        /*List<Movement> movements = movementDao.getMovementListByMovementConnect(oldMovementConnect);
-        for (Movement move : movements) {
-            move.setMovementConnect(newMovementConnect);
-        }*/
-
         int numberOfChanged = movementDao.updateToNewMovementConnect(oldMovementConnect.getId(), newMovementConnect.getId(), 1000);
 
         return numberOfChanged;

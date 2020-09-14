@@ -65,12 +65,11 @@ import java.util.UUID;
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = Movement.UPDATE_TO_NEW_MOVEMENTCONNECT, query = "WITH subRequest as (" +
-                                                                                    "SELECT move_id FROM movement.movement WHERE move_moveconn_id = :oldMC LIMIT :limit FOR UPDATE)" +
-                                                                                        "UPDATE movement.movement as m" +
+                                                                                    "SELECT move_id FROM movement.movement WHERE move_moveconn_id = :oldMC LIMIT :limit FOR UPDATE) " +
+                                                                                        "UPDATE movement.movement as m " +
                                                                                         "SET move_moveconn_id = :newMC " +
-                                                                                        "FROM subRequest" +
+                                                                                        "FROM subRequest " +
                                                                                         "WHERE m.move_id = subRequest.move_id"),
-        //@NamedNativeQuery(name = Movement.UPDATE_TO_NEW_MOVEMENTCONNECT, query = "UPDATE movement.movement SET move_moveconn_id = :newMC WHERE move_moveconn_id = :oldMC"),
 })
 @DynamicUpdate
 @DynamicInsert

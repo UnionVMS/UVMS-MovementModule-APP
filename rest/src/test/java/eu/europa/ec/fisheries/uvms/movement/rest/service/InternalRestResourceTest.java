@@ -157,7 +157,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
-    public void remapMovementConnectInMovementTest() throws IOException {
+    public void remapMovementConnectInMovementTest() {
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         Movement movementBaseType2 = MovementTestHelper.createMovement();
         Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
@@ -171,6 +171,8 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .put(Entity.json(""), Response.class);
         assertEquals(200, remapResponse.getStatus());
+        int nrOfChanges = remapResponse.readEntity(Integer.class);
+        assertEquals(1, nrOfChanges);
 
         MovementQuery movementQuery = createMovementQuery(null);
         movementQuery.getMovementSearchCriteria().clear();
@@ -210,6 +212,8 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
                 .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .put(Entity.json(""), Response.class);
         assertEquals(200, remapResponse.getStatus());
+        int nrOfChanges = remapResponse.readEntity(Integer.class);
+        assertEquals(1, nrOfChanges);
 
         Response deleteResponse = getWebTarget()
                 .path("internal/removeMovementConnect")
