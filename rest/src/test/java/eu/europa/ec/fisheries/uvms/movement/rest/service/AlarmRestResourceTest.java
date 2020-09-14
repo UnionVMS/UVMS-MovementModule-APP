@@ -165,7 +165,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         IncomingMovement incomingMovement = new IncomingMovement();
         incomingMovement.setUpdated(Instant.now());
         incomingMovement.setUpdatedBy("Test User");
-        incomingMovement.setActive(true);
+        incomingMovement.setMobileTerminalActive(true);
         incomingMovement.setAlarmReport(alarmReport);
         incomingMovement.setPluginType("NAF");
         incomingMovement.setComChannelType("Test");
@@ -197,7 +197,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         IncomingMovement incomingMovement = new IncomingMovement();
         incomingMovement.setUpdated(Instant.now());
         incomingMovement.setUpdatedBy("Test User");
-        incomingMovement.setActive(true);
+        incomingMovement.setMobileTerminalActive(true);
         incomingMovement.setAlarmReport(alarmReport);
         incomingMovement.setPluginType("NAF");
         incomingMovement.setComChannelType("Test");

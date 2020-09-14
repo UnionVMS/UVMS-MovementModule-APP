@@ -137,6 +137,9 @@ public class MovementCreateBean {
 
     private void enrichIncomingMovement(IncomingMovement im, AssetMTEnrichmentResponse response) {
         im.setMobileTerminalConnectId(response.getMobileTerminalConnectId());
+        if (response.getMobileTerminalIsInactive() != null) {
+            im.setMobileTerminalActive(!response.getMobileTerminalIsInactive());
+        }
         im.setAssetGuid(response.getAssetUUID());
         im.setAssetHistoryId(response.getAssetHistoryId());
 

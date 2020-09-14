@@ -15,6 +15,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.validation.SanityRule;
 import eu.europa.ec.fisheries.uvms.movementrules.model.mapper.JAXBMarshaller;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -359,6 +360,20 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportTransponderInactiveTest() throws Exception {
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setMobileTerminalLES("inactive"); // Used to control AssetMTRestMock
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+        AlarmReport alarmReport = dao.getAlarmReportByGuid(UUID.fromString(response.getMovementRefType().getMovementRefGuid()));
+        assertThat(alarmReport.getAlarmItemList().size(), is(1));
+        AlarmItem alarmItem = alarmReport.getAlarmItemList().get(0);
+        assertThat(alarmItem.getRuleName(), is(SanityRule.TRANSPONDER_INACTIVE.getRuleName()));
     }
 
     private ProcessedMovementResponse sendIncomingMovementAndReturnAlarmResponse(IncomingMovement incomingMovement) throws Exception{

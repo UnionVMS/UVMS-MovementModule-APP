@@ -138,6 +138,12 @@ public enum SanityRule {
         public boolean evaluate(IncomingMovement movement) {
             return MovementTypeType.EXI.value().equals(movement.getMovementType()) && (movement.getLatitude() == null || movement.getLongitude() == null);
         }
+    },
+    TRANSPONDER_INACTIVE("Transponder is inactive") {
+        @Override
+        public boolean evaluate(IncomingMovement movement) {
+            return movement.getMobileTerminalConnectId() != null && !movement.isMobileTerminalActive();
+        }
     };
 
     
