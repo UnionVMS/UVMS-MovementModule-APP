@@ -76,9 +76,7 @@ import org.hibernate.annotations.Type;
     																			   //SELECT movement FROM Movement movement INNER JOIN movement.movementareaList movementArea WHERE (movement.timestamp BETWEEN :fromDate AND :toDate) AND movement.duplicate = false AND movementArea.movareaMoveId = movement.id AND movementArea.movareaAreaId.areaId = :areaId
     @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :id AND m.timestamp = :date AND m.duplicate = false AND m.processed = true"),
     @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.timestamp BETWEEN :fromDate AND :toDate AND m.movementConnect.value = :asset AND m.duplicate = false"),
-    @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.guid, m.movementConnect, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.duplicate = false"),
-    @NamedQuery(name = Movement.FIND_BY_CONNECTID_FOR_AREAS_IN_A_PERIOD , query = "SELECT m FROM Movement m WHERE m.movementConnect.value = :connectId AND m.timestamp >= :startDate AND m.timestamp < :endDate "+
-                                                                                  "AND EXISTS (SELECT ma.movareaId FROM Movementarea ma WHERE ma.movareaMoveId = m AND ma.movareaAreaId.areaId IN :movementAreaIds) ")
+    @NamedQuery(name = MicroMovementDto.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto(m.location, m.heading, m.guid, m.movementConnect, m.timestamp, m.speed) FROM Movement m WHERE m.timestamp > :date AND m.duplicate = false")
 })
 @DynamicUpdate
 @DynamicInsert
@@ -105,7 +103,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String LIST_BY_AREA_TIME_INTERVAL = "Movement.findMovementByAreaAndTimestampInterval";
     public static final String FIND_EXISTING_DATE = "Movement.findExistingDate";
     public static final String NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN = "Movement.nrOfMovementsForAssetInTimespan";
-    public static final String FIND_BY_CONNECTID_FOR_AREAS_IN_A_PERIOD = "Movement.findMovementByConnectIdForAreasInAPeriod";
     
     private static final long serialVersionUID = 1L;
 

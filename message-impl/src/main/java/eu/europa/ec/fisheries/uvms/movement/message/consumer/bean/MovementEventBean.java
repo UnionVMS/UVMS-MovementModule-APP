@@ -27,12 +27,12 @@ import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.FilterGuidListByAreaAndDateResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.FindRawMovementsRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.FindRawMovementsResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.ForwardPositionRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.ForwardPositionResponse;
+import eu.europa.ec.fisheries.schema.movement.module.v1.GetConnectIdsByDateAndGeometryRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.GetConnectIdsByDateAndGeometryResponse;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByAreaAndTimeIntervalRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryRequest;
@@ -49,15 +49,14 @@ import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.AuditService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementAndBaseType;
-import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementFiltererBean;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceException;
+import eu.europa.ec.fisheries.uvms.movement.service.exception.MovementServiceRuntimeException;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper;
@@ -84,9 +83,6 @@ public class MovementEventBean {
 
     @Inject
     private AuditService auditService;
-
-    @Inject
-    private MovementFiltererBean movementFiltererBean;
 
     @Inject
     @ErrorEvent
@@ -258,17 +254,17 @@ public class MovementEventBean {
         }
     }
 
-    public void filterGuidListByDateAndAreas(EventMessage eventMessage) {
+    public void findConnectIdsByDateAndGeometry(EventMessage eventMessage) {
         TextMessage jmsMessage = eventMessage.getJmsMessage();
         try {
-            FilterGuidListByAreaAndDateRequest actualRequest = (FilterGuidListByAreaAndDateRequest) eventMessage.getRequest();
+            GetConnectIdsByDateAndGeometryRequest actualRequest = (GetConnectIdsByDateAndGeometryRequest) eventMessage.getRequest();
             GuidListForAreaFilteringQuery query = actualRequest.getQuery();
-            List<String> filteredList = movementFiltererBean.filterGuidListForPeriodAndAreaTypesByArea(query.getGuidList(), query.getStartDate(), query.getEndDate(), query.getAreas());
-
-            FilterGuidListByAreaAndDateResponse response = new FilterGuidListByAreaAndDateResponse();
-            response.getFilteredList().addAll(filteredList);
+            List<String> connectIds = movementService.findConnectIdsByDateAndGeometry(query.getGuidList(), query.getStartDate(), query.getEndDate(), 
+                    query.getAreasGeometryUnion(),query.getPage(),query.getLimit());
+            GetConnectIdsByDateAndGeometryResponse response = new GetConnectIdsByDateAndGeometryResponse();
+            response.getConnectIds().addAll(connectIds);
             messageProducer.sendMessageBackToRecipient(jmsMessage, JAXBMarshaller.marshallJaxBObjectToString(response));
-        } catch (MovementModelException | MovementMessageException | MovementModelRuntimeException ex) {
+        } catch (MovementModelException | MovementMessageException | MovementServiceRuntimeException ex) {
             LOG.error("[ Error in filterGuidListByDateAndAreas.filterGuidListForPeriodAndAreaTypesByArea ] ", ex);
             errorEvent.fire(new EventMessage(jmsMessage, ex.getMessage()));
             throw new EJBException(ex);

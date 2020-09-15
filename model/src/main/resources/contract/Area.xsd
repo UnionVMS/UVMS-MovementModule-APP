@@ -18,7 +18,9 @@
             <xsd:element name="guidList" type="xsd:string"  minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="startDate" type="xsd:date"/>
             <xsd:element name="endDate" type="xsd:date"/>
-            <xsd:element name="areas" type="tns:AreaType"  minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="areasGeometryUnion" type="xsd:string" />
+            <xsd:element name="page" type="xsd:int" />
+            <xsd:element name="limit" type="xsd:int" nillable="true"/>
         </xsd:sequence>
     </xsd:complexType>
 

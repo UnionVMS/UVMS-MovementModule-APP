@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -24,15 +22,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 
-import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vividsolutions.jts.geom.Geometry;
@@ -239,37 +231,32 @@ public class MovementDao {
         return query.getSingleResult();
     }
 
-    public List<Long> findMovementAreaIdsByAreaRemoteIdAndNameList(List<AreaType> areaTypes)  {
-
-        StringBuilder queryBuilder = new StringBuilder("SELECT ma.movareaAreaId.areaId FROM Movementarea ma WHERE ");
-        for(int i=0; i < areaTypes.size(); i++){
-            queryBuilder.append("(ma.movareaAreaId.remoteId=:remoteId").append(i).append(" AND ma.movareaAreaId.areaType.name=:areaName").append(i).append(") OR ");
+    public List<String> findConnectIdsByDateAndGeometry(List<String> inList,Date startDate, Date endDate, String areasGeometry,int page,Integer limit)  throws MovementServiceRuntimeException {
+        StringBuilder qb = new StringBuilder();
+              qb.append("SELECT distinct m.movementConnect.value ")
+                .append("FROM Movement m ")
+                .append("WHERE m.timestamp >= :startDate AND m.timestamp < :endDate ")
+                .append("AND intersects(m.location, :areasGeometry) = true ");
+        if(!inList.isEmpty()){
+           qb.append("AND m.movementConnect.value in :connectIds");
         }
-        TypedQuery<Long> typedQuery = em.createQuery(queryBuilder.substring(0,queryBuilder.lastIndexOf(" OR ")), Long.class);
-
-        for(int i=0; i < areaTypes.size(); i++){
-            AreaType areaType = areaTypes.get(i);
-            typedQuery.setParameter("remoteId"+i, String.valueOf(areaType.getAreaId()));
-            typedQuery.setParameter("areaName"+i, areaType.getAreaName());
-        }
-
-        return typedQuery.getResultList();
-    }
-
-    public boolean checkMovementExistence(String connectId, Date startDate, Date endDate, List<Long> movementAreaIds)  {
-
-        TypedQuery<Movement> typedQuery = em.createNamedQuery(Movement.FIND_BY_CONNECTID_FOR_AREAS_IN_A_PERIOD, Movement.class).setMaxResults(1);
-        typedQuery.setParameter("connectId", connectId);
+        TypedQuery<String> typedQuery = em.createQuery(qb.toString(), String.class);
         typedQuery.setParameter("startDate", startDate.toInstant());
         typedQuery.setParameter("endDate", endDate.toInstant());
-        typedQuery.setParameter("movementAreaIds", movementAreaIds);
-        try{
-            return typedQuery.getSingleResult() != null;
+        try {
+            typedQuery.setParameter("areasGeometry", WKTUtil.getGeometryFromWKTSrring(areasGeometry));
+        } catch (ParseException e) {
+            throw new MovementServiceRuntimeException("Error when parsing geometry", e, ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
-        catch (NoResultException e){
-            LOG.debug("On checkMovementExistence [{}]",e.getMessage());
-            return false;
+        if(!inList.isEmpty()){
+            typedQuery.setParameter("connectIds", inList);
         }
+        int firstResult = limit == null ? page : (limit * (page - 1));
+        typedQuery.setFirstResult(firstResult);
+        if(limit != null){
+            typedQuery.setMaxResults(limit);
+        }
+        return typedQuery.getResultList();
     }
 
     private void setTypedQueryMovementParams(List<SearchValue> searchKeyValues, Query query) throws ParseException {

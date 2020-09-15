@@ -30,7 +30,7 @@
                     <xsd:enumeration value="GET_SEGMENT_BY_ID"/>
                     <xsd:enumeration value="PING"/>
                     <xsd:enumeration value="MOVEMENT_LIST_BY_AREA_TIME_INTERVAL"/>
-                    <xsd:enumeration value="FILTER_GUID_LIST_FOR_DATE_BY_AREA"/>
+                    <xsd:enumeration value="FIND_CONNECT_IDS_BY_DATE_AND_GEOMETRY"/>
                     <xsd:enumeration value="FORWARD_POSITION"/>
                     <xsd:enumeration value="FIND_RAW_MOVEMENTS"/>
                 </xsd:restriction>
@@ -215,8 +215,8 @@
                 </xsd:complexType>
             </xsd:element>
 
-            <!-- filter guid list by area and date -->
-            <xsd:element name="FilterGuidListByAreaAndDateRequest">
+            <!-- find guid list by area and date -->
+            <xsd:element name="GetConnectIdsByDateAndGeometryRequest">
                 <xsd:complexType>
                     <xsd:complexContent>
                         <xsd:extension base="module:MovementBaseRequest">
@@ -228,10 +228,10 @@
                 </xsd:complexType>
             </xsd:element>
 
-            <xsd:element name="FilterGuidListByAreaAndDateResponse">
+            <xsd:element name="GetConnectIdsByDateAndGeometryResponse">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="filteredList" type="xsd:string"  minOccurs="0" maxOccurs="unbounded"/>
+                        <xsd:element name="connectIds" type="xsd:string"  minOccurs="0" maxOccurs="unbounded"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
@@ -352,11 +352,11 @@
         <part name="body" element="module:getMovementListByAreaAndTimeIntervalResponse"/>
     </message>
 
-    <message name="FilterGuidListByAreaAndDateRequestMessage">
-        <part name="body" element="module:FilterGuidListByAreaAndDateRequest"/>
+    <message name="GetConnectIdsByDateAndGeometryRequestMessage">
+        <part name="body" element="module:GetConnectIdsByDateAndGeometryRequest"/>
     </message>
-    <message name="FilterGuidListByAreaAndDateResponseMessage">
-        <part name="body" element="module:FilterGuidListByAreaAndDateResponse"/>
+    <message name="GetConnectIdsByDateAndGeometryResponseMessage">
+        <part name="body" element="module:GetConnectIdsByDateAndGeometryResponse"/>
     </message>
 
     <message name="ProcessedMovementAck">
@@ -424,9 +424,9 @@
             <fault name="MovementException" message="module:MovementException"/>
         </operation>
 
-        <operation name="FilterGuidListByAreaAndDateOperation">
-            <input message="module:FilterGuidListByAreaAndDateRequestMessage"/>
-            <output message="module:FilterGuidListByAreaAndDateResponseMessage"/>
+        <operation name="GetConnectIdsByDateAndGeometryOperation">
+            <input message="module:GetConnectIdsByDateAndGeometryRequestMessage"/>
+            <output message="module:GetConnectIdsByDateAndGeometryResponseMessage"/>
             <fault name="MovementException" message="module:MovementException"/>
         </operation>
     </portType>
@@ -548,7 +548,7 @@
             </fault>
         </operation>
 
-        <operation name="FilterGuidListByAreaAndDateOperation">
+        <operation name="GetConnectIdsByDateAndGeometryOperation">
             <input>
                 <soap:body use="literal"/>
             </input>
