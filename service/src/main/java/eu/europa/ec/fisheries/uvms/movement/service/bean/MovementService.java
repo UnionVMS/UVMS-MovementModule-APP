@@ -27,8 +27,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import eu.europa.ec.fisheries.schema.movement.area.v1.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelRuntimeException;
+import eu.europa.ec.fisheries.uvms.movement.model.exception.InvalidArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
@@ -462,11 +461,25 @@ public class MovementService {
         return true;
     }
 
-    public List<Long> findMovementAreaIdsByAreaRemoteIdAndNameList(List<AreaType> areaTypes)  {
-        return dao.findMovementAreaIdsByAreaRemoteIdAndNameList(areaTypes);
+    /**
+     * Gets list of connect ids (movement connect values) based on arguments
+     * @param inList List of connect ids to filter query
+     * @param startDate Movement timestamp lower bound
+     * @param endDate Movement timestamp upper bound
+     * @param areasGeometryUnion An geometry which will be intersected with movement location 
+     * @param page Page number
+     * @param limit Records limit
+     * @return List of movement connect values
+     * @throws MovementServiceRuntimeException If arguments are invalid
+     */
+    public List<String> findConnectIdsByDateAndGeometry(List<String> inList, Date startDate, Date endDate, String areasGeometryUnion,Integer page,Integer limit) throws MovementServiceRuntimeException {
+        checkArguments( startDate, endDate, areasGeometryUnion);
+        return dao.findConnectIdsByDateAndGeometry(inList,startDate,endDate,areasGeometryUnion,page,limit);
     }
-
-    public boolean checkMovementExistence(String connectId, Date startDate, Date endDate, List<Long> movementAreaIds) throws MovementModelRuntimeException {
-        return dao.checkMovementExistence(connectId,startDate,endDate,movementAreaIds);
+    private void checkArguments( Date startDate, Date endDate, String areasGeometryUnion) {
+        if(startDate == null) throw new InvalidArgumentException("No start date provided/or invalid syntax, try UTC");
+        if(endDate == null) throw new InvalidArgumentException("No end date provided/or invalid syntax, try UTC");
+        if(startDate.toInstant().isAfter(endDate.toInstant())) throw new InvalidArgumentException("Start date cannot be after end date");
+        if(areasGeometryUnion == null) throw new InvalidArgumentException("AreasGeometryUnion was null");
     }
 }

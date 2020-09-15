@@ -1,27 +1,17 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
 
-import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.AreaDao;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Area;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.AreaType;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.area.Movementarea;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Rule;
 import org.junit.Test;
@@ -157,114 +147,6 @@ public class MovementDaoBeanTest extends TransactionalTests {
 		assertEquals(move3.getGuid(), output.get(0).getGuid());
 
 		movementDao.getLatestMovementsByConnectId(connectID, -3);
-	}
-
-	@Test
-	public void testFindMovementAreaIdsByAreaRemoteIdAndNameList() {
-
-		final String AREA_TYPE_1 = "AreaType1";
-		final String AREA_TYPE_2 = "AreaType2";
-		final long REMOTE_ID_10 = 10;
-		final long REMOTE_ID_20 = 20;
-		final long REMOTE_ID_30 = 30;
-		AreaType areaType = MockData.createAreaType(AREA_TYPE_1);
-		AreaType areaType2 = MockData.createAreaType(AREA_TYPE_2);
-		Area areaA = areaDao.createMovementArea(MockData.createArea(areaType,String.valueOf(REMOTE_ID_10)));
-		Area areaB = areaDao.createMovementArea(MockData.createArea(areaType,String.valueOf(REMOTE_ID_10)));
-		Area areaC = areaDao.createMovementArea(MockData.createArea(areaType2,String.valueOf(REMOTE_ID_30)));
-
-		String connectId = UUID.randomUUID().toString();
-		Instant timestamp = Instant.now();
-		Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-		firstMovement.setTimestamp(timestamp);
-		Movementarea movementArea1 = MockData.getMovementArea(areaA, firstMovement);
-		firstMovement.setMovementareaList(Arrays.asList(movementArea1));
-		movementBatchModelBean.createMovement(firstMovement);
-
-
-		Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
-		secondMovement.setTimestamp(timestamp.plusSeconds(10));
-		Movementarea movementArea2 = MockData.getMovementArea(areaB, secondMovement);
-		secondMovement.setMovementareaList(Arrays.asList(movementArea2));
-		movementBatchModelBean.createMovement(secondMovement);
-
-		Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
-		thirdMovement.setTimestamp(timestamp.plusSeconds(20));
-		Movementarea movementArea3 = MockData.getMovementArea(areaC, thirdMovement);
-		thirdMovement.setMovementareaList(Arrays.asList(movementArea3));
-		movementBatchModelBean.createMovement(thirdMovement);
-
-		List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> areaTypes = new ArrayList<>();
-		eu.europa.ec.fisheries.schema.movement.area.v1.AreaType areaType11 = new eu.europa.ec.fisheries.schema.movement.area.v1.AreaType();
-		areaType11.setAreaName(AREA_TYPE_1);
-		areaType11.setAreaId(REMOTE_ID_10);
-
-		eu.europa.ec.fisheries.schema.movement.area.v1.AreaType areaType22 = new eu.europa.ec.fisheries.schema.movement.area.v1.AreaType();
-		areaType22.setAreaName(AREA_TYPE_2);
-		areaType22.setAreaId(REMOTE_ID_20);
-		areaTypes.add(areaType11);
-		areaTypes.add(areaType22);
-
-		List<Long> maIds = movementDao.findMovementAreaIdsByAreaRemoteIdAndNameList(areaTypes);
-		assertNotNull("MovementArea ids list wasn't suppose to be null", maIds);
-		assertEquals("MovementArea ids list size wasn't as expected" , maIds.size(),2);
-	}
-
-	@Test
-	public void testCheckMovementExistence() {
-
-		final LocalDate todayLD = LocalDate.now();
-		final Instant twoMonthsAgo = todayLD.minusMonths(2).atStartOfDay(ZoneId.systemDefault()).toInstant();
-		final Instant lastMonth = todayLD.minusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
-		final Instant today = todayLD.atStartOfDay(ZoneId.systemDefault()).toInstant();
-		final Instant nextMonth = todayLD.plusMonths(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
-
-		final String AREA_TYPE_1 = "AreaType1";
-		final String AREA_TYPE_2 = "AreaType2";
-		final long REMOTE_ID_10 = 10;
-		final long REMOTE_ID_20 = 20;
-		AreaType areaType = MockData.createAreaType(AREA_TYPE_1);
-		AreaType areaType2 = MockData.createAreaType(AREA_TYPE_2);
-		Area areaA = areaDao.createMovementArea(MockData.createArea(areaType,String.valueOf(REMOTE_ID_10)));
-		Area areaB = areaDao.createMovementArea(MockData.createArea(areaType,String.valueOf(REMOTE_ID_10)));
-		Area areaC = areaDao.createMovementArea(MockData.createArea(areaType2,String.valueOf(REMOTE_ID_20)));
-
-		String connectId = UUID.randomUUID().toString();
-		Movement firstMovement = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-		firstMovement.setTimestamp(today);
-		Movementarea movementArea1 = MockData.getMovementArea(areaA, firstMovement);
-		firstMovement.setMovementareaList(Arrays.asList(movementArea1));
-		movementBatchModelBean.createMovement(firstMovement);
-
-		Movement secondMovement = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
-		secondMovement.setTimestamp(lastMonth);
-		Movementarea movementArea2 = MockData.getMovementArea(areaB, secondMovement);
-		secondMovement.setMovementareaList(Arrays.asList(movementArea2));
-		movementBatchModelBean.createMovement(secondMovement);
-
-		Movement thirdMovement = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
-		thirdMovement.setTimestamp(nextMonth);
-		Movementarea movementArea3 = MockData.getMovementArea(areaC, thirdMovement);
-		thirdMovement.setMovementareaList(Arrays.asList(movementArea3));
-		movementBatchModelBean.createMovement(thirdMovement);
-
-		List<eu.europa.ec.fisheries.schema.movement.area.v1.AreaType> areaTypes = new ArrayList<>();
-		eu.europa.ec.fisheries.schema.movement.area.v1.AreaType areaType11 = new eu.europa.ec.fisheries.schema.movement.area.v1.AreaType();
-		areaType11.setAreaName(AREA_TYPE_1);
-		areaType11.setAreaId(REMOTE_ID_10);
-
-		eu.europa.ec.fisheries.schema.movement.area.v1.AreaType areaType22 = new eu.europa.ec.fisheries.schema.movement.area.v1.AreaType();
-		areaType22.setAreaName(AREA_TYPE_2);
-		areaType22.setAreaId(REMOTE_ID_20);
-		areaTypes.add(areaType11);
-		areaTypes.add(areaType22);
-
-		List<Long> maIds = movementDao.findMovementAreaIdsByAreaRemoteIdAndNameList(areaTypes);
-
-		boolean result1 = movementDao.checkMovementExistence(connectId, Date.from(lastMonth),Date.from(nextMonth),maIds);
-		assertTrue("Movement should be found",result1);
-		boolean result2 = movementDao.checkMovementExistence(connectId, Date.from(twoMonthsAgo),Date.from(lastMonth),maIds);
-		assertFalse("Where did that movement came from?",result2);
 	}
 
 	@Test

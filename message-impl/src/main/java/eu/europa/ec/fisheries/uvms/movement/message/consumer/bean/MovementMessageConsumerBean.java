@@ -74,8 +74,8 @@ public class MovementMessageConsumerBean implements MessageListener {
                 case MOVEMENT_LIST_BY_AREA_TIME_INTERVAL:
                     movementEventBean.getMovementListByAreaAndTimeInterval(eventMessage);
                     break;
-                case FILTER_GUID_LIST_FOR_DATE_BY_AREA:
-                    movementEventBean.filterGuidListByDateAndAreas(eventMessage);
+                case FIND_CONNECT_IDS_BY_DATE_AND_GEOMETRY:
+                    movementEventBean.findConnectIdsByDateAndGeometry(eventMessage);
                     break;
                 case FORWARD_POSITION:
                     movementEventBean.forwardPosition(eventMessage);
