@@ -184,7 +184,7 @@ public class MovementEventBean {
             FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(messageId, request.getVesselIdentifyingProperties(), movements, localNodeName);
             String serializedRulesRequest = RulesModuleRequestMapper.createSendFluxMovementReportMessageRequest(
                     PluginType.FLUX, JAXBMarshaller.marshallJaxBObjectToString(fluxVesselPositionMessage),
-                    "FLUX", messageId, request.getDataflow(), request.getReceiver());
+                    "FLUX", messageId, request.getDataflow(), request.getReceiver(),request.getReceiver());
             messageProducer.sendModuleMessage(serializedRulesRequest, ModuleQueue.RULES);
 
             ForwardPositionResponse forwardPositionResponse = new ForwardPositionResponse();
