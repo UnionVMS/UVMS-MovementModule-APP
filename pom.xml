@@ -24,7 +24,7 @@
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.1.5</user.model.version>
 		<audit.model.version>4.3.5</audit.model.version>
-		<exchange.model.version>5.3.3-UVMS</exchange.model.version>
+		<exchange.model.version>5.3.5-UVMS</exchange.model.version>
 		<asset.client.version>6.7.23</asset.client.version>
 		<movement-rules.model.version>2.4.1</movement-rules.model.version>
 		<installAtEnd>false</installAtEnd>
