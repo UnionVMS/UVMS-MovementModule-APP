@@ -2,7 +2,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementBaseRequest;
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementCreateBean;

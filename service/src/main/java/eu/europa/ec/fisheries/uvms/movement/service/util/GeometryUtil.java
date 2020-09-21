@@ -11,15 +11,17 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.util;
 
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import org.locationtech.jts.geom.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 
 public class GeometryUtil {
     

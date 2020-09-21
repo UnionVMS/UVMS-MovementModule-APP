@@ -11,16 +11,15 @@
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper;
+import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper;
-import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Stateless
 public class MovementConfigHelper implements ConfigHelper {

@@ -11,10 +11,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 
 public class CursorPagination {
 

@@ -12,9 +12,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.model.mapper;
 
 import javax.xml.bind.DatatypeConverter;
-import java.time.LocalDate;
 import java.time.Instant;
-import java.util.Date;  //leave be for now
+import java.time.LocalDate;
+import java.util.Date;
 
 
 public class XsdDateTimeConverter {

@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.message;
 
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.impl.AbstractProducer;
 import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;

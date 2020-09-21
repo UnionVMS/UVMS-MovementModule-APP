@@ -11,18 +11,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
@@ -35,6 +26,15 @@ import eu.europa.ec.fisheries.uvms.movement.service.message.MovementRulesBean;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 @Stateless
 public class MovementCreateBean {

@@ -11,28 +11,17 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSegment;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTrack;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.schema.movement.v1.*;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.util.WKTUtil;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+
+import java.util.*;
 
 public class MovementEntityToModelMapper {
     

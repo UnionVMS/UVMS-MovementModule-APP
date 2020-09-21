@@ -11,16 +11,17 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.util.List;
-import java.util.UUID;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementSearchGroupDao;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementGroupMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementGroupValidatorBean;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.UUID;
 
 @Stateless
 public class MovementSearchGroupService {

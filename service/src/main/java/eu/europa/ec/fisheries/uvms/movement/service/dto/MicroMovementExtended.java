@@ -1,10 +1,10 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
 
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.locationtech.jts.geom.Geometry;
-import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 
 import java.io.Serializable;
 import java.time.Instant;
