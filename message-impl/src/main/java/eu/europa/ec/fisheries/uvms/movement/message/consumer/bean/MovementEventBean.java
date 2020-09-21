@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.message.consumer.bean;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -40,6 +41,8 @@ import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryRe
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 import eu.europa.ec.fisheries.schema.rules.exchange.v1.PluginType;
+import eu.europa.ec.fisheries.uvms.config.exception.ConfigServiceException;
+import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
@@ -71,6 +74,7 @@ public class MovementEventBean {
     private static final Logger LOG = LoggerFactory.getLogger(MovementEventBean.class);
 
     private static final int MAXIMUM_REDELIVERIES = 6;
+    private static final String FLUX_LOCAL_NATION_CODE = "flux_local_nation_code";
 
     @Inject
     private MovementService movementService;
@@ -87,6 +91,21 @@ public class MovementEventBean {
     @Inject
     @ErrorEvent
     private Event<EventMessage> errorEvent;
+
+    @Inject
+    ParameterService parameterService;
+
+    private String localNodeName;
+
+    @PostConstruct
+    public void init() throws RuntimeException {
+        try {
+            localNodeName = parameterService.getParamValueById(FLUX_LOCAL_NATION_CODE);
+        } catch (ConfigServiceException e) {
+            LOG.error("[ERROR] Could no set localNodeName in MovementEventBean!");
+            throw new RuntimeException("ConfigServiceException thrown: ", e);
+        }
+    }
 
 
     public void getMovementListByQuery(EventMessage eventMessage) {
@@ -162,7 +181,7 @@ public class MovementEventBean {
             String messageId = UUID.randomUUID().toString();
             List<Movement> movements = movementService.findMovementsByGUIDList(request.getMovementGuids());
 
-            FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(messageId, request.getVesselIdentifyingProperties(), movements, "XEU");
+            FLUXVesselPositionMessage fluxVesselPositionMessage = MovementMapper.mapToFLUXVesselPositionMessage(messageId, request.getVesselIdentifyingProperties(), movements, localNodeName);
             String serializedRulesRequest = RulesModuleRequestMapper.createSendFluxMovementReportMessageRequest(
                     PluginType.FLUX, JAXBMarshaller.marshallJaxBObjectToString(fluxVesselPositionMessage),
                     "FLUX", messageId, request.getDataflow(), request.getReceiver());
