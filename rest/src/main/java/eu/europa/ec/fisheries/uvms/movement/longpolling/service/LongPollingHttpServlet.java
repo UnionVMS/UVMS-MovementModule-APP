@@ -11,8 +11,13 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.longpolling.service;
 
-import java.io.IOException;
-import java.util.UUID;
+import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
+import eu.europa.ec.fisheries.uvms.movement.longpolling.constants.LongPollingConstants;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportCountEvent;
+import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportEvent;
+import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
+
 import javax.ejb.EJB;
 import javax.enterprise.event.Observes;
 import javax.enterprise.event.TransactionPhase;
@@ -25,12 +30,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
-import eu.europa.ec.fisheries.uvms.movement.longpolling.constants.LongPollingConstants;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
-import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportCountEvent;
-import eu.europa.ec.fisheries.uvms.movement.service.event.AlarmReportEvent;
-import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
+import java.io.IOException;
+import java.util.UUID;
 
 @WebServlet(asyncSupported = true, urlPatterns = {LongPollingConstants.MOVEMENT_PATH, LongPollingConstants.MANUAL_MOVEMENT_PATH, LongPollingConstants.ALARM_REPORT_PATH, LongPollingConstants.ALARM_REPORT_COUNT_PATH})
 public class LongPollingHttpServlet extends HttpServlet {

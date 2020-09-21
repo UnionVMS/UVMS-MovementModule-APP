@@ -11,11 +11,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.model.dto;
 
+import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
-
-import eu.europa.ec.fisheries.schema.movement.v1.TempMovementType;
 
 public class TempMovementsListResponseDto implements Serializable {
 

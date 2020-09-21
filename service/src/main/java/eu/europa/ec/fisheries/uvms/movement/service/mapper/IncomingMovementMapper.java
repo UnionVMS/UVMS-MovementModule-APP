@@ -17,7 +17,7 @@ import org.locationtech.jts.geom.Point;
 import java.time.Instant;
 import java.util.UUID;
 
-public abstract class IncomingMovementMapper {
+public class IncomingMovementMapper {
 
 
     public static Movement mapNewMovementEntity(IncomingMovement ic, String username) {

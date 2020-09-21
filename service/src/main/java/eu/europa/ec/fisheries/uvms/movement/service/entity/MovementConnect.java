@@ -11,18 +11,18 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.UUID;
+import org.apache.commons.lang3.ObjectUtils;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.locationtech.jts.geom.Point;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.locationtech.jts.geom.Point;
-import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "movementconnect")

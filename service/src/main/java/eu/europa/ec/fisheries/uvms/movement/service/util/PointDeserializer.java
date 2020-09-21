@@ -1,7 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.util;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.uvms.asset.remote.dto.search.SearchBranch;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;

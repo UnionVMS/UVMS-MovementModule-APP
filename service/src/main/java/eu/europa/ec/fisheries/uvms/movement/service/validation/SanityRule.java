@@ -11,11 +11,11 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.validation;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 public enum SanityRule {
 

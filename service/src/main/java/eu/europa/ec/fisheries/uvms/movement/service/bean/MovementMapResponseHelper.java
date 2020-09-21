@@ -1,6 +1,5 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import org.locationtech.jts.geom.Geometry;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementMapResponseType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
@@ -17,6 +16,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementResponseMappe
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchField;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchFieldMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.search.SearchValue;
+import org.locationtech.jts.geom.Geometry;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;

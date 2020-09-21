@@ -11,13 +11,12 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.longpolling.service;
 
+import javax.ejb.Singleton;
+import javax.servlet.AsyncContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.ejb.Singleton;
-import javax.servlet.AsyncContext;
 
 @Singleton
 public class LongPollingContextHelper {

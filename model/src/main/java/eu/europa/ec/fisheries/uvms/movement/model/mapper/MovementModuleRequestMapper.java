@@ -11,12 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.model.mapper;
 
-import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementBatchRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.CreateMovementRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementListByQueryRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryRequest;
-import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
-import eu.europa.ec.fisheries.schema.movement.module.v1.PingRequest;
+import eu.europa.ec.fisheries.schema.movement.module.v1.*;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
 

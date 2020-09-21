@@ -11,9 +11,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.util;
 
-import org.locationtech.jts.geom.Point;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import org.locationtech.jts.geom.Point;
 
 import java.math.BigInteger;
 import java.time.Duration;

@@ -10,13 +10,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
-import java.util.List;
-import java.util.UUID;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
+import java.util.List;
+import java.util.UUID;
 
 @Stateless
 public class MovementSearchGroupDao {
