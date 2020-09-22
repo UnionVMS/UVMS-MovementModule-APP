@@ -42,9 +42,9 @@ public class ConfigServiceMock implements MessageListener {
             mockSetting.setDescription("From ConfigServiceMock.java");
 
             SettingType fluxLocalNationCodeMockSetting = new SettingType();
-            mockSetting.setKey("flux_local_nation_code");
-            mockSetting.setValue("XEU");
-            mockSetting.setDescription("From ConfigServiceMock.java");
+            fluxLocalNationCodeMockSetting.setKey("flux_local_nation_code");
+            fluxLocalNationCodeMockSetting.setValue("XEU");
+            fluxLocalNationCodeMockSetting.setDescription("From ConfigServiceMock.java");
 
             String response = ModuleResponseMapper.toPullSettingsResponse(Arrays.asList(mockSetting, fluxLocalNationCodeMockSetting), PullSettingsStatus.OK);
             messageProducer.sendMessageBackToRecipient((TextMessage) message, response);
