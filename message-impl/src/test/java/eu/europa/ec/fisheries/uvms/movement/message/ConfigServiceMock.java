@@ -24,12 +24,13 @@ import eu.europa.ec.fisheries.uvms.config.model.mapper.ModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 
+
 @MessageDriven(mappedName = "jms/queue/UVMSConfigEvent", activationConfig = {
-        @ActivationConfigProperty(propertyName = "messagingType", propertyValue = "javax.jms.MessageListener"), 
-        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"), 
+        @ActivationConfigProperty(propertyName = "messagingType", propertyValue = "javax.jms.MessageListener"),
+        @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "UVMSConfigEvent")})
 public class ConfigServiceMock implements MessageListener {
-    
+
     @Inject
     MessageProducer messageProducer;
 
@@ -40,7 +41,13 @@ public class ConfigServiceMock implements MessageListener {
             mockSetting.setKey("Key");
             mockSetting.setValue("Value");
             mockSetting.setDescription("From ConfigServiceMock.java");
-            String response = ModuleResponseMapper.toPullSettingsResponse(Arrays.asList(mockSetting), PullSettingsStatus.OK);
+
+            SettingType fluxLocalNationCodeMockSetting = new SettingType();
+            mockSetting.setKey("flux_local_nation_code");
+            mockSetting.setValue("XEU");
+            mockSetting.setDescription("From ConfigServiceMock.java");
+
+            String response = ModuleResponseMapper.toPullSettingsResponse(Arrays.asList(mockSetting, fluxLocalNationCodeMockSetting), PullSettingsStatus.OK);
             messageProducer.sendMessageBackToRecipient((TextMessage) message, response);
         } catch (ModelMarshallException | MovementMessageException e) {
         }
