@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+                   logicalFilePath="changelog/v5.5.20/db-changelog-vms-partial-index.xml">
+    
+    <changeSet id="Create partial vms index" author="peerik">
+
+        <sql>
+            DROP INDEX IF EXISTS move_timestamp_id_vms_partial_idx;
+
+            CREATE INDEX move_timestamp_id_vms_partial_idx
+                ON movement USING btree
+                (move_timestamp ASC NULLS LAST, move_id ASC NULLS LAST)
+                TABLESPACE pg_default
+                WHERE move_movesour_id = ANY (ARRAY[0, 2, 3, 4, 5, 6]);
+        </sql>
+        
+    </changeSet>
+
+</databaseChangeLog>

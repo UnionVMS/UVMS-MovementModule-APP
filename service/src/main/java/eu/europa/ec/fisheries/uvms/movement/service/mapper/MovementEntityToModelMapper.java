@@ -48,6 +48,10 @@ public class MovementEntityToModelMapper {
     }
 
     public static MovementType mapToMovementType(Movement movement) {
+        return mapToMovementType(movement, true);
+    }
+
+    public static MovementType mapToMovementType(Movement movement, boolean includeCalculations) {
 
         if (movement == null) {
             return null;
@@ -80,12 +84,14 @@ public class MovementEntityToModelMapper {
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
 
         model.setWkt(WKTUtil.getWktPointFromMovement(movement));
-        Movement previousMovement = movement.getPreviousMovement();
-        if (previousMovement != null) {
-            SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
-            model.setCalculatedCourse(positionCalculations.getCourse());
-            Double calculatedSpeed = positionCalculations.getAvgSpeed();
-            model.setCalculatedSpeed(calculatedSpeed != null && !calculatedSpeed.isInfinite() && !calculatedSpeed.isNaN() ? calculatedSpeed : null);
+        if (includeCalculations) {
+            Movement previousMovement = movement.getPreviousMovement();
+            if (previousMovement != null) {
+                SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
+                model.setCalculatedCourse(positionCalculations.getCourse());
+                Double calculatedSpeed = positionCalculations.getAvgSpeed();
+                model.setCalculatedSpeed(calculatedSpeed != null && !calculatedSpeed.isInfinite() && !calculatedSpeed.isNaN() ? calculatedSpeed : null);
+            }
         }
         if (movement.getTrack() != null) {
             // Investigate if segmentsIds can be removed
