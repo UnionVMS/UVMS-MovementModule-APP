@@ -45,4 +45,6 @@
 
     <include file="v5.5.13\db-changelog-add-ais-position-accuracy-5.2.26.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.5.20\db-changelog-vms-partial-index.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

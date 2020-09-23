@@ -189,7 +189,7 @@ public class MovementService {
 
         List<MovementType> movementList = new ArrayList<>();
         for (Movement movement : movementEntityList) {
-            movementList.add(MovementEntityToModelMapper.mapToMovementType(movement));
+            movementList.add(MovementEntityToModelMapper.mapToMovementType(movement, false));
         }
         return movementList;
     }
