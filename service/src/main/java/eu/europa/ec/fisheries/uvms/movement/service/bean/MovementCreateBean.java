@@ -123,7 +123,8 @@ public class MovementCreateBean {
     }
 
     private Movement getPreviousVms(IncomingMovement movement, MovementConnect movementConnect) {
-        if (MovementSourceType.AIS.value().equals(movement.getMovementSourceType())) {
+        if (MovementSourceType.AIS.value().equals(movement.getMovementSourceType())
+                || movement.getPositionTime() == null) {
             return null;
         }
         Movement currentLatestVMS = movementConnect.getLatestVMS();

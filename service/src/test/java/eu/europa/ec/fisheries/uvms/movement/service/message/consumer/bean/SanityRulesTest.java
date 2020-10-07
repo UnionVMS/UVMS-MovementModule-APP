@@ -158,6 +158,7 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
     }
+
     @Test
     @OperateOnDeployment("movementservice")
     public void setMovementReportMissingPositionTimeSanityRuleTest() throws Exception {
@@ -166,6 +167,30 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         incomingMovement.setAssetHistoryId(null);
         incomingMovement.setPositionTime(null);
         ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void setMovementReportMissingPositionTimeWithPreviousMovement() throws Exception {
+
+        UUID id = UUID.randomUUID();
+        IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
+        incomingMovement.setAssetGuid(null);
+        incomingMovement.setAssetHistoryId(id.toString());
+        incomingMovement.setAssetIRCS("TestIrcs:" + id);
+        ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
+
+        assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.MOVEMENT));
+
+
+        IncomingMovement incomingMovement2 = MovementTestHelper.createIncomingMovementType();
+        incomingMovement2.setAssetGuid(null);
+        incomingMovement2.setAssetHistoryId(null);
+        incomingMovement2.setAssetIRCS("TestIrcs:" + id);
+        incomingMovement2.setPositionTime(null);
+        response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement2);
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
     }
