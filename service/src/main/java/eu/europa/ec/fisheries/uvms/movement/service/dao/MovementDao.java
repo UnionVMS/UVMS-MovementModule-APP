@@ -296,16 +296,14 @@ public class MovementDao {
         List<Predicate> predicates = new ArrayList<>();
 
         if (cursorPagination.getTimestampCursor() != null && cursorPagination.getIdCursor() != null) {
-            predicates.add(criteriaBuilder.or(
-                    criteriaBuilder.and(
-                            criteriaBuilder.greaterThan(movement.get("timestamp"), cursorPagination.getTimestampCursor()),
-                            criteriaBuilder.lessThanOrEqualTo(movement.get("timestamp"), cursorPagination.getTo())
-                            ),
-                    criteriaBuilder.and(
-                            criteriaBuilder.equal(movement.get("timestamp"), cursorPagination.getTimestampCursor()),
-                            criteriaBuilder.greaterThanOrEqualTo(movement.get("id"), cursorPagination.getIdCursor())
-                            )
-                    ));
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(movement.get("timestamp"), cursorPagination.getTimestampCursor()));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(movement.get("timestamp"), cursorPagination.getTo()));
+            predicates.add(criteriaBuilder.not(
+                                criteriaBuilder.and(
+                                        criteriaBuilder.equal(movement.get("timestamp"), cursorPagination.getTimestampCursor()),
+                                        criteriaBuilder.lessThan(movement.get("id"), cursorPagination.getIdCursor())
+                                        )
+                                ));
         } else {
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(movement.get("timestamp"), cursorPagination.getFrom()));
             predicates.add(criteriaBuilder.lessThanOrEqualTo(movement.get("timestamp"), cursorPagination.getTo()));
