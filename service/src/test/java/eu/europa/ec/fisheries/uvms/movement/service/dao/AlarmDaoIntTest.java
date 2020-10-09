@@ -1,6 +1,8 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
+import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
@@ -37,12 +39,12 @@ public class AlarmDaoIntTest extends TransactionalTests {
         AlarmReport alarmReport = new AlarmReport();
         alarmReport.setUpdatedBy("TEST");
         alarmReport.setUpdated(Instant.now());
-        alarmReport.setStatus("OPEN");
+        alarmReport.setStatus(AlarmStatusType.OPEN);
         alarmReport.setUpdated(Instant.now());
         alarmReport.setUpdatedBy("test");
         alarmReport.setIncomingMovement(im);
         alarmReport.setRecipient("");
-        alarmReport.setPluginType("TEST");
+        alarmReport.setPluginType(PluginType.SATELLITE_RECEIVER);
         alarmReport.setAlarmItemList(new ArrayList<>());
         alarmDAO.save(alarmReport);
         assertNotNull(alarmReport.getId());

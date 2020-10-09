@@ -1,5 +1,7 @@
 package eu.europa.ec.fisheries.uvms.movement.service.entity.alarm;
 
+import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 
 import javax.persistence.*;
@@ -33,9 +35,12 @@ public class AlarmReport implements Serializable {
     @Column(columnDefinition = "uuid", name = "id")
     private UUID id;        //DB id
 
-    private String pluginType;  //Expects values from the class PluginType, exists in Type, same name  TODO: make the *Type class use an enum instead of a string
+    @Enumerated(EnumType.STRING)
+    private PluginType pluginType;  //Expects values from the class PluginType, exists in Type, same name  TODO: make the *Type class use an enum instead of a string
     private String assetGuid;   //exists in Type, same name
-    private String status;  //Expects values from teh class AlarmsStatusType, exists in Type, same name
+
+    @Enumerated(EnumType.STRING)
+    private AlarmStatusType status;  //Expects values from teh class AlarmStatusType, exists in Type, same name
     private String recipient;   //exists in Type, same name
 
     private Instant createdDate;   //exists in Type as openDate
@@ -59,11 +64,11 @@ public class AlarmReport implements Serializable {
         this.id = id;
     }
 
-    public String getPluginType() {
+    public PluginType getPluginType() {
         return pluginType;
     }
 
-    public void setPluginType(String pluginType) {
+    public void setPluginType(PluginType pluginType) {
         this.pluginType = pluginType;
     }
 
@@ -75,11 +80,11 @@ public class AlarmReport implements Serializable {
         this.assetGuid = assetGuid;
     }
 
-    public String getStatus() {
+    public AlarmStatusType getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AlarmStatusType status) {
         this.status = status;
     }
 

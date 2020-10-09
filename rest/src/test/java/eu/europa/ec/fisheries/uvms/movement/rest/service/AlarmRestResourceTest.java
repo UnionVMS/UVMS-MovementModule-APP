@@ -90,7 +90,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
         AlarmReport alarmReport = getBasicAlarmReport();
         alarmDao.save(alarmReport);
 
-        alarmReport.setStatus(AlarmStatusType.REJECTED.value());
+        alarmReport.setStatus(AlarmStatusType.REJECTED);
 
         AlarmReport output = getWebTarget()
                 .path("alarms")
@@ -297,7 +297,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
     private static AlarmReport getBasicAlarmReport() {
         AlarmReport alarmReport = new AlarmReport();
         alarmReport.setAssetGuid(UUID.randomUUID().toString());
-        alarmReport.setStatus(AlarmStatusType.OPEN.value());
+        alarmReport.setStatus(AlarmStatusType.OPEN);
         alarmReport.setUpdated(Instant.now());
         alarmReport.setCreatedDate(Instant.now());
         alarmReport.setUpdatedBy("Test user");

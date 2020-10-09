@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.validation;
 
+import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListPagination;
 import eu.europa.ec.fisheries.uvms.longpolling.notifications.NotificationMessage;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.AuditObjectTypeEnum;
@@ -70,9 +71,9 @@ public class MovementSanityValidatorBean {
             alarmReport = new AlarmReport();
             alarmReport.setAssetGuid(movement.getAssetGuid());
             alarmReport.setCreatedDate(Instant.now());
-            alarmReport.setPluginType(movement.getPluginType());
+            alarmReport.setPluginType(PluginType.fromValue(movement.getPluginType()));
             //alarmReport.setRecipient();
-            alarmReport.setStatus(AlarmStatusType.OPEN.value());
+            alarmReport.setStatus(AlarmStatusType.OPEN);
             alarmReport.setUpdated(Instant.now());
             alarmReport.setUpdatedBy("UVMS");
             alarmReport.setIncomingMovement(movement);
@@ -185,7 +186,7 @@ public class MovementSanityValidatorBean {
             }
 
             // Mark the alarm as REPROCESSED before reprocessing. That will create a new alarm (if still wrong) with the items remaining.
-            alarm.setStatus(AlarmStatusType.REPROCESSED.value());
+            alarm.setStatus(AlarmStatusType.REPROCESSED);
             alarm = updateAlarmStatus(alarm);
             auditService.sendAuditMessage(AuditObjectTypeEnum.ALARM, AuditOperationEnum.UPDATE, alarm.getId().toString(), null, username);
             IncomingMovement incomingMovement = alarm.getIncomingMovement();
