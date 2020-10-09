@@ -99,7 +99,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .put(Entity.json(alarmReport), AlarmReport.class);
 
         assertEquals(alarmReport.getId(), output.getId());
-        assertEquals(AlarmStatusType.REJECTED.value(), output.getStatus());
+        assertEquals(AlarmStatusType.REJECTED, output.getStatus());
 
         alarmDao.removeAlarmReportAfterTests(alarmReport);
     }
@@ -187,7 +187,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .get(AlarmReport.class);
 
         assertNotNull(responseAlarmReportType);
-        assertEquals(AlarmStatusType.REPROCESSED.value(), responseAlarmReportType.getStatus());
+        assertEquals(AlarmStatusType.REPROCESSED, responseAlarmReportType.getStatus());
     }
 
     @Test
@@ -232,7 +232,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .get(AlarmReport.class);
 
         assertNotNull(responseAlarmReportType);
-        assertEquals(AlarmStatusType.OPEN.value(), responseAlarmReportType.getStatus());
+        assertEquals(AlarmStatusType.OPEN, responseAlarmReportType.getStatus());
         assertEquals("Another User", responseAlarmReportType.getIncomingMovement().getUpdatedBy());
 
         savedMovement.setAlarmReport(null);
@@ -253,7 +253,7 @@ public class AlarmRestResourceTest extends BuildMovementRestDeployment {
                 .get(AlarmReport.class);
 
         assertNotNull(responseAlarmReportType);
-        assertEquals(AlarmStatusType.OPEN.value(), responseAlarmReportType.getStatus());
+        assertEquals(AlarmStatusType.OPEN, responseAlarmReportType.getStatus());
         assertEquals("Yet Another User", responseAlarmReportType.getIncomingMovement().getUpdatedBy());
     }
 

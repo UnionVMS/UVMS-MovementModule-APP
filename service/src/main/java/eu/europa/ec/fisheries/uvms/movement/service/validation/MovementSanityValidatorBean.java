@@ -71,7 +71,7 @@ public class MovementSanityValidatorBean {
             alarmReport = new AlarmReport();
             alarmReport.setAssetGuid(movement.getAssetGuid());
             alarmReport.setCreatedDate(Instant.now());
-            alarmReport.setPluginType(PluginType.fromValue(movement.getPluginType()));
+            alarmReport.setPluginType(movement.getPluginType() != null ? PluginType.fromValue(movement.getPluginType()) : null);
             //alarmReport.setRecipient();
             alarmReport.setStatus(AlarmStatusType.OPEN);
             alarmReport.setUpdated(Instant.now());
