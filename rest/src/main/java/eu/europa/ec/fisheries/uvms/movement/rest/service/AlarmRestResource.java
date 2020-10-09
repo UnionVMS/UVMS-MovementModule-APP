@@ -21,6 +21,7 @@ import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -52,51 +53,81 @@ public class AlarmRestResource {
     @Path("/list")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public Response getAlarmList(AlarmQuery query) {
-        LOG.info("Get alarm list invoked in rest layer");
-        AlarmListResponseDto alarmList = validationService.getAlarmList(query);
-        return Response.ok(alarmList).build();
+        try {
+            LOG.info("Get alarm list invoked in rest layer");
+            AlarmListResponseDto alarmList = validationService.getAlarmList(query);
+            return Response.ok(alarmList).header("MDC", MDC.get("requestId")).build();
+        }catch (Exception e){
+            LOG.error("Unable to get alarm list due to: {}", e);
+            throw e;
+        }
     }
 
     @PUT
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
     public Response updateAlarmStatus(final AlarmReport alarmReport) {
-        LOG.info("Update alarm status invoked in rest layer");
-        AlarmReport updated = validationService.updateAlarmStatus(alarmReport);
-        return Response.ok(updated).build();
+        try {
+            LOG.info("Update alarm status invoked in rest layer");
+            AlarmReport updated = validationService.updateAlarmStatus(alarmReport);
+            return Response.ok(updated).header("MDC", MDC.get("requestId")).build();
+        }catch (Exception e){
+            LOG.error("Unable to update alarm status due to: {}", e);
+            throw e;
+        }
     }
 
     @PUT
     @Path("/incomingMovement")
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
     public Response updateIncomingMovement(IncomingMovement movement) {
-        LOG.info("Update incomingMovement in holding table");
-        IncomingMovement updated = validationService.updateIncomingMovement(movement);
-        return Response.ok(updated).build();
+        try {
+            LOG.info("Update incomingMovement in holding table");
+            IncomingMovement updated = validationService.updateIncomingMovement(movement);
+            return Response.ok(updated).header("MDC", MDC.get("requestId")).build();
+        }catch (Exception e){
+            LOG.error("Unable to update incoming movement due to: {}", e);
+            throw e;
+        }
     }
 
     @GET
     @Path("/{guid}")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public Response getAlarmReportByGuid(@PathParam("guid") UUID guid) {
-        AlarmReport byGuid = validationService.getAlarmReportByGuid(guid);
-        return Response.ok(byGuid).build();
+        try {
+            AlarmReport byGuid = validationService.getAlarmReportByGuid(guid);
+            return Response.ok(byGuid).header("MDC", MDC.get("requestId")).build();
+        }catch (Exception e){
+            LOG.error("Unable to get alarm report due to: {}", e);
+            throw e;
+        }
     }
 
     @POST
     @Path("/reprocess")
     @RequiresFeature(UnionVMSFeature.manageAlarmsHoldingTable)
     public Response reprocessAlarm(final List<String> alarmGuidList) {
-        LOG.info("Reprocess alarm invoked in rest layer");
-        validationService.reprocessAlarm(alarmGuidList, request.getRemoteUser());
-        return Response.ok().build();
+        try {
+            LOG.info("Reprocess alarm invoked in rest layer");
+            validationService.reprocessAlarm(alarmGuidList, request.getRemoteUser());
+            return Response.ok().header("MDC", MDC.get("requestId")).build();
+        }catch (Exception e){
+            LOG.error("Unable to reprocess alarm due to {}", e);
+            throw e;
+        }
     }
 
     @GET
     @Path("/countopen")
     @RequiresFeature(UnionVMSFeature.viewAlarmsHoldingTable)
     public Response getNumberOfOpenAlarmReports() {
-        long count = validationService.getNumberOfOpenAlarmReports();
-        return Response.ok(count).build();
+        try {
+            long count = validationService.getNumberOfOpenAlarmReports();
+            return Response.ok(count).header("MDC", MDC.get("requestId")).build();
+        }catch (Exception e){
+            LOG.error("Unable to get the number of open alarms due to: {}", e);
+            throw e;
+        }
     }
 
     @GET
@@ -106,6 +137,6 @@ public class AlarmRestResource {
         List<String> sanityRuleNames = Arrays.stream(SanityRule.values())
                 .map(SanityRule::getRuleName)
                 .collect(Collectors.toList());
-        return Response.ok(sanityRuleNames).build();
+        return Response.ok(sanityRuleNames).header("MDC", MDC.get("requestId")).build();
     }
 }

@@ -68,9 +68,9 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         alarmReport = new AlarmReport();
         alarmReport.setAssetGuid(UUID.randomUUID().toString());
         alarmReport.setCreatedDate(Instant.now());
-        alarmReport.setPluginType(PluginType.MANUAL.value());
+        alarmReport.setPluginType(PluginType.MANUAL);
         //alarmReport.setRecipient();
-        alarmReport.setStatus(AlarmStatusType.OPEN.value());
+        alarmReport.setStatus(AlarmStatusType.OPEN);
         alarmReport.setUpdated(Instant.now());
         alarmReport.setUpdatedBy("UVMS");
         alarmReport.setIncomingMovement(null);
@@ -221,7 +221,7 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.ALARM));
 
-        incomingMovement.setPluginType("NOT_FLUX");
+        incomingMovement.setPluginType(PluginType.OTHER.value());
         incomingMovement.setComChannelType("MANUAL");
         response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
 
@@ -235,14 +235,14 @@ public class SanityRulesTest extends BuildMovementServiceTestDeployment {
         IncomingMovement incomingMovement = MovementTestHelper.createIncomingMovementType();
         incomingMovement.setAssetGuid(null);
         incomingMovement.setAssetHistoryId(null);
-        incomingMovement.setPluginType("FLUX");
+        incomingMovement.setPluginType(PluginType.FLUX.value());
         incomingMovement.setAssetCFR(null);
         incomingMovement.setAssetIRCS(null);
         ProcessedMovementResponse response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
 
         assertThat(response.getMovementRefType().getType(), is(MovementRefTypeType.MOVEMENT));
 
-        incomingMovement.setPluginType("NOT_FLUX");
+        incomingMovement.setPluginType(PluginType.BELGIAN_SALES.value());
         incomingMovement.setComChannelType("MANUAL");
         response = sendIncomingMovementAndReturnAlarmResponse(incomingMovement);
 
