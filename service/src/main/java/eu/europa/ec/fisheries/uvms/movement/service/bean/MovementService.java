@@ -267,6 +267,9 @@ public class MovementService {
         }
 
         MovementConnect oldMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(oldMovementConnectId));
+        if(oldMovementConnect == null) { //I really dont understand the how as to why this can be null but according to the log in prod it can
+            return 0;
+        }
         MovementConnect newMovementConnect = movementDao.getMovementConnectByConnectId(UUID.fromString(newMovementConnectId));
 
         if(newMovementConnect == null){
