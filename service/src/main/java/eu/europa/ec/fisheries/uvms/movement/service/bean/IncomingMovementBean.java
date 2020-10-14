@@ -46,7 +46,7 @@ public class IncomingMovementBean {
             } else {
                 Movement previousMovement = dao.getPreviousMovement(connectId, timeStamp);
                 if (previousMovement == null) { // Before first position
-                    Movement firstMovement = dao.getFirstMovement(connectId, currentMovement.getTimestamp());
+                    Movement firstMovement = dao.getFirstMovement(connectId);
                     firstMovement.setPreviousMovement(currentMovement);
                     trackService.upsertTrack(firstMovement, currentMovement);
                 } else { // Between two positions

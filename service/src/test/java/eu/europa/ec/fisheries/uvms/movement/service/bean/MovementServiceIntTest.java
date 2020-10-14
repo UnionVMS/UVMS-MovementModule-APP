@@ -90,6 +90,26 @@ public class MovementServiceIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
+    public void createTwoVmsMovementsAtTheSameTimeAndMakeSureGetPreviousMovementDoesNotThrowExceptions() {
+        UUID connectId1 = UUID.randomUUID();
+        Instant now = Instant.now();
+        Movement movementType = MockData.createMovement(1d, 1d, connectId1);
+        movementType.setTimestamp(now);
+        movementType.setSource(MovementSourceType.IRIDIUM);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        Movement movementType2 = MockData.createMovement(1d, 1d, connectId1);
+        movementType2.setTimestamp(now);
+        movementType2.setSource(MovementSourceType.NAF);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        Movement previousVMS = movementService.getPreviousVMS(connectId1, now.plus(1, ChronoUnit.MINUTES));
+        assertNotNull(previousVMS);
+
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
     public void getLatestMovementsByConnectIds() {
         UUID connectId1 = UUID.randomUUID();
         Movement movementType = MockData.createMovement(1d, 1d, connectId1);

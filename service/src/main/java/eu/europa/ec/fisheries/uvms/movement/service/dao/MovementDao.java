@@ -152,6 +152,7 @@ public class MovementDao {
             query.setParameter("id", id);
             query.setParameter("date", date);
             query.setParameter("sources", sources);
+            query.setMaxResults(1);
             singleResult = query.getSingleResult();
         } catch (NoResultException e) {
             LOG.debug("No previous movement found for date: {} and connectedId: {}", date, id);
@@ -196,11 +197,11 @@ public class MovementDao {
         return latestMovementQuery.getResultList();
     }
 
-    public Movement getFirstMovement(UUID movementConnectValue, Instant dateOfNewMovement) {
+    public Movement getFirstMovement(UUID movementConnectValue) {
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_FIRST, Movement.class);
             query.setParameter("id", movementConnectValue);
-            query.setParameter("date", dateOfNewMovement);
+            query.setMaxResults(1);
             return query.getSingleResult();
         } catch (NoResultException e) {
             LOG.debug("Could not get first position, no result of id: {}", movementConnectValue);
