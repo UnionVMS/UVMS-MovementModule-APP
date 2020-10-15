@@ -18,11 +18,7 @@ public class MovementDto {
 
     private Float heading;
 
-    private Double tripNumber;
-
     private String asset;
-
-    private String internalReferenceNumber;
 
     private String status;
 
@@ -74,22 +70,6 @@ public class MovementDto {
 
     public void setHeading(Float heading) {
         this.heading = heading;
-    }
-
-    public Double getTripNumber() {
-        return tripNumber;
-    }
-
-    public void setTripNumber(Double tripNumber) {
-        this.tripNumber = tripNumber;
-    }
-
-    public String getInternalReferenceNumber() {
-        return internalReferenceNumber;
-    }
-
-    public void setInternalReferenceNumber(String internalReferenceNumber) {
-        this.internalReferenceNumber = internalReferenceNumber;
     }
 
     public String getStatus() {

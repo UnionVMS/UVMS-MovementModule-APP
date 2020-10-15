@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+				   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+				   logicalFilePath="changelog/v5.5.24/db-changelog-remove-tripNumber-and-internalRefNumber-5.5.24.xml">
+
+    <changeSet id="remove tripNumber and internalReferenceNumber" author="joemat" runInTransaction="false">
+        <dropColumn  columnName="move_trip_number"
+                     tableName="movement">
+        </dropColumn>
+        <dropColumn  columnName="move_internal_reference_number"
+                     tableName="movement">
+        </dropColumn>
+
+        <dropColumn  columnName="tripnumber"
+                     tableName="incomingmovement">
+        </dropColumn>
+        <dropColumn  columnName="internalreferencenumber"
+                     tableName="incomingmovement">
+        </dropColumn>
+
+    </changeSet>
+
+</databaseChangeLog>

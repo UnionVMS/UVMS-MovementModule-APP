@@ -27,6 +27,10 @@ public class MicroMovement implements Serializable {
 
     private SatId sourceSatelliteId;
 
+    private String status;
+
+    private Short aisPositionAccuracy;
+
     public MicroMovement() {
 
     }
@@ -42,9 +46,11 @@ public class MicroMovement implements Serializable {
         speed = (movement.getSpeed() == null ? null : movement.getSpeed().doubleValue());
         source = movement.getSource();
         sourceSatelliteId = movement.getSourceSatelliteId();
+        status = movement.getStatus();
+        aisPositionAccuracy = movement.getAisPositionAccuracy();
     }
 
-    public MicroMovement(Geometry geo, Float heading, UUID id, Instant timestamp, Float speed, MovementSourceType source, SatId sourceSatelliteId) {
+    public MicroMovement(Geometry geo, Float heading, UUID id, Instant timestamp, Float speed, MovementSourceType source, SatId sourceSatelliteId, String status, Short aisPositionAccuracy) {
         Point point = (Point)geo;
         location = new MovementPoint();
         location.setLatitude(point.getY());
@@ -55,6 +61,8 @@ public class MicroMovement implements Serializable {
         this.speed = (speed == null ? null : speed.doubleValue());
         this.source = source;
         this.sourceSatelliteId = sourceSatelliteId;
+        this.status = status;
+        this.aisPositionAccuracy = aisPositionAccuracy;
     }
 
     public MovementPoint getLocation() {
@@ -111,5 +119,21 @@ public class MicroMovement implements Serializable {
 
     public void setSourceSatelliteId(SatId sourceSatelliteId) {
         this.sourceSatelliteId = sourceSatelliteId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Short getAisPositionAccuracy() {
+        return aisPositionAccuracy;
+    }
+
+    public void setAisPositionAccuracy(Short aisPositionAccuracy) {
+        this.aisPositionAccuracy = aisPositionAccuracy;
     }
 }
