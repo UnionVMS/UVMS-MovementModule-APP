@@ -53,11 +53,11 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     @Column(name = "moveconn_name")
     private String name;
     
-    @JoinColumn(name = "moveconn_latest_move", referencedColumnName = "move_id")
+    @JoinColumn(name = "moveconn_latest_move", referencedColumnName = "id")
     @OneToOne(fetch = FetchType.LAZY)
     private Movement latestMovement;
 
-    @JoinColumn(name = "moveconn_latest_vms", referencedColumnName = "move_id")
+    @JoinColumn(name = "moveconn_latest_vms", referencedColumnName = "id")
     @OneToOne(fetch = FetchType.LAZY)
     private Movement latestVMS;
 

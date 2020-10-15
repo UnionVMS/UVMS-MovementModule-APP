@@ -312,6 +312,36 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         assertThat(secondMovementDetails.getPreviousVMSLatitude(), is(firstLatitude));
         assertThat(secondMovementDetails.getPreviousVMSLongitude(), is(firstLongitude));
     }
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createMovementVerifyCalculatedSpeed() throws Exception {
+        UUID assetHistoryId = UUID.randomUUID();
+        Double firstLongitude = 3d;
+        Double firstLatitude = 4d;
+        IncomingMovement firstIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        firstIncomingMovement.setMovementSourceType("NAF");
+        firstIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
+        firstIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        firstIncomingMovement.setLongitude(firstLongitude);
+        firstIncomingMovement.setLatitude(firstLatitude);
+        MovementDetails firstMovementDetails = sendIncomingMovementAndWaitForResponse(firstIncomingMovement);
+
+        assertThat(firstMovementDetails.getPreviousVMSLatitude(), is(nullValue()));
+        assertThat(firstMovementDetails.getPreviousVMSLongitude(), is(nullValue()));
+
+        IncomingMovement secondIncomingMovement = MovementTestHelper.createIncomingMovementType();
+        secondIncomingMovement.setMovementSourceType("NAF");
+        secondIncomingMovement.setAssetHistoryId(assetHistoryId.toString());
+        secondIncomingMovement.setAssetIRCS("TestIrcs:" + assetHistoryId);
+        MovementDetails secondMovementDetails = sendIncomingMovementAndWaitForResponse(secondIncomingMovement);
+
+        
+        assertNotNull(secondMovementDetails.getCalculatedSpeed());
+        System.out.println("secondMovementDetails.getCalculatedSpeed(): "+secondMovementDetails.getCalculatedSpeed().toString());
+        assertThat(secondMovementDetails.getPreviousVMSLatitude(), is(firstLatitude));
+        assertThat(secondMovementDetails.getPreviousVMSLongitude(), is(firstLongitude));
+    }
 
     @Test
     @OperateOnDeployment("movementservice")

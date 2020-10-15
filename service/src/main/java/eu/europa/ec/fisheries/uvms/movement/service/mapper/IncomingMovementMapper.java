@@ -78,12 +78,8 @@ public class IncomingMovementMapper {
         md.setLatitude(movement.getLocation().getY());
         md.setMovementType(movement.getMovementType().value());
         Movement previousMovement = movement.getPreviousMovement();
-        if(previousMovement != null) {
-            SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
-            md.setCalculatedCourse(positionCalculations.getCourse());
-            md.setCalculatedSpeed(positionCalculations.getAvgSpeed());
-            //md.setSegmentType(movement.getFromSegment().getSegmentCategory().value()); // TODO
-        }
+        md.setCalculatedSpeed(movement.getCalculatedSpeed() != null ? 
+                Double.valueOf(movement.getCalculatedSpeed().toString()) : null);
         md.setReportedCourse(movement.getHeading() != null ? (double)movement.getHeading() : null);
         md.setReportedSpeed(movement.getSpeed() != null ? (double)movement.getSpeed() : null);
         md.setPositionTime(movement.getTimestamp());
