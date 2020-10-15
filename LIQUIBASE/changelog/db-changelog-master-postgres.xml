@@ -47,4 +47,6 @@
 
     <include file="v5.5.20\db-changelog-vms-partial-index.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.5.24\db-changelog-remove-tripNumber-and-internalRefNumber-5.5.24.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

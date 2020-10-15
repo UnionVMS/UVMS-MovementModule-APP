@@ -30,8 +30,8 @@ public class MicroMovementExtended implements Serializable {
         this.asset = movement.getMovementConnect().getId().toString();
     }
 
-    public MicroMovementExtended(Geometry geo, Float heading, UUID guid, UUID assetGuid, Instant timestamp, Float speed, MovementSourceType source, SatId sourceSatelliteId) {
-        microMove = new MicroMovement(geo, heading, guid, timestamp, speed, source, sourceSatelliteId);
+    public MicroMovementExtended(Geometry geo, Float heading, UUID guid, UUID assetGuid, Instant timestamp, Float speed, MovementSourceType source, SatId sourceSatelliteId, String status, Short aisPositionAccuracy) {
+        microMove = new MicroMovement(geo, heading, guid, timestamp, speed, source, sourceSatelliteId, status, aisPositionAccuracy);
         this.asset = assetGuid.toString();
     }
 
