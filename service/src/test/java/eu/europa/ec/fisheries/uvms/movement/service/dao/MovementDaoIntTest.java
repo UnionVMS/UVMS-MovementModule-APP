@@ -110,73 +110,9 @@ public class MovementDaoIntTest extends TransactionalTests {
         assertEquals(fetchedMovement.getId(), createdMovementId);
         MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
-        Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getId(), Instant.EPOCH);
+        Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getId(), UUID.randomUUID());
         assertNotNull(firstMovement);
     }
-
-
-    // There is no value to run these 2 tests
-//    @Test
-//    @OperateOnDeployment("normal")
-//    public void getLatestMovement_tryLatestTable_FALSE() throws MovementDaoException {
-//        Date timeStamp = DateUtil.nowUTC();
-//
-//        MovementConnect movementConnect = createMovementConnectHelper();
-//        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-//        movementDao.flush();
-//        assertNotNull(createdMovementConnect);
-//
-//        Movement movement = createMovementHelper();
-//        movement.setMovementConnect(createdMovementConnect);
-//        Movement createdMovement = movementDao.create(movement);
-//        movementDao.flush();
-//        assertNotNull(createdMovement);
-//        assertEquals(createdMovementConnect.getId(), createdMovement.getOrCreateMovementConnectByConnectId().getId());
-//
-//        Long createdMovementId = createdMovement.getId();
-//        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
-//
-//        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
-//        assertNotNull(fetchedMovement);
-//        assertEquals(fetchedMovement.getId(), createdMovementId);
-//        MovementConnect fetchedMovementConnect = fetchedMovement.getOrCreateMovementConnectByConnectId();
-//        assertNotNull(fetchedMovementConnect);
-//
-//        Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
-//        // null is not an error
-//        assertTrue(true);
-//    }
-
-//    @Test
-//    @OperateOnDeployment("normal")
-//    public void getLatestMovement_tryLatestTable_TRUE() throws MovementDaoException {
-//        Date timeStamp = DateUtil.nowUTC();
-//
-//        MovementConnect movementConnect = createMovementConnectHelper();
-//        MovementConnect createdMovementConnect = movementDao.createMovementConnect(movementConnect);
-//        movementDao.flush();
-//        assertNotNull(createdMovementConnect);
-//
-//        Movement movement = createMovementHelper();
-//        movement.setMovementConnect(createdMovementConnect);
-//        Movement createdMovement = movementDao.create(movement);
-//        movementDao.flush();
-//        assertNotNull(createdMovement);
-//        assertEquals(createdMovementConnect.getId(), createdMovement.getOrCreateMovementConnectByConnectId().getId());
-//
-//        Long createdMovementId = createdMovement.getId();
-//        assertNotNull("The created id : " + createdMovementId.toString(), createdMovementId);
-//
-//        Movement fetchedMovement = movementDao.getMovementById(createdMovementId);
-//        assertNotNull(fetchedMovement);
-//        assertEquals(fetchedMovement.getId(), createdMovementId);
-//        MovementConnect fetchedMovementConnect = fetchedMovement.getOrCreateMovementConnectByConnectId();
-//        assertNotNull(fetchedMovementConnect);
-//
-//        Movement latestMovement = movementDao.getLatestMovement(fetchedMovementConnect.getValue(), timeStamp);
-//        // TODO: Should not return null in contrast with the previous test case but it actually does! Same method body, Not good!
-//        //assertNotNull(latestMovement);
-//    }
 
     @Test
     @OperateOnDeployment("movementservice")

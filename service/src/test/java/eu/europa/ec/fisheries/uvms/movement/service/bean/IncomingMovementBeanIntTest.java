@@ -344,6 +344,8 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         firstMovementType = movementService.createMovement(firstMovementType);
         assertNotNull(firstMovementType);
         incomingMovementBean.processMovement(firstMovementType);
+
+        em.flush();
        
         Movement secondMovementType = MockData.createMovement(2d, 1d, connectId, 0, "TEST");
         secondMovementType.setTimestamp(positionTime.plusMillis(tenMinutes));
@@ -351,11 +353,15 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertNotNull(secondMovementType);
         incomingMovementBean.processMovement(secondMovementType);
 
+        em.flush();
+
         Movement thirdMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
         thirdMovementType.setTimestamp(positionTime);
         thirdMovementType = movementService.createMovement(thirdMovementType);
         assertNotNull(thirdMovementType);
         incomingMovementBean.processMovement(thirdMovementType);
+
+        em.flush();
 
         MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
         List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
