@@ -48,7 +48,6 @@ public class MockData {
         movementConnect.setUpdated(Instant.now());
         movementConnect.setUpdatedBy("Mock Data");
         movement.setMovementConnect(movementConnect);
-        movement.setInternalReferenceNumber("TEST");
         Coordinate coordinate = new Coordinate(latlong.longitude, latlong.latitude);
         GeometryFactory factory = new GeometryFactory();
         Point point = factory.createPoint(coordinate);
@@ -62,8 +61,7 @@ public class MockData {
         movement.setUpdatedBy(username);
 
         movement.setTimestamp(latlong.positionTime);
-        movement.setTripNumber(0d);
-        
+
         return movement;
     }
     

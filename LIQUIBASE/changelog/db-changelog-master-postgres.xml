@@ -46,8 +46,10 @@
     <include file="v5.5.13\db-changelog-add-ais-position-accuracy-5.2.26.xml" relativeToChangelogFile="true"/>
 
     <include file="v5.5.20\db-changelog-vms-partial-index.xml" relativeToChangelogFile="true"/>
+
+    <include file="v5.5.24\db-changelog-remove-tripNumber-and-internalRefNumber-5.5.24.xml" relativeToChangelogFile="true"/>
     
     <include file="v5.6.1\db-changelog-add-calculatedspeed-to-movement.xml" relativeToChangelogFile="true"/>
     <include file="v5.6.1\db-changelog-rename-columns-in-movement.xml" relativeToChangelogFile="true"/>
-  
+
 </databaseChangeLog>

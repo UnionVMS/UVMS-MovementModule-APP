@@ -72,7 +72,41 @@ public class MovementServiceIntTest extends TransactionalTests {
         List<Movement> movements =  movementService.getLatestMovementsByConnectIds(connectionIds);
         assertThat(movements.size(), CoreMatchers.is(0));
     }
-    
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createTwoMovementsInReverseOrderAndMakeSureTheyBothHaveTracks() {
+        UUID connectId1 = UUID.randomUUID();
+        Movement movementType = MockData.createMovement(1d, 1d, connectId1);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        Movement movementType2 = MockData.createMovement(2d, 2d, connectId1);
+        movementType2.setTimestamp(Instant.now().minus(10, ChronoUnit.SECONDS));
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        assertNotNull(createdMovement.getTrack());
+        assertEquals(createdMovement.getTrack(), createdMovement2.getTrack());
+    }
+
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createTwoVmsMovementsAtTheSameTimeAndMakeSureGetPreviousMovementDoesNotThrowExceptions() {
+        UUID connectId1 = UUID.randomUUID();
+        Instant now = Instant.now();
+        Movement movementType = MockData.createMovement(1d, 1d, connectId1);
+        movementType.setTimestamp(now);
+        movementType.setSource(MovementSourceType.IRIDIUM);
+        Movement createdMovement = movementService.createAndProcessMovement(movementType);
+
+        Movement movementType2 = MockData.createMovement(1d, 1d, connectId1);
+        movementType2.setTimestamp(now);
+        movementType2.setSource(MovementSourceType.NAF);
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
+
+        Movement previousVMS = movementService.getPreviousVMS(connectId1, now.plus(1, ChronoUnit.MINUTES));
+        assertNotNull(previousVMS);
+    }
+
     @Test
     @OperateOnDeployment("movementservice")
     public void getLatestMovementsByConnectIds() {

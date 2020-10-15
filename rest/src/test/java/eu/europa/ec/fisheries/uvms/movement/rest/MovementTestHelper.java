@@ -38,13 +38,11 @@ public class MovementTestHelper {
         point.setSRID(4326);
         movement.setLocation(point);
 
-        movement.setInternalReferenceNumber("TEST");
         movement.setHeading(0f);
         movement.setSpeed(0f);
         movement.setSource(MovementSourceType.NAF);
         movement.setStatus("TEST");
         movement.setTimestamp(Instant.now());
-        movement.setTripNumber(0d);
 
         movement.setUpdatedBy("Test");
         movement.setUpdated(Instant.now());

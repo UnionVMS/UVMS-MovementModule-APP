@@ -27,8 +27,6 @@ public class IncomingMovementMapper {
             entity.setSpeed(ic.getReportedSpeed().floatValue());
         }
         entity.setHeading( ic.getReportedCourse() == null ? -1f : ic.getReportedCourse().floatValue());
-        entity.setInternalReferenceNumber(ic.getInternalReferenceNumber());
-        entity.setTripNumber(ic.getTripNumber());
         entity.setStatus(ic.getStatus());
         entity.setLesReportTime(ic.getLesReportTime());
         entity.setSourceSatelliteId(ic.getSourceSatelliteId() != null ? SatId.fromInt(ic.getSourceSatelliteId().intValue()) : null);
@@ -84,9 +82,7 @@ public class IncomingMovementMapper {
         md.setReportedSpeed(movement.getSpeed() != null ? (double)movement.getSpeed() : null);
         md.setPositionTime(movement.getTimestamp());
         md.setStatusCode(movement.getStatus());
-        md.setTripNumber(movement.getTripNumber());
         md.setWkt("");
-        md.setInternalReferenceNumber(movement.getInternalReferenceNumber());
 
         // Asset
         md.setAssetGuid(response.getAssetUUID());

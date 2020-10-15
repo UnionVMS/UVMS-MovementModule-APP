@@ -41,9 +41,6 @@ public class MovementModelToEntityMapper {
             entity.setHeading(movement.getReportedCourse().floatValue());
         }
 
-        entity.setInternalReferenceNumber(movement.getInternalReferenceNumber());
-        entity.setTripNumber(movement.getTripNumber());
-
         entity.setStatus(movement.getStatus());
 
         if (movement.getPosition() != null) {
@@ -89,9 +86,6 @@ public class MovementModelToEntityMapper {
         if (movement.getReportedCourse() != null) {
             entity.setHeading(movement.getReportedCourse().floatValue());
         }
-
-        entity.setInternalReferenceNumber(movement.getInternalReferenceNumber());
-        entity.setTripNumber(movement.getTripNumber());
 
         entity.setStatus(movement.getStatus());
 

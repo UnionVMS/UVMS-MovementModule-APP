@@ -9,7 +9,7 @@
 
 	<groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
 	<artifactId>movement</artifactId>
-	<version>5.5.23-UVMS-SNAPSHOT</version>
+	<version>5.5.24-UVMS-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Maven project-archetype for UnionVms modules</description>
 
@@ -23,10 +23,10 @@
         <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.1.6</user.model.version>
-		<audit.model.version>4.3.6</audit.model.version>
+		<audit.model.version>4.3.7</audit.model.version>
 		<exchange.model.version>5.3.10-UVMS</exchange.model.version>
 		<asset.client.version>6.7.28</asset.client.version>
-		<movement-rules.model.version>2.4.6</movement-rules.model.version>
+		<movement-rules.model.version>2.4.7</movement-rules.model.version>
 		<installAtEnd>false</installAtEnd>
 
 		<!-- UVMS Libraries -->

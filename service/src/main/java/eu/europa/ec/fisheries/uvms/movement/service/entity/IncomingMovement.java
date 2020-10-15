@@ -35,8 +35,6 @@ public class IncomingMovement {
     private String assetName;
     private String flagState;
     private String externalMarking;
-    private Double tripNumber;
-    private String internalReferenceNumber;
 
     private String movementType = MovementTypeType.POS.value();
     private String movementSourceType;
@@ -180,22 +178,6 @@ public class IncomingMovement {
 
     public void setExternalMarking(String externalMarking) {
         this.externalMarking = externalMarking;
-    }
-
-    public Double getTripNumber() {
-        return tripNumber;
-    }
-
-    public void setTripNumber(Double tripNumber) {
-        this.tripNumber = tripNumber;
-    }
-
-    public String getInternalReferenceNumber() {
-        return internalReferenceNumber;
-    }
-
-    public void setInternalReferenceNumber(String internalReferenceNumber) {
-        this.internalReferenceNumber = internalReferenceNumber;
     }
 
     public String getMovementType() {

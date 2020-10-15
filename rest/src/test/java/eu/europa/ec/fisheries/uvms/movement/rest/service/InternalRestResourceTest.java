@@ -228,6 +228,21 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movement")
+    public void remapNonExistantAssetTest() {
+        Response remapResponse = getWebTarget()
+                .path("internal/remapMovementConnectInMovement")
+                .queryParam("MovementConnectFrom", UUID.randomUUID().toString())
+                .queryParam("MovementConnectTo", UUID.randomUUID().toString())
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
+                .put(Entity.json(""), Response.class);
+        assertEquals(200, remapResponse.getStatus());
+        int nrOfChanges = remapResponse.readEntity(Integer.class);
+        assertEquals(0, nrOfChanges);
+    }
+
+    @Test
+    @OperateOnDeployment("movement")
     public void removeNonExistantMCTest() {
         Response deleteResponse = getWebTarget()
                 .path("internal/removeMovementConnect")

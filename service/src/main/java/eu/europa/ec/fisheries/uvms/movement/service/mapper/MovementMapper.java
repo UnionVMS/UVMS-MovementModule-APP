@@ -77,10 +77,8 @@ public class MovementMapper {
         dto.setId(movement.getId());
 
         dto.setAisPositionAccuracy(movement.getAisPositionAccuracy());
-        dto.setInternalReferenceNumber(movement.getInternalReferenceNumber());
         dto.setLesReportTime(movement.getLesReportTime());
         dto.setSourceSatelliteId(movement.getSourceSatelliteId());
-        dto.setTripNumber(movement.getTripNumber());
         dto.setUpdated(movement.getUpdated());
         dto.setUpdatedBy(movement.getUpdatedBy());
         return dto;

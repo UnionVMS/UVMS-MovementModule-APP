@@ -99,10 +99,6 @@ public class MovementEntityToModelMapper {
         }
         model.setProcessed(true);
 
-        model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
-        model.setTripNumber(movement.getTripNumber());
-
-        
         return model;
     }
 

@@ -35,14 +35,12 @@ public class MovementTestHelper {
         im.setActivityCallback("TEST");
         im.setActivityMessageId("TEST");
         im.setActivityMessageType(MovementActivityTypeType.AUT.value());
-        im.setInternalReferenceNumber("TEST");
         im.setReportedCourse(0d);
         im.setReportedSpeed(0d);
         im.setMovementSourceType(MovementSourceType.NAF.value());
         im.setPluginType(PluginType.NAF.value());
         im.setStatus("TEST");
         im.setPositionTime(Instant.now());
-        im.setTripNumber(0d);
         im.setComChannelType(MovementComChannelType.NAF.value());
         im.setUpdatedBy("TEST");
         im.setAckResponseMessageId(UUID.randomUUID().toString());
@@ -72,13 +70,11 @@ public class MovementTestHelper {
 
         movementBase.setPluginType(PluginType.NAF.value());
 
-        movementBase.setInternalReferenceNumber("TEST");
         movementBase.setReportedCourse(0d);
         movementBase.setReportedSpeed(0d);
         movementBase.setMovementSourceType(MovementSourceType.NAF.value());
         movementBase.setStatus("TEST");
         movementBase.setPositionTime(Instant.now());
-        movementBase.setTripNumber(0d);
 
         return movementBase;
     }

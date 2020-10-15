@@ -22,6 +22,10 @@ public class MicroMovement {
 
     private SatId sourceSatelliteId;
 
+    private String status;
+
+    private Short aisPositionAccuracy;
+
     public MicroMovement() {}
 
     public MovementPoint getLocation() {
@@ -78,5 +82,21 @@ public class MicroMovement {
 
     public void setSourceSatelliteId(SatId sourceSatelliteId) {
         this.sourceSatelliteId = sourceSatelliteId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Short getAisPositionAccuracy() {
+        return aisPositionAccuracy;
+    }
+
+    public void setAisPositionAccuracy(Short aisPositionAccuracy) {
+        this.aisPositionAccuracy = aisPositionAccuracy;
     }
 }
