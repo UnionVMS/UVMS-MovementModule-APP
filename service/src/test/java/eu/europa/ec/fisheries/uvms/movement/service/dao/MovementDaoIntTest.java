@@ -110,7 +110,7 @@ public class MovementDaoIntTest extends TransactionalTests {
         assertEquals(fetchedMovement.getId(), createdMovementId);
         MovementConnect fetchedMovementConnect = fetchedMovement.getMovementConnect();
 
-        Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getId());
+        Movement firstMovement = movementDao.getFirstMovement(fetchedMovementConnect.getId(), UUID.randomUUID());
         assertNotNull(firstMovement);
     }
 

@@ -105,7 +105,6 @@ public class MovementServiceIntTest extends TransactionalTests {
 
         Movement previousVMS = movementService.getPreviousVMS(connectId1, now.plus(1, ChronoUnit.MINUTES));
         assertNotNull(previousVMS);
-
     }
 
     @Test
