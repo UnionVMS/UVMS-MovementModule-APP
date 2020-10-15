@@ -11,18 +11,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
-import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementRefTypeType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.AssetClient;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentRequest;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
@@ -36,6 +27,15 @@ import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 @Stateless
 public class MovementCreateBean {
@@ -103,7 +103,7 @@ public class MovementCreateBean {
             if (previousVms != null && !MovementSourceType.AIS.value().equals(movement.getSource().value()) ) {
                 movement.setCalculatedSpeed((float)CalculationUtil.getPositionCalculations(previousVms, movement).getAvgSpeed());
             }
-            
+
             Movement createdMovement = movementService.createAndProcessMovement(movement);
 
             // send to MovementRules
@@ -128,9 +128,10 @@ public class MovementCreateBean {
     }
 
     private Movement getPreviousVms(IncomingMovement movement, MovementConnect movementConnect) {
-        if (MovementSourceType.AIS.value().equals(movement.getMovementSourceType())) {
+        if (MovementSourceType.AIS.value().equals(movement.getMovementSourceType())
+                || movement.getPositionTime() == null) {
             return null;
-        } 
+        }
         Movement currentLatestVMS = movementConnect.getLatestVMS();
         if (currentLatestVMS != null &&
                 currentLatestVMS.getTimestamp().isBefore(movement.getPositionTime())) {
@@ -142,6 +143,9 @@ public class MovementCreateBean {
 
     private void enrichIncomingMovement(IncomingMovement im, AssetMTEnrichmentResponse response) {
         im.setMobileTerminalConnectId(response.getMobileTerminalConnectId());
+        if (response.getMobileTerminalIsInactive() != null) {
+            im.setMobileTerminalActive(!response.getMobileTerminalIsInactive());
+        }
         im.setAssetGuid(response.getAssetUUID());
         im.setAssetHistoryId(response.getAssetHistoryId());
 
