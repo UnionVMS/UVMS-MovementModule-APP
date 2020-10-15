@@ -19,12 +19,6 @@
             schemaName="movement"  
             tableName="movement"/>
     <renameColumn  catalogName="movement"  
-            columnDataType="varchar(12)"  
-            newColumnName="internal_reference_number"  
-            oldColumnName="move_internal_reference_number"  
-            schemaName="movement"  
-            tableName="movement"/>
-    <renameColumn  catalogName="movement"  
             columnDataType="geometry"  
             newColumnName="location"  
             oldColumnName="move_location"  
@@ -58,12 +52,6 @@
             columnDataType="timestamp with time zone"  
             newColumnName="timestamp"  
             oldColumnName="move_timestamp"  
-            schemaName="movement"  
-            tableName="movement"/>
-    <renameColumn  catalogName="movement"  
-            columnDataType="DOUBLE PRECISION"  
-            newColumnName="trip_number"  
-            oldColumnName="move_trip_number"  
             schemaName="movement"  
             tableName="movement"/>
     <renameColumn  catalogName="movement"  
