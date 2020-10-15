@@ -111,17 +111,7 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     @Column(name = "heading")
     private Float heading;
-
-<<<<<<< HEAD
-    @Column(name = "trip_number")
-    private Double tripNumber;
-
-    @Column(name = "internal_reference_number")
-    @Size(max = 12)
-    private String internalReferenceNumber;
-
-=======
->>>>>>> swe-dev
+    
     @Size(max = 60)
     @Column(name = "status")
     private String status;
