@@ -3,7 +3,7 @@
 				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
 				   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
-				   logicalFilePath="changelog/v5.5.24/db-changelog-rename-columns-in-movement.xml">
+				   logicalFilePath="changelog/v5.5.25/db-changelog-rename-columns-in-movement.xml">
 
 <changeSet  author="johsod" runInTransaction="false"  id="rename_movement_columns">  
     <renameColumn  catalogName="movement"  

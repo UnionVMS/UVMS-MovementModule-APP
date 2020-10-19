@@ -3,11 +3,11 @@
 				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
 				   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
-				   logicalFilePath="changelog/v5.5.24/db-changelog-add-calculatedspeed-to-movement.xml">
+				   logicalFilePath="changelog/v5.5.25/db-changelog-add-calculatedspeed-to-movement.xml">
 
     <changeSet id="update_movement_with_calculatedspeed" author="johsod" runInTransaction="false">
         <addColumn tableName="movement">
-            <column name="calculatedspeed" type="real" remarks="avg speed between two vms positions"/>
+            <column name="calculatedspeed" type="double" remarks="avg speed between two vms positions"/>
         </addColumn>
     </changeSet>
 
