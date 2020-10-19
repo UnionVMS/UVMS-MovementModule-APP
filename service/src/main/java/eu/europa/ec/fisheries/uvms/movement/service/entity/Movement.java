@@ -165,7 +165,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     private Short aisPositionAccuracy;
 
     @Column(name = "calculatedspeed")
-    private Float calculatedSpeed;
+    private Double calculatedSpeed;
 
     public UUID getId() {
         return id;
@@ -295,11 +295,11 @@ public class Movement implements Serializable, Comparable<Movement> {
         this.aisPositionAccuracy = aisPositionAccuracy;
     }
 
-    public Float getCalculatedSpeed() {
+    public Double getCalculatedSpeed() {
         return calculatedSpeed;
     }
 
-    public void setCalculatedSpeed(Float calculatedSpeed) {
+    public void setCalculatedSpeed(Double calculatedSpeed) {
         this.calculatedSpeed = calculatedSpeed;
     }
 

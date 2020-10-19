@@ -73,7 +73,7 @@ public class CalculationUtil {
 
             courseOverGround = calculateCourse(pointPreviousPosition.getY(), pointPreviousPosition.getX(), pointThisPosition.getY(), pointThisPosition.getX());
             distanceBetweenPointsInNauticalMiles = CalculationUtil.getNauticalMilesFromMeter(distanceInMeters);
-            if(distanceInMeters > 1) {
+            if(distanceInMeters > 0) {
                 speedOverGround = (distanceInMeters / (durationInMilliSeconds/1000)) * FACTOR_METER_PER_SECOND_TO_KNOTS; 
             }
         }

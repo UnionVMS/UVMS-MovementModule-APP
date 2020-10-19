@@ -88,9 +88,9 @@ public class MovementEntityToModelMapper {
             Movement previousMovement = movement.getPreviousMovement();
             if (previousMovement != null) {
                 SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
-                model.setCalculatedCourse(positionCalculations.getCourse());
-                Double calculatedSpeed = positionCalculations.getAvgSpeed();
-                model.setCalculatedSpeed(calculatedSpeed != null && !calculatedSpeed.isInfinite() && !calculatedSpeed.isNaN() ? calculatedSpeed : null);
+                // model.setCalculatedCourse(positionCalculations.getCourse());
+                model.setCalculatedSpeed(movement.getCalculatedSpeed());
+               // model.setCalculatedSpeed(calculatedSpeed != null && !calculatedSpeed.isInfinite() && !calculatedSpeed.isNaN() ? calculatedSpeed : null);
             }
         }
         if (movement.getTrack() != null) {

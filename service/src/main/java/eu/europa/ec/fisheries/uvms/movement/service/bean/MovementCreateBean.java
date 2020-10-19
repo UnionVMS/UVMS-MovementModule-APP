@@ -101,7 +101,7 @@ public class MovementCreateBean {
             movement.setMovementConnect(movementConnect);
             
             if (previousVms != null && !MovementSourceType.AIS.value().equals(movement.getSource().value()) ) {
-                movement.setCalculatedSpeed((float)CalculationUtil.getPositionCalculations(previousVms, movement).getAvgSpeed());
+                movement.setCalculatedSpeed(CalculationUtil.getPositionCalculations(previousVms, movement).getAvgSpeed());
             }
 
             Movement createdMovement = movementService.createAndProcessMovement(movement);
