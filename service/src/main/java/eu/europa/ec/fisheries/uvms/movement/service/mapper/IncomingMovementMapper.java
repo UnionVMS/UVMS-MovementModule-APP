@@ -76,8 +76,7 @@ public class IncomingMovementMapper {
         md.setLatitude(movement.getLocation().getY());
         md.setMovementType(movement.getMovementType().value());
         Movement previousMovement = movement.getPreviousMovement();
-        md.setCalculatedSpeed(movement.getCalculatedSpeed() != null ? 
-                Double.valueOf(movement.getCalculatedSpeed().toString()) : null);
+        md.setCalculatedSpeed(movement.getCalculatedSpeed() != null ? movement.getCalculatedSpeed() : null);
         md.setReportedCourse(movement.getHeading() != null ? (double)movement.getHeading() : null);
         md.setReportedSpeed(movement.getSpeed() != null ? (double)movement.getSpeed() : null);
         md.setPositionTime(movement.getTimestamp());
