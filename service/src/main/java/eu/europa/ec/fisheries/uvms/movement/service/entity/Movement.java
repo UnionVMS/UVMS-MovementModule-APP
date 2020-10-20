@@ -33,9 +33,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "movement", indexes = {
-        @Index(columnList = "move_moveconn_id", name = "movement_moveconn_fk_idx", unique = false),
-        @Index(columnList = "move_trac_id", name = "movement_trac_fk_idx", unique = false),
-        @Index(columnList = "move_moveconn_id, move_timestamp", name = "movement_count_idx", unique = false)
+        @Index(columnList = "movementconnect_id", name = "movement_moveconn_fk_idx", unique = false),
+        @Index(columnList = "track_id", name = "movement_trac_fk_idx", unique = false),
+        @Index(columnList = "movementconnect_id, timestamp", name = "movement_count_idx", unique = false)
 })
 @NamedQueries({
     @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.source, m.sourceSatelliteId, m.status, m.aisPositionAccuracy) FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
@@ -65,11 +65,11 @@ import java.util.UUID;
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = Movement.UPDATE_TO_NEW_MOVEMENTCONNECT, query = "WITH subRequest as (" +
-                                                                                    "SELECT move_id FROM movement.movement WHERE move_moveconn_id = :oldMC LIMIT :limit FOR UPDATE) " +
+                                                                                    "SELECT id FROM movement.movement WHERE movementconnect_id = :oldMC LIMIT :limit FOR UPDATE) " +
                                                                                         "UPDATE movement.movement as m " +
-                                                                                        "SET move_moveconn_id = :newMC " +
+                                                                                        "SET movementconnect_id = :newMC " +
                                                                                         "FROM subRequest " +
-                                                                                        "WHERE m.move_id = subRequest.move_id"),
+                                                                                        "WHERE m.id = subRequest.id"),
 })
 @DynamicUpdate
 @DynamicInsert
@@ -96,74 +96,76 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String UPDATE_TO_NEW_MOVEMENTCONNECT = "Movement.updateToNewMovementConnect";
     
     private static final long serialVersionUID = 1L;
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "uuid", name = "move_id")
+    @Column(columnDefinition = "uuid", name = "id")
     private UUID id;
 
     @NotNull
-    @Column(name = "move_location", columnDefinition = "Geometry")
+    @Column(name = "location", columnDefinition = "Geometry")
     private Point location;
 
-    @Column(name = "move_speed")
+    @Column(name = "speed")
     private Float speed;
 
-    @Column(name = "move_heading")
+    @Column(name = "heading")
     private Float heading;
-
+    
     @Size(max = 60)
-    @Column(name = "move_status")
+    @Column(name = "status")
     private String status;
 
     @JsonbTransient
     @NotNull
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "move_moveconn_id", referencedColumnName = "moveconn_id")
+    @JoinColumn(name = "movementconnect_id", referencedColumnName = "moveconn_id")
     @ManyToOne(cascade = CascadeType.MERGE)
     private MovementConnect movementConnect;
 
     @JsonbTransient
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "move_trac_id", referencedColumnName = "trac_id")
+    @JoinColumn(name = "track_id", referencedColumnName = "trac_id")
     @ManyToOne(optional = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Track track;
 
     @JsonbTransient
-    @JoinColumn(name = "move_prevmove_id", referencedColumnName = "move_id")
+    @JoinColumn(name = "prev_movement_id", referencedColumnName = "id")
     @OneToOne(fetch = FetchType.LAZY)
     private Movement previousMovement;
 
-    @Column(name = "move_movesour_id")
+    @Column(name = "source_id")
     @Enumerated(EnumType.ORDINAL)
     private MovementSourceType source;
 
-    @Column(name = "move_movetyp_id")
+    @Column(name = "movetype_id")
     @Enumerated(EnumType.ORDINAL)
     private MovementTypeType movementType;
 
-    @Column(name = "move_timestamp")
+    @Column(name = "timestamp")
     private Instant timestamp;
     
-    @Column(name = "move_lesreporttime")
+    @Column(name = "lesreporttime")
     private Instant lesReportTime;
 
-    @Column(name = "move_satellite_id")
+    @Column(name = "satellite_id")
     @Convert(converter = SatelliteConverter.class)
     private SatId sourceSatelliteId;
 
     @NotNull
-    @Column(name = "move_updattim")
+    @Column(name = "update_time")
     private Instant updated;
 
     @NotNull
     @Size(min = 1, max = 20)
-    @Column(name = "move_upuser")
+    @Column(name = "update_user")
     private String updatedBy;
 
     @Column(name = "ais_position_accuracy")     //Value can be 0 (>10m) and 1 (<10m). See https://gpsd.gitlab.io/gpsd/AIVDM.html for more info
     private Short aisPositionAccuracy;
 
+    @Column(name = "calculatedspeed")
+    private Double calculatedSpeed;
 
     public UUID getId() {
         return id;
@@ -291,6 +293,14 @@ public class Movement implements Serializable, Comparable<Movement> {
 
     public void setAisPositionAccuracy(Short aisPositionAccuracy) {
         this.aisPositionAccuracy = aisPositionAccuracy;
+    }
+
+    public Double getCalculatedSpeed() {
+        return calculatedSpeed;
+    }
+
+    public void setCalculatedSpeed(Double calculatedSpeed) {
+        this.calculatedSpeed = calculatedSpeed;
     }
 
     @Override

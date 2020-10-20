@@ -23,6 +23,7 @@ import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.IncomingMovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.ExchangeBean;
 import eu.europa.ec.fisheries.uvms.movement.service.message.MovementRulesBean;
+import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
@@ -98,6 +99,10 @@ public class MovementCreateBean {
 
             Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
             movement.setMovementConnect(movementConnect);
+            
+            if (previousVms != null && !MovementSourceType.AIS.value().equals(movement.getSource().value()) ) {
+                movement.setCalculatedSpeed(CalculationUtil.getPositionCalculations(previousVms, movement).getAvgSpeed());
+            }
 
             Movement createdMovement = movementService.createAndProcessMovement(movement);
 
