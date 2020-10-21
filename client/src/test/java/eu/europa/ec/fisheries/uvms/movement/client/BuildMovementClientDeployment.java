@@ -15,14 +15,9 @@ public abstract class BuildMovementClientDeployment {
     @Deployment(name = "movement", order = 1)
     public static Archive<?> createDeployment() {
         WebArchive testWar = ShrinkWrap.create(WebArchive.class, "movement.war");
-        testWar.merge(ShrinkWrap.createFromZipFile(WebArchive.class,
-                Maven.configureResolver().loadPomFromFile("pom.xml")
-                        .resolve("eu.europa.ec.fisheries.uvms.movement:movement-rest:war:?")
-                        .withoutTransitivity().asSingleFile()));
-
         File[] files = Maven.configureResolver().loadPomFromFile("pom.xml")
-                .resolve("eu.europa.ec.fisheries.uvms.movement:movement-service")
-                .withTransitivity().asFile();
+                    .resolve("eu.europa.ec.fisheries.uvms.movement:movement-module:jar:classes:?")
+                    .withTransitivity().asFile();
         testWar.addAsLibraries(files);
 
         testWar.addPackages(true, "eu.europa.ec.fisheries.uvms.movement.client");

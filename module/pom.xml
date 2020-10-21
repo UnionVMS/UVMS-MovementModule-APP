@@ -4,75 +4,157 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>movement-module</artifactId>
     <name>${project.parent.artifactId}-module</name>
-    <packaging>ear</packaging>
+    <packaging>war</packaging>
 
     <parent>
         <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
         <artifactId>movement</artifactId>
         <version>5.5.27-UVMS-SNAPSHOT</version>
     </parent>
-    
+
+    <properties>
+        <docker.dev.start.phase>test-compile</docker.dev.start.phase>
+        <docker.liquibase.phase>test-compile</docker.liquibase.phase>
+        <docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>fish.focus.uvms.maven</groupId>
+            <artifactId>uvms-pom-gis-deps</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>movement-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.exchange</groupId>
+            <artifactId>exchange-model</artifactId>
+            <version>${exchange.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
+            <artifactId>asset-model</artifactId>
+            <version>${asset.client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.asset</groupId>
+            <artifactId>asset-client</artifactId>
+            <version>${asset.client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.movement-rules</groupId>
+            <artifactId>movement-rules-model</artifactId>
+            <version>${movement-rules.model.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                    <artifactId>jackson-datatype-jsr310</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.audit</groupId>
+            <artifactId>audit-model</artifactId>
+            <version>${audit.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms</groupId>
+            <artifactId>uvms-config</artifactId>
+            <version>${uvms.config.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms</groupId>
+            <artifactId>uvms-longpolling</artifactId>
+            <version>${longpolling.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.user</groupId>
+            <artifactId>user-model</artifactId>
+            <version>${user.model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>fish.focus.uvms.maven</groupId>
+            <artifactId>uvms-pom-monitoring-deps</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
+            <artifactId>uvms-commons-message</artifactId>
+            <version>${uvms.common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.commons</groupId>
+            <artifactId>uvms-commons-rest</artifactId>
+            <version>${uvms.common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms</groupId>
+            <artifactId>usm4uvms</artifactId>
+            <version>${usm4uvms.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>eu.europa.ec.fisheries.uvms</groupId>
+                    <artifactId>uvms-commons</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jaxrs</artifactId>
+                </exclusion>
+                <exclusion>
+                  <groupId>com.fasterxml.jackson.core</groupId>
+                  <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sf.ehcache</groupId>
+                    <artifactId>ehcache</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>fish.focus.uvms.maven</groupId>
+            <artifactId>uvms-pom-arquillian-deps</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.peertopark.java</groupId>
+            <artifactId>geocalc</artifactId>
+            <version>1.1.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <build>
-        <finalName>${project.name}</finalName>
+        <finalName>${project.name}-${project.version}</finalName>
         <plugins>
-            <!-- This configuration specifies what ends up in application.xml -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-ear-plugin</artifactId>
+                <artifactId>maven-war-plugin</artifactId>
                 <configuration>
-                    <modules>
-                        <ejbModule>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>movement-service</artifactId>
-                        </ejbModule>
-                        <jarModule>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>movement-model</artifactId>
-                        </jarModule>
-                        <webModule>
-                            <groupId>${project.groupId}</groupId>
-                            <context-root>${context.root}${project.parent.artifactId}</context-root>
-                            <artifactId>movement-rest</artifactId>
-                        </webModule>
-                    </modules>
-                    <skinnyWars>true</skinnyWars>
-                    <defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                        </resource>
+                    </webResources>
                     <archive>
                         <manifestEntries>
                             <Logging-Profile>movement</Logging-Profile>
                         </manifestEntries>
                     </archive>
+                    <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>movement-service</artifactId>
-            <version>${project.parent.version}</version>
-            <type>ejb</type>
-        </dependency>
-        <dependency>
-            <groupId>eu.europa.ec.fisheries.uvms.movement</groupId>
-            <artifactId>movement-model</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-            <exclusions>
-            	<exclusion>
-					<groupId>org.apache.commons</groupId>
-		      		<artifactId>commons-lang3</artifactId>
-				</exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>movement-rest</artifactId>
-            <version>${project.parent.version}</version>
-            <type>war</type>
-        </dependency>
-    </dependencies>
 
     <!-- USE following command to run this profile: mvn clean install -P wildfly-deploy wildfly:deploy -Dhostname=127.0.0.1 -Dport=9990 -Dusername=admin -Dpassword=asdf  -->
     <profiles>
@@ -92,6 +174,65 @@
                             <username>${username}</username>
                             <password>${password}</password>
                             <force>true</force>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- USE following command to run this profile: mvn clean install -P generate-rest-doc -Dhostname=127.0.0.1 -Dport=8080  -->
+        <profile>
+            <id>generate-rest-doc</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>generate-service-docs</id>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <doclet>com.carma.swagger.doclet.ServiceDoclet</doclet>
+                                    <docletArtifact>
+                                        <groupId>com.carma</groupId>
+                                        <artifactId>swagger-doclet</artifactId>
+                                        <version>1.1.2</version>
+                                    </docletArtifact>
+                                    <reportOutputDirectory>src/main/webapp</reportOutputDirectory>
+                                    <useStandardDocletOptions>false</useStandardDocletOptions>
+                                    <additionalparam>
+                                        -apiVersion ${project.version}
+                                        -docBasePath /${project.parent.artifactId}/apidocs
+                                        -apiBasePath /${project.parent.artifactId}/rest
+                                    </additionalparam>
+                                </configuration>
+                                <goals>
+                                    <goal>javadoc</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <version>1.5.3</version>
+                        <executions>
+                            <execution>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <file>${basedir}/src/main/webapp/apidocs/index.html</file>
+                            <replacements>
+                                <replacement>
+                                    <token>new ApiKeyAuthorization\("api_key", key, "query"\)</token>
+                                    <value>new ApiKeyAuthorization("Authorization", key, "header")</value>
+                                </replacement>
+                            </replacements>
                         </configuration>
                     </plugin>
                 </plugins>
