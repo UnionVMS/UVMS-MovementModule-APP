@@ -108,8 +108,6 @@
 	<modules>
 		<module>model</module>
 		<module>LIQUIBASE</module>
-		<module>rest</module>
-		<module>service</module>
 		<module>module</module>
         <module>client</module>
     </modules>
