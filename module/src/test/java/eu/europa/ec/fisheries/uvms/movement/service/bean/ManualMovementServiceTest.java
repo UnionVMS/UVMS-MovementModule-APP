@@ -8,8 +8,10 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
+import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -20,6 +22,7 @@ import org.junit.runner.RunWith;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
+import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
 import javax.jms.TextMessage;
 import java.time.Instant;
@@ -40,6 +43,9 @@ public class ManualMovementServiceTest extends TransactionalTests {
 
     @EJB
     private ManualMovementService manualMovementService;
+
+    @Inject
+    MovementDao movementDao;
 
     private static String exchange = MessageConstants.QUEUE_EXCHANGE_EVENT_NAME;
     JMSHelper jmsHelper;
@@ -66,29 +72,22 @@ public class ManualMovementServiceTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void sendManualMovementSuccessTest() throws Exception {
-        String username = ManualMovementServiceTest.class.getSimpleName() + UUID.randomUUID().toString();
+        UUID assetId = UUID.randomUUID();
+        String username = "ManualMovementTests";
 
         ManualMovementDto draftMovement = createTempMovement();
+        draftMovement.getAsset().setIrcs("TestIrcs:" + assetId);
 
-        manualMovementService.sendManualMovement(draftMovement, username);
+        UUID reportId = manualMovementService.sendManualMovement(draftMovement, username);
+        assertNull(reportId);
 
-        userTransaction.commit();
-        userTransaction.begin();
+        Movement latestMovement = movementDao.getLatestMovement(assetId);
+        assertNotNull(latestMovement);
+        assertEquals(MovementSourceType.MANUAL, latestMovement.getSource());
+        assertEquals(username, latestMovement.getUpdatedBy());
+        assertEquals("10", latestMovement.getStatus());
+        assertEquals(draftMovement.getMovement().getTimestamp(), latestMovement.getTimestamp());
 
-        TextMessage message = (TextMessage) jmsHelper.listenOnQueue(exchange);
-        assertNotNull(message);
-
-        SetMovementReportRequest reportRequest = JAXBMarshaller.unmarshallTextMessage(message, SetMovementReportRequest.class);
-        assertNotNull(reportRequest);
-
-        assertEquals(reportRequest.getUsername(), username);
-        assertEquals(eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType.MANUAL, reportRequest.getRequest().getMovement().getSource());
-        assertEquals("10", reportRequest.getRequest().getMovement().getStatus());
-        assertTrue(reportRequest.getRequest().getMovement().getAssetId().getAssetIdList().stream().anyMatch(id -> id.getIdType().equals(AssetIdType.IRCS)));
-        assertTrue(reportRequest.getRequest().getMovement().getAssetId().getAssetIdList().stream().anyMatch(id -> id.getValue().equals(draftMovement.getAsset().getIrcs())));
-        assertTrue(reportRequest.getRequest().getMovement().getAssetId().getAssetIdList().stream().anyMatch(id -> id.getIdType().equals(AssetIdType.CFR)));
-        assertTrue(reportRequest.getRequest().getMovement().getAssetId().getAssetIdList().stream().anyMatch(id -> id.getValue().equals(draftMovement.getAsset().getCfr())));
-        assertEquals(Date.from(draftMovement.getMovement().getTimestamp()), reportRequest.getRequest().getMovement().getPositionTime());
     }
 
     private ManualMovementDto createTempMovement() {

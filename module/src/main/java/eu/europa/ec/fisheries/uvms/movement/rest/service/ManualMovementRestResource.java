@@ -13,13 +13,18 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.uvms.movement.service.bean.ManualMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
+import eu.europa.ec.fisheries.uvms.movement.service.validation.MovementSanityValidatorBean;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -28,6 +33,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Path("/manualMovement")
 @Stateless
@@ -37,8 +45,11 @@ public class ManualMovementRestResource {
 
     private final static Logger LOG = LoggerFactory.getLogger(ManualMovementRestResource.class);
 
-    @EJB
+    @Inject
     private ManualMovementService service;
+
+    @Inject
+    private MovementSanityValidatorBean validationService;
 
     @Context
     private HttpServletRequest request;
@@ -48,8 +59,14 @@ public class ManualMovementRestResource {
     public Response create(ManualMovementDto data) {
         LOG.debug("Create manual movement invoked in rest layer");
         try {
-            service.sendManualMovement(data, request.getRemoteUser());
-            return Response.ok().build();
+            UUID reportId = service.sendManualMovement(data, request.getRemoteUser());
+            if(reportId == null){
+                return Response.ok().header("MDC", MDC.get("requestId")).build();
+            } else {
+                AlarmReport report = validationService.getAlarmReportByGuid(reportId);
+                List<String> sanityRulesTriggered = report.getAlarmItemList().stream().map(AlarmItem::getRuleName).collect(Collectors.toList());
+                return Response.status(400).entity(sanityRulesTriggered).header("MDC", MDC.get("requestId")).build();
+            }
         } catch (Exception e) {
             LOG.error("[ Error when creating a manual movement. ] {} ", e);
             throw e;

@@ -34,7 +34,6 @@ public class ManualMovementRestResourceTest extends BuildMovementRestDeployment 
                 .post(Entity.json(movement), Response.class);
         assertEquals(200, response.getStatus());
 
-
         }
 
     @Test

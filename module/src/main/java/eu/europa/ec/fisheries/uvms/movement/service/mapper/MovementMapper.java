@@ -11,14 +11,14 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdList;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetType;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.*;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementComChannelType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.locationtech.jts.geom.Point;
 import org.slf4j.Logger;
@@ -84,55 +84,28 @@ public class MovementMapper {
         return dto;
     }
 
-    public static SetReportMovementType mapToSetReportMovementType(ManualMovementDto movement) {
+    public static IncomingMovement manualMovementToIncomingMovement(ManualMovementDto movement, String username) {
 
-        SetReportMovementType report = new SetReportMovementType();
-        report.setPluginName("ManualMovement");
-        report.setPluginType(PluginType.MANUAL);
-        report.setTimestamp(Date.from(Instant.now()));
+        IncomingMovement report = new IncomingMovement();
+        report.setPluginType(PluginType.MANUAL.value());
+        report.setMovementType(MovementTypeType.MAN.value());
+        report.setMovementSourceType(MovementSourceType.MANUAL.value());
+        report.setComChannelType(MovementComChannelType.MANUAL.value());
+        report.setDateReceived(Instant.now());
 
-        eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType exchangeMovementBaseType =
-                new eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementBaseType();
-        eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId exchangeAssetId =
-                new eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetId();
+        report.setAssetCFR(movement.getAsset().getCfr());
+        report.setAssetIRCS(movement.getAsset().getIrcs());
 
-        exchangeAssetId.setAssetType(AssetType.VESSEL);
+        report.setLatitude(movement.getMovement().getLocation().getLatitude());
+        report.setLongitude(movement.getMovement().getLocation().getLongitude());
 
-        AssetIdList cfr = new AssetIdList();
-        cfr.setIdType(AssetIdType.CFR);
-        cfr.setValue(movement.getAsset().getCfr());
+        report.setReportedCourse(movement.getMovement().getHeading());
+        report.setReportedSpeed(movement.getMovement().getSpeed());
+        report.setStatus("10");
 
-        AssetIdList ircs = new AssetIdList();
-        ircs.setIdType(AssetIdType.IRCS);
-        ircs.setValue(movement.getAsset().getIrcs());
+        report.setPositionTime(movement.getMovement().getTimestamp());
+        report.setUpdatedBy(username);
 
-        exchangeAssetId.getAssetIdList().add(cfr);
-        exchangeAssetId.getAssetIdList().add(ircs);
-
-        exchangeMovementBaseType.setAssetId(exchangeAssetId);
-
-        eu.europa.ec.fisheries.schema.exchange.movement.v1.MovementPoint exchangeMovementPoint = new MovementPoint();
-        if (movement.getMovement().getLocation().getLatitude() != null)
-            exchangeMovementPoint.setLatitude(movement.getMovement().getLocation().getLatitude());
-        if (movement.getMovement().getLocation().getLongitude() != null)
-            exchangeMovementPoint.setLongitude(movement.getMovement().getLocation().getLongitude());
-        exchangeMovementBaseType.setPosition(exchangeMovementPoint);
-
-        exchangeMovementBaseType.setReportedCourse(movement.getMovement().getHeading());
-        exchangeMovementBaseType.setReportedSpeed(movement.getMovement().getSpeed());
-        exchangeMovementBaseType.setStatus("10");
-
-        exchangeMovementBaseType.setMovementType(MovementTypeType.MAN);
-        exchangeMovementBaseType.setSource(MovementSourceType.MANUAL);
-
-        try {
-            Date date = Date.from(movement.getMovement().getTimestamp());
-            exchangeMovementBaseType.setPositionTime(date);
-        } catch (Exception e) {
-            LOG.error("Error when parsing position date for temp movement continuing ");
-        }
-        exchangeMovementBaseType.setComChannelType(MovementComChannelType.MANUAL);
-        report.setMovement(exchangeMovementBaseType);
         return report;
     }
 }
