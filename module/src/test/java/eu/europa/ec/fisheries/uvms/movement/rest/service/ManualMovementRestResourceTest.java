@@ -4,6 +4,7 @@ import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
+import eu.europa.ec.fisheries.uvms.movement.rest.filter.AppError;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -16,8 +17,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Arquillian.class)
 public class ManualMovementRestResourceTest extends BuildMovementRestDeployment {
@@ -34,8 +37,26 @@ public class ManualMovementRestResourceTest extends BuildMovementRestDeployment 
                 .post(Entity.json(movement), Response.class);
         assertEquals(200, response.getStatus());
 
+    }
 
-        }
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void createManualMovementWithTimeInFutureTest() {
+        ManualMovementDto movement = createManualMovement();
+        movement.getMovement().setTimestamp(Instant.now().plus(5, ChronoUnit.MINUTES));
+
+        Response response = getWebTarget()
+                .path("manualMovement")
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .post(Entity.json(movement), Response.class);
+        assertEquals(200, response.getStatus());
+
+        AppError error = response.readEntity(AppError.class);
+        assertEquals(400, error.code.intValue());
+        assertTrue(error.description, error.description.contains("Time in future"));
+
+    }
 
     @Test
     @OperateOnDeployment("movementservice")

@@ -11,12 +11,9 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import eu.europa.ec.fisheries.schema.exchange.module.v1.ExchangeModuleMethod;
-import eu.europa.ec.fisheries.schema.exchange.movement.v1.SetReportMovementType;
-import eu.europa.ec.fisheries.schema.exchange.plugin.types.v1.PluginType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
-import eu.europa.ec.fisheries.uvms.exchange.model.mapper.ExchangeModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.message.ExchangeBean;
 import org.slf4j.Logger;
@@ -24,8 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.jms.JMSException;
-import java.time.Instant;
+import java.util.UUID;
 
 @Stateless
 public class ManualMovementService {
@@ -33,23 +29,16 @@ public class ManualMovementService {
     private static final Logger LOG = LoggerFactory.getLogger(ManualMovementService.class);
 
     @Inject
-    private ExchangeBean exchangeProducer;
+    private MovementCreateBean movementCreateBean;
 
-    @Inject
-    private AuditService auditService;
-    
-    public void sendManualMovement(ManualMovementDto incomingMovement, String username) {
+    public UUID sendManualMovement(ManualMovementDto incomingManual, String username) {
         checkUsernameProvided(username);
-        validatePosition(incomingMovement.getMovement().getLocation());
-        try {
-            SetReportMovementType report = MovementMapper.mapToSetReportMovementType(incomingMovement);
-            String exchangeRequest = ExchangeModuleRequestMapper.createSetMovementReportRequest(report, username, null,
-                    Instant.now(), PluginType.MANUAL, username, null);
-            exchangeProducer.sendModuleMessage(exchangeRequest, ExchangeModuleMethod.SET_MOVEMENT_REPORT.value());
-//            auditService.sendManualMovementCreatedAudit(exchangeRequest, username);
-        } catch (JMSException ex) {
-            throw new IllegalArgumentException("Error when marshaling exchange request.", ex);
-        }
+        validatePosition(incomingManual.getMovement().getLocation());
+
+        IncomingMovement incomingMovement = MovementMapper.manualMovementToIncomingMovement(incomingManual, username);
+
+        return movementCreateBean.processIncomingMovement(incomingMovement);
+
     }
 
     private void checkUsernameProvided(String username) {

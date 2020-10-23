@@ -60,7 +60,7 @@ public class MovementCreateBean {
     @EJB
     private ExchangeBean exchangeBean;
 
-    public void processIncomingMovement(IncomingMovement incomingMovement) {
+    public UUID processIncomingMovement(IncomingMovement incomingMovement) {
         try {
             if (incomingMovement.getUpdated() == null) {
                 incomingMovement.setUpdated(Instant.now());
@@ -75,7 +75,7 @@ public class MovementCreateBean {
                     incomingMovement.getMovementSourceType().equals(MovementSourceType.AIS.value())) {
                 LOG.warn("Ignoring duplicate AIS position for {} ({}) with timestamp {}",
                         incomingMovement.getAssetName(), incomingMovement.getAssetMMSI(), incomingMovement.getPositionTime());
-                return;
+                return null;
             }
 
             Movement previousVms = null;
@@ -94,7 +94,7 @@ public class MovementCreateBean {
             UUID reportId = movementSanityValidatorBean.evaluateSanity(incomingMovement);
             if (reportId != null) {
                 exchangeBean.sendAckToExchange(MovementRefTypeType.ALARM, reportId, incomingMovement.getAckResponseMessageId());
-                return;
+                return reportId;
             }
 
             Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());
@@ -122,6 +122,8 @@ public class MovementCreateBean {
             // report ok to Exchange...
             // Tracer Id
             exchangeBean.sendAckToExchange(MovementRefTypeType.MOVEMENT, createdMovement.getId(), incomingMovement.getAckResponseMessageId());
+
+            return null;
         } catch (Exception e) {
             throw new IllegalStateException("Could not process incoming movement", e);
         }
