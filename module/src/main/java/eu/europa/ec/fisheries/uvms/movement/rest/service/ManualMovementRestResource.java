@@ -11,6 +11,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
  */
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
+import eu.europa.ec.fisheries.uvms.movement.rest.filter.AppError;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.ManualMovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmItem;
@@ -22,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +33,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -64,8 +63,8 @@ public class ManualMovementRestResource {
                 return Response.ok().header("MDC", MDC.get("requestId")).build();
             } else {
                 AlarmReport report = validationService.getAlarmReportByGuid(reportId);
-                List<String> sanityRulesTriggered = report.getAlarmItemList().stream().map(AlarmItem::getRuleName).collect(Collectors.toList());
-                return Response.status(400).entity(sanityRulesTriggered).header("MDC", MDC.get("requestId")).build();
+                String sanityRulesTriggered = report.getAlarmItemList().stream().map(AlarmItem::getRuleName).collect(Collectors.joining("\n"));
+                return Response.ok().entity(new AppError(400, sanityRulesTriggered)).header("MDC", MDC.get("requestId")).build();
             }
         } catch (Exception e) {
             LOG.error("[ Error when creating a manual movement. ] {} ", e);
