@@ -22,7 +22,7 @@
         <docker.liquibase.db.user>movement</docker.liquibase.db.user>
         <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
 		<longpolling.version>2.0.13</longpolling.version>
-		<user.model.version>2.1.8</user.model.version>
+		<user.model.version>2.1.9</user.model.version>
 		<audit.model.version>4.3.8</audit.model.version>
 		<exchange.model.version>5.3.13-UVMS</exchange.model.version>
 		<asset.client.version>6.7.31</asset.client.version>
