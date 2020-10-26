@@ -33,7 +33,6 @@ public class ManualMovementService {
 
     public UUID sendManualMovement(ManualMovementDto incomingManual, String username) {
         checkUsernameProvided(username);
-        validatePosition(incomingManual.getMovement().getLocation());
 
         IncomingMovement incomingMovement = MovementMapper.manualMovementToIncomingMovement(incomingManual, username);
 
@@ -44,20 +43,6 @@ public class ManualMovementService {
     private void checkUsernameProvided(String username) {
         if(username == null || username.isEmpty()){
             throw new IllegalArgumentException("Could not get username from request context");
-        }
-    }
-
-    private void validatePosition(MovementPoint movementPoint){
-        Double lat = movementPoint.getLatitude();
-        Double lon = movementPoint.getLongitude();
-        if (lat == null || lon == null) {
-            throw new IllegalArgumentException("Longitude and/or latitude is missing.");
-        }
-        if (Math.abs(lat) > 90) {
-            throw new IllegalArgumentException("Latitude is outside range.");
-        }
-        if (Math.abs(lon) > 180) {
-            throw new IllegalArgumentException("Longitude is outside range.");
         }
     }
 }
