@@ -57,6 +57,9 @@ public class MovementMapper {
     }
 
     public static MovementDto mapToMovementDto(Movement movement) {
+        if(movement == null){
+            return null;
+        }
         MovementDto dto = new MovementDto();
         dto.setHeading(movement.getHeading());
 
