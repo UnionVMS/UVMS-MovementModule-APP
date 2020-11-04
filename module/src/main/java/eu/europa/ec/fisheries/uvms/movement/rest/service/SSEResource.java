@@ -1,8 +1,9 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
@@ -51,8 +52,8 @@ public class SSEResource {
         LOG.debug("Movement {} came to SseResource" , move);
         try {
             if (move != null) {
-                MicroMovementExtended micro = new MicroMovementExtended(move);
-                String outboundJson = jsonb.toJson(micro);
+                MovementDto dto = MovementMapper.mapToMovementDto(move);
+                String outboundJson = jsonb.toJson(dto);
                 OutboundSseEvent sseEvent = eventBuilder
                         .name("Movement")
                         .id("" + System.currentTimeMillis())

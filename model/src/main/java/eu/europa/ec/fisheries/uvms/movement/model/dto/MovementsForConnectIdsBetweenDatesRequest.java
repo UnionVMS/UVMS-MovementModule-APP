@@ -9,7 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MicroMovementsForConnectIdsBetweenDatesRequest implements Serializable {
+public class MovementsForConnectIdsBetweenDatesRequest implements Serializable {
     private List<String> assetIds;
 
     private Instant fromDate = Instant.now().minus(8, ChronoUnit.HOURS);
@@ -18,10 +18,10 @@ public class MicroMovementsForConnectIdsBetweenDatesRequest implements Serializa
 
     private List<String> sources;
 
-    public MicroMovementsForConnectIdsBetweenDatesRequest() {
+    public MovementsForConnectIdsBetweenDatesRequest() {
     }
 
-    public MicroMovementsForConnectIdsBetweenDatesRequest(List<String> assetIds, Instant fromDate, Instant toDate) {
+    public MovementsForConnectIdsBetweenDatesRequest(List<String> assetIds, Instant fromDate, Instant toDate) {
         this.assetIds = assetIds;
         this.fromDate = fromDate;
         this.toDate = toDate;

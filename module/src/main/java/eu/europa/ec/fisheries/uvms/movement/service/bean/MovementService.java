@@ -24,8 +24,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.constant.ParameterKey;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
@@ -235,11 +233,11 @@ public class MovementService {
                 ChronoUnit.DAYS), positionTime);
     }
 
-    public List<MicroMovementExtended> getLatestMovementsLast8Hours(List<MovementSourceType> sources) {
+    public List<Movement> getLatestMovementsLast8Hours(List<MovementSourceType> sources) {
         return getLatestMovementsAfter(Instant.now().minus(8, ChronoUnit.HOURS), sources);
     }
 
-    public List<MicroMovementExtended> getLatestMovementsAfter(Instant date, List<MovementSourceType> sources) {
+    public List<Movement> getLatestMovementsAfter(Instant date, List<MovementSourceType> sources) {
         return movementDao.getLatestWithLimit(date, sources);
     }
     
@@ -293,15 +291,6 @@ public class MovementService {
         if(toBeDeleted != null) {
             movementDao.deleteMovementConnect(toBeDeleted);
         }
-    }
-
-    public MicroMovement getMicroMovementById(UUID movementId) {
-        Movement movement = movementDao.getMovementById(movementId);
-        return movement == null ? null : new MicroMovement(movement);
-    }
-    
-    public List<MicroMovement> getMicroMovementsByMoveIds(List<UUID> moveIds) {
-        return movementDao.getMicroMovementsByMoveIdList(moveIds);
     }
 
     public List<MovementDto> getMovementsByMoveIds(List<UUID> moveIds) {

@@ -1,6 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.rest.dto;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 
 import java.util.List;
 
@@ -8,24 +8,24 @@ public class RealTimeMapInitialData {
 
     public static final String ASSET_JSON_PLACE_HERE = "\"AssetJsonPlaceHere\"";
 
-    List<MicroMovementExtended> microMovements;
+    List<MovementDto> movements;
 
     String assetList;
 
-    public RealTimeMapInitialData(List<MicroMovementExtended> microMovements) {
-        this.microMovements = microMovements;
+    public RealTimeMapInitialData(List<MovementDto> movements) {
+        this.movements = movements;
         this.assetList = ASSET_JSON_PLACE_HERE.replace("\"", "");
     }
 
     public RealTimeMapInitialData() {
     }
 
-    public List<MicroMovementExtended> getMicroMovements() {
-        return microMovements;
+    public List<MovementDto> getMovements() {
+        return movements;
     }
 
-    public void setMicroMovements(List<MicroMovementExtended> microMovements) {
-        this.microMovements = microMovements;
+    public void setMovements(List<MovementDto> movements) {
+        this.movements = movements;
     }
 
     public String getAssetList() {

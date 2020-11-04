@@ -6,16 +6,14 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
-import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementMapByQueryResponse;
-import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -121,16 +119,16 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createAndGetMicroMovementById() {
+    public void createAndGetMovementById() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
-        MicroMovement response = getWebTarget()
-                .path("internal/getMicroMovement/")
+        MovementDto response = getWebTarget()
+                .path("internal/getMovement/")
                 .path(createdMovement.getId().toString())
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
-                .get(MicroMovement.class);
+                .get(MovementDto.class);
 
         assertNotNull(response);
     }
@@ -255,7 +253,7 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void microMovementsForConnectIdsBetweenDates() {
+    public void movementsForConnectIdsBetweenDates() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -267,17 +265,17 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
         Instant now = Instant.now();
         Instant dayBefore = now.minus(1, ChronoUnit.DAYS);
 
-        MicroMovementsForConnectIdsBetweenDatesRequest request = new MicroMovementsForConnectIdsBetweenDatesRequest(connectIds, dayBefore, now);
+        MovementsForConnectIdsBetweenDatesRequest request = new MovementsForConnectIdsBetweenDatesRequest(connectIds, dayBefore, now);
 
         Response response = getWebTarget()
-                .path("internal/microMovementsForConnectIdsBetweenDates")
+                .path("internal/movementsForConnectIdsBetweenDates")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE), Response.class);
 
-        List<MicroMovementExtended> microMovementExtendedList = response.readEntity(new GenericType<List<MicroMovementExtended>>() {});
+        List<MovementDto> movementExtendedList = response.readEntity(new GenericType<List<MovementDto>>() {});
 
-        assertEquals(1, microMovementExtendedList.size());
+        assertEquals(1, movementExtendedList.size());
     }
 
     private MovementQuery createMovementQuery(Movement createdMovement) {

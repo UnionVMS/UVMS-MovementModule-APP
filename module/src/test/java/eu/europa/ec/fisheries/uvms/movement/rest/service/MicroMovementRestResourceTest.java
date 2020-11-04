@@ -2,13 +2,12 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.TrackForAssetsQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -44,7 +43,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
         OffsetDateTime timestamp = createdMovement.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
-        List<MicroMovement> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("micro")
                 .path("track")
                 .path("asset")
@@ -52,11 +51,11 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(""), new GenericType<List<MicroMovement>>() {});
+                .post(Entity.json(""), new GenericType<List<MovementDto>>() {});
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getId().equals(createdMovement.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement.getId())));
     }
 
     @Test
@@ -72,21 +71,21 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         TrackForAssetsQuery query = new TrackForAssetsQuery();
         query.setAssetIds(Arrays.asList(createdMovement1.getMovementConnect().getId(), createdMovement2.getMovementConnect().getId()));
 
-        List<MicroMovementExtended> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("micro")
                 .path("track")
                 .path("assets")
                 .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(query),new GenericType<List<MicroMovementExtended>>() {});
+                .post(Entity.json(query),new GenericType<List<MovementDto>>() {});
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement1.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement1.getId())));
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement2.getId())));
     }
 
     @Test
@@ -104,7 +103,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         Movement aisCreated = movementService.createAndProcessMovement(aisMovement);
 
         OffsetDateTime timestamp = aisCreated.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
-        List<MicroMovement> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("micro")
                 .path("track")
                 .path("asset")
@@ -112,15 +111,15 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(Arrays.asList(MovementSourceType.AIS.value())), new GenericType<List<MicroMovement>>() {});
+                .post(Entity.json(Arrays.asList(MovementSourceType.AIS.value())), new GenericType<List<MovementDto>>() {});
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getId().equals(aisCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(aisCreated.getId())));
 
         assertFalse(latestMovements
                 .stream()
-                .anyMatch(m -> m.getId().equals(nafCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(nafCreated.getId())));
     }
 
     @Test
@@ -143,7 +142,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         Movement iridiumCreated = movementService.createAndProcessMovement(iridiumMovement);
 
         OffsetDateTime timestamp = aisCreated.getTimestamp().minus(5, ChronoUnit.MINUTES).atOffset(ZoneOffset.UTC);
-        List<MicroMovement> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("micro")
                 .path("track")
                 .path("asset")
@@ -151,19 +150,19 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(Arrays.asList(MovementSourceType.NAF.value(), MovementSourceType.IRIDIUM.value())), new GenericType<List<MicroMovement>>() {});
+                .post(Entity.json(Arrays.asList(MovementSourceType.NAF.value(), MovementSourceType.IRIDIUM.value())), new GenericType<List<MovementDto>>() {});
 
         assertFalse(latestMovements
                 .stream()
-                .anyMatch(m -> m.getId().equals(aisCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(aisCreated.getId())));
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getId().equals(nafCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(nafCreated.getId())));
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getId().equals(iridiumCreated.getId().toString())));
+                .anyMatch(m -> m.getId().equals(iridiumCreated.getId())));
     }
 
     @Test
@@ -183,21 +182,21 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         query.setSources(Arrays.asList(MovementSourceType.NAF.value(), MovementSourceType.IRIDIUM.value()));
         query.setAssetIds(Arrays.asList(createdMovement1.getMovementConnect().getId(), createdMovement2.getMovementConnect().getId()));
 
-        List<MicroMovementExtended> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("micro")
                 .path("track")
                 .path("assets")
                 .queryParam("startDate", timestamp.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z")))
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(query), new GenericType<List<MicroMovementExtended>>() {});
+                .post(Entity.json(query), new GenericType<List<MovementDto>>() {});
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement1.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement1.getId())));
         assertFalse(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement2.getId())));
     }
 
     @Test
@@ -220,7 +219,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         Instant endTime  = createdMovement2.getTimestamp().plusSeconds(1);
 
 
-        List<MicroMovement> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("micro")
                 .path("track")
                 .path("asset")
@@ -229,15 +228,15 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .queryParam("endDate", DateUtils.dateToHumanReadableString(endTime))
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(""), new GenericType<List<MicroMovement>>() {});
+                .post(Entity.json(""), new GenericType<List<MovementDto>>() {});
 
         assertFalse(latestMovements.isEmpty());
         assertTrue(latestMovements.stream().
-                noneMatch(m -> m.getId().equals(createdMovement.getId().toString())));
+                noneMatch(m -> m.getId().equals(createdMovement.getId())));
         assertTrue(latestMovements.stream()
-                .anyMatch(m -> m.getId().equals(createdMovement2.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement2.getId())));
         assertTrue(latestMovements.stream()
-                .noneMatch(m -> m.getId().equals(createdMovement3.getId().toString())));
+                .noneMatch(m -> m.getId().equals(createdMovement3.getId())));
     }
 
     @Test
@@ -257,7 +256,7 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         Movement createdMovement3 = movementService.createAndProcessMovement(movementBaseType3);
 
 
-        List<MicroMovement> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("micro")
                 .path("track")
                 .path("latest")
@@ -266,15 +265,15 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .queryParam("maxNbr", 2)
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(""), new GenericType<List<MicroMovement>>() {});
+                .post(Entity.json(""), new GenericType<List<MovementDto>>() {});
 
         assertFalse(latestMovements.isEmpty());
         assertTrue(latestMovements.stream().
-                noneMatch(m -> m.getId().equals(createdMovement.getId().toString())));
+                noneMatch(m -> m.getId().equals(createdMovement.getId())));
         assertTrue(latestMovements.stream()
-                .anyMatch(m -> m.getId().equals(createdMovement2.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement2.getId())));
         assertTrue(latestMovements.stream()
-                .anyMatch(m -> m.getId().equals(createdMovement3.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement3.getId())));
     }
 
 
@@ -284,21 +283,21 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
-        List<MicroMovementExtended> latestMovements = getWebTarget()
+        List<MovementDto> latestMovements = getWebTarget()
                 .path("micro")
                 .path("latest")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(""), RealTimeMapInitialData.class).getMicroMovements();
+                .post(Entity.json(""), RealTimeMapInitialData.class).getMovements();
 
         assertTrue(latestMovements
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement.getId())));
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getLastMicroMovementForAllAssetsTest() {
+    public void getLastMovementForAllAssetsTest() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
@@ -309,16 +308,16 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(""), RealTimeMapInitialData.class);
 
-        assertTrue(output.getMicroMovements().size() > 0);
-        assertTrue(output.getMicroMovements()
+        assertTrue(output.getMovements().size() > 0);
+        assertTrue(output.getMovements()
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
+                .anyMatch(m -> m.getId().equals(createdMovement.getId())));
         assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
     }
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void getLastMicroMovementFromOnlyOneSourceTest() {
+    public void getLastMovementFromOnlyOneSourceTest() {
         Movement nafBaseType = MovementTestHelper.createMovement();
         nafBaseType.setSource(MovementSourceType.NAF);
         Movement nafMovement = movementService.createAndProcessMovement(nafBaseType);
@@ -334,13 +333,13 @@ public class MicroMovementRestResourceTest extends BuildMovementRestDeployment {
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(Arrays.asList(MovementSourceType.NAF.value())), RealTimeMapInitialData.class);
 
-        assertTrue(output.getMicroMovements().size() > 0);
-        assertTrue(output.getMicroMovements()
+        assertTrue(output.getMovements().size() > 0);
+        assertTrue(output.getMovements()
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getId().equals(nafMovement.getId().toString())));
-        assertFalse(output.getMicroMovements()
+                .anyMatch(m -> m.getId().equals(nafMovement.getId())));
+        assertFalse(output.getMovements()
                 .stream()
-                .anyMatch(m -> m.getMicroMove().getId().equals(manualMovement.getId().toString())));
+                .anyMatch(m -> m.getId().equals(manualMovement.getId())));
         assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
     }
 

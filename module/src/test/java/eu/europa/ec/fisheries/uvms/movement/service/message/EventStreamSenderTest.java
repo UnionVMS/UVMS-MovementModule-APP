@@ -2,8 +2,8 @@ package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.BuildMovementServiceTestDeployment;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -66,12 +66,12 @@ public class EventStreamSenderTest extends BuildMovementServiceTestDeployment {
         Matcher m = p.matcher(messageJson);
         assertTrue(m.find());
 
-        MicroMovementExtended micro = jsonb.fromJson(messageJson, MicroMovementExtended.class);
-        assertNotNull(micro);
-        assertEquals(incomingMovement.getMovementSourceType(), micro.getMicroMove().getSource().name());
-        assertEquals(incomingMovement.getReportedCourse(), micro.getMicroMove().getHeading());
-        assertEquals(incomingMovement.getAssetGuid(), micro.getAsset());
-        assertEquals(incomingMovement.getPositionTime().truncatedTo(ChronoUnit.MILLIS), micro.getMicroMove().getTimestamp());
+        MovementDto dto = jsonb.fromJson(messageJson, MovementDto.class);
+        assertNotNull(dto);
+        assertEquals(incomingMovement.getMovementSourceType(), dto.getSource().name());
+        assertEquals(incomingMovement.getReportedCourse().floatValue(), dto.getHeading().floatValue(), 0);
+        assertEquals(incomingMovement.getAssetGuid(), dto.getAsset());
+        assertEquals(incomingMovement.getPositionTime().truncatedTo(ChronoUnit.MILLIS), dto.getTimestamp());
 
     }
 

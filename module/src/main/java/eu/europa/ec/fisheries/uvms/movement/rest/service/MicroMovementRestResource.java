@@ -13,13 +13,14 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.RestUtilMapper;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.TrackForAssetsQuery;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import eu.europa.ec.fisheries.uvms.rest.security.RequiresFeature;
 import eu.europa.ec.fisheries.uvms.rest.security.UnionVMSFeature;
@@ -65,14 +66,15 @@ public class MicroMovementRestResource {
     @POST
     @Path("/track/asset/{id}/")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackForAssetByDate(@PathParam("id") UUID connectId, @DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, List<String> sources) {
+    public Response getMovementTrackForAssetByDate(@PathParam("id") UUID connectId, @DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, List<String> sources) {
         try {
 
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
             Instant startInstant = (startDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
             Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtils.stringToDate(endDate));
-            List<MicroMovement> microList = movementDao.getMicroMovementsForAssetAfterDate(connectId, startInstant, endInstant, sourceTypes);
-            return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
+            List<Movement> movements = movementDao.getMicroMovementsForAssetAfterDate(connectId, startInstant, endInstant, sourceTypes);
+            List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
+            return Response.ok(movementDtos).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Micro Movement for connectId: {}", connectId, e);
             throw e;
@@ -82,12 +84,13 @@ public class MicroMovementRestResource {
     @POST
     @Path("/track/latest/asset/{id}/")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackForAssetByNumber(@PathParam("id") UUID connectId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNumber, List<String> sources) {
+    public Response getMovementTrackForAssetByNumber(@PathParam("id") UUID connectId, @DefaultValue("2000") @QueryParam("maxNbr") Integer maxNumber, List<String> sources) {
         try {
 
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
-            List<MicroMovement> microList = movementDao.getLatestNumberOfMicroMovementsForAsset(connectId, maxNumber, sourceTypes);
-            return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
+            List<Movement> movements = movementDao.getLatestNumberOfMovementsForAsset(connectId, maxNumber, sourceTypes);
+            List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
+            return Response.ok(movementDtos).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Micro Movement for connectId: {}", connectId, e);
             throw e;
@@ -97,7 +100,7 @@ public class MicroMovementRestResource {
     @POST
     @Path("/track/assets/")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getMicroMovementTrackForAssets(@DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, TrackForAssetsQuery query) {
+    public Response getMovementTrackForAssets(@DefaultValue("") @QueryParam("startDate") String startDate, @DefaultValue("") @QueryParam("endDate") String endDate, TrackForAssetsQuery query) {
         try {
             if (query.getAssetIds().isEmpty()) {
                 return Response.ok(Collections.emptyList()).header("MDC", MDC.get("requestId")).build();
@@ -106,8 +109,9 @@ public class MicroMovementRestResource {
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(query.getSources());
             Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
             Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtils.stringToDate(endDate));
-            List<MicroMovementExtended> microList = movementDao.getMicroMovementsForConnectIdsBetweenDates(query.getAssetIds(), startInstant, endInstant, sourceTypes);
-            return Response.ok(microList).header("MDC", MDC.get("requestId")).build();
+            List<Movement> movements = movementDao.getMicroMovementsForConnectIdsBetweenDates(query.getAssetIds(), startInstant, endInstant, sourceTypes);
+            List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
+            return Response.ok(movementDtos).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("Error when getting Micro Movement for connectIds: {}", query.getAssetIds(), e);
             throw e;
@@ -117,18 +121,20 @@ public class MicroMovementRestResource {
     @POST
     @Path("/latest")
     @RequiresFeature(UnionVMSFeature.viewMovements)
-    public Response getLastMicroMovementForAllAssets(List<String> sources) {
+    public Response getLastMovementForAllAssets(List<String> sources) {
         try {
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
-            List<MicroMovementExtended> microMovements = movementService.getLatestMovementsLast8Hours(sourceTypes);
+            List<Movement> movements = movementService.getLatestMovementsLast8Hours(sourceTypes);
 
-            List<String> assetIdList = new ArrayList<>(microMovements.size());
-            for (MicroMovementExtended micro: microMovements) {
-                assetIdList.add(micro.getAsset());
+            List<String> assetIdList = new ArrayList<>(movements.size());
+            for (Movement micro: movements) {
+                assetIdList.add(micro.getMovementConnect().getId().toString());
             }
 
             String assetInfo = movementService.getMicroAssets(assetIdList);
-            RealTimeMapInitialData retVal = new RealTimeMapInitialData(microMovements);
+
+            List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
+            RealTimeMapInitialData retVal = new RealTimeMapInitialData(movementDtos);
             String returnJson = jsonb.toJson(retVal).replace(RealTimeMapInitialData.ASSET_JSON_PLACE_HERE, assetInfo);
 
             return Response.ok(returnJson).header("MDC", MDC.get("requestId")).build();

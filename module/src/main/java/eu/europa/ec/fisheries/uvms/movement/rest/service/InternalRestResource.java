@@ -6,13 +6,11 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementEntityToModelMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
@@ -109,20 +107,6 @@ public class InternalRestResource {
     }
 
     @GET
-    @Path("/getMicroMovement/{movementId}")
-    @RequiresFeature(UnionVMSFeature.manageInternalRest)
-    public Response getMicroMovementById(@PathParam("movementId") UUID movementId) {
-        try {
-            MicroMovement byId = movementService.getMicroMovementById(movementId);
-            return Response.ok(byId).type(MediaType.APPLICATION_JSON)
-                    .header("MDC", MDC.get("requestId")).build();
-        } catch (Exception e) {
-            LOG.error("[ Error when getting microMovement. ]", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
-        }
-    }
-
-    @GET
     @Path("/getMovement/{movementId}")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getMovementById(@PathParam("movementId") UUID movementId) {
@@ -182,9 +166,9 @@ public class InternalRestResource {
     }
 
     @POST
-    @Path("/microMovementsForConnectIdsBetweenDates")
+    @Path("/movementsForConnectIdsBetweenDates")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
-    public Response getMicroMovementsForConnectIdsBetweenDates(MicroMovementsForConnectIdsBetweenDatesRequest request) {
+    public Response getMovementsForConnectIdsBetweenDates(MovementsForConnectIdsBetweenDatesRequest request) {
         List<String> vesselIds = request.getAssetIds();
         Instant fromDate = request.getFromDate();
         Instant toDate = request.getToDate();
@@ -200,9 +184,10 @@ public class InternalRestResource {
                     .map(UUID::fromString)
                     .collect(Collectors.toList());
 
-            List<MicroMovementExtended> microMovements = movementDao.getMicroMovementsForConnectIdsBetweenDates(uuids, fromDate, toDate, sourceTypes);
+            List<Movement> movements = movementDao.getMicroMovementsForConnectIdsBetweenDates(uuids, fromDate, toDate, sourceTypes);
+            List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
 
-            Response.ResponseBuilder ok = Response.ok(microMovements);
+            Response.ResponseBuilder ok = Response.ok(movementDtos);
             return ok.header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting micro movements for vessel ids ]", e);
@@ -222,20 +207,6 @@ public class InternalRestResource {
         return sourceTypes;
     }
     
-    @POST
-    @Path("/getMicroMovementList")
-    @RequiresFeature(UnionVMSFeature.manageInternalRest)
-    public Response getMicroMovementByIdList(List<UUID> moveIds) {
-        try {
-            List<MicroMovement> microMovement = movementService.getMicroMovementsByMoveIds(moveIds);
-            return Response.ok(microMovement).type(MediaType.APPLICATION_JSON)
-                    .header("MDC", MDC.get("requestId")).build();
-        } catch (Exception e) {
-            LOG.error("[ Error when getting microMovements. ]", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ExceptionUtils.getRootCause(e)).build();
-        }
-    }
-
     @POST
     @Path("/getMovementList")
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
