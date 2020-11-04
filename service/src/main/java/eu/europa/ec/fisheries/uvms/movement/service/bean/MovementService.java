@@ -489,10 +489,6 @@ public class MovementService {
         if(areasGeometryUnion == null) throw new InvalidArgumentException("AreasGeometryUnion was null");
     }
 
-    public List<Segment> findSegmentsBySegmentIds(List<Long> segmentIds) {
-        return dao.getSegmentsBySegmentIds(segmentIds);
-    }
-
     public List<SegmentAndTrackList>  findSegmentsBySegmentIds(List<SegmentIds> segmentIds) {
         return segmentIds.stream().map(segmentId -> {
             List<Segment> segments = dao.getSegmentsBySegmentIds(segmentId.getSegmentIds());
