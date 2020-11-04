@@ -4,10 +4,8 @@ import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.commons.date.JsonBConfigurator;
 import eu.europa.ec.fisheries.uvms.movement.client.model.CursorPagination;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
-import eu.europa.ec.fisheries.uvms.movement.model.dto.MicroMovementsForConnectIdsBetweenDatesRequest;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementsForConnectIdsBetweenDatesRequest;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.rest.security.InternalRestTokenHandler;
 import org.slf4j.MDC;
@@ -70,43 +68,31 @@ public class MovementRestClient {
         return response.readEntity(String.class);
     }
 
-    public List<MicroMovementExtended> getMicroMovementsForConnectIdsBetweenDates(List<String> connectIds, Instant fromDate, Instant toDate) {
-        MicroMovementsForConnectIdsBetweenDatesRequest request = new MicroMovementsForConnectIdsBetweenDatesRequest(connectIds, fromDate, toDate);
+    public List<MovementDto> getMovementsForConnectIdsBetweenDates(List<String> connectIds, Instant fromDate, Instant toDate) {
+        MovementsForConnectIdsBetweenDatesRequest request = new MovementsForConnectIdsBetweenDatesRequest(connectIds, fromDate, toDate);
 
         Response response = webTarget
-                .path("internal/microMovementsForConnectIdsBetweenDates")
+                .path("internal/movementsForConnectIdsBetweenDates")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
                 .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
 
         checkForErrorResponse(response);
-        return response.readEntity(new GenericType<List<MicroMovementExtended>>() {});
+        return response.readEntity(new GenericType<List<MovementDto>>() {});
     }
 
-    public String getMicroMovementsForConnectIdsBetweenDates(List<String> connectIds, Instant fromDate, Instant toDate, List<String> sources) {
-        MicroMovementsForConnectIdsBetweenDatesRequest request = new MicroMovementsForConnectIdsBetweenDatesRequest(connectIds, fromDate, toDate);
+    public String getMovementsForConnectIdsBetweenDates(List<String> connectIds, Instant fromDate, Instant toDate, List<String> sources) {
+        MovementsForConnectIdsBetweenDatesRequest request = new MovementsForConnectIdsBetweenDatesRequest(connectIds, fromDate, toDate);
         request.setSources(sources);
 
         Response response = webTarget
-                .path("internal/microMovementsForConnectIdsBetweenDates")
+                .path("internal/movementsForConnectIdsBetweenDates")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
                 .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
 
         checkForErrorResponse(response);
         return response.readEntity(String.class);
-    }
-
-    public MicroMovement getMicroMovementById(UUID id) {
-        Response response = webTarget
-                .path("internal/getMicroMovement")
-                .path(id.toString())
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
-                .get();
-
-        checkForErrorResponse(response);
-        return response.readEntity(MicroMovement.class);
     }
 
     public MovementDto getMovementById(UUID id) {
@@ -133,17 +119,6 @@ public class MovementRestClient {
         return getMovementListByQueryResponse;
     }
     
-    public List<MicroMovement> getMicroMovementByIdList(List<UUID> ids) {
-        Response response = webTarget
-                .path("internal/getMicroMovementList")
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, internalRestTokenHandler.createAndFetchToken("user"))
-                .post(Entity.entity(ids, MediaType.APPLICATION_JSON_TYPE));
-
-        checkForErrorResponse(response);
-        return response.readEntity(new GenericType<List<MicroMovement>>() {});
-    }
-
     public List<MovementDto> getMovementDtoByIdList(List<UUID> ids) {
         Response response = webTarget
                 .path("internal/getMovementList")

@@ -102,8 +102,8 @@ public class MovementMapper {
         report.setLatitude(movement.getMovement().getLocation().getLatitude());
         report.setLongitude(movement.getMovement().getLocation().getLongitude());
 
-        report.setReportedCourse(movement.getMovement().getHeading());
-        report.setReportedSpeed(movement.getMovement().getSpeed());
+        report.setReportedCourse(movement.getMovement().getHeading() != null ? movement.getMovement().getHeading().doubleValue() : null);
+        report.setReportedSpeed(movement.getMovement().getSpeed() != null ? movement.getMovement().getSpeed().doubleValue() : null);
         report.setStatus("10");
 
         report.setPositionTime(movement.getMovement().getTimestamp());

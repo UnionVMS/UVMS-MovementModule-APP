@@ -1,16 +1,13 @@
 package eu.europa.ec.fisheries.uvms.movement.service.bean;
 
-import eu.europa.ec.fisheries.schema.exchange.module.v1.SetMovementReportRequest;
-import eu.europa.ec.fisheries.schema.exchange.movement.asset.v1.AssetIdType;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
-import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.message.JMSHelper;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -24,9 +21,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
-import javax.jms.TextMessage;
 import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -101,16 +96,16 @@ public class ManualMovementServiceTest extends TransactionalTests {
         asset.setName("T");
         movement.setAsset(asset);
 
-        MicroMovement micro = new MicroMovement();
+        MovementDto dto = new MovementDto();
         MovementPoint location = new MovementPoint();
         location.setLatitude(0.0);
         location.setLongitude(0.0);
-        micro.setLocation(location);
-        micro.setTimestamp(Instant.now());
-        micro.setHeading(0.0);
-        micro.setSpeed(0.0);
-        micro.setSource(MovementSourceType.MANUAL);
-        movement.setMovement(micro);
+        dto.setLocation(location);
+        dto.setTimestamp(Instant.now());
+        dto.setHeading(0.0f);
+        dto.setSpeed(0.0f);
+        dto.setSource(MovementSourceType.MANUAL);
+        movement.setMovement(dto);
 
         return movement;
     }

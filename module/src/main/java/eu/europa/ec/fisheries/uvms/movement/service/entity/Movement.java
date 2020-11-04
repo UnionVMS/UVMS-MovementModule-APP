@@ -14,7 +14,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.SatelliteConverter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.DynamicInsert;
@@ -38,7 +37,7 @@ import java.util.UUID;
         @Index(columnList = "movementconnect_id, timestamp", name = "movement_count_idx", unique = false)
 })
 @NamedQueries({
-    @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.source, m.sourceSatelliteId, m.status, m.aisPositionAccuracy) FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT m FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_ALL_BY_MOVEMENTCONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect = :movementConnect ORDER BY m.timestamp ASC"),
     @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :connectId ORDER BY m.timestamp DESC"),
@@ -48,11 +47,9 @@ import java.util.UUID;
     @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date "),
     @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.movementConnect.id = :asset AND m.timestamp BETWEEN :fromDate AND :toDate "),
 
-    @NamedQuery(name = MicroMovementExtended.FIND_ALL_AFTER_DATE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect.id, m.timestamp, m.speed, m.source, m.sourceSatelliteId, m.status, m.aisPositionAccuracy) FROM Movement m WHERE m.timestamp > :date "),
-    @NamedQuery(name = MicroMovementExtended.FIND_LATEST_X_NUMBER_FOR_ASSET, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.source, m.sourceSatelliteId, m.status, m.aisPositionAccuracy) FROM Movement m WHERE m.movementConnect.id = :id AND m.source in :sources ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = MicroMovementExtended.FIND_ALL_FOR_ASSET_BETWEEN_DATES, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.source, m.sourceSatelliteId, m.status, m.aisPositionAccuracy) FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp > :startDate AND m.timestamp < :endDate AND m.source in :sources ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = MicroMovementExtended.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect.id, m.timestamp, m.speed, m.source, m.sourceSatelliteId, m.status, m.aisPositionAccuracy) FROM Movement m WHERE m.movementConnect.id in :connectIds AND m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.source in :sources ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended(m.location, m.heading, m.id, m.movementConnect.id, m.timestamp, m.speed, m.source, m.sourceSatelliteId, m.status, m.aisPositionAccuracy) FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE mc.updated > :date AND m.source in :sources" ),
+    @NamedQuery(name = Movement.FIND_ALL_FOR_ASSET_BETWEEN_DATES, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp > :startDate AND m.timestamp < :endDate AND m.source in :sources ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, query = "SELECT m FROM Movement m WHERE m.movementConnect.id in :connectIds AND m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.source in :sources ORDER BY m.timestamp DESC"),
+    @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE mc.updated > :date AND m.source in :sources" ),
 
 
     @NamedQuery(name = Movement.FIND_LATEST_X_NUMBER_FOR_ASSET, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.source in :sources ORDER BY m.timestamp DESC"),
@@ -60,7 +57,6 @@ import java.util.UUID;
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"), 
     @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.updated DESC"),
     @NamedQuery(name = Movement.FIND_BY_PREVIOUS_MOVEMENT, query = "SELECT m FROM Movement m WHERE m.previousMovement = :previousMovement"),
-    @NamedQuery(name = Movement.FIND_MICRO_MOVEMENT_BY_ID_LIST, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement(m.location, m.heading, m.id, m.timestamp, m.speed, m.source, m.sourceSatelliteId, m.status, m.aisPositionAccuracy) FROM Movement m WHERE m.id in :moveIds"),
     @NamedQuery(name = Movement.FIND_MOVEMENT_BY_ID_LIST, query = "SELECT m FROM Movement m WHERE m.id in :moveIds"),
 })
 @NamedNativeQueries({
@@ -90,8 +86,9 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATEST = "Movement.findLatest";
     public static final String FIND_BY_PREVIOUS_MOVEMENT = "Movement.findByPreviousMovement";
     public static final String FIND_LATEST_X_NUMBER_FOR_ASSET = "Movement.findLatestXNumberForAsset";
-    public static final String FIND_MICRO_MOVEMENT_BY_ID_LIST = "Movement.findMicroMovementByMovementIdList";
     public static final String FIND_MOVEMENT_BY_ID_LIST = "Movement.findMovementByMovementIdList";
+    public static final String FIND_ALL_FOR_ASSET_BETWEEN_DATES = "Movement.findAllForAssetBetweenDates";
+    public static final String FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES = "Movement.findAllForConnectIdsBetweenDates";
 
     public static final String UPDATE_TO_NEW_MOVEMENTCONNECT = "Movement.updateToNewMovementConnect";
     

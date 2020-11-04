@@ -9,7 +9,6 @@ import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse
 import eu.europa.ec.fisheries.uvms.movement.service.MockData;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO;
@@ -608,9 +607,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES), Arrays.asList(MovementSourceType.values()));
-        assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
-        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
+        List<Movement> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES), Arrays.asList(MovementSourceType.values()));
+        assertFalse(latest.stream().anyMatch(m -> m.getId().equals(createdMovement.getId())));
+        assertTrue(latest.stream().anyMatch(m -> m.getId().equals(createdMovement2.getId())));
     }
 
     @Test
@@ -626,9 +625,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES), Arrays.asList(MovementSourceType.values()));
-        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
-        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
+        List<Movement> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES), Arrays.asList(MovementSourceType.values()));
+        assertTrue(latest.stream().anyMatch(m -> m.getId().equals(createdMovement.getId())));
+        assertTrue(latest.stream().anyMatch(m -> m.getId().equals(createdMovement2.getId())));
     }
 
     @Test
@@ -646,9 +645,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType2.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        List<MicroMovementExtended> latest = movementService.getLatestMovementsAfter(createdMovement2.getMovementConnect().getUpdated(), Arrays.asList(MovementSourceType.values()));
-        assertFalse(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement.getId().toString())));
-        assertTrue(latest.stream().anyMatch(m -> m.getMicroMove().getId().equals(createdMovement2.getId().toString())));
+        List<Movement> latest = movementService.getLatestMovementsAfter(createdMovement2.getMovementConnect().getUpdated(), Arrays.asList(MovementSourceType.values()));
+        assertFalse(latest.stream().anyMatch(m -> m.getId().equals(createdMovement.getId())));
+        assertTrue(latest.stream().anyMatch(m -> m.getId().equals(createdMovement2.getId())));
     }
     
     @Test

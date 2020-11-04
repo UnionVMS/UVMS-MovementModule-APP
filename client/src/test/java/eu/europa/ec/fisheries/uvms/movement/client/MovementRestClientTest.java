@@ -11,8 +11,6 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetDTO;
 import eu.europa.ec.fisheries.uvms.movement.client.model.CursorPagination;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.client.model.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
@@ -61,7 +59,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
     }
 
     @Test
-    public void getMicroMovementsForConnectIdsBetweenDates() {
+    public void getMovementsForConnectIdsBetweenDates() {
         // Given
         AssetDTO asset = createBasicAsset();
         Instant positionTime = Instant.parse("2019-01-24T09:00:00Z");
@@ -76,23 +74,22 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         connectIds.add(asset.getId().toString());
 
         // When
-        List<MicroMovementExtended> movementsForVesselsIds = movementRestClient.getMicroMovementsForConnectIdsBetweenDates(connectIds, positionTime, positionTime);
+        List<MovementDto> movementsForVesselsIds = movementRestClient.getMovementsForConnectIdsBetweenDates(connectIds, positionTime, positionTime);
 
         // Then
         assertEquals(1, movementsForVesselsIds.size());
 
-        MicroMovementExtended microMovementExtended = movementsForVesselsIds.get(0);
-        MicroMovement microMove = microMovementExtended.getMicroMove();
-        MovementPoint location = microMove.getLocation();
+        MovementDto dto = movementsForVesselsIds.get(0);
+        MovementPoint location = dto.getLocation();
 
         assertEquals(incomingMovement.getLatitude(), location.getLatitude());
         assertEquals(incomingMovement.getLongitude(), location.getLongitude());
 
-        assertEquals(SatId.IOR, microMove.getSourceSatelliteId());
+        assertEquals(SatId.IOR, dto.getSourceSatelliteId());
     }
 
     @Test
-    public void getMicroMovementsForConnectIdsBetweenDatesEmptySourceList() {
+    public void getMovementsForConnectIdsBetweenDatesEmptySourceList() {
         // Given
         AssetDTO asset = createBasicAsset();
         Instant positionTime = Instant.now();
@@ -106,14 +103,14 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         connectIds.add(asset.getId().toString());
 
         // When
-        String jsonOutput = movementRestClient.getMicroMovementsForConnectIdsBetweenDates(connectIds, positionTime, Instant.now(), new ArrayList<>());
+        String jsonOutput = movementRestClient.getMovementsForConnectIdsBetweenDates(connectIds, positionTime, Instant.now(), new ArrayList<>());
 
         // Then
         assertTrue(jsonOutput.contains(createdMovement.getId().toString()));
     }
 
     @Test
-    public void getMicroMovementsForTwoAssetsBetweenDatesOneOfTwoSources() {
+    public void getMovementsForTwoAssetsBetweenDatesOneOfTwoSources() {
         // Given
         AssetDTO asset1 = createBasicAsset();
         AssetDTO asset2 = createBasicAsset();
@@ -136,7 +133,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         connectIds.add(asset2.getId().toString());
 
         // When
-        String jsonOutput = movementRestClient.getMicroMovementsForConnectIdsBetweenDates(connectIds, positionTime, Instant.now(), Arrays.asList(MovementSourceType.MANUAL.value(), MovementSourceType.AIS.value()));
+        String jsonOutput = movementRestClient.getMovementsForConnectIdsBetweenDates(connectIds, positionTime, Instant.now(), Arrays.asList(MovementSourceType.MANUAL.value(), MovementSourceType.AIS.value()));
 
         // Then
         assertFalse(jsonOutput.contains(createdMovement1.getId().toString()));
@@ -145,7 +142,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
 
     @Test
-    public void getMicroMovementsForConnectIdsBetweenDatesNullDates() {
+    public void getMovementsForConnectIdsBetweenDatesNullDates() {
         // Given
         AssetDTO asset = createBasicAsset();
 
@@ -159,10 +156,10 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
 
 
         // When
-        String jsonOutput =  movementRestClient.getMicroMovementsForConnectIdsBetweenDates(connectIds, null, null, new ArrayList<>());
+        String jsonOutput =  movementRestClient.getMovementsForConnectIdsBetweenDates(connectIds, null, null, new ArrayList<>());
 
         // Then
-        assertTrue(jsonOutput.contains(createdMovement.getId().toString()));
+        assertTrue(jsonOutput, jsonOutput.contains(createdMovement.getId().toString()));
     }
 
     @Test
@@ -175,11 +172,11 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         Movement createdMovement = movementService.createAndProcessMovement(movement);
 
        // When
-        MicroMovement movementById = movementRestClient.getMicroMovementById(createdMovement.getId());
+        MovementDto movementById = movementRestClient.getMovementById(createdMovement.getId());
 
         // Then
         assertNotNull(movementById);
-        assertEquals(createdMovement.getId(), UUID.fromString(movementById.getId()));
+        assertEquals(createdMovement.getId(), movementById.getId());
         assertEquals(createdMovement.getHeading(), movementById.getHeading(), 0);
         assertEquals(incomingMovement.getLatitude(), movementById.getLocation().getLatitude(), 0);
         assertEquals(incomingMovement.getLongitude(), movementById.getLocation().getLongitude(), 0);
@@ -276,7 +273,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
     }
     
     @Test
-    public void getMicroMovementByIdListTest() {
+    public void getMovementByIdListTest() {
         AssetDTO asset = createBasicAsset();
         IncomingMovement incomingMovement = createIncomingMovement(asset,  Instant.now());
         Movement movement = IncomingMovementMapper.mapNewMovementEntity(incomingMovement, incomingMovement.getUpdatedBy());    
@@ -285,10 +282,10 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         
         List<UUID> ids = new ArrayList<UUID>();
         ids.add(createdMovement.getId());
-        List<MicroMovement> microMovementList = movementRestClient.getMicroMovementByIdList(ids);
+        List<MovementDto> microMovementList = movementRestClient.getMovementDtoByIdList(ids);
         assertNotNull(microMovementList);
         assertTrue(microMovementList.size() == 1);
-        assertTrue( microMovementList.get(0).getId().equals(createdMovement.getId().toString() ) );
+        assertTrue( microMovementList.get(0).getId().equals(createdMovement.getId() ) );
         assertTrue(microMovementList.get(0).getHeading() == (double)createdMovement.getHeading());
     }
     
@@ -309,7 +306,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         List<UUID> ids = new ArrayList<UUID>();
         ids.add(createdMovement.getId());
         ids.add(createdMovement2.getId());
-        List<MicroMovement> microMovementList = movementRestClient.getMicroMovementByIdList(ids);
+        List<MovementDto> microMovementList = movementRestClient.getMovementDtoByIdList(ids);
         assertNotNull(microMovementList);
         assertTrue(microMovementList.size() == 2);
     }

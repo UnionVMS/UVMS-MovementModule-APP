@@ -2,9 +2,10 @@ package eu.europa.ec.fisheries.uvms.movement.service.message;
 
 import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
 import eu.europa.ec.fisheries.uvms.commons.message.context.MappedDiagnosticContext;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.event.CreatedMovement;
+import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.util.JsonBConfiguratorMovement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +41,13 @@ public class EventStreamSender {
     public void createdMovement(@Observes(during = TransactionPhase.AFTER_SUCCESS) @CreatedMovement Movement move){
         try {
             if (move != null) {
-                MicroMovementExtended micro = new MicroMovementExtended(move);
-                String outgoingJson = jsonb.toJson(micro);
+                MovementDto dto = MovementMapper.mapToMovementDto(move);
+                String outgoingJson = jsonb.toJson(dto);
 
                 TextMessage message = this.context.createTextMessage(outgoingJson);
                 message.setStringProperty(MessageConstants.EVENT_STREAM_EVENT, "Movement");
                 message.setStringProperty(MessageConstants.EVENT_STREAM_SUBSCRIBER_LIST, null);
-                message.setStringProperty(MessageConstants.EVENT_STREAM_MOVEMENT_SOURCE, micro.getMicroMove().getSource().value());
+                message.setStringProperty(MessageConstants.EVENT_STREAM_MOVEMENT_SOURCE, dto.getSource().value());
                 MappedDiagnosticContext.addThreadMappedDiagnosticContextToMessageProperties(message);
 
                 context.createProducer().setDeliveryMode(DeliveryMode.NON_PERSISTENT).send(destination, message);

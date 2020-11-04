@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
 
@@ -64,10 +63,10 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
         Track track = firstAfter.getTrack();
 
-        List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track, 100);
-        assertThat(movements.get(2).getId(), is(firstMovement.getId().toString()));
-        assertThat(movements.get(1).getId(), is(secondMovement.getId().toString()));
-        assertThat(movements.get(0).getId(), is(thirdMovement.getId().toString()));
+        List<Movement> movements = movementDao.getMovementsByTrack(track, 100);
+        assertThat(movements.get(2).getId(), is(firstMovement.getId()));
+        assertThat(movements.get(1).getId(), is(secondMovement.getId()));
+        assertThat(movements.get(0).getId(), is(thirdMovement.getId()));
         
         assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
         assertThat(secondAfter.getPreviousMovement(), is(firstAfter));
@@ -103,11 +102,11 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Movement fourthAfter = movementDao.getMovementById(fourthMovement.getId());
         Track track = firstAfter.getTrack();
 
-        List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track, 100);
-        assertThat(movements.get(3).getId(), is(firstMovement.getId().toString()));
-        assertThat(movements.get(2).getId(), is(secondMovement.getId().toString()));
-        assertThat(movements.get(1).getId(), is(thirdMovement.getId().toString()));
-        assertThat(movements.get(0).getId(), is(fourthMovement.getId().toString()));
+        List<Movement> movements = movementDao.getMovementsByTrack(track, 100);
+        assertThat(movements.get(3).getId(), is(firstMovement.getId()));
+        assertThat(movements.get(2).getId(), is(secondMovement.getId()));
+        assertThat(movements.get(1).getId(), is(thirdMovement.getId()));
+        assertThat(movements.get(0).getId(), is(fourthMovement.getId()));
         
         assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
         assertThat(secondAfter.getPreviousMovement(), is(firstAfter));
@@ -144,11 +143,11 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Movement fourthAfter = movementDao.getMovementById(fourthMovement.getId());
         Track track = firstAfter.getTrack();
 
-        List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track, 100);
-        assertThat(movements.get(3).getId(), is(firstMovement.getId().toString()));
-        assertThat(movements.get(2).getId(), is(secondMovement.getId().toString()));
-        assertThat(movements.get(1).getId(), is(thirdMovement.getId().toString()));
-        assertThat(movements.get(0).getId(), is(fourthMovement.getId().toString()));
+        List<Movement> movements = movementDao.getMovementsByTrack(track, 100);
+        assertThat(movements.get(3).getId(), is(firstMovement.getId()));
+        assertThat(movements.get(2).getId(), is(secondMovement.getId()));
+        assertThat(movements.get(1).getId(), is(thirdMovement.getId()));
+        assertThat(movements.get(0).getId(), is(fourthMovement.getId()));
         
         assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
         assertThat(secondAfter.getPreviousMovement(), is(firstAfter));
@@ -184,11 +183,11 @@ public class MovementSegmentIntTest extends TransactionalTests {
         Movement fourthAfter = movementDao.getMovementById(fourthMovement.getId());
         Track track = firstAfter.getTrack();
 
-        List<MicroMovement> movements = movementDao.getMicroMovementsDtoByTrack(track, 100);
-        assertThat(movements.get(3).getId(), is(firstMovement.getId().toString()));
-        assertThat(movements.get(2).getId(), is(secondMovement.getId().toString()));
-        assertThat(movements.get(1).getId(), is(thirdMovement.getId().toString()));
-        assertThat(movements.get(0).getId(), is(fourthMovement.getId().toString()));
+        List<Movement> movements = movementDao.getMovementsByTrack(track, 100);
+        assertThat(movements.get(3).getId(), is(firstMovement.getId()));
+        assertThat(movements.get(2).getId(), is(secondMovement.getId()));
+        assertThat(movements.get(1).getId(), is(thirdMovement.getId()));
+        assertThat(movements.get(0).getId(), is(fourthMovement.getId()));
         
         assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
         assertThat(secondAfter.getPreviousMovement(), is(firstAfter));

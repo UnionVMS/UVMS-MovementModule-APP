@@ -3,10 +3,10 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementPoint;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.filter.AppError;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.ManualMovementDto;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
@@ -98,16 +98,16 @@ public class ManualMovementRestResourceTest extends BuildMovementRestDeployment 
         asset.setName("T");
         movement.setAsset(asset);
 
-        MicroMovement micro = new MicroMovement();
+        MovementDto dto = new MovementDto();
         MovementPoint location = new MovementPoint();
         location.setLatitude(0.0);
         location.setLongitude(0.0);
-        micro.setLocation(location);
-        micro.setTimestamp(Instant.now());
-        micro.setHeading(0.0);
-        micro.setSpeed(0.0);
-        micro.setSource(MovementSourceType.MANUAL);
-        movement.setMovement(micro);
+        dto.setLocation(location);
+        dto.setTimestamp(Instant.now());
+        dto.setHeading(0.0f);
+        dto.setSpeed(0.0f);
+        dto.setSource(MovementSourceType.MANUAL);
+        movement.setMovement(dto);
 
         return movement;
     }

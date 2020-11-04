@@ -12,20 +12,21 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.dto;
 
 import eu.europa.ec.fisheries.schema.movement.asset.v1.VesselType;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 
 import java.io.Serializable;
 
 public class ManualMovementDto implements Serializable {
 
-    private MicroMovement movement;
+    private MovementDto movement;
 
     private VesselType asset;
 
-    public MicroMovement getMovement() {
+    public MovementDto getMovement() {
         return movement;
     }
 
-    public void setMovement(MicroMovement movement) {
+    public void setMovement(MovementDto movement) {
         this.movement = movement;
     }
 

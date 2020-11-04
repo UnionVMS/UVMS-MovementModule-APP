@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.ejb.EJB;
 
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.*;
 import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -281,13 +280,13 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(secondMovement.getTrack()));
         assertThat(track, is(thirdMovement.getTrack()));
 
-        List<MicroMovement> trackMovementList = movementDao.getMicroMovementsDtoByTrack(track,2000);
+        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track,2000);
 
         assertThat(trackMovementList.size(), is(3));
 
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
     
     @Test
@@ -325,12 +324,12 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(secondMovement.getTrack()));
         assertThat(track, is(thirdMovement.getTrack()));
 
-        List<MicroMovement> trackMovementList = movementDao.getMicroMovementsDtoByTrack(track,2000);
+        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track,2000);
         assertThat(trackMovementList.size(), is(3));
 
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
     
     @Test
@@ -374,12 +373,12 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         assertThat(track, is(secondMovement.getTrack()));
         assertThat(track, is(thirdMovement.getTrack()));
 
-        List<MicroMovement> trackMovementList = movementDao.getMicroMovementsDtoByTrack(track,2000);
+        List<Movement> trackMovementList = movementDao.getMovementsByTrack(track,2000);
         assertThat(trackMovementList.size(), is(3));
 
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId().toString())));
-        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId().toString())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(firstMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(secondMovement.getId())));
+        assertTrue(trackMovementList.stream().anyMatch(item -> item.getId().equals(thirdMovement.getId())));
     }
     
     @Test
@@ -724,12 +723,12 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
         Track track = firstMovement.getTrack();
         if (movements.size() > 1) {
             assertThat(track, is(notNullValue()));
-            List<MicroMovement> movementList = movementDao.getMicroMovementsDtoByTrack(track,2000);
+            List<Movement> movementList = movementDao.getMovementsByTrack(track,2000);
             assertThat(movementList.size(), is(movements.size()));
             
             for (Movement movement : movements) {
                 assertThat(movement.getTrack(), is(track));
-                assertTrue(movementList.stream().anyMatch(item -> item.getId().equals(movement.getId().toString())));
+                assertTrue(movementList.stream().anyMatch(item -> item.getId().equals(movement.getId())));
             }
         }
 

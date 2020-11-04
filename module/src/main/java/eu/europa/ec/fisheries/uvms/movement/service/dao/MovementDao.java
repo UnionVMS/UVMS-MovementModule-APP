@@ -13,8 +13,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.dao;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovement;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.MicroMovementExtended;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Track;
@@ -63,8 +61,8 @@ public class MovementDao {
         return query.executeUpdate();
     }
 
-    public List<MicroMovement> getMicroMovementsDtoByTrack(Track track, int maxResults) {
-        TypedQuery<MicroMovement> query = em.createNamedQuery(Movement.FIND_ALL_BY_TRACK, MicroMovement.class);
+    public List<Movement> getMovementsByTrack(Track track, int maxResults) {
+        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_BY_TRACK, Movement.class);
         query.setMaxResults(maxResults);
         query.setParameter("track", track);
         return query.getResultList();
@@ -353,20 +351,10 @@ public class MovementDao {
         em.remove(movementConnect);
     }
 
-    public List<MicroMovementExtended> getMicroMovementsAfterDate(Instant date) {
-        try {
-            TypedQuery<MicroMovementExtended> query = em.createNamedQuery(MicroMovementExtended.FIND_ALL_AFTER_DATE, MicroMovementExtended.class);
-            query.setParameter("date", date);
-            return query.getResultList();
-        } catch (NoResultException e) {
-            LOG.debug("No positions found after date: {}", date);
-            return new ArrayList<>();
-        }
-    }
 
-    public List<MicroMovement> getMicroMovementsForAssetAfterDate(UUID id, Instant startDate, Instant endDate, List<MovementSourceType> sources){
+    public List<Movement> getMicroMovementsForAssetAfterDate(UUID id, Instant startDate, Instant endDate, List<MovementSourceType> sources){
         try {
-            TypedQuery<MicroMovement> query = em.createNamedQuery(MicroMovementExtended.FIND_ALL_FOR_ASSET_BETWEEN_DATES, MicroMovement.class);
+            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_FOR_ASSET_BETWEEN_DATES, Movement.class);
             query.setParameter("id", id);
             query.setParameter("startDate", startDate);
             query.setParameter("endDate", endDate);
@@ -374,19 +362,6 @@ public class MovementDao {
             return query.getResultList();
         } catch (NoResultException e) {
             LOG.debug("No positions found for asset after date: {}", startDate);
-            return new ArrayList<>();
-        }
-    }
-
-    public List<MicroMovement> getLatestNumberOfMicroMovementsForAsset(UUID id, int number, List<MovementSourceType> sources){
-        try {
-            TypedQuery<MicroMovement> query = em.createNamedQuery(MicroMovementExtended.FIND_LATEST_X_NUMBER_FOR_ASSET, MicroMovement.class);
-            query.setParameter("id", id);
-            query.setParameter("sources", sources);
-            query.setMaxResults(number);
-            return query.getResultList();
-        } catch (NoResultException e) {
-            LOG.debug("No positions found for asset {}");
             return new ArrayList<>();
         }
     }
@@ -404,15 +379,15 @@ public class MovementDao {
         }
     }
 
-    public List<MicroMovementExtended> getLatestWithLimit(Instant date, List<MovementSourceType> sources) {
-        TypedQuery<MicroMovementExtended> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, MicroMovementExtended.class);
+    public List<Movement> getLatestWithLimit(Instant date, List<MovementSourceType> sources) {
+        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, Movement.class);
         query.setParameter("date", date);
         query.setParameter("sources", sources);
         return query.getResultList();
     }
 
-    public List<MicroMovementExtended> getMicroMovementsForConnectIdsBetweenDates(List<UUID> connectIds, Instant fromDate, Instant toDate, List<MovementSourceType> sources) {
-        TypedQuery<MicroMovementExtended> query = em.createNamedQuery(MicroMovementExtended.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, MicroMovementExtended.class);
+    public List<Movement> getMicroMovementsForConnectIdsBetweenDates(List<UUID> connectIds, Instant fromDate, Instant toDate, List<MovementSourceType> sources) {
+        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, Movement.class);
         query.setParameter("connectIds", connectIds);
         query.setParameter("fromDate", fromDate);
         query.setParameter("toDate", toDate);
@@ -420,16 +395,6 @@ public class MovementDao {
         return query.getResultList();
     }
     
-    public List<MicroMovement> getMicroMovementsByMoveIdList(List<UUID> moveIds) {
-        if (moveIds == null || moveIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-        TypedQuery<MicroMovement> latestMovementQuery =
-                em.createNamedQuery(Movement.FIND_MICRO_MOVEMENT_BY_ID_LIST, MicroMovement.class);
-        latestMovementQuery.setParameter("moveIds", moveIds);
-        return latestMovementQuery.getResultList();
-    }
-
     public List<Movement> getMovementsByMoveIdList(List<UUID> moveIds) {
         if (moveIds == null || moveIds.isEmpty()) {
             return new ArrayList<>();
