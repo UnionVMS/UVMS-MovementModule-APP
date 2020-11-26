@@ -117,8 +117,15 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            
-             
+
+
+            <xsd:element name="MovementToSubscriptionRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="movementTypes" type="movement:MovementType" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
             <!-- Get Movement Map By Query -->
             <xsd:element name="getMovementMapByQueryRequest">
                 <xsd:complexType>

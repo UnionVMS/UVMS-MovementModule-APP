@@ -29,6 +29,7 @@
     <audit.model.version>${uvms.audit.module.version}</audit.model.version>
     <rules.model.version>${uvms.rules.module.version}</rules.model.version>
     <exchange.model.version>${uvms.exchange.model.version}</exchange.model.version>
+    <subscription.model.version>1.3</subscription.model.version>
     <flux.movement.client.version>2.0.1</flux.movement.client.version>
     <javaee.version>8.0</javaee.version>
     <installAtEnd>false</installAtEnd>

@@ -20,7 +20,9 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.GetMovementMapByQueryReq
 import eu.europa.ec.fisheries.schema.movement.module.v1.MovementModuleMethod;
 import eu.europa.ec.fisheries.schema.movement.module.v1.PingRequest;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
+import eu.europa.ec.fisheries.schema.movement.source.v1.MovementToSubscriptionRequest;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 
 import java.util.List;
@@ -78,5 +80,13 @@ public class MovementModuleRequestMapper {
         PingRequest request = new PingRequest();
         request.setMethod(MovementModuleMethod.PING);
         return JAXBMarshaller.marshallJaxBObjectToString(request);
+    }
+
+    public static MovementToSubscriptionRequest mapToMovementToSubscriptionRequest(List<MovementType> movementTypes) {
+        MovementToSubscriptionRequest movementToSubscriptionRequest = new MovementToSubscriptionRequest();
+        if (movementTypes != null) {
+            movementToSubscriptionRequest.getMovementTypes().addAll(movementTypes);
+        }
+        return movementToSubscriptionRequest;
     }
 }
