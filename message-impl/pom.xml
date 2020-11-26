@@ -41,6 +41,11 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.fisheries.uvms.subscription</groupId>
+            <artifactId>subscription-model</artifactId>
+            <version>${subscription.model.version}</version>
+        </dependency>
+        <dependency>
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
             <artifactId>config-library</artifactId>
             <version>${uvms.config.version}</version>
@@ -100,7 +105,7 @@
             <artifactId>activemq-client</artifactId>
             <version>5.15.6</version>
             <scope>test</scope>
-        </dependency>				        
+        </dependency>
     </dependencies>
 
     <build>

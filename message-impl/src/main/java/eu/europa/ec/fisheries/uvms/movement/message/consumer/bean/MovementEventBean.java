@@ -18,9 +18,9 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import javax.xml.bind.JAXBException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import eu.europa.ec.fisheries.schema.movement.area.v1.GuidListForAreaFilteringQuery;
 import eu.europa.ec.fisheries.schema.movement.common.v1.SimpleResponse;
@@ -40,16 +40,23 @@ import eu.europa.ec.fisheries.schema.movement.module.v1.PingResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.source.v1.GetMovementMapByQueryResponse;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementBaseType;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
 import eu.europa.ec.fisheries.schema.rules.exchange.v1.PluginType;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageConstants;
+import eu.europa.ec.fisheries.uvms.commons.message.api.MessageException;
+import eu.europa.ec.fisheries.uvms.commons.message.impl.JMSUtils;
+import eu.europa.ec.fisheries.uvms.config.constants.ConfigHelper;
 import eu.europa.ec.fisheries.uvms.config.exception.ConfigServiceException;
 import eu.europa.ec.fisheries.uvms.config.service.ParameterService;
 import eu.europa.ec.fisheries.uvms.movement.message.constants.ModuleQueue;
+import eu.europa.ec.fisheries.uvms.movement.message.consumer.MessageConsumer;
 import eu.europa.ec.fisheries.uvms.movement.message.event.ErrorEvent;
 import eu.europa.ec.fisheries.uvms.movement.message.event.carrier.EventMessage;
 import eu.europa.ec.fisheries.uvms.movement.message.exception.MovementMessageException;
 import eu.europa.ec.fisheries.uvms.movement.message.producer.MessageProducer;
 import eu.europa.ec.fisheries.uvms.movement.model.exception.MovementModelException;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.JAXBMarshaller;
+import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleRequestMapper;
 import eu.europa.ec.fisheries.uvms.movement.model.mapper.MovementModuleResponseMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.AuditService;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementAndBaseType;
@@ -62,6 +69,10 @@ import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementMapper;
 import eu.europa.ec.fisheries.uvms.movement.service.mapper.MovementModelToEntityMapper;
 import eu.europa.ec.fisheries.uvms.rules.model.exception.RulesModelMapperException;
 import eu.europa.ec.fisheries.uvms.rules.model.mapper.RulesModuleRequestMapper;
+import eu.europa.ec.fisheries.wsdl.subscription.module.MessageType;
+import eu.europa.ec.fisheries.wsdl.subscription.module.SubscriptionPermissionAnswer;
+import eu.europa.ec.fisheries.wsdl.subscription.module.SubscriptionPermissionResponse;
+import eu.europa.fisheries.uvms.subscription.model.mapper.SubscriptionModuleResponseMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +101,9 @@ public class MovementEventBean {
 
     @Inject
     ParameterService parameterService;
+
+    @Inject
+    MessageConsumer messageConsumer;
 
     private String localNodeName;
 
@@ -151,23 +165,49 @@ public class MovementEventBean {
                         movementBaseType
                 ));
             }
-            List<MovementAndBaseType> movementBatch = movementService.createMovementBatch(movements);
-            SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(movementBatch) ? SimpleResponse.OK : SimpleResponse.NOK;
-            auditService.sendMovementBatchCreatedAudit(simpleResponse.name(), request.getUsername());
             CreateMovementBatchResponse createMovementBatchResponse = new CreateMovementBatchResponse();
-            createMovementBatchResponse.setResponse(simpleResponse);
-            createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementTypeFromMovementAndBaseType(movementBatch));
-            String responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createMovementBatchResponse);
-            messageProducer.sendModuleMessage(responseString, ModuleQueue.SUBSCRIPTION_DATA);
+            String responseString;
+            SimpleResponse isPermitted =  requestPermissionFromSubscription(
+                    movements.stream().map(MovementAndBaseType::getMovement).
+                            map(MovementEntityToModelMapper::mapToMovementType).collect(Collectors.toList()));
+            createMovementBatchResponse.setPermitted(isPermitted);
+            createMovementBatchResponse.setResponse(SimpleResponse.NOK);
+            if (isPermitted.equals(SimpleResponse.OK)) {
+                List<MovementAndBaseType> movementBatch = movementService.createMovementBatch(movements);
+
+                SimpleResponse simpleResponse = CollectionUtils.isNotEmpty(movementBatch) ? SimpleResponse.OK : SimpleResponse.NOK;
+                auditService.sendMovementBatchCreatedAudit(simpleResponse.name(), request.getUsername());
+                createMovementBatchResponse.setResponse(simpleResponse);
+                createMovementBatchResponse.getMovements().addAll(MovementEntityToModelMapper.mapToMovementTypeFromMovementAndBaseType(movementBatch));
+                responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createMovementBatchResponse);
+                messageProducer.sendModuleMessage(responseString, ModuleQueue.SUBSCRIPTION_DATA);
+                LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage != null ? jmsMessage.getJMSReplyTo() : "Null!!!");
+            }
+            responseString = MovementModuleResponseMapper.mapToCreateMovementBatchResponse(createMovementBatchResponse);
             messageProducer.sendMessageBackToRecipient(jmsMessage, responseString);
-            LOG.info("Response sent back to requestor on queue [ {} ]", jmsMessage != null ? jmsMessage.getJMSReplyTo() : "Null!!!");
-        } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException ex) {
+        } catch (EJBException | MovementMessageException | JMSException | MovementModelException | MovementServiceException | MessageException | JAXBException ex) {
             LOG.error("[ Error when creating movement batch ] ", ex);
             if (maxRedeliveriesReached(jmsMessage)) {
                 errorEvent.fire(new EventMessage(jmsMessage, "Error when receiving message in movement: " + ex.getMessage()));
             }
             throw new EJBException(ex);
         }
+    }
+
+    private SimpleResponse requestPermissionFromSubscription(List<MovementType> movements) throws MovementMessageException,
+            MessageException, JMSException, JAXBException, MovementModelException {
+        SubscriptionPermissionResponse subscriptionPermissionResponse = null;
+
+        String request = JAXBMarshaller.marshallJaxBObjectToString(MovementModuleRequestMapper.mapToMovementToSubscriptionRequest(movements));
+        String correlationId = messageProducer.sendModuleMessage(request, ModuleQueue.SUBSCRIPTION_PERMISSION);
+        if (correlationId != null) {
+            TextMessage message = messageConsumer.getMessage(correlationId, TextMessage.class);
+            LOG.debug("Received response message from Subscription.");
+            subscriptionPermissionResponse = SubscriptionModuleResponseMapper.mapToSubscriptionPermissionResponse(message.getText());
+        }
+        SubscriptionPermissionAnswer subscriptionPermissionAnswer = subscriptionPermissionResponse.getSubscriptionCheck();
+        return (subscriptionPermissionAnswer != null && subscriptionPermissionResponse.getSubscriptionCheck().equals(SubscriptionPermissionAnswer.YES))?
+                SimpleResponse.OK: SimpleResponse.NOK;
     }
 
     public void forwardPosition(EventMessage eventMessage) {
