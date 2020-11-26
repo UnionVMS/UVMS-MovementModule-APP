@@ -53,6 +53,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
     private Queue userQueue;
     private Queue subscriptionDataQueue;
     private Queue rulesQueue;
+    private Queue subscriptionPermissionQueue;
 
     @PostConstruct
     public void init() {
@@ -62,6 +63,7 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
         spatialQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_MODULE_SPATIAL);
         userQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_USER_IN);
         subscriptionDataQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_SUBSCRIPTION_DATA);
+        subscriptionPermissionQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_SUBSCRIPTION_PERMISSION);
         rulesQueue = JMSUtils.lookupQueue(MessageConstants.QUEUE_MODULE_RULES);
 
     }
@@ -90,6 +92,9 @@ public class MovementMessageProducerBean extends AbstractProducer implements Mes
                     break;
                 case SUBSCRIPTION_DATA:
                     corrId = sendMessageToSpecificQueueSameTx(text, subscriptionDataQueue, movementQueue, Collections.singletonMap(MessageConstants.JMS_SUBSCRIPTION_SOURCE_PROPERTY, configHelper.getModuleName()));
+                    break;
+                case SUBSCRIPTION_PERMISSION:
+                    corrId = sendMessageToSpecificQueueSameTx(text, subscriptionPermissionQueue, movementQueue, Collections.singletonMap(MessageConstants.JMS_SUBSCRIPTION_SOURCE_PROPERTY, configHelper.getModuleName()));
                     break;
                 case RULES:
                     corrId = sendMessageToSpecificQueueSameTx(text, rulesQueue, movementQueue);
