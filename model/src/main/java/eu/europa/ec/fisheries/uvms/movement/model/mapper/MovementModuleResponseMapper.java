@@ -52,7 +52,9 @@ public class MovementModuleResponseMapper {
             }
             throw new MovementModelException(response.getText(), movementFault, ErrorCode.MOVEMENT_FAULT_ERROR);
         } catch (MovementModelException e) {
-                LOG.error("Error of type: " + e.getCode() + " for response: " + response,e);
+            if (!e.getCode().equals(ErrorCode.MODEL_MARSHALL_ERROR)) {
+                LOG.error("Error of type: " + e.getCode() + " for response: " + response, e);
+            }
         }
     }
  
