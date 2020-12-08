@@ -72,6 +72,7 @@ public class MovementMapper {
         }
 
         dto.setSpeed(movement.getSpeed());
+        dto.setCalculatedSpeed(movement.getCalculatedSpeed());
         dto.setMovementType(movement.getMovementType());
         dto.setSource(movement.getSource());
         dto.setStatus(movement.getStatus());

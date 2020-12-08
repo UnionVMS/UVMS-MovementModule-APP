@@ -182,12 +182,12 @@ public class MovementService {
         }
     }
     
-    public List<MovementType> getCursorBasedList(CursorPagination cursorPagination) {
+    public List<MovementDto> getCursorBasedList(CursorPagination cursorPagination) {
         List<Movement> movementEntityList = movementDao.getCursorBasedList(cursorPagination);
 
-        List<MovementType> movementList = new ArrayList<>();
+        List<MovementDto> movementList = new ArrayList<>();
         for (Movement movement : movementEntityList) {
-            movementList.add(MovementEntityToModelMapper.mapToMovementType(movement));
+            movementList.add(MovementMapper.mapToMovementDto(movement));
         }
         return movementList;
     }

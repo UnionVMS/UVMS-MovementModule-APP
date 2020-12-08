@@ -264,12 +264,12 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         cursorPagination.setFrom(createdMovement.getTimestamp().minus(1, ChronoUnit.HOURS));
         cursorPagination.setTo(createdMovement.getTimestamp().plus(1, ChronoUnit.HOURS));
         cursorPagination.setConnectIds(Arrays.asList(createdMovement.getMovementConnect().getId()));
-        List<MovementType> movements = movementRestClient.getCursorBasedList(cursorPagination);
+        List<MovementDto> movements = movementRestClient.getCursorBasedList(cursorPagination);
        
         assertNotNull(movements);
         assertTrue(movements.size() > 0);
-        assertTrue(movements.stream().anyMatch(m -> m.getGuid().equals(createdMovement.getId().toString())));
-        assertTrue(movements.stream().anyMatch(m -> m.getConnectId().equals(asset.getId().toString())));   
+        assertTrue(movements.stream().anyMatch(m -> m.getId().equals(createdMovement.getId())));
+        assertTrue(movements.stream().anyMatch(m -> m.getAsset().equals(asset.getId().toString())));
     }
     
     @Test
