@@ -209,7 +209,7 @@ public class MovementMapper {
 
     public static FLUXVesselPositionMessage mapToFLUXVesselPositionMessage(TempMovement movement, String guid, String party) {
         FLUXVesselPositionMessage fluxVesselPositionMessage = new FLUXVesselPositionMessage();
-        fluxVesselPositionMessage.setFLUXReportDocument(mapToMovementReportDocument(guid,party));
+        fluxVesselPositionMessage.setFLUXReportDocument(mapToMovementReportDocument(guid,party,"UUID"));
         fluxVesselPositionMessage.setVesselTransportMeans(mapToVesselTransportMeans(movement));
         return fluxVesselPositionMessage;
     }
@@ -266,6 +266,14 @@ public class MovementMapper {
         doc.setCreationDateTime(mapToNowDateTime());
         doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
         doc.setOwnerFLUXParty(mapToFluxPartyType(FLUX_GP_PARTY));
+        return doc;
+    }
+    private static FLUXReportDocumentType mapToMovementReportDocument(String guid, String party,String schemeId) {
+        FLUXReportDocumentType doc = new FLUXReportDocumentType();
+        doc.getIDS().add(mapToIdType(schemeId,guid));
+        doc.setCreationDateTime(mapToNowDateTime());
+        doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
+        doc.setOwnerFLUXParty( mapToFluxOwnerPartyType(FLUX_GP_PARTY,party));
         return doc;
     }
 
