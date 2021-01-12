@@ -130,7 +130,7 @@ public class MovementRestClient {
         return response.readEntity(new GenericType<List<MovementDto>>() {});
     }
     
-    public List<MovementType> getCursorBasedList(CursorPagination cursorPagination){ 
+    public List<MovementDto> getCursorBasedList(CursorPagination cursorPagination){
         Response response = webTarget
                 .path("internal/list/cursor")
                 .request(MediaType.APPLICATION_JSON)
@@ -138,7 +138,7 @@ public class MovementRestClient {
                 .header("requestId", MDC.get("requestId"))
                 .post(Entity.json(cursorPagination), Response.class);
         checkForErrorResponse(response);
-        return jsonb.fromJson(response.readEntity(String.class), new ArrayList<MovementType>(){}.getClass().getGenericSuperclass());
+        return jsonb.fromJson(response.readEntity(String.class), new ArrayList<MovementDto>(){}.getClass().getGenericSuperclass());
     }
 
     private void checkForErrorResponse(Response response){

@@ -16,6 +16,8 @@ public class MovementDto {
 
     private Float speed;
 
+    private Double calculatedSpeed;
+
     private Float heading;
 
     private String asset;
@@ -62,6 +64,14 @@ public class MovementDto {
 
     public void setSpeed(Float speed) {
         this.speed = speed;
+    }
+
+    public Double getCalculatedSpeed() {
+        return calculatedSpeed;
+    }
+
+    public void setCalculatedSpeed(Double calculatedSpeed) {
+        this.calculatedSpeed = calculatedSpeed;
     }
 
     public Float getHeading() {

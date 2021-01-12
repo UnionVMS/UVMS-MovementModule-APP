@@ -156,8 +156,8 @@
         </plugins>
     </build>
 
-    <!-- USE following command to run this profile: mvn clean install -P wildfly-deploy wildfly:deploy -Dhostname=127.0.0.1 -Dport=9990 -Dusername=admin -Dpassword=asdf  -->
     <profiles>
+        <!-- USE following command to run this profile: mvn clean install -Pwildfly-deploy -Dhostname=127.0.0.1 -Dport=9990 -Dusername=admin -Dpassword=asdf  -->
         <profile>
             <id>wildfly-deploy</id>
             <build>
@@ -166,14 +166,35 @@
                         <groupId>org.wildfly.plugins</groupId>
                         <artifactId>wildfly-maven-plugin</artifactId>
                         <version>2.0.2.Final</version>
+                        <executions>
+                            <execution>
+                                <id>undeploy</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>undeploy</goal>
+                                </goals>
+                                <configuration>
+                                    <match-pattern>${project.name}-.*</match-pattern>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>deploy</goal>
+                                </goals>
+                                <configuration>
+                                    <filename>${project.build.finalName}.${project.packaging}</filename>
+                                    <targetDir>${project.build.directory}</targetDir>
+                                    <force>true</force>
+                                </configuration>
+                            </execution>
+                        </executions>
                         <configuration>
-                            <filename>${project.build.finalName}.${project.packaging}</filename>
-                            <targetDir>${project.build.directory}</targetDir>
                             <hostname>${hostname}</hostname>
                             <port>${port}</port>
                             <username>${username}</username>
                             <password>${password}</password>
-                            <force>true</force>
                         </configuration>
                     </plugin>
                 </plugins>

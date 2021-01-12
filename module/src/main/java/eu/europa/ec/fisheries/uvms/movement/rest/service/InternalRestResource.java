@@ -226,7 +226,7 @@ public class InternalRestResource {
     @RequiresFeature(UnionVMSFeature.manageInternalRest)
     public Response getCursorBasedList(CursorPagination cursorPagination) {
         try {
-            List<MovementType> list = movementService.getCursorBasedList(cursorPagination);
+            List<MovementDto> list = movementService.getCursorBasedList(cursorPagination);
             return Response.ok(list).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
             LOG.error("[ Error when getting movements by list cursor. ]", e);
