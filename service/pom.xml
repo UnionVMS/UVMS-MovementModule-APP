@@ -16,14 +16,21 @@
 	<properties>
 		<application.name>${project.parent.artifactId}</application.name>
 		<application.version>${project.parent.version}</application.version>
-		<application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
-		<application.error.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}-error.log</application.error.logfile>
-		<application.logfile>/app/logs/${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
-
+		<application.logfile>${project.parent.artifactId}/${project.parent.artifactId}.log</application.logfile>
+		<application.logfile.message.pattern>%replace(%rEx){'[\r\n]+', '~~'}%nopex %n</application.logfile.message.pattern>
 		<docker.dev.start.phase>test-compile</docker.dev.start.phase>
 		<docker.liquibase.phase>test-compile</docker.liquibase.phase>
 		<docker.dev.prestop.phase>validate</docker.dev.prestop.phase>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>multilineLog</id>
+			<properties>
+				<application.logfile.message.pattern>%n</application.logfile.message.pattern>
+			</properties>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
