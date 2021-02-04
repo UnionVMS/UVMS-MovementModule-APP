@@ -55,7 +55,7 @@ public class MovementEntityToModelMapper {
         MovementBaseType model = new MovementBaseType();
         model.setReportedSpeed(movement.getSpeed());
         model.setReportedCourse(movement.getHeading());
-        model.setGuid(movement.getGuid().toString());
+        model.setGuid(movement.getGuid());
         model.setPositionTime(Date.from(movement.getTimestamp()));
         model.setStatus(movement.getStatus());
         model.setSource(movement.getMovementSource());
@@ -151,7 +151,7 @@ public class MovementEntityToModelMapper {
             model.setDuplicate(false);
         }
         if (movement.getDuplicateId() != null) {
-            model.setDuplicates(movement.getDuplicateId().toString());
+            model.setDuplicates(movement.getDuplicateId());
         }
 
         model.setInternalReferenceNumber(movement.getInternalReferenceNumber());
@@ -230,7 +230,7 @@ public class MovementEntityToModelMapper {
 
     private static String mapToConnectId(MovementConnect connect) {
         if (connect != null) {
-            return connect.getValue().toString();
+            return connect.getValue();
         }
         return null;
     }
