@@ -234,30 +234,33 @@ public class MovementDao {
 
     public List<String> findConnectIdsByDateAndGeometry(List<String> inList,Date startDate, Date endDate, String areasGeometry,int page,Integer limit)  throws MovementServiceRuntimeException {
         StringBuilder qb = new StringBuilder();
-              qb.append("SELECT distinct m.movementConnect.value ")
-                .append("FROM Movement m ")
-                .append("WHERE m.timestamp >= :startDate AND m.timestamp < :endDate ")
-                .append("AND intersects(m.location, :areasGeometry) = true ");
-        if(!inList.isEmpty()){
-           qb.append("AND m.movementConnect.value in :connectIds");
+        qb.append("SELECT mc.moveconn_value ")
+                .append("FROM movement.movement m ")
+                .append("JOIN movement.movementconnect mc on mc.moveconn_id = m.move_moveconn_id ")
+                .append("WHERE m.move_timestamp  >= :startDate AND m.move_timestamp <= :endDate ")
+                .append("AND ST_Intersects(m.move_location, :areasGeometry) = true "); //check if srid is needed after wkt replacemnet
+        if (!inList.isEmpty()) {
+            qb.append("AND mc.moveconn_value in (:connectIds) ");
         }
-        TypedQuery<String> typedQuery = em.createQuery(qb.toString(), String.class);
-        typedQuery.setParameter("startDate", startDate.toInstant());
-        typedQuery.setParameter("endDate", endDate.toInstant());
+        Query nativeQuery = em.createNativeQuery(qb.toString());
+        nativeQuery.setParameter("startDate", startDate.toInstant());
+        nativeQuery.setParameter("endDate", endDate.toInstant());
         try {
-            typedQuery.setParameter("areasGeometry", WKTUtil.getGeometryFromWKTSrring(areasGeometry));
+            Geometry geometryFromWKTSrring = WKTUtil.getGeometryFromWKTSrring(areasGeometry);
+            String s = "SRID=" + geometryFromWKTSrring.getSRID() + ";" + geometryFromWKTSrring.toString();
+            nativeQuery.setParameter("areasGeometry", s);
         } catch (ParseException e) {
             throw new MovementServiceRuntimeException("Error when parsing geometry", e, ErrorCode.ILLEGAL_ARGUMENT_ERROR);
         }
         if(!inList.isEmpty()){
-            typedQuery.setParameter("connectIds", inList);
+            nativeQuery.setParameter("connectIds", inList);
         }
         int firstResult = limit == null ? page : (limit * (page - 1));
-        typedQuery.setFirstResult(firstResult);
+        nativeQuery.setFirstResult(firstResult);
         if(limit != null){
-            typedQuery.setMaxResults(limit);
+            nativeQuery.setMaxResults(limit);
         }
-        return typedQuery.getResultList();
+        return nativeQuery.getResultList();
     }
 
     private void setTypedQueryMovementParams(List<SearchValue> searchKeyValues, Query query) throws ParseException {
