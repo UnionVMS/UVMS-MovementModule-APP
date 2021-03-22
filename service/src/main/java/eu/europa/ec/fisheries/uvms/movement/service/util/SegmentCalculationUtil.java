@@ -22,6 +22,7 @@ public class SegmentCalculationUtil {
     private static final Logger LOG = LoggerFactory.getLogger(SegmentCalculationUtil.class);
 
     private static final double DISTANCE_TO_PORT_THRESHOLD_IN_NAUTICAL_MILES = 1.5;
+    public static final long TWELVE_HOURS_THRESHOLD = 60 * 60 * 12;
 
     public enum SegmentCalcType {
 
@@ -89,7 +90,7 @@ public class SegmentCalculationUtil {
 
     public static Boolean isGap(SegmentCalculations calc, Movement fromMovement, Movement toMovement) {
         if (calc != null) {
-            if ((!isVesselInPort(fromMovement) && !isVesselInPort(toMovement)) && (calc.getDurationBetweenPoints() > 12)) {
+            if ((!isVesselInPort(fromMovement) && !isVesselInPort(toMovement)) && (calc.getDurationBetweenPoints() > TWELVE_HOURS_THRESHOLD)) {
                 return Boolean.TRUE;
             } else {
                 return Boolean.FALSE;
@@ -102,7 +103,7 @@ public class SegmentCalculationUtil {
 
     public static Boolean isJump(SegmentCalculations calc) {
         if (calc != null) {
-            if (calc.getAvgSpeed() > 50 || (calc.getDistanceBetweenPoints() > 250 && calc.getDurationBetweenPoints() > 12)) {
+            if (calc.getAvgSpeed() > 50 || (calc.getDistanceBetweenPoints() > 250 && calc.getDurationBetweenPoints() > TWELVE_HOURS_THRESHOLD)) {
                 return Boolean.TRUE;
             } else {
                 return Boolean.FALSE;
