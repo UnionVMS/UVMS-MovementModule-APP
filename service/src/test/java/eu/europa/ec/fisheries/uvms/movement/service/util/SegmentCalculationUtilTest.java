@@ -93,7 +93,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
     @Test
     public void testJump() {
 
-        double duration = 13;
+        double duration = 13 * 60 * 60;
         double avgSpeed = 51;
         double distance = 251;
 
@@ -104,7 +104,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         SegmentCategoryType segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
         assertEquals(SegmentCategoryType.JUMP, segmentCategoryType);
 
-        duration = 11;
+        duration = 11 * 60 * 60;
         avgSpeed = 49;
         distance = 249;
 
@@ -114,7 +114,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
         assertNotSame(SegmentCategoryType.JUMP, segmentCategoryType);
 
-        duration = 13;
+        duration = 13 * 60 * 60;
         avgSpeed = 49;
         distance = 251;
 
@@ -124,7 +124,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         segmentCategoryType = SegmentCalculationUtil.getSegmentCategoryType(segCalc, null, null);
         assertEquals(SegmentCategoryType.JUMP, segmentCategoryType);
 
-        duration = 13;
+        duration = 13 * 60 * 60;
         avgSpeed = 49;
         distance = 249;
 
@@ -157,7 +157,7 @@ public class SegmentCalculationUtilTest extends TransactionalTests {
         double distanceToClosestPortTo = 1.6;
         double distanceToClosestPortFrom = 1.6;
 
-        double duration = 13;
+        double duration = 13 * 60 * 60;
         double avgSpeed = 49;
         double distance = 249;
 
