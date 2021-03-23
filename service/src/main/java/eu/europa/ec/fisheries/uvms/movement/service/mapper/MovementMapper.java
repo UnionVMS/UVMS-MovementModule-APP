@@ -12,6 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;  //leave be for now
 import java.util.GregorianCalendar;
@@ -63,6 +64,7 @@ public class MovementMapper {
 
     private static final String PURPOSE_CODE = "9";
     private static final String FLUX_GP_PARTY = "FLUX_GP_PARTY";
+    private static final String FLUX_GP_PURPOSE = "FLUX_GP_PURPOSE";
     public static final String POS = "POS";
     private static final Logger LOG = LoggerFactory.getLogger(MovementMapper.class);
 
@@ -279,9 +281,12 @@ public class MovementMapper {
 
     private static FLUXReportDocumentType mapToMovementReportDocument(String guid, String party) {
         FLUXReportDocumentType doc = new FLUXReportDocumentType();
-        doc.getIDS().add(mapToIdType(guid));
+        IDType idType = mapToIdType(guid);
+        idType.setSchemeID("UUID");
+        doc.getIDS().add(idType);
         doc.setCreationDateTime(mapToNowDateTime());
         doc.setPurposeCode(mapToCodeType(PURPOSE_CODE));
+        doc.getPurposeCode().setListID(FLUX_GP_PURPOSE);
         doc.setOwnerFLUXParty( mapToFluxOwnerPartyType(FLUX_GP_PARTY,party));
         return doc;
     }
@@ -330,12 +335,19 @@ public class MovementMapper {
     private static VesselCountryType mapToVesselCountry(String countryCode) {
         VesselCountryType vesselCountry = new VesselCountryType();
         vesselCountry.setID(mapToIdType(countryCode));
+        vesselCountry.getID().setSchemeID("TERRITORY"); // for forward position report
         return vesselCountry;
     }
 
     private static MeasureType mapToMeasureType(Double measuredValue) {
         MeasureType measureType = new MeasureType();
         measureType.setValue(measuredValue == null ? null: BigDecimal.valueOf(measuredValue));
+        return measureType;
+    }
+
+    private static MeasureType mapToMeasureTypeWithScale(Double measuredValue, int scale) {
+        MeasureType measureType = new MeasureType();
+        measureType.setValue(measuredValue == null ? null: BigDecimal.valueOf(measuredValue).setScale(scale, RoundingMode.DOWN));
         return measureType;
     }
 
@@ -356,13 +368,14 @@ public class MovementMapper {
     private static VesselPositionEventType mapToVesselPosition(Movement movement) {
         VesselPositionEventType position = new VesselPositionEventType();
         position.setObtainedOccurrenceDateTime(mapToDateTime(Date.from(movement.getTimestamp())));
-        position.setCourseValueMeasure(mapToMeasureType(movement.getHeading()));
-        position.setSpeedValueMeasure(mapToMeasureType(movement.getSpeed()));
+        position.setCourseValueMeasure(mapToMeasureTypeWithScale(movement.getHeading(),  2));
+        position.setSpeedValueMeasure(mapToMeasureTypeWithScale(movement.getSpeed(), 2));
         position.setTypeCode(mapToCodeType(POS));
+        position.getTypeCode().setListID("FLUX_VESSEL_POSITION_TYPE");
 
         VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
-        geoType.setLatitudeMeasure(mapToMeasureType(movement.getLocation().getY()));
-        geoType.setLongitudeMeasure(mapToMeasureType(movement.getLocation().getX()));
+        geoType.setLatitudeMeasure(mapToMeasureTypeWithScale(movement.getLocation().getY(), 6));
+        geoType.setLongitudeMeasure(mapToMeasureTypeWithScale(movement.getLocation().getX(), 6));
         position.setSpecifiedVesselGeographicalCoordinate(geoType);
         return position;
     }
