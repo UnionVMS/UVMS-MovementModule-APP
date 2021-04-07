@@ -116,16 +116,20 @@ public class MovementEntityToModelMapper {
         MovementPoint movementPoint = new MovementPoint();
         Point point = movement.getLocation();
 
-        movementPoint.setLatitude(point.getY());
-        movementPoint.setLongitude(point.getX());
-        if (movement.getAltitude() != null) {
-            movementPoint.setAltitude(movement.getAltitude().doubleValue());
-        }
+        if(point != null) {
+            movementPoint.setLatitude(point.getY());
+            movementPoint.setLongitude(point.getX());
+            if (movement.getAltitude() != null) {
+                movementPoint.setAltitude(movement.getAltitude().doubleValue());
+            }
+        } 
         model.setPosition(movementPoint);
 
         model.setConnectId(mapToConnectId(movement.getMovementConnect()));
-
-        model.setWkt(WKTUtil.getWktPointFromMovement(movement));
+        
+        if(movement.getLocation() != null) {
+            model.setWkt(WKTUtil.getWktPointFromMovement(movement));
+        }
         if (movement.getFromSegment() != null) {
             model.getSegmentIds().add(movement.getFromSegment().getId().toString());
             model.setCalculatedCourse(movement.getFromSegment().getCourseOverGround());
