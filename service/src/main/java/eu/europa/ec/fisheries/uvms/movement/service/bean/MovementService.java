@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -108,10 +109,12 @@ public class MovementService {
 
     public List<MovementAndBaseType> createMovementBatch(List<MovementAndBaseType> movements) throws MovementServiceException {
         try {
-            spatial.enrichMovementBatchWithSpatialData(movements.stream().map(MovementAndBaseType::getMovement).collect(Collectors.toList()));
+            spatial.enrichMovementBatchWithSpatialData(movements.stream().map(MovementAndBaseType::getMovement).filter(movement -> Objects.nonNull(movement.getLocation())).collect(Collectors.toList()));
             for (MovementAndBaseType pair : movements) {
-                movementBatch.createMovement(pair.getMovement());
-                incomingMovementBean.processMovement(pair.getMovement());
+                if(pair.getMovement().getLocation() != null) {
+                    movementBatch.createMovement(pair.getMovement());
+                    incomingMovementBean.processMovement(pair.getMovement());
+                }
             }
             return movements;
         } catch (MovementServiceRuntimeException mdre) {
