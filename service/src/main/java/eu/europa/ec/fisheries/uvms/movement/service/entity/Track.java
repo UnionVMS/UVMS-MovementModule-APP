@@ -15,32 +15,30 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.vividsolutions.jts.geom.LineString;
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.List;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
+import java.io.Serializable;
+import java.time.Instant;
 
 /**
+ *
  **/
 @Entity
 @Table(name = "track")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Track.findAll", query = "SELECT t FROM Track t"),
-    @NamedQuery(name = "Track.findById", query = "SELECT t FROM Track t WHERE t.id = :id"),
-    @NamedQuery(name = "Track.findByDistance", query = "SELECT t FROM Track t WHERE t.distance = :distance"),
-    @NamedQuery(name = "Track.findByDuration", query = "SELECT t FROM Track t WHERE t.duration = :duration"),
-    @NamedQuery(name = "Track.findByUpdated", query = "SELECT t FROM Track t WHERE t.updated = :updated"),
-    @NamedQuery(name = "Track.findByUpdatedBy", query = "SELECT t FROM Track t WHERE t.updatedBy = :updatedBy")})
+        @NamedQuery(name = "Track.findAll", query = "SELECT t FROM Track t"),
+        @NamedQuery(name = "Track.findById", query = "SELECT t FROM Track t WHERE t.id = :id"),
+        @NamedQuery(name = "Track.findByDistance", query = "SELECT t FROM Track t WHERE t.distance = :distance"),
+        @NamedQuery(name = "Track.findByDuration", query = "SELECT t FROM Track t WHERE t.duration = :duration"),
+        @NamedQuery(name = "Track.findByUpdated", query = "SELECT t FROM Track t WHERE t.updated = :updated"),
+        @NamedQuery(name = "Track.findByUpdatedBy", query = "SELECT t FROM Track t WHERE t.updatedBy = :updatedBy")})
 @DynamicUpdate
 @DynamicInsert
 public class Track implements Serializable {
@@ -84,7 +82,6 @@ public class Track implements Serializable {
     @Column(name = "trac_upuser")
     private String updatedBy;
 
-    @Type(type = "org.hibernate.spatial.GeometryType")
     @Column(name = "trac_geom", columnDefinition = "Geometry")
     private LineString location;
 
