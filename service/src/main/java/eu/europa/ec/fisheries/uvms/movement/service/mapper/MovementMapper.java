@@ -79,7 +79,9 @@ public class MovementMapper {
     enum FLUXVesselIDType {
         CFR,
         EXT_MARK,
-        IRCS
+        IRCS,
+        ICCAT,
+        UVI,
     }
 
     private MovementMapper() {}
@@ -247,6 +249,8 @@ public class MovementMapper {
         addId(retVal.getIDS(), FLUXVesselIDType.IRCS.name(), vesselIdentifyingProperties.getIrcs());
         addId(retVal.getIDS(), FLUXVesselIDType.EXT_MARK.name(), vesselIdentifyingProperties.getExtMarking());
         addId(retVal.getIDS(), FLUXVesselIDType.CFR.name(), vesselIdentifyingProperties.getCfr());
+        addId(retVal.getIDS(), FLUXVesselIDType.ICCAT.name(), vesselIdentifyingProperties.getIccat());
+        addId(retVal.getIDS(), FLUXVesselIDType.UVI.name(), vesselIdentifyingProperties.getUvi());
         retVal.setRegistrationVesselCountry(mapToVesselCountry(vesselIdentifyingProperties.getFlagState()));
 
         List<VesselPositionEventType> vesselPositionEventTypes = movements.stream()
@@ -331,6 +335,7 @@ public class MovementMapper {
     private static CodeType mapToCodeType(String value) {
         CodeType codeType = new CodeType();
         codeType.setValue(value);
+        codeType.setListID("FLUX_VESSEL_POSITION_TYPE");
         return codeType;
     }
 
@@ -378,8 +383,7 @@ public class MovementMapper {
         position.setObtainedOccurrenceDateTime(mapToDateTime(Date.from(movement.getTimestamp())));
         position.setCourseValueMeasure(mapToMeasureTypeWithScale(movement.getHeading(),  2));
         position.setSpeedValueMeasure(mapToMeasureTypeWithScale(movement.getSpeed(), 2));
-        position.setTypeCode(mapToCodeType(POS));
-        position.getTypeCode().setListID("FLUX_VESSEL_POSITION_TYPE");
+        position.setTypeCode(mapToCodeType(movement.getMovementType().value()));
 
         VesselGeographicalCoordinateType geoType = new VesselGeographicalCoordinateType();
         geoType.setLatitudeMeasure(mapToMeasureTypeWithScale(movement.getLocation().getY(), 6));
