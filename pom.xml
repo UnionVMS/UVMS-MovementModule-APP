@@ -16,7 +16,7 @@
 	<properties>
 		<movement.api.check.against.version>4.0.0</movement.api.check.against.version>
 
-		<uvms.pom.version>3.5</uvms.pom.version>
+		<uvms.pom.version>3.6</uvms.pom.version>
 		<docker.dev.version>3.43.9</docker.dev.version>
 		<docker.liquibase.changeLogFile>LIQUIBASE/changelog/db-changelog-master-postgres.xml</docker.liquibase.changeLogFile>
         <docker.liquibase.db.user>movement</docker.liquibase.db.user>
