@@ -27,24 +27,48 @@
 
     <profiles>
         <profile>
-            <id>multilineLog</id>
-            <properties>
-                <application.logfile.message.pattern>%n</application.logfile.message.pattern>
-            </properties>
+            <id>logging-default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <filtering>true</filtering>
+                        <directory>src/main/logging/default</directory>
+                        <targetPath>${project.build.outputDirectory}</targetPath>
+                        <includes>
+                            <include>logback.xml</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+        <profile>
+            <id>logging-cloud</id>
+            <build>
+                <resources>
+                    <resource>
+                        <filtering>true</filtering>
+                        <directory>src/main/logging/cloud</directory>
+                        <targetPath>${project.build.outputDirectory}</targetPath>
+                        <includes>
+                            <include>logback.xml</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.j256.cloudwatchlogbackappender</groupId>
+                    <artifactId>cloudwatchlogbackappender</artifactId>
+                    <version>2.0</version>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 
     <dependencies>
-        <!--		<dependency>-->
-        <!--			<groupId>org.hibernate</groupId>-->
-        <!--			<artifactId>hibernate-core</artifactId>-->
-        <!--			<version>${hibernate.version}</version>-->
-        <!--		</dependency>-->
-        <!--		<dependency>-->
-        <!--			<groupId>org.hibernate</groupId>-->
-        <!--			<artifactId>hibernate-entitymanager</artifactId>-->
-        <!--			<version>${hibernate.version}</version>-->
-        <!--		</dependency>-->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-spatial</artifactId>
@@ -132,6 +156,18 @@
 
     <build>
         <finalName>${project.name}-${project.version}</finalName>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <filtering>true</filtering>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -157,18 +193,6 @@
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <filtering>true</filtering>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-        </testResources>
     </build>
     <dependencyManagement>
         <dependencies>
