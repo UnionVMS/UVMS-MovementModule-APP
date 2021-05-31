@@ -16,22 +16,16 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.vividsolutions.jts.geom.LineString;
 import eu.europa.ec.fisheries.schema.movement.v1.SegmentCategoryType;
-import java.io.Serializable;
-import java.time.Instant;
+import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import eu.europa.ec.fisheries.uvms.movement.model.MovementInstantDeserializer;
-import org.hibernate.annotations.*;
+import java.io.Serializable;
+import java.time.Instant;
 
 @Entity
 @Table(name = "segment", indexes = {
@@ -45,19 +39,19 @@ import org.hibernate.annotations.*;
 })
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = Segment.FIND_ALL, query = "SELECT s FROM Segment s"),
-    @NamedQuery(name = Segment.FIND_ALL_BY_TRACK, query = "SELECT s FROM Segment s where s.track = :track"),
-    @NamedQuery(name = Segment.FIND_BY_IDS, query = "SELECT s FROM Segment s WHERE s.id IN :ids"),
-    @NamedQuery(name = Segment.FIND_BY_ID, query = "SELECT s FROM Segment s WHERE s.id = :id"),
-    @NamedQuery(name = Segment.FIND_BY_DISTANCE, query = "SELECT s FROM Segment s WHERE s.distance = :distance"),
-    @NamedQuery(name = Segment.FIND_BY_DURATION, query = "SELECT s FROM Segment s WHERE s.duration = :duration"),
-    @NamedQuery(name = Segment.FIND_BY_SPEED_OVER_GROUND, query = "SELECT s FROM Segment s WHERE s.speedOverGround = :speedOverGround"),
-    @NamedQuery(name = Segment.FIND_BY_COURSE_OVER_GROUND, query = "SELECT s FROM Segment s WHERE s.courseOverGround = :courseOverGround"),
-    @NamedQuery(name = Segment.FIND_BY_UPDATED, query = "SELECT s FROM Segment s WHERE s.updated = :updated"),
-    @NamedQuery(name = Segment.FIND_BY_UPDATED_BY, query = "SELECT s FROM Segment s WHERE s.updatedBy = :updatedBy"),
-    @NamedQuery(name = Segment.FIND_FIND_BY_FROM_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.fromMovement = :movement"),
-    @NamedQuery(name = Segment.FIND_BY_TO_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.toMovement = :movement"),
-    @NamedQuery(name = Segment.FIND_BY_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.toMovement = :movement OR s.fromMovement = :movement"),})
+        @NamedQuery(name = Segment.FIND_ALL, query = "SELECT s FROM Segment s"),
+        @NamedQuery(name = Segment.FIND_ALL_BY_TRACK, query = "SELECT s FROM Segment s where s.track = :track"),
+        @NamedQuery(name = Segment.FIND_BY_IDS, query = "SELECT s FROM Segment s WHERE s.id IN :ids"),
+        @NamedQuery(name = Segment.FIND_BY_ID, query = "SELECT s FROM Segment s WHERE s.id = :id"),
+        @NamedQuery(name = Segment.FIND_BY_DISTANCE, query = "SELECT s FROM Segment s WHERE s.distance = :distance"),
+        @NamedQuery(name = Segment.FIND_BY_DURATION, query = "SELECT s FROM Segment s WHERE s.duration = :duration"),
+        @NamedQuery(name = Segment.FIND_BY_SPEED_OVER_GROUND, query = "SELECT s FROM Segment s WHERE s.speedOverGround = :speedOverGround"),
+        @NamedQuery(name = Segment.FIND_BY_COURSE_OVER_GROUND, query = "SELECT s FROM Segment s WHERE s.courseOverGround = :courseOverGround"),
+        @NamedQuery(name = Segment.FIND_BY_UPDATED, query = "SELECT s FROM Segment s WHERE s.updated = :updated"),
+        @NamedQuery(name = Segment.FIND_BY_UPDATED_BY, query = "SELECT s FROM Segment s WHERE s.updatedBy = :updatedBy"),
+        @NamedQuery(name = Segment.FIND_FIND_BY_FROM_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.fromMovement = :movement"),
+        @NamedQuery(name = Segment.FIND_BY_TO_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.toMovement = :movement"),
+        @NamedQuery(name = Segment.FIND_BY_MOVEMENT, query = "SELECT s FROM Segment s WHERE s.toMovement = :movement OR s.fromMovement = :movement"),})
 @DynamicUpdate
 @DynamicInsert
 public class Segment implements Serializable {
@@ -82,7 +76,6 @@ public class Segment implements Serializable {
     @Column(name = "seg_id")
     private Long id;
 
-    @Type(type = "org.hibernate.spatial.GeometryType")
     @Column(name = "seg_geom", columnDefinition = "Geometry", nullable = true)
     private LineString location;
 
