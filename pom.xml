@@ -23,7 +23,7 @@
         <docker.liquibase.db.passwd>movement</docker.liquibase.db.passwd>
 		<longpolling.version>2.0.13</longpolling.version>
 		<user.model.version>2.2.2</user.model.version>
-		<audit.model.version>4.3.8</audit.model.version>
+		<audit.model.version>4.3.9</audit.model.version>
 		<exchange.model.version>5.3.15-UVMS</exchange.model.version>
 		<asset.client.version>6.8.10</asset.client.version>
 		<movement-rules.model.version>2.4.12</movement-rules.model.version>
