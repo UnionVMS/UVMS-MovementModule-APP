@@ -111,6 +111,82 @@
 
         </xsd:sequence>
     </xsd:complexType>
+
+    <xsd:complexType name="VesselPositionEventType">
+        <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="ObtainedOccurrenceDateTime" type="movement:DateTimeType" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="TypeCode" type="movement:CodeType" />
+            <xsd:element maxOccurs="1" minOccurs="0" name="SpeedValueMeasure" type="movement:MeasureType" />
+            <xsd:element maxOccurs="1" minOccurs="0" name="CourseValueMeasure" type="movement:MeasureType" />
+            <xsd:element maxOccurs="1" minOccurs="0" name="ActivityTypeCode" type="movement:CodeType" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="SpecifiedVesselGeographicalCoordinate" type="movement:VesselGeographicalCoordinateType" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="IDType">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:token">
+                <xsd:attribute name="schemeID" type="xsd:token" use="optional" />
+                <xsd:attribute name="schemeName" type="xsd:string" use="optional" />
+                <xsd:attribute name="schemeAgencyID" type="xsd:token" use="optional" />
+                <xsd:attribute name="schemeAgencyName" type="xsd:string" use="optional" />
+                <xsd:attribute name="schemeVersionID" type="xsd:token" use="optional" />
+                <xsd:attribute name="schemeDataURI" type="xsd:anyURI" use="optional" />
+                <xsd:attribute name="schemeURI" type="xsd:anyURI" use="optional" />
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="VesselGeographicalCoordinateType">
+        <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="0" name="AltitudeMeasure" type="movement:MeasureType" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="LatitudeMeasure" type="movement:MeasureType" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="LongitudeMeasure" type="movement:MeasureType" />
+            <xsd:element maxOccurs="1" minOccurs="0" name="SystemID" type="movement:IDType" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="CodeType">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:token">
+                <xsd:attribute name="listID" type="xsd:token" use="optional" />
+                <xsd:attribute name="listAgencyID" type="xsd:token" use="optional" />
+                <xsd:attribute name="listAgencyName" type="xsd:string" use="optional" />
+                <xsd:attribute name="listName" type="xsd:string" use="optional" />
+                <xsd:attribute name="listVersionID" type="xsd:token" use="optional" />
+                <xsd:attribute name="name" type="xsd:string" use="optional" />
+                <xsd:attribute name="languageID" type="xsd:token" use="optional" />
+                <xsd:attribute name="listURI" type="xsd:anyURI" use="optional" />
+                <xsd:attribute name="listSchemeURI" type="xsd:anyURI" use="optional" />
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="MeasureType">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:decimal">
+                <xsd:attribute name="unitCode" type="xsd:token" use="optional" />
+                <xsd:attribute name="unitCodeListVersionID" type="xsd:token" use="optional" />
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+
+
+    <xsd:complexType name="DateTimeType">
+        <xsd:choice>
+            <xsd:element name="DateTimeString">
+                <xsd:complexType>
+                    <xsd:simpleContent>
+                        <xsd:extension base="xsd:string">
+                            <xsd:attribute name="format" type="xsd:string" use="optional" />
+                        </xsd:extension>
+                    </xsd:simpleContent>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="DateTime" type="xsd:dateTime" />
+        </xsd:choice>
+    </xsd:complexType>
     
     <xsd:complexType name="MovementType">
         <xsd:complexContent>

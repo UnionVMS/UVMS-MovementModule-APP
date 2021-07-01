@@ -160,6 +160,7 @@
                                 <xsd:element name="vesselIdentifyingProperties" type="asset:VesselIdentifyingProperties" minOccurs="1" maxOccurs="1"/>
                                 <xsd:element name="receiver" type="xsd:string" minOccurs="1" maxOccurs="1"/>
                                 <xsd:element name="dataflow" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+                                <xsd:element name="SpecifiedVesselPositionEvent" type="movement:VesselPositionEventType" minOccurs="1" maxOccurs="unbounded"/>
                             </xsd:sequence>
                         </xsd:extension>
                     </xsd:complexContent>

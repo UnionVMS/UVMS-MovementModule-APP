@@ -63,7 +63,12 @@ public class SpatialService {
             MovementMapper.enrichAndMapToMovementTypes(movements, enrichment);
             List<SpatialEnrichmentRSListElement> enrichmentRespLists = enrichment.getEnrichmentRespLists();
             for (Movement movement : movements) {
+                if(enrichmentRespLists.isEmpty()){
+                    continue;
+                }
+
                 SpatialEnrichmentRSListElement enrichmentRSListElement = enrichmentRespLists.stream()
+                        .filter(el->el.getGuid() != null)
                         .filter(el->el.getGuid().equals(movement.getMovementConnect().getValue()))
                         .findFirst().orElse(null);
                 if(enrichmentRSListElement == null) {
