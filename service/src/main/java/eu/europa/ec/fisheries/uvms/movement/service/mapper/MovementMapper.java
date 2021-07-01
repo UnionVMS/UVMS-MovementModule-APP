@@ -141,7 +141,8 @@ public class MovementMapper {
         List<Movement> enrichedList = new ArrayList<>();
         for (Movement movement : movements) {
             SpatialEnrichmentRSListElement enrichmentRSListElement = enrichmentRespLists.stream()
-                                                                    .filter(el->el.getGuid().equals(movement.getMovementConnect().getValue()))
+                                                                    .filter(el -> el.getGuid() != null)
+                                                                    .filter(el -> el.getGuid().equals(movement.getMovementConnect().getValue()))
                                                                     .findFirst().orElse(null);
             if(enrichmentRSListElement == null) {
                 continue;
