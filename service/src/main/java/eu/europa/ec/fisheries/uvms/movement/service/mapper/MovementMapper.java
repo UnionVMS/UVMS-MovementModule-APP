@@ -82,6 +82,7 @@ public class MovementMapper {
         IRCS,
         ICCAT,
         UVI,
+        GFCM
     }
 
     private MovementMapper() {}
@@ -252,6 +253,7 @@ public class MovementMapper {
         addId(retVal.getIDS(), FLUXVesselIDType.CFR.name(), vesselIdentifyingProperties.getCfr());
         addId(retVal.getIDS(), FLUXVesselIDType.ICCAT.name(), vesselIdentifyingProperties.getIccat());
         addId(retVal.getIDS(), FLUXVesselIDType.UVI.name(), vesselIdentifyingProperties.getUvi());
+        addId(retVal.getIDS(), FLUXVesselIDType.GFCM.name(), vesselIdentifyingProperties.getGfcm());
         retVal.setRegistrationVesselCountry(mapToVesselCountry(vesselIdentifyingProperties.getFlagState()));
 
         List<VesselPositionEventType> vesselPositionEventTypes = movements.stream()
@@ -336,6 +338,9 @@ public class MovementMapper {
     private static CodeType mapToCodeType(String value) {
         CodeType codeType = new CodeType();
         codeType.setValue(value);
+        if("EXI".equals(value)){
+            codeType.setValue("EXIT");
+        }
         codeType.setListID("FLUX_VESSEL_POSITION_TYPE");
         return codeType;
     }

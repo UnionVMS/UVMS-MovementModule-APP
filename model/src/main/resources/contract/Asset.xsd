@@ -51,6 +51,7 @@
             <xsd:element name="cfr" type="xsd:string"/>
             <xsd:element name="uvi" type="xsd:string"/>
             <xsd:element name="extMarking" type="xsd:string"/>
+            <xsd:element name="gfcm" type="xsd:string"/>
             <xsd:element name="name" type="xsd:string"/>
         </xsd:sequence>
     </xsd:complexType>
