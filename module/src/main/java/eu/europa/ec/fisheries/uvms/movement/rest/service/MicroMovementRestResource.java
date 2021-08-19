@@ -124,17 +124,16 @@ public class MicroMovementRestResource {
     public Response getLastMovementForAllAssets(List<String> sources) {
         try {
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
-            List<Movement> movements = movementService.getLatestMovementsLast8Hours(sourceTypes);
+            List<MovementDto> movements = movementService.getLatestMovementsLast8Hours(sourceTypes);
 
             List<String> assetIdList = new ArrayList<>(movements.size());
-            for (Movement micro: movements) {
-                assetIdList.add(micro.getMovementConnect().getId().toString());
+            for (MovementDto movement: movements) {
+                assetIdList.add(movement.getAsset());
             }
 
             String assetInfo = movementService.getMicroAssets(assetIdList);
 
-            List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
-            RealTimeMapInitialData retVal = new RealTimeMapInitialData(movementDtos);
+            RealTimeMapInitialData retVal = new RealTimeMapInitialData(movements);
             String returnJson = jsonb.toJson(retVal).replace(RealTimeMapInitialData.ASSET_JSON_PLACE_HERE, assetInfo);
 
             return Response.ok(returnJson).header("MDC", MDC.get("requestId")).build();

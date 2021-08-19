@@ -12,6 +12,7 @@ package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
 import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
+import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.service.dto.CursorPagination;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
@@ -379,8 +380,8 @@ public class MovementDao {
         }
     }
 
-    public List<Movement> getLatestWithLimit(Instant date, List<MovementSourceType> sources) {
-        TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, Movement.class);
+    public List<MovementDto> getLatestWithLimit(Instant date, List<MovementSourceType> sources) {
+        TypedQuery<MovementDto> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, MovementDto.class);
         query.setParameter("date", date);
         query.setParameter("sources", sources);
         return query.getResultList();
