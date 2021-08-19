@@ -49,7 +49,7 @@ import java.util.UUID;
 
     @NamedQuery(name = Movement.FIND_ALL_FOR_ASSET_BETWEEN_DATES, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp > :startDate AND m.timestamp < :endDate AND m.source in :sources ORDER BY m.timestamp DESC"),
     @NamedQuery(name = Movement.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, query = "SELECT m FROM Movement m WHERE m.movementConnect.id in :connectIds AND m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.source in :sources ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE mc.updated > :date AND m.source in :sources" ),
+    @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MovementProjection(m.id, m.location, m.speed, m.calculatedSpeed, m.heading, m.movementConnect.id, m.status, m.source, m.movementType, m.timestamp, m.lesReportTime, m.sourceSatelliteId, m.updated, m.updatedBy, m.aisPositionAccuracy) FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE mc.updated > :date AND m.source in :sources" ),
 
 
     @NamedQuery(name = Movement.FIND_LATEST_X_NUMBER_FOR_ASSET, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.source in :sources ORDER BY m.timestamp DESC"),

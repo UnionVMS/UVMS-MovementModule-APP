@@ -233,11 +233,11 @@ public class MovementService {
                 ChronoUnit.DAYS), positionTime);
     }
 
-    public List<Movement> getLatestMovementsLast8Hours(List<MovementSourceType> sources) {
+    public List<MovementDto> getLatestMovementsLast8Hours(List<MovementSourceType> sources) {
         return getLatestMovementsAfter(Instant.now().minus(8, ChronoUnit.HOURS), sources);
     }
 
-    public List<Movement> getLatestMovementsAfter(Instant date, List<MovementSourceType> sources) {
+    public List<MovementDto> getLatestMovementsAfter(Instant date, List<MovementSourceType> sources) {
         return movementDao.getLatestWithLimit(date, sources);
     }
     
