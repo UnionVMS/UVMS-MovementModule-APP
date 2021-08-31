@@ -254,6 +254,10 @@ public class MovementService {
     public String getMicroAssets(List<String> assetIds){
         return assetClient.getMicroAssetList(assetIds);
     }
+    
+    public String getAssetListFromIDs(List<String> assetIds){
+        return assetClient.getAssetList(assetIds);
+    }
 
     public int remapMovementConnectInMovement(String oldMovementConnectId, String newMovementConnectId){
         if(oldMovementConnectId == null || oldMovementConnectId.isEmpty()){
