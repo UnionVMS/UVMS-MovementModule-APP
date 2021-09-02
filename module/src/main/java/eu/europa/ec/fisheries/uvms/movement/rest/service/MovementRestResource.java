@@ -251,7 +251,7 @@ public class MovementRestResource {
                 assetIdList.add(movement.getAsset());
             }
 
-            String assetInfo = movementService.getAssetListFromIDs(assetIdList);
+            String assetInfo = movementService.getAssetList(assetIdList);
 
             RealTimeMapInitialData retVal = new RealTimeMapInitialData(movements);
             String returnJson = jsonb.toJson(retVal).replace(RealTimeMapInitialData.ASSET_JSON_PLACE_HERE, assetInfo);

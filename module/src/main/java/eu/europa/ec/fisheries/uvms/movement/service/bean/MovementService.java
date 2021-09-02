@@ -255,7 +255,7 @@ public class MovementService {
         return assetClient.getMicroAssetList(assetIds);
     }
     
-    public String getAssetListFromIDs(List<String> assetIds){
+    public String getAssetList(List<String> assetIds){
         return assetClient.getAssetList(assetIds);
     }
 
