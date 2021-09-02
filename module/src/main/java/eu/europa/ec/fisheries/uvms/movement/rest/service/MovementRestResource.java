@@ -239,7 +239,7 @@ public class MovementRestResource {
     }
 
     @POST
-    @Path("/latest")
+    @Path("/latest/8h")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getLastMovementForAllAssets(List<String> sources) {
         try {
