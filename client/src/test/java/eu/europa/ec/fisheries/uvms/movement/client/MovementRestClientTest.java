@@ -284,9 +284,9 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         ids.add(createdMovement.getId());
         List<MovementDto> microMovementList = movementRestClient.getMovementDtoByIdList(ids);
         assertNotNull(microMovementList);
-        assertTrue(microMovementList.size() == 1);
-        assertTrue( microMovementList.get(0).getId().equals(createdMovement.getId() ) );
-        assertTrue(microMovementList.get(0).getHeading() == (double)createdMovement.getHeading());
+        assertEquals(1,microMovementList.size());
+        assertEquals(microMovementList.get(0).getId(), createdMovement.getId());
+        assertEquals(Double.valueOf(createdMovement.getHeading()), Double.valueOf(microMovementList.get(0).getHeading()));
     }
     
     @Test
@@ -308,7 +308,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         ids.add(createdMovement2.getId());
         List<MovementDto> microMovementList = movementRestClient.getMovementDtoByIdList(ids);
         assertNotNull(microMovementList);
-        assertTrue(microMovementList.size() == 2);
+        assertEquals(2,microMovementList.size());
     }
 
     @Test
@@ -324,9 +324,9 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         ids.add(createdMovement.getId());
         List<MovementDto> MovementDtoList = movementRestClient.getMovementDtoByIdList(ids);
         assertNotNull(MovementDtoList);
-        assertTrue(MovementDtoList.size() == 1);
-        assertTrue( MovementDtoList.get(0).getId().equals(createdMovement.getId() ) );
-        assertTrue(MovementDtoList.get(0).getHeading() == (double)createdMovement.getHeading());
+        assertEquals(1, MovementDtoList.size());
+        assertEquals(MovementDtoList.get(0).getId(), (createdMovement.getId()));
+        assertEquals(Double.valueOf(MovementDtoList.get(0).getHeading()), Double.valueOf(createdMovement.getHeading()));
         assertEquals(createdMovement.getMovementType(), MovementDtoList.get(0).getMovementType());
     }
 
@@ -349,7 +349,7 @@ public class MovementRestClientTest extends BuildMovementClientDeployment {
         ids.add(createdMovement2.getId());
         List<MovementDto> movementDtoList = movementRestClient.getMovementDtoByIdList(ids);
         assertNotNull(movementDtoList);
-        assertTrue(movementDtoList.size() == 2);
+        assertEquals(2, movementDtoList.size());
     }
     
     private RangeCriteria createRangeCriteriaDate(int daysFromNow) {
