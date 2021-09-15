@@ -208,10 +208,11 @@ public class MovementRestResource {
     public ResponseDto getById(@PathParam(value = "id") final String id) {
         LOG.debug("Get by id invoked in rest layer");
         try {
-            Movement movement = serviceLayer.getById(id);
+            String movementGuid = id.contains("_") ? id.split("_")[0] : id;
+            Movement movement = serviceLayer.getById(movementGuid);
             MovementType response = MovementEntityToModelMapper.mapToMovementType(movement);
             if (response == null) {
-                throw new MovementServiceRuntimeException("Error when getting movement by id: " + id, ErrorCode.NO_RESULT_ERROR);
+                throw new MovementServiceRuntimeException("Error when getting movement by id: " + movementGuid, ErrorCode.NO_RESULT_ERROR);
             }
             return new ResponseDto<>(response, ResponseCode.OK);
         } catch (MovementServiceRuntimeException ex) {
