@@ -208,7 +208,7 @@ public class MovementRestResource {
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(sources);
             Instant startInstant = (startDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
             Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtils.stringToDate(endDate));
-            List<Movement> movements = movementDao.getMicroMovementsForAssetAfterDate (connectId, startInstant, endInstant, sourceTypes);
+            List<Movement> movements = movementDao.getMovementsForAssetAfterDate (connectId, startInstant, endInstant, sourceTypes);
             List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
             return Response.ok(movementDtos).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
@@ -229,7 +229,7 @@ public class MovementRestResource {
             List<MovementSourceType> sourceTypes = RestUtilMapper.convertToMovementSourceTypes(query.getSources());
             Instant startInstant = (endDate.isEmpty() ? Instant.now().minus(8, ChronoUnit.HOURS) : DateUtils.stringToDate(startDate));
             Instant endInstant = (endDate.isEmpty() ? Instant.now() : DateUtils.stringToDate(endDate));
-            List<Movement> movements = movementDao.getMicroMovementsForConnectIdsBetweenDates(query.getAssetIds(), startInstant, endInstant, sourceTypes);
+            List<Movement> movements = movementDao.getMovementsForConnectIdsBetweenDates(query.getAssetIds(), startInstant, endInstant, sourceTypes);
             List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
             return Response.ok(movementDtos).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
@@ -239,7 +239,7 @@ public class MovementRestResource {
     }
 
     @POST
-    @Path("/latest/8h")
+    @Path("/update")
     @RequiresFeature(UnionVMSFeature.viewMovements)
     public Response getLastMovementForAllAssets(List<String> sources) {
         try {

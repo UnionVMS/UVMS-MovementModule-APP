@@ -353,7 +353,7 @@ public class MovementDao {
     }
 
 
-    public List<Movement> getMicroMovementsForAssetAfterDate(UUID id, Instant startDate, Instant endDate, List<MovementSourceType> sources){
+    public List<Movement> getMovementsForAssetAfterDate(UUID id, Instant startDate, Instant endDate, List<MovementSourceType> sources){
         try {
             TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_FOR_ASSET_BETWEEN_DATES, Movement.class);
             query.setParameter("id", id);
@@ -387,7 +387,7 @@ public class MovementDao {
         return query.getResultList();
     }
 
-    public List<Movement> getMicroMovementsForConnectIdsBetweenDates(List<UUID> connectIds, Instant fromDate, Instant toDate, List<MovementSourceType> sources) {
+    public List<Movement> getMovementsForConnectIdsBetweenDates(List<UUID> connectIds, Instant fromDate, Instant toDate, List<MovementSourceType> sources) {
         TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, Movement.class);
         query.setParameter("connectIds", connectIds);
         query.setParameter("fromDate", fromDate);
