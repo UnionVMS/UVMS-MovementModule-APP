@@ -25,7 +25,7 @@
 		<user.model.version>2.2.2</user.model.version>
 		<audit.model.version>4.3.9</audit.model.version>
 		<exchange.model.version>5.3.17-UVMS</exchange.model.version>
-		<asset.client.version>6.8.12</asset.client.version>
+		<asset.client.version>6.8.13</asset.client.version>
 		<movement-rules.model.version>2.4.13</movement-rules.model.version>
 		<installAtEnd>false</installAtEnd>
 
