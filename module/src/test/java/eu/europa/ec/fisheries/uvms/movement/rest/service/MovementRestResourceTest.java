@@ -10,6 +10,7 @@ import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
+import eu.europa.ec.fisheries.uvms.movement.rest.RestUtilMapper;
 import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -217,71 +219,6 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
                 .noneMatch(m -> m.getId().equals(createdMovement3.getId())));
     }
     
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getRealTimeMapInitialDataMovementsTest() {
-        Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
-
-        List<MovementDto> latestMovements = getWebTarget()
-                .path("movement")
-                .path("realtime")
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(""), RealTimeMapInitialData.class).getMovements();
-
-        assertTrue(latestMovements
-                .stream()
-                .anyMatch(m -> m.getId().equals(createdMovement.getId())));
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getLastMovementForAllAssetsTest() {
-        Movement movementBaseType = MovementTestHelper.createMovement();
-        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
-
-        RealTimeMapInitialData output = getWebTarget()
-                .path("movement")
-                .path("realtime")
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(""), RealTimeMapInitialData.class);
-
-        assertTrue(output.getMovements().size() > 0);
-        assertTrue(output.getMovements()
-                .stream()
-                .anyMatch(m -> m.getId().equals(createdMovement.getId())));
-        assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void getLastMovementFromOnlyOneSourceTest() {
-        Movement nafBaseType = MovementTestHelper.createMovement();
-        nafBaseType.setSource(MovementSourceType.NAF);
-        Movement nafMovement = movementService.createAndProcessMovement(nafBaseType);
-
-        Movement manualBaseType = MovementTestHelper.createMovement();
-        manualBaseType.setSource(MovementSourceType.MANUAL);
-        Movement manualMovement = movementService.createAndProcessMovement(manualBaseType);
-
-        RealTimeMapInitialData output = getWebTarget()
-                .path("movement")
-                .path("realtime")
-                .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, getToken())
-                .post(Entity.json(Arrays.asList(MovementSourceType.NAF.value())), RealTimeMapInitialData.class);
-
-        assertTrue(output.getMovements().size() > 0);
-        assertTrue(output.getMovements()
-                .stream()
-                .anyMatch(m -> m.getId().equals(nafMovement.getId())));
-        assertFalse(output.getMovements()
-                .stream()
-                .anyMatch(m -> m.getId().equals(manualMovement.getId())));
-        assertEquals("AssetMT rest mock in movement rest module", output.getAssetList());
-    }
 
     /*
      * Helper functions for REST calls
