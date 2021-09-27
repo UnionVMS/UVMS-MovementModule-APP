@@ -250,10 +250,6 @@ public class MovementService {
             return new ArrayList<>();
         }
     }
-
-    public String getMicroAssets(List<String> assetIds){
-        return assetClient.getMicroAssetList(assetIds);
-    }
     
     public String getAssetList(List<String> assetIds){
         return assetClient.getAssetList(assetIds);
