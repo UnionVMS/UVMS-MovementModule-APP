@@ -219,13 +219,13 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
     
     @Test
     @OperateOnDeployment("movementservice")
-    public void getLatestMovementsTest() {
+    public void getRealTimeMapInitialDataMovementsTest() {
         Movement movementBaseType = MovementTestHelper.createMovement();
         Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
 
         List<MovementDto> latestMovements = getWebTarget()
                 .path("movement")
-                .path("latest")
+                .path("realtime")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(""), RealTimeMapInitialData.class).getMovements();
@@ -243,7 +243,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
 
         RealTimeMapInitialData output = getWebTarget()
                 .path("movement")
-                .path("latest")
+                .path("realtime")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(""), RealTimeMapInitialData.class);
@@ -268,7 +268,7 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
 
         RealTimeMapInitialData output = getWebTarget()
                 .path("movement")
-                .path("latest")
+                .path("realtime")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getToken())
                 .post(Entity.json(Arrays.asList(MovementSourceType.NAF.value())), RealTimeMapInitialData.class);

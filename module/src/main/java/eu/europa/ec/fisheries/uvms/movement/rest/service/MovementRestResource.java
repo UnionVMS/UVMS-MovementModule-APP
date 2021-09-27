@@ -212,7 +212,7 @@ public class MovementRestResource {
             List<MovementDto> movementDtos = MovementMapper.mapToMovementDtoList(movements);
             return Response.ok(movementDtos).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
-            LOG.error("Error when getting Micro Movement for connectId: {}", connectId, e);
+            LOG.error("Error when getting Movement for connectId: {}", connectId, e);
             throw e;
         }
     }
@@ -237,7 +237,7 @@ public class MovementRestResource {
 
             return Response.ok(returnJson).header("MDC", MDC.get("requestId")).build();
         } catch (Exception e) {
-            LOG.error("Error when getting latest Micro Movements", e);
+            LOG.error("Error when getting latest Movements for realtime", e);
             throw e;
         }
     }
