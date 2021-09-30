@@ -56,7 +56,7 @@ public class MovementModuleRequestMapper {
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
 
-    public static String mapToPingRequest(MovementQuery query) {
+    public static String mapToPingRequest() {
         PingRequest request = new PingRequest();
         request.setMethod(MovementModuleMethod.PING);
         return JAXBMarshaller.marshallJaxBObjectToString(request);
