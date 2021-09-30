@@ -4,11 +4,9 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -19,7 +17,9 @@ import java.util.UUID;
 
 public class IncomingMovementMapper {
 
-
+    private IncomingMovementMapper() {
+        // private constructor because utility class
+    }
     public static Movement mapNewMovementEntity(IncomingMovement ic, String username) {
         Movement entity = new Movement();
 
@@ -108,7 +108,7 @@ public class IncomingMovementMapper {
         md.setMobileTerminalMemberNumber(response.getMemberNumber());
         md.setMobileTerminalSerialNumber(response.getSerialNumber());
         //TODO: missing
-        //md.setMobileTerminalStatus();
+
         md.setSource(movement.getSource().value());
         if (movement.getSourceSatelliteId() != null) {
             md.setOceanRegion(movement.getSourceSatelliteId().name());
@@ -119,10 +119,6 @@ public class IncomingMovementMapper {
             md.setPreviousLatitude(previousMovement.getLocation().getY());
             md.setPreviousLongitude(previousMovement.getLocation().getX());
         }
-        
-        /*
-    private List<String> vicinityOf;
-         */
 
         return md;
     }
