@@ -3,11 +3,15 @@ package eu.europa.ec.fisheries.uvms.movement.rest.service;
 import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementQuery;
 import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementType;
+import eu.europa.ec.fisheries.uvms.commons.date.DateUtils;
 import eu.europa.ec.fisheries.uvms.movement.model.GetMovementListByQueryResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.dto.MovementDto;
 import eu.europa.ec.fisheries.uvms.movement.rest.BuildMovementRestDeployment;
 import eu.europa.ec.fisheries.uvms.movement.rest.MovementTestHelper;
+import eu.europa.ec.fisheries.uvms.movement.rest.RestUtilMapper;
+import eu.europa.ec.fisheries.uvms.movement.rest.dto.RealTimeMapInitialData;
 import eu.europa.ec.fisheries.uvms.movement.service.bean.MovementService;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -21,6 +25,8 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -168,6 +174,51 @@ public class MovementRestResourceTest extends BuildMovementRestDeployment {
         assertTrue(latestMovements.stream()
                 .anyMatch(m -> m.getId().equals(createdMovement3.getId())));
     }
+    
+    /*
+     * Moved from microMovementRestResourceTest
+     */
+    
+    @Test
+    @OperateOnDeployment("movementservice")
+    public void getTrackBetweenTimesForAssetTest() {
+        UUID connectId = UUID.randomUUID();
+        Movement movementBaseType = MovementTestHelper.createMovement();
+        movementBaseType.getMovementConnect().setId(connectId);
+        movementBaseType.setTimestamp(Instant.now().minusSeconds(4));
+        Movement createdMovement = movementService.createAndProcessMovement(movementBaseType);
+        Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType2.getMovementConnect().setId(connectId);
+        movementBaseType2.setTimestamp(Instant.now().minusSeconds(2));
+        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
+        Movement movementBaseType3 = MovementTestHelper.createMovement();
+        movementBaseType3.getMovementConnect().setId(connectId);
+        Movement createdMovement3 = movementService.createAndProcessMovement(movementBaseType3);
+
+        Instant startTime  = createdMovement2.getTimestamp().minusSeconds(1);
+        Instant endTime  = createdMovement2.getTimestamp().plusSeconds(1);
+
+
+        List<MovementDto> latestMovements = getWebTarget()
+                .path("movement")
+                .path("track")
+                .path("asset")
+                .path(connectId.toString())
+                .queryParam("startDate", DateUtils.dateToEpochMilliseconds(startTime)) //yyyy-MM-dd HH:mm:ss Z
+                .queryParam("endDate", DateUtils.dateToHumanReadableString(endTime))
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, getToken())
+                .post(Entity.json(""), new GenericType<List<MovementDto>>() {});
+
+        assertFalse(latestMovements.isEmpty());
+        assertTrue(latestMovements.stream().
+                noneMatch(m -> m.getId().equals(createdMovement.getId())));
+        assertTrue(latestMovements.stream()
+                .anyMatch(m -> m.getId().equals(createdMovement2.getId())));
+        assertTrue(latestMovements.stream()
+                .noneMatch(m -> m.getId().equals(createdMovement3.getId())));
+    }
+    
 
     /*
      * Helper functions for REST calls

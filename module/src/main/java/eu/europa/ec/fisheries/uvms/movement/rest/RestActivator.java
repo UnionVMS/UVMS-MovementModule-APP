@@ -41,7 +41,6 @@ public class RestActivator extends Application {
         set.add(AlarmRestResource.class);
         set.add(InternalRestResource.class);
         set.add(SSEResource.class);
-        set.add(MicroMovementRestResource.class);
         set.add(JsonBConfiguratorMovement.class);
         LOG.info(RestConstants.MODULE_NAME + " module starting up");
     }
