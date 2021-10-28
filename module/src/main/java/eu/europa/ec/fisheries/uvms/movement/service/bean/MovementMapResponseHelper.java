@@ -198,49 +198,35 @@ public class MovementMapResponseHelper {
             throw new IllegalArgumentException("MovementSegment or SearchValue list is null");
         }
 
-        boolean keepSegment = true;
-
         for (SearchValue searchValue : searchKeyValuesRange) {
 
             if (searchValue.isRange() && searchValue.getField().equals(SearchField.SEGMENT_DURATION)) {
-                keepSegment = checkDuration(segment, searchValue);
+                if (segment.getDuration() < Double.valueOf(searchValue.getFromValue())) {
+                    return false;
+                }
+                if (segment.getDuration() > Double.valueOf(searchValue.getToValue())) {
+                    return false;
+                }
             }
 
             if (searchValue.isRange() && searchValue.getField().equals(SearchField.SEGMENT_LENGTH)) {
-                keepSegment = checkDistance(segment, searchValue);
+                if (segment.getDistance() < Double.valueOf(searchValue.getFromValue())) {
+                    return false;
+                }
+                if (segment.getDistance() > Double.valueOf(searchValue.getToValue())) {
+                    return false;
+                }
             }
 
             if (searchValue.isRange() && searchValue.getField().equals(SearchField.SEGMENT_SPEED)) {
-                keepSegment = checkSpeed(segment, searchValue);
+                if (segment.getSpeedOverGround() < Double.valueOf(searchValue.getFromValue())) {
+                    return false;
+                }
+                if (segment.getSpeedOverGround() > Double.valueOf(searchValue.getToValue())) {
+                    return false;
+                }
             }
         }
-    return keepSegment;
-    }
-
-    private static boolean checkDuration(MovementSegment segment, SearchValue searchValue) {
-        boolean returnSegment = true;
-        if ((segment.getDuration() < Double.valueOf(searchValue.getFromValue())) ||
-                (segment.getDuration() > Double.valueOf(searchValue.getToValue()))) {
-            returnSegment = false;
-        }
-        return returnSegment;
-    }
-
-    private static boolean checkDistance(MovementSegment segment, SearchValue searchValue) {
-        boolean returnSegment = true;
-        if ((segment.getDistance() < Double.valueOf(searchValue.getFromValue())) ||
-                (segment.getDistance() > Double.valueOf(searchValue.getToValue())))   {
-            returnSegment = false;
-        }
-        return returnSegment;
-    }
-
-    private static boolean checkSpeed(MovementSegment segment, SearchValue searchValue) {
-        boolean returnSegment = true;
-        if ((segment.getSpeedOverGround() < Double.valueOf(searchValue.getFromValue())) ||
-                (segment.getSpeedOverGround() > Double.valueOf(searchValue.getToValue()))) {
-            returnSegment = false;
-        }
-        return returnSegment;
+        return true;
     }
 }
