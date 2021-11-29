@@ -10,10 +10,10 @@ import javax.json.stream.JsonGenerator;
 public class PointSerializer implements JsonbSerializer<Point> {
     public void serialize(Point location, JsonGenerator jsonGenerator, SerializationContext serializationContext) {
         if (location != null) {
-            MovementPoint forGodsSakeWhyDoIHaveToGoTHisWay = new MovementPoint();
-            forGodsSakeWhyDoIHaveToGoTHisWay.setLatitude(location.getY());
-            forGodsSakeWhyDoIHaveToGoTHisWay.setLongitude(location.getX());
-            serializationContext.serialize( forGodsSakeWhyDoIHaveToGoTHisWay, jsonGenerator);
+            MovementPoint point = new MovementPoint();
+            point.setLatitude(location.getY());
+            point.setLongitude(location.getX());
+            serializationContext.serialize( point, jsonGenerator);
         } else {
             serializationContext.serialize(null, jsonGenerator);
         }

@@ -158,25 +158,31 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     public void remapMovementConnectInMovementTest() {
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType2.setMovementConnect(movementBaseType1.getMovementConnect());
+        Movement movementBaseType3 = MovementTestHelper.createMovement();
+        Movement movementBaseType4 = MovementTestHelper.createMovement();
+        movementBaseType4.setMovementConnect(movementBaseType3.getMovementConnect());
         Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
         Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
+        Movement createdMovement3 = movementService.createAndProcessMovement(movementBaseType3);
+        Movement createdMovement4 = movementService.createAndProcessMovement(movementBaseType4);
 
         Response remapResponse = getWebTarget()
                 .path("internal/remapMovementConnectInMovement")
                 .queryParam("MovementConnectFrom", createdMovement1.getMovementConnect().getId().toString())
-                .queryParam("MovementConnectTo", createdMovement2.getMovementConnect().getId().toString())
+                .queryParam("MovementConnectTo", createdMovement3.getMovementConnect().getId().toString())
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .put(Entity.json(""), Response.class);
         assertEquals(200, remapResponse.getStatus());
         int nrOfChanges = remapResponse.readEntity(Integer.class);
-        assertEquals(1, nrOfChanges);
+        assertEquals(2, nrOfChanges);
 
         MovementQuery movementQuery = createMovementQuery(null);
         movementQuery.getMovementSearchCriteria().clear();
         ListCriteria criteria = new ListCriteria();
         criteria.setKey(SearchKey.CONNECT_ID);
-        criteria.setValue(createdMovement2.getMovementConnect().getId().toString());
+        criteria.setValue(createdMovement3.getMovementConnect().getId().toString());
         movementQuery.getMovementSearchCriteria().add(criteria);
 
         String response = getWebTarget()
@@ -188,9 +194,11 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
 
         GetMovementListByQueryResponse movList =
                 jsonb.fromJson(response, GetMovementListByQueryResponse.class);
-        assertEquals(2, movList.getMovement().size());
+        assertEquals(4, movList.getMovement().size());
         assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement1.getId().toString())));
         assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement2.getId().toString())));
+        assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement3.getId().toString())));
+        assertTrue(movList.getMovement().stream().anyMatch(m -> m.getGuid().equals(createdMovement4.getId().toString())));
     }
 
     @Test
@@ -198,20 +206,25 @@ public class InternalRestResourceTest extends BuildMovementRestDeployment {
     public void remapMovementConnectInMovementAndDeleteOldMovementConnectTest() {
         Movement movementBaseType1 = MovementTestHelper.createMovement();
         Movement movementBaseType2 = MovementTestHelper.createMovement();
+        movementBaseType2.setMovementConnect(movementBaseType1.getMovementConnect());
+        Movement movementBaseType3 = MovementTestHelper.createMovement();
+        Movement movementBaseType4 = MovementTestHelper.createMovement();
+        movementBaseType4.setMovementConnect(movementBaseType3.getMovementConnect());
         Movement createdMovement1 = movementService.createAndProcessMovement(movementBaseType1);
-        Movement createdMovement2 = movementService.createAndProcessMovement(movementBaseType2);
-
+        movementService.createAndProcessMovement(movementBaseType2);
+        Movement createdMovement3 = movementService.createAndProcessMovement(movementBaseType3);
+        movementService.createAndProcessMovement(movementBaseType4);
 
         Response remapResponse = getWebTarget()
                 .path("internal/remapMovementConnectInMovement")
                 .queryParam("MovementConnectFrom", createdMovement1.getMovementConnect().getId().toString())
-                .queryParam("MovementConnectTo", createdMovement2.getMovementConnect().getId().toString())
+                .queryParam("MovementConnectTo", createdMovement3.getMovementConnect().getId().toString())
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, getTokenInternalRest())
                 .put(Entity.json(""), Response.class);
         assertEquals(200, remapResponse.getStatus());
         int nrOfChanges = remapResponse.readEntity(Integer.class);
-        assertEquals(1, nrOfChanges);
+        assertEquals(2, nrOfChanges);
 
         Response deleteResponse = getWebTarget()
                 .path("internal/removeMovementConnect")

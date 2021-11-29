@@ -117,29 +117,6 @@ public class MovementDao {
         return latestMovementQuery.getResultList();
     }
 
-    public Movement getNextMovement(Movement previousMovement){
-        Movement nextMovement = getMovementByPrevious(previousMovement);
-        if(nextMovement == null){
-            LOG.info("No movement found with previousMovement as movement.previousMovement. Trying to find it by MC and date");
-            nextMovement = getNextMovementByMcAndDate(previousMovement.getMovementConnect().getId(), previousMovement.getTimestamp());
-            nextMovement.setPreviousMovement(previousMovement);
-        }
-
-        return nextMovement;
-    }
-
-
-    public Movement getMovementByPrevious(Movement previousMovement) {
-        try {
-            return em.createNamedQuery(Movement.FIND_BY_PREVIOUS_MOVEMENT, Movement.class)
-                    .setParameter("previousMovement", previousMovement)
-                    .getSingleResult();
-        }catch (NoResultException e) {
-            LOG.debug("No movement found with previousMovement as movement.previousMovement.");
-            return null;
-        }
-    }
-
     public Movement getPreviousMovement(UUID id, Instant date) {
         return getPreviousMovement(id, date, Arrays.asList(MovementSourceType.values()));
     }

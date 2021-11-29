@@ -148,7 +148,7 @@ public class MovementEntityToModelTest extends TransactionalTests {
 
         List<Movement> movementSublist = movementList.subList(1, movementList.size());
         List<MovementSegment> output = MovementEntityToModelMapper.mapToMovementSegment(movementSublist, false);
-        assertThat(output.size(), CoreMatchers.is(movementSublist.size()));
+        assertThat(output.size(), CoreMatchers.is(movementSublist.size() - 1));
     }
 
     @Test
