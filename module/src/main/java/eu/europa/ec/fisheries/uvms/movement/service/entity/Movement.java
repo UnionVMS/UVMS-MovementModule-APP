@@ -56,7 +56,6 @@ import java.util.UUID;
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
     @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"), 
     @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.updated DESC"),
-    @NamedQuery(name = Movement.FIND_BY_PREVIOUS_MOVEMENT, query = "SELECT m FROM Movement m WHERE m.previousMovement = :previousMovement"),
     @NamedQuery(name = Movement.FIND_MOVEMENT_BY_ID_LIST, query = "SELECT m FROM Movement m WHERE m.id in :moveIds"),
 })
 @NamedNativeQueries({
@@ -84,7 +83,6 @@ public class Movement implements Serializable, Comparable<Movement> {
     public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT = "Movement.findLatestMovementByMovementConnect";
     public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST = "Movement.findLatestMovementByMovementConnectList";
     public static final String FIND_LATEST = "Movement.findLatest";
-    public static final String FIND_BY_PREVIOUS_MOVEMENT = "Movement.findByPreviousMovement";
     public static final String FIND_LATEST_X_NUMBER_FOR_ASSET = "Movement.findLatestXNumberForAsset";
     public static final String FIND_MOVEMENT_BY_ID_LIST = "Movement.findMovementByMovementIdList";
     public static final String FIND_ALL_FOR_ASSET_BETWEEN_DATES = "Movement.findAllForAssetBetweenDates";
@@ -127,8 +125,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     private Track track;
 
     @JsonbTransient
-    @JoinColumn(name = "prev_movement_id", referencedColumnName = "id")
-    @OneToOne(fetch = FetchType.LAZY)
+    @Transient
     private Movement previousMovement;
 
     @Column(name = "source_id")

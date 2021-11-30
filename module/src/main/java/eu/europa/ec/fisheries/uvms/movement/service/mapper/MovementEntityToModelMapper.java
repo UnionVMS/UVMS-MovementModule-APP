@@ -112,9 +112,11 @@ public class MovementEntityToModelMapper {
     public static List<MovementSegment> mapToMovementSegment(List<Movement> movements, boolean excludeFirstAndLast) {
         List<MovementSegment> mappedSegments = new ArrayList<>();
         Collections.sort(movements, (m1, m2) -> m1.getTimestamp().compareTo(m2.getTimestamp()));
+        Movement previousMovement = null;
         for (Movement movement : movements) {
-            Movement previousMovement = movement.getPreviousMovement();
-            if (previousMovement != null) {
+            if (previousMovement == null) {
+                previousMovement = movement;
+            } else {
                 SegmentCalculations positionCalculations = CalculationUtil.getPositionCalculations(previousMovement, movement);
                 MovementSegment movSegment = new MovementSegment();
                 movSegment.setId(movement.getId().toString());
@@ -126,6 +128,7 @@ public class MovementEntityToModelMapper {
                 movSegment.setDuration(positionCalculations.getDurationBetweenPoints());
                 movSegment.setDistance(positionCalculations.getDistanceBetweenPoints());
                 mappedSegments.add(movSegment);
+                previousMovement = movement;
             }
         }
         if (excludeFirstAndLast && mappedSegments.size() >= movements.size()) {

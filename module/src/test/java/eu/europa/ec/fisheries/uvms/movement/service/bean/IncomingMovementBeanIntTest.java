@@ -210,43 +210,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
     
     @Test
     @OperateOnDeployment("movementservice")
-    public void testMovementRelationThreeMovementsNonOrdered() throws Exception {
-    	int tenMinutes = 600000;
-    	UUID connectId = UUID.randomUUID();
-    	Instant positionTime = Instant.now();
-    	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-    	firstMovementType.setTimestamp(positionTime);
-        firstMovementType = movementService.createMovement(firstMovementType);
-        assertNotNull(firstMovementType);
-        incomingMovementBean.processMovement(firstMovementType);
-
-        Movement thirdMovementType = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
-        thirdMovementType.setTimestamp(positionTime.plusMillis(2*tenMinutes));
-        thirdMovementType = movementService.createMovement(thirdMovementType);
-        assertNotNull(thirdMovementType);
-        incomingMovementBean.processMovement(thirdMovementType);
-
-        Movement secondMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
-        secondMovementType.setTimestamp(positionTime.plusMillis(tenMinutes));
-        secondMovementType = movementService.createMovement(secondMovementType);
-        assertNotNull(secondMovementType);
-        incomingMovementBean.processMovement(secondMovementType);
-
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        // This list is now sorted by timestamp now...
-        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
-
-        Movement firstMovement = movementList.get(0);
-        Movement secondMovement = movementList.get(1);
-        Movement thirdMovement = movementList.get(2);
-        
-        assertThat(firstMovement.getPreviousMovement(), is(CoreMatchers.nullValue()));
-        assertThat(secondMovement.getPreviousMovement(), is(firstMovement));
-        assertThat(thirdMovement.getPreviousMovement(), is(secondMovement));
-    }
-    
-    @Test
-    @OperateOnDeployment("movementservice")
     public void testTrackWithThreeMovements() throws Exception {
     	UUID connectId = UUID.randomUUID();
     	Instant timestamp = Instant.now();
@@ -729,20 +692,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
             for (Movement movement : movements) {
                 assertThat(movement.getTrack(), is(track));
                 assertTrue(movementList.stream().anyMatch(item -> item.getId().equals(movement.getId())));
-            }
-        }
-
-        // Relations
-        assertThat(firstMovement.getPreviousMovement(), is(nullValue()));
-        if (movements.size() > 1) {
-            Movement previous = null;
-            for (Movement movement : movements) {
-                if (previous == null) {
-                    previous = movement;
-                } else {
-                    assertThat(movement.getPreviousMovement(), is(previous));
-                    previous = movement;
-                }
             }
         }
     }
