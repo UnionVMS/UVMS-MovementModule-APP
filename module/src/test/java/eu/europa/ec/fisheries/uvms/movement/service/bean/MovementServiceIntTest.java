@@ -84,8 +84,11 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType2.setTimestamp(Instant.now().minus(10, ChronoUnit.SECONDS));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        assertNotNull(createdMovement.getTrack());
-        assertEquals(createdMovement.getTrack(), createdMovement2.getTrack());
+        List<Movement> fetchedMovements = movementDao.getMovementListByMovementConnect(createdMovement.getMovementConnect());
+
+        assertEquals(2, fetchedMovements.size());
+        assertNotNull(fetchedMovements.get(0).getTrack());
+        assertEquals(fetchedMovements.get(0).getTrack(), fetchedMovements.get(1).getTrack());
     }
 
     @Test
@@ -113,15 +116,14 @@ public class MovementServiceIntTest extends TransactionalTests {
         UUID connectId1 = UUID.randomUUID();
         Movement movementType = MockData.createMovement(1d, 1d, connectId1);
         Movement createdMovement = movementService.createAndProcessMovement(movementType);
-        
         UUID connectId2 = UUID.randomUUID();
         Movement movementType2 = MockData.createMovement(2d, 2d, connectId2);
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
         List<Movement> movements =  movementService.getLatestMovementsByConnectIds(Arrays.asList(connectId1, connectId2));
         assertThat(movements.size(), CoreMatchers.is(2));
-        assertTrue(movements.contains(createdMovement));
-        assertTrue(movements.contains(createdMovement2));
+        assertTrue(movements.stream().anyMatch(fetched -> fetched.getId().equals(createdMovement.getId())));
+        assertTrue(movements.stream().anyMatch(fetched -> fetched.getId().equals(createdMovement2.getId())));
     }
     
     @Test
@@ -130,7 +132,6 @@ public class MovementServiceIntTest extends TransactionalTests {
         UUID connectId1 = UUID.randomUUID();
         Movement movementType = MockData.createMovement(1d, 1d, connectId1);
         Movement createdMovement = movementService.createAndProcessMovement(movementType);
-        
         UUID connectId2 = UUID.randomUUID();
         Movement movementType2 = MockData.createMovement(2d, 2d, connectId2);
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
@@ -139,9 +140,9 @@ public class MovementServiceIntTest extends TransactionalTests {
 
         List<Movement> movements =  movementService.getLatestMovementsByConnectIds(Arrays.asList(connectId1, connectId2));
         assertThat(movements.size(), CoreMatchers.is(2));
-        assertTrue(movements.contains(createdMovement));
-        assertFalse(movements.contains(createdMovement2));
-        assertTrue(movements.contains(createdMovement3));
+        assertTrue(movements.stream().anyMatch(fetched -> fetched.getId().equals(createdMovement.getId())));
+        assertFalse(movements.stream().anyMatch(fetched -> fetched.getId().equals(createdMovement2.getId())));
+        assertTrue(movements.stream().anyMatch(fetched -> fetched.getId().equals(createdMovement3.getId())));
     }
 
     @Test
@@ -318,13 +319,8 @@ public class MovementServiceIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getById_Null_ID() {
-        try {
-            UUID connectId = null;
-            Movement byId = movementService.getById(connectId);
-            fail();
-        }catch (EJBTransactionRolledbackException e){
-
-        }
+        Movement byId = movementService.getById(null);
+        assertNull(byId);
     }
 
     @Test
@@ -338,8 +334,8 @@ public class MovementServiceIntTest extends TransactionalTests {
         
         List<Movement> movements = movementService.getLatestMovements(5);
         assertNotNull(movements);
-        assertTrue(movements.contains(createdMovement));
-        assertTrue(movements.contains(createdMovement2));
+        assertTrue(movements.stream().anyMatch(fetched -> fetched.getId().equals(createdMovement.getId())));
+        assertTrue(movements.stream().anyMatch(fetched -> fetched.getId().equals(createdMovement2.getId())));
     }
     
     @Test
@@ -348,15 +344,13 @@ public class MovementServiceIntTest extends TransactionalTests {
         Movement movementType = MockData.createMovement(1d, 1d, UUID.randomUUID());
         Movement createdMovement = movementService.createAndProcessMovement(movementType);
 
-        movementDao.flush();
-
         Movement movementType2 = MockData.createMovement(2d, 2d, UUID.randomUUID());
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
         
         List<Movement> movements = movementService.getLatestMovements(1);
         assertNotNull(movements);
-        assertFalse(movements.contains(createdMovement));
-        assertTrue(movements.contains(createdMovement2));
+        assertFalse(movements.stream().anyMatch(fetched -> fetched.getId().equals(createdMovement.getId())));
+        assertTrue(movements.stream().anyMatch(fetched -> fetched.getId().equals(createdMovement2.getId())));
     }
 
     @Test(expected = EJBTransactionRolledbackException.class)
@@ -605,7 +599,7 @@ public class MovementServiceIntTest extends TransactionalTests {
         Movement createdMovement = movementService.createAndProcessMovement(movementType);
 
         Movement movementType2 = MockData.createMovement(57.715303, 11.973323, connectId);
-        movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
+        movementType2.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
         List<MovementDto> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES), Arrays.asList(MovementSourceType.values()));
@@ -620,10 +614,9 @@ public class MovementServiceIntTest extends TransactionalTests {
         Movement movementType = MockData.createMovement(57.715303, 11.973323, connectId);
         movementType.setTimestamp(Instant.now().minus(5, ChronoUnit.MINUTES));
         Movement createdMovement = movementService.createAndProcessMovement(movementType);
-
         UUID connectId2 = UUID.randomUUID();
         Movement movementType2 = MockData.createMovement(57.715303, 11.973323, connectId2);
-        movementType.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
+        movementType2.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
         List<MovementDto> latest = movementService.getLatestMovementsAfter(Instant.now().minus(10, ChronoUnit.MINUTES), Arrays.asList(MovementSourceType.values()));
@@ -639,14 +632,12 @@ public class MovementServiceIntTest extends TransactionalTests {
         movementType.setTimestamp(Instant.now().minus(15, ChronoUnit.MINUTES));
         Movement createdMovement = movementService.createAndProcessMovement(movementType);
 
-        movementDao.flush();        //needed to force db to update the updated column
-
         UUID connectId2 = UUID.randomUUID();
         Movement movementType2 = MockData.createMovement(57.715303, 11.973323, connectId2);
         movementType2.setTimestamp(Instant.now().minus(1, ChronoUnit.MINUTES));
         Movement createdMovement2 = movementService.createAndProcessMovement(movementType2);
 
-        List<MovementDto> latest = movementService.getLatestMovementsAfter(createdMovement2.getMovementConnect().getUpdated(), Arrays.asList(MovementSourceType.values()));
+        List<MovementDto> latest = movementService.getLatestMovementsAfter(createdMovement2.getTimestamp(), Arrays.asList(MovementSourceType.values()));
         assertFalse(latest.stream().anyMatch(m -> m.getId().equals(createdMovement.getId())));
         assertTrue(latest.stream().anyMatch(m -> m.getId().equals(createdMovement2.getId())));
     }

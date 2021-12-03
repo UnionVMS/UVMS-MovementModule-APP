@@ -155,61 +155,6 @@ public class IncomingMovementBeanIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void testMovementRelation() throws Exception {
-    	UUID connectId = UUID.randomUUID();
-    	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        firstMovementType = movementService.createMovement(firstMovementType);
-        assertNotNull(firstMovementType);
-        incomingMovementBean.processMovement(firstMovementType);
-       
-        Movement secondMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
-        secondMovementType = movementService.createMovement(secondMovementType);
-        assertNotNull(secondMovementType);
-        incomingMovementBean.processMovement(secondMovementType);
-        
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
-
-        Movement firstMovement = movementList.get(0);
-        Movement secondMovement = movementList.get(1);
-        
-        assertThat(firstMovement.getPreviousMovement(), is(CoreMatchers.nullValue()));
-        assertThat(secondMovement.getPreviousMovement(), is(firstMovement));
-    }
-    
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void testMovementRelationThreeMovements() throws Exception {
-    	UUID connectId = UUID.randomUUID();
-    	Movement firstMovementType = MockData.createMovement(0d, 1d, connectId, 0, "TEST");
-        firstMovementType = movementService.createMovement(firstMovementType);
-        assertNotNull(firstMovementType);
-        incomingMovementBean.processMovement(firstMovementType);
-       
-        Movement secondMovementType = MockData.createMovement(1d, 1d, connectId, 0, "TEST");
-        secondMovementType = movementService.createMovement(secondMovementType);
-        assertNotNull(secondMovementType);
-        incomingMovementBean.processMovement(secondMovementType);
-
-        Movement thirdMovementType = MockData.createMovement(1d, 2d, connectId, 0, "TEST");
-        thirdMovementType = movementService.createMovement(thirdMovementType);
-        assertNotNull(thirdMovementType);
-        incomingMovementBean.processMovement(thirdMovementType);
-
-        MovementConnect movementConnect = movementDao.getMovementConnectByConnectId(connectId);
-        List<Movement> movementList = movementDao.getMovementListByMovementConnect(movementConnect);
-        
-        Movement firstMovement = movementList.get(0);
-        Movement secondMovement = movementList.get(1);
-        Movement thirdMovement = movementList.get(2);
-        
-        assertThat(firstMovement.getPreviousMovement(), is(CoreMatchers.nullValue()));
-        assertThat(secondMovement.getPreviousMovement(), is(firstMovement));
-        assertThat(thirdMovement.getPreviousMovement(), is(secondMovement));
-    }
-    
-    @Test
-    @OperateOnDeployment("movementservice")
     public void testTrackWithThreeMovements() throws Exception {
     	UUID connectId = UUID.randomUUID();
     	Instant timestamp = Instant.now();

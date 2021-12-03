@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.uvms.movement.service.MovementHelpers;
 import eu.europa.ec.fisheries.uvms.movement.service.TransactionalTests;
 import eu.europa.ec.fisheries.uvms.movement.service.dao.MovementDao;
@@ -153,7 +154,7 @@ public class MovementDaoBeanTest extends TransactionalTests {
 	@OperateOnDeployment("movementservice")
 	public void testIsDateAlreadyInserted() {
 		//only testing the no result part since the rest of teh function is tested elsewhere
-		List<Movement> output = movementDao.isDateAlreadyInserted(UUID.randomUUID(), Instant.now());
+		List<Movement> output = movementDao.isDateAlreadyInserted(UUID.randomUUID(), Instant.now(), MovementSourceType.NAF);
 		assertTrue(output.isEmpty());
 	}
 }

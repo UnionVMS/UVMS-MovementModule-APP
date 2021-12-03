@@ -55,4 +55,6 @@
 
     <include file="v5.6.6\db-changelog-drop-previous-movement.xml" relativeToChangelogFile="true"/>
 
+    <include file="v5.6.8\db-changelog-movement-partition.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

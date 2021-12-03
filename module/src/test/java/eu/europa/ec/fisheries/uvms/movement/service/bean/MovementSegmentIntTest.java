@@ -38,121 +38,12 @@ public class MovementSegmentIntTest extends TransactionalTests {
 
     @Test
     @OperateOnDeployment("movementservice")
-    public void createThreeMovementTrackInOrder()  {
-        MovementHelpers movementHelpers = new MovementHelpers(movementService);
-
-        UUID connectId = UUID.randomUUID();
-
-        Instant dateFirstMovement = Instant.now();
-        Instant dateSecondMovement = dateFirstMovement.plusMillis(300000);
-        Instant dateThirdMovement = dateSecondMovement.plusMillis(300000);
-
-        Movement firstMovement = movementHelpers.createMovement(0d, 0d, connectId, "ONE", dateFirstMovement);
-        Movement secondMovement = movementHelpers.createMovement(1d, 1d, connectId, "TWO", dateSecondMovement);
-        Movement thirdMovement = movementHelpers.createMovement(2d, 2d, connectId, "THREE", dateThirdMovement);
-
-        incomingMovementBean.processMovement(firstMovement);
-        incomingMovementBean.processMovement(secondMovement);
-        incomingMovementBean.processMovement(thirdMovement);
-        
-        em.flush();
-
-        Movement firstAfter = movementDao.getMovementById(firstMovement.getId());
-        Movement secondAfter = movementDao.getMovementById(secondMovement.getId());
-        Movement thirdAfter = movementDao.getMovementById(thirdMovement.getId());
-
-        Track track = firstAfter.getTrack();
-
-        List<Movement> movements = movementDao.getMovementsByTrack(track, 100);
-        assertThat(movements.get(2).getId(), is(firstMovement.getId()));
-        assertThat(movements.get(1).getId(), is(secondMovement.getId()));
-        assertThat(movements.get(0).getId(), is(thirdMovement.getId()));
-        
-        assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
-        assertThat(secondAfter.getPreviousMovement(), is(firstAfter));
-        assertThat(thirdAfter.getPreviousMovement(), is(secondAfter));
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void createFourMovementTrackInOrder()  {
-        MovementHelpers movementHelpers = new MovementHelpers(movementService);
-
-        UUID connectId = UUID.randomUUID();
-
-        Instant firstMovementDate = Instant.now();
-        Instant secondMovementDate = firstMovementDate.plusMillis(300000);
-        Instant thirdMovementDate  = firstMovementDate.plusMillis(600000);
-        Instant fourthMovementDate  = firstMovementDate.plusMillis(900000);
-
-        Movement firstMovement = movementHelpers.createMovement(0d, 0d, connectId, "ONE", firstMovementDate);
-        Movement secondMovement = movementHelpers.createMovement(1d, 1d, connectId, "TWO", secondMovementDate);
-        Movement thirdMovement = movementHelpers.createMovement(2d, 2d, connectId, "THREE", thirdMovementDate);
-        Movement fourthMovement = movementHelpers.createMovement(3d, 3d, connectId, "FORTH", fourthMovementDate);
-
-        incomingMovementBean.processMovement(firstMovement);
-        incomingMovementBean.processMovement(secondMovement);
-        incomingMovementBean.processMovement(thirdMovement);
-        incomingMovementBean.processMovement(fourthMovement);
-        em.flush();
-
-        Movement firstAfter = movementDao.getMovementById(firstMovement.getId());
-        Movement secondAfter = movementDao.getMovementById(secondMovement.getId());
-        Movement thirdAfter = movementDao.getMovementById(thirdMovement.getId());
-        Movement fourthAfter = movementDao.getMovementById(fourthMovement.getId());
-        Track track = firstAfter.getTrack();
-
-        List<Movement> movements = movementDao.getMovementsByTrack(track, 100);
-        assertThat(movements.get(3).getId(), is(firstMovement.getId()));
-        assertThat(movements.get(2).getId(), is(secondMovement.getId()));
-        assertThat(movements.get(1).getId(), is(thirdMovement.getId()));
-        assertThat(movements.get(0).getId(), is(fourthMovement.getId()));
-        
-        assertThat(firstAfter.getPreviousMovement(), is(CoreMatchers.nullValue()));
-        assertThat(secondAfter.getPreviousMovement(), is(firstAfter));
-        assertThat(thirdAfter.getPreviousMovement(), is(secondAfter));
-        assertThat(fourthAfter.getPreviousMovement(), is(thirdAfter));
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
     public void createVarbergGrenaNormal()  {
         MovementHelpers movementHelpers = new MovementHelpers(movementService);
         UUID connectId = UUID.randomUUID();
 
         List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(ORDER_NORMAL, ALL, connectId);
         assertMovementIds(movementList);
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void createVarbergGrenaBasedOnReversedOrder()  {
-        testVarbergGrenaBasedOnOrdering(ORDER_REVERSED);
-    }
-
-    @Test
-    @OperateOnDeployment("movementservice")
-    public void createVarbergGrenaBasedOnRandomOrder()  {
-        testVarbergGrenaBasedOnOrdering(ORDER_RANDOM);
-    }
-
-    private void testVarbergGrenaBasedOnOrdering(int order)  {
-        MovementHelpers movementHelpers = new MovementHelpers(movementService);
-        UUID connectId = UUID.randomUUID();
-
-        List<Movement> movementList = movementHelpers.createVarbergGrenaMovements(order, ALL, connectId);
-
-        Collections.sort(movementList, Comparator.comparing(m -> m.getTimestamp()));
-
-        Movement previous = null; 
-        for (Movement movement: movementList) {
-            if (previous == null) {
-                assertThat(movement.getPreviousMovement(), is(CoreMatchers.nullValue()));
-            } else {
-                assertThat(movement.getPreviousMovement(), is(previous));
-            }
-            previous = movement;
-        }
     }
 
     @Test
