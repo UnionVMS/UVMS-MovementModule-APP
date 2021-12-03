@@ -19,6 +19,10 @@ import java.util.List;
 
 public class MovementModuleRequestMapper {
 
+    private MovementModuleRequestMapper() {
+        // private constructor because utility class
+    }
+
     public static String mapToCreateMovementRequest(MovementBaseType baseType, String username) {
         CreateMovementRequest request = new CreateMovementRequest();
         request.setMethod(MovementModuleMethod.CREATE);
@@ -52,7 +56,7 @@ public class MovementModuleRequestMapper {
         return JAXBMarshaller.marshallJaxBObjectToString(request);
     }
 
-    public static String mapToPingRequest(MovementQuery query) {
+    public static String mapToPingRequest() {
         PingRequest request = new PingRequest();
         request.setMethod(MovementModuleMethod.PING);
         return JAXBMarshaller.marshallJaxBObjectToString(request);
