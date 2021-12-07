@@ -12,7 +12,6 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -51,7 +50,7 @@ public class MovementId implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, timestamp.truncatedTo(ChronoUnit.MICROS));
+        return Objects.hash(id, timestamp);
     }
 
     @Override
@@ -64,6 +63,6 @@ public class MovementId implements Serializable {
             return false;
         MovementId other = (MovementId) obj;
         return Objects.equals(id, other.id) && 
-                Objects.equals(timestamp.truncatedTo(ChronoUnit.MICROS), other.timestamp.truncatedTo(ChronoUnit.MICROS));
+                Objects.equals(timestamp, other.timestamp);
     }
 }
