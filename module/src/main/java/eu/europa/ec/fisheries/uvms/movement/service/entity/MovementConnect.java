@@ -19,27 +19,32 @@ import org.locationtech.jts.geom.Point;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
+@NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_GET_ALL, query = "SELECT m FROM MovementConnect m")
+@NamedQuery(name = MovementConnect.FIND_NEAREST_AFTER, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(mc.id, mc.latestMovement.id, distance(mc.latestLocation, :point))" +
+            "FROM MovementConnect mc " +
+            "WHERE DWithin(mc.latestLocation, :point, :maxDistance, false) = true " +
+            "AND mc.updated > :time AND mc.id <> :excludedID")
+@NamedQuery(name = MovementConnect.FIND_LATEST_MOVEMENT_BY_ID, query = "SELECT mc.latestMovement FROM MovementConnect mc WHERE mc.id = :connectId")
+@NamedQuery(name = MovementConnect.FIND_LATEST_MOVEMENT_BY_IDS, query = "SELECT mc.latestMovement FROM MovementConnect mc WHERE mc.id in :connectId")
+@NamedQuery(name = MovementConnect.FIND_LATEST_MOVEMENT, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.latestMovement.timestamp DESC")
+@NamedQuery(name = MovementConnect.FIND_LATEST_MOVEMENT_SINCE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MovementProjection(mc.latestMovement.id, mc.latestMovement.location, mc.latestMovement.speed, mc.latestMovement.calculatedSpeed, mc.latestMovement.heading, mc.latestMovement.movementConnect.id, mc.latestMovement.status, mc.latestMovement.source, mc.latestMovement.movementType, mc.latestMovement.timestamp, mc.latestMovement.lesReportTime, mc.latestMovement.sourceSatelliteId, mc.latestMovement.updated, mc.latestMovement.updatedBy, mc.latestMovement.aisPositionAccuracy) FROM MovementConnect mc WHERE mc.latestMovement.timestamp >= :date AND mc.latestMovement.source in :sources" )
+
 @Entity
 @Table(name = "movementconnect")
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = MovementConnect.MOVEMENT_CONNECT_GET_ALL, query = "SELECT m FROM MovementConnect m"),
-    @NamedQuery(name = MovementConnect.FIND_NEAREST_AFTER, query = "SELECT new eu.europa.ec.fisheries.uvms.movementrules.model.dto.VicinityInfoDTO(mc.id, mc.latestMovement.id, distance(mc.latestLocation, :point))" +
-                "FROM MovementConnect mc " +
-                "WHERE DWithin(mc.latestLocation, :point, :maxDistance, false) = true " +
-                "AND mc.updated > :time AND mc.id <> :excludedID")
-})
 @DynamicUpdate
 @DynamicInsert
 public class MovementConnect implements Serializable, Comparable<MovementConnect> {
 
     public static final String MOVEMENT_CONNECT_GET_ALL = "MovementConnect.findAll";
     public static final String FIND_NEAREST_AFTER = "MovementConnect.findVicinityAfter";
+    public static final String FIND_LATEST_MOVEMENT_BY_ID = "MovementConnect.findLatestMovementById";
+    public static final String FIND_LATEST_MOVEMENT_BY_IDS = "MovementConnect.findLatestMovementByIds";
+    public static final String FIND_LATEST_MOVEMENT = "MovementConnect.findLatestMovement";
+    public static final String FIND_LATEST_MOVEMENT_SINCE = "MovementConnect.findLatestMovementSince";
 
     private static final long serialVersionUID = 1L;
 
@@ -52,12 +57,14 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
 
     @Column(name = "moveconn_name")
     private String name;
-    
+
     @JoinColumn(name = "moveconn_latest_move", referencedColumnName = "id")
+    @JoinColumn(name = "moveconn_latest_move_timestamp", referencedColumnName = "timestamp")
     @OneToOne(fetch = FetchType.LAZY)
     private Movement latestMovement;
 
     @JoinColumn(name = "moveconn_latest_vms", referencedColumnName = "id")
+    @JoinColumn(name = "moveconn_latest_vms_timestamp", referencedColumnName = "timestamp")
     @OneToOne(fetch = FetchType.LAZY)
     private Movement latestVMS;
 

@@ -521,7 +521,7 @@ public class MovementMessageConsumerBeanTest extends BuildMovementServiceTestDep
         GetMovementListByQueryResponse listByQueryResponse3 = jmsHelper.getMovementListByQuery(query, movement.getAssetGuid());
         List<MovementType> movements3 = listByQueryResponse3.getMovement();
         assertThat(movements3.size(), is(1));
-        assertThat(movements3.get(0).getPositionTime(), is(Date.from(movement.getPositionTime().plus(1, ChronoUnit.SECONDS))));
+        assertThat(movements3.get(0).getPositionTime(), is(Date.from(movement.getPositionTime())));
     }
 
     @Test

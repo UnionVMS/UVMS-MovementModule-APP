@@ -22,6 +22,7 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.inject.Inject;
 import javax.jms.ConnectionFactory;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -101,7 +102,7 @@ public class ManualMovementServiceTest extends TransactionalTests {
         location.setLatitude(0.0);
         location.setLongitude(0.0);
         dto.setLocation(location);
-        dto.setTimestamp(Instant.now());
+        dto.setTimestamp(Instant.now().truncatedTo(ChronoUnit.MICROS));
         dto.setHeading(0.0f);
         dto.setSpeed(0.0f);
         dto.setSource(MovementSourceType.MANUAL);

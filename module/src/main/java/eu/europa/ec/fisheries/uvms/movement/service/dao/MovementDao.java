@@ -74,7 +74,13 @@ public class MovementDao {
     }
 
     public Movement getMovementById(UUID id) {
-        return em.find(Movement.class, id);
+        try {
+            return em.createNamedQuery(Movement.FIND_BY_ID, Movement.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     public List<Movement> getLatestMovementsByConnectIdList(List<UUID> connectIds) {
@@ -82,7 +88,7 @@ public class MovementDao {
             return new ArrayList<>();
         }
         TypedQuery<Movement> latestMovementQuery =
-                em.createNamedQuery(Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, Movement.class);
+                em.createNamedQuery(MovementConnect.FIND_LATEST_MOVEMENT_BY_IDS, Movement.class);
         latestMovementQuery.setParameter("connectId", connectIds);
         return latestMovementQuery.getResultList();
     }
@@ -104,15 +110,16 @@ public class MovementDao {
         }
     }
 
-    public List<Movement> isDateAlreadyInserted(UUID id, Instant date) {
+    public List<Movement> isDateAlreadyInserted(UUID id, Instant date, MovementSourceType source) {
         TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_EXISTING_DATE, Movement.class);
         query.setParameter("date", date);
         query.setParameter("id", id);
+        query.setParameter("source", source);
         return query.getResultList();
     }
 
     public List<Movement> getLatestMovements(Integer numberOfMovements) {
-        TypedQuery<Movement> latestMovementQuery = em.createNamedQuery(Movement.FIND_LATEST, Movement.class);
+        TypedQuery<Movement> latestMovementQuery = em.createNamedQuery(MovementConnect.FIND_LATEST_MOVEMENT, Movement.class);
         latestMovementQuery.setMaxResults(numberOfMovements);
         return latestMovementQuery.getResultList();
     }
@@ -136,27 +143,9 @@ public class MovementDao {
         return singleResult;
     }
 
-    public Movement getNextMovementByMcAndDate(UUID id, Instant date) {
-        return getNextMovementByMcAndDate(id, date, Arrays.asList(MovementSourceType.values()));
-    }
-
-    public Movement getNextMovementByMcAndDate(UUID id, Instant date, List<MovementSourceType> sources) {
-        Movement singleResult = null;
-        try {
-            TypedQuery<Movement> query = em.createNamedQuery(Movement.FIND_NEXT, Movement.class);
-            query.setParameter("id", id);
-            query.setParameter("date", date);
-            query.setParameter("sources", sources);
-            singleResult = query.getSingleResult();
-        } catch (NoResultException e) {
-            LOG.debug("No previous movement found for date: {} and connectedId: {}", date, id);
-        }
-        return singleResult;
-    }
-
     public Movement getLatestMovement(UUID connectId) {
         try {
-            TypedQuery<Movement> latestMovementQuery = em.createNamedQuery(Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, Movement.class);
+            TypedQuery<Movement> latestMovementQuery = em.createNamedQuery(MovementConnect.FIND_LATEST_MOVEMENT_BY_ID, Movement.class);
             latestMovementQuery.setParameter("connectId", connectId);
             return latestMovementQuery.getSingleResult();
         } catch (NoResultException nre) {
@@ -193,8 +182,7 @@ public class MovementDao {
             query.setParameter("fromDate", from);
             query.setParameter("toDate", to);
 
-            Long count = (Long)query.getSingleResult();
-            return count;
+            return (Long) query.getSingleResult();
         }catch (NoResultException e) {
             LOG.debug("No valid position in DB for {}, between {} and {}", asset, from, to);
             return 0;
@@ -352,13 +340,13 @@ public class MovementDao {
             query.setMaxResults(number);
             return query.getResultList();
         } catch (NoResultException e) {
-            LOG.debug("No positions found for asset {}");
+            LOG.debug("No positions found for asset {}", id);
             return new ArrayList<>();
         }
     }
 
     public List<MovementDto> getLatestWithLimit(Instant date, List<MovementSourceType> sources) {
-        TypedQuery<MovementDto> query = em.createNamedQuery(Movement.FIND_LATEST_SINCE, MovementDto.class);
+        TypedQuery<MovementDto> query = em.createNamedQuery(MovementConnect.FIND_LATEST_MOVEMENT_SINCE, MovementDto.class);
         query.setParameter("date", date);
         query.setParameter("sources", sources);
         return query.getResultList();

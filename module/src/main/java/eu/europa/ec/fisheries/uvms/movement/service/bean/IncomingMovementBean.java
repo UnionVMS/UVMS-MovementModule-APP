@@ -47,7 +47,6 @@ public class IncomingMovementBean {
                 Movement previousMovement = dao.getPreviousMovement(connectId, timeStamp);
                 if (previousMovement == null) { // Before first position
                     Movement firstMovement = dao.getFirstMovement(connectId, currentMovement.getId());
-                    firstMovement.setPreviousMovement(currentMovement);
                     trackService.upsertTrack(firstMovement, currentMovement);
                 } else { // Between two positions
                     currentMovement.setPreviousMovement(previousMovement);
@@ -74,17 +73,14 @@ public class IncomingMovementBean {
         }
         UUID connectId = UUID.fromString(movement.getAssetGuid());
         Instant timeStamp = movement.getPositionTime();
+        MovementSourceType source = MovementSourceType.fromValue(movement.getMovementSourceType());
 
-        List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp);
+        List<Movement> duplicateMovements = dao.isDateAlreadyInserted(connectId, timeStamp, source);
         if (!duplicateMovements.isEmpty()) {
             // If they have different movement types or different source
             if (!Objects.equals(movement.getMovementType(), duplicateMovements.get(0).getMovementType().value())) {
                 Instant newDate = timeStamp.plusSeconds(1);
                 movement.setPositionTime(newDate);
-            } else if (!Objects.equals(movement.getMovementSourceType(), MovementSourceType.AIS.value()) &&
-                    !Objects.equals(movement.getMovementSourceType(), duplicateMovements.get(0).getSource().value())) {
-                // Don't modify NAF/Inmarsat timestamp, add second to AIS position instead 
-                duplicateMovements.get(0).setTimestamp(timeStamp.plusSeconds(1));
             } else {
                 LOG.info("Got a duplicate movement for Asset {}. Marking it as such.", movement.getAssetGuid());
                 movement.setDuplicate(true);

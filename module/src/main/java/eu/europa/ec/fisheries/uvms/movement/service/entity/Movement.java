@@ -28,61 +28,48 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.UUID;
 
+@NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id")
+@NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT m FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC")
+@NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC")
+@NamedQuery(name = Movement.FIND_ALL_BY_MOVEMENTCONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect = :movementConnect ORDER BY m.timestamp ASC")
+@NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :connectId ORDER BY m.timestamp DESC")
+@NamedQuery(name = Movement.FIND_PREVIOUS, query = "SELECT m FROM Movement m  WHERE m.movementConnect.id = :id AND m.timestamp = (select max(mm.timestamp) from Movement mm where mm.movementConnect.id = :id and mm.source in :sources and mm.timestamp < :date) ")
+@NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m  WHERE m.movementConnect.id = :id AND m.timestamp = (select min(mm.timestamp) from Movement mm  where mm.movementConnect.id = :id  AND mm.id <> :excludedMovement) ")
+@NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date AND m.source = :source")
+@NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.movementConnect.id = :asset AND m.timestamp BETWEEN :fromDate AND :toDate ")
+
+@NamedQuery(name = Movement.FIND_ALL_FOR_ASSET_BETWEEN_DATES, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp > :startDate AND m.timestamp < :endDate AND m.source in :sources ORDER BY m.timestamp DESC")
+@NamedQuery(name = Movement.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, query = "SELECT m FROM Movement m WHERE m.movementConnect.id in :connectIds AND m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.source in :sources ORDER BY m.timestamp DESC")
+
+@NamedQuery(name = Movement.FIND_LATEST_X_NUMBER_FOR_ASSET, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.source in :sources ORDER BY m.timestamp DESC")
+@NamedQuery(name = Movement.FIND_MOVEMENT_BY_ID_LIST, query = "SELECT m FROM Movement m WHERE m.id in :moveIds")
+
+@NamedNativeQuery(name = Movement.UPDATE_TO_NEW_MOVEMENTCONNECT, query = "WITH subRequest as (" +
+                                                                            "SELECT id FROM movement.movement WHERE movementconnect_id = :oldMC LIMIT :limit FOR UPDATE) " +
+                                                                                "UPDATE movement.movement as m " +
+                                                                                "SET movementconnect_id = :newMC " +
+                                                                                "FROM subRequest " +
+                                                                                "WHERE m.id = subRequest.id")
 @Entity
-@Table(name = "movement", indexes = {
-        @Index(columnList = "movementconnect_id", name = "movement_moveconn_fk_idx", unique = false),
-        @Index(columnList = "track_id", name = "movement_trac_fk_idx", unique = false),
-        @Index(columnList = "movementconnect_id, timestamp", name = "movement_count_idx", unique = false)
-})
-@NamedQueries({
-    @NamedQuery(name = Movement.FIND_ALL_BY_TRACK, query = "SELECT m FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_ALL_LOCATIONS_BY_TRACK, query = "SELECT m.location FROM Movement m WHERE m.track = :track ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_ALL_BY_MOVEMENTCONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect = :movementConnect ORDER BY m.timestamp ASC"),
-    @NamedQuery(name = Movement.FIND_LATEST_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :connectId ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_PREVIOUS, query = "SELECT m FROM Movement m  WHERE m.movementConnect.id = :id AND m.timestamp = (select max(mm.timestamp) from Movement mm where mm.movementConnect.id = :id and mm.source in :sources and mm.timestamp < :date) "),
-    @NamedQuery(name = Movement.FIND_NEXT, query = "SELECT m FROM Movement m  WHERE m.movementConnect.id = :id AND m.timestamp = (select min(mm.timestamp) from Movement mm where mm.movementConnect.id = :id and mm.source in :sources and mm.timestamp > :date) "),
-    @NamedQuery(name = Movement.FIND_FIRST, query = "SELECT m FROM Movement m  WHERE m.movementConnect.id = :id AND m.timestamp = (select min(mm.timestamp) from Movement mm  where mm.movementConnect.id = :id  AND mm.id <> :excludedMovement) "),
-    @NamedQuery(name = Movement.FIND_EXISTING_DATE, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp = :date "),
-    @NamedQuery(name = Movement.NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN, query = "SELECT COUNT (m) FROM Movement m WHERE m.movementConnect.id = :asset AND m.timestamp BETWEEN :fromDate AND :toDate "),
-
-    @NamedQuery(name = Movement.FIND_ALL_FOR_ASSET_BETWEEN_DATES, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.timestamp > :startDate AND m.timestamp < :endDate AND m.source in :sources ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_ALL_FOR_CONNECT_IDS_BETWEEN_DATES, query = "SELECT m FROM Movement m WHERE m.movementConnect.id in :connectIds AND m.timestamp >= :fromDate AND m.timestamp <= :toDate AND m.source in :sources ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_LATEST_SINCE, query = "SELECT new eu.europa.ec.fisheries.uvms.movement.service.dto.MovementProjection(m.id, m.location, m.speed, m.calculatedSpeed, m.heading, m.movementConnect.id, m.status, m.source, m.movementType, m.timestamp, m.lesReportTime, m.sourceSatelliteId, m.updated, m.updatedBy, m.aisPositionAccuracy) FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE mc.updated > :date AND m.source in :sources" ),
-
-
-    @NamedQuery(name = Movement.FIND_LATEST_X_NUMBER_FOR_ASSET, query = "SELECT m FROM Movement m WHERE m.movementConnect.id = :id AND m.source in :sources ORDER BY m.timestamp DESC"),
-    @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id = :connectId"),
-    @NamedQuery(name = Movement.FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST, query = "SELECT m FROM Movement m JOIN MovementConnect mc ON m.id = mc.latestMovement.id WHERE m.movementConnect.id in :connectId"), 
-    @NamedQuery(name = Movement.FIND_LATEST, query = "SELECT mc.latestMovement FROM MovementConnect mc ORDER BY mc.updated DESC"),
-    @NamedQuery(name = Movement.FIND_MOVEMENT_BY_ID_LIST, query = "SELECT m FROM Movement m WHERE m.id in :moveIds"),
-})
-@NamedNativeQueries({
-        @NamedNativeQuery(name = Movement.UPDATE_TO_NEW_MOVEMENTCONNECT, query = "WITH subRequest as (" +
-                                                                                    "SELECT id FROM movement.movement WHERE movementconnect_id = :oldMC LIMIT :limit FOR UPDATE) " +
-                                                                                        "UPDATE movement.movement as m " +
-                                                                                        "SET movementconnect_id = :newMC " +
-                                                                                        "FROM subRequest " +
-                                                                                        "WHERE m.id = subRequest.id"),
-})
+@Table(name = "movement")
 @DynamicUpdate
 @DynamicInsert
+@IdClass(MovementId.class)
 public class Movement implements Serializable, Comparable<Movement> {
 
+    public static final String FIND_BY_ID = "Movement.findById";
     public static final String FIND_ALL_BY_TRACK = "Movement.findAllByTrack";
     public static final String FIND_ALL_LOCATIONS_BY_TRACK = "Movement.findAllPointsByTrack";
     public static final String FIND_ALL_BY_MOVEMENTCONNECT = "Movement.findAllByMovementConnect";
     public static final String FIND_LATEST_BY_MOVEMENT_CONNECT = "Movement.findLatestByMovementConnect";
     public static final String FIND_PREVIOUS = "Movement.findPrevious";
-    public static final String FIND_NEXT = "Movement.findNext";
     public static final String FIND_FIRST = "Movement.findFirst";
     public static final String FIND_EXISTING_DATE = "Movement.findExistingDate";
     public static final String NR_OF_MOVEMENTS_FOR_ASSET_IN_TIMESPAN = "Movement.nrOfMovementsForAssetInTimespan";
-    public static final String FIND_LATEST_SINCE = "Movement.findLatestSince";
-    public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT = "Movement.findLatestMovementByMovementConnect";
-    public static final String FIND_LATESTMOVEMENT_BY_MOVEMENT_CONNECT_LIST = "Movement.findLatestMovementByMovementConnectList";
-    public static final String FIND_LATEST = "Movement.findLatest";
     public static final String FIND_LATEST_X_NUMBER_FOR_ASSET = "Movement.findLatestXNumberForAsset";
     public static final String FIND_MOVEMENT_BY_ID_LIST = "Movement.findMovementByMovementIdList";
     public static final String FIND_ALL_FOR_ASSET_BETWEEN_DATES = "Movement.findAllForAssetBetweenDates";
@@ -136,6 +123,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     @Enumerated(EnumType.ORDINAL)
     private MovementTypeType movementType;
 
+    @Id
     @Column(name = "timestamp")
     private Instant timestamp;
     
@@ -305,5 +293,4 @@ public class Movement implements Serializable, Comparable<Movement> {
             return ObjectUtils.compare(this.getTimestamp(), o.getTimestamp());
         }
     }
-
 }

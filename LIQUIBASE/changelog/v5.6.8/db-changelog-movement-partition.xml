@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+                   logicalFilePath="changelog/v5.6.8/db-changelog-movement-partition.xml">
+
+    <changeSet id="Rename movement table" author="peerik">
+        <renameTable
+            oldTableName="movement"
+            newTableName="movement_2021" />
+    </changeSet>
+
+    <changeSet id="Create combined primary key" author="peerik">
+        <addColumn tableName="movementconnect">
+            <column name="moveconn_latest_move_timestamp"
+                type="TIMESTAMP(6) WITH TIME ZONE"/>
+        </addColumn>
+        <sql>
+            UPDATE movementconnect
+            SET moveconn_latest_move_timestamp = m.timestamp
+            FROM movement_2021 m
+            WHERE m.id = moveconn_latest_move;
+        </sql>
+        <addColumn tableName="movementconnect">
+            <column name="moveconn_latest_vms_timestamp"
+                type="TIMESTAMP(6) WITH TIME ZONE"/>
+        </addColumn>
+        <sql>
+            UPDATE movementconnect
+            SET moveconn_latest_vms_timestamp = m.timestamp
+            FROM movement_2021 m
+            WHERE m.id = moveconn_latest_vms;
+        </sql>
+        <dropPrimaryKey
+            tableName="movement_2021"/>
+        <addPrimaryKey
+            columnNames="id, timestamp"
+            tableName="movement_2021" />
+    </changeSet>
+
+    <changeSet id="Create base partition" author="peerik">
+        <sql>
+            CREATE TABLE movement (LIKE movement_2021 INCLUDING ALL)
+            PARTITION BY RANGE (timestamp);
+        </sql>
+        <addForeignKeyConstraint baseColumnNames="track_id" baseTableName="movement" constraintName="movement_track_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="trac_id" referencedTableName="track" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="movementconnect_id" baseTableName="movement" constraintName="movement_moveconn_fk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="moveconn_id" referencedTableName="movementconnect" validate="true"/>
+    </changeSet>
+
+    <changeSet id="Create partitions" author="peerik">
+        <sql>
+            CREATE TABLE movement_2022 
+            PARTITION OF movement
+            FOR VALUES FROM ('2022-01-01') TO ('2022-12-31');
+        </sql>
+        <sql>
+            CREATE TABLE movement_2023 
+            PARTITION OF movement
+            FOR VALUES FROM ('2023-01-01') TO ('2023-12-31');
+        </sql>
+        <sql>
+            CREATE TABLE movement_default
+            PARTITION OF movement
+            DEFAULT;
+        </sql>
+    </changeSet>
+
+    <changeSet id="Attach partition" author="peerik">
+        <sql>
+            ALTER TABLE movement
+            ATTACH PARTITION movement_2021
+            FOR VALUES FROM ('2019-01-01') TO ('2021-12-31');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

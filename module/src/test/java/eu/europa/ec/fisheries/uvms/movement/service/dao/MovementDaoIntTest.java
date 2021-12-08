@@ -174,10 +174,8 @@ public class MovementDaoIntTest extends TransactionalTests {
     @Test
     @OperateOnDeployment("movementservice")
     public void getMovementById_NULL_AS_SearchCriteria() {
-        thrown.expect(RuntimeException.class);
-        expectedMessage("id to load is required for loading");
-
-        movementDao.getMovementById(null);
+        Movement movementById = movementDao.getMovementById(null);
+        assertNull(movementById);
     }
 
     @OperateOnDeployment("movementservice")
