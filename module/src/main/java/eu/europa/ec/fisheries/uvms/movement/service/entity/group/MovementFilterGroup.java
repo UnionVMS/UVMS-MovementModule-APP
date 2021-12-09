@@ -141,12 +141,4 @@ public class MovementFilterGroup implements Serializable {
         }
         return this.filters;
     }
-
-    public String getFiltgrpDynamic() {
-        return dynamic;
-    }
-
-    public void setFiltgrpDynamic(String filtgrpDynamic) {
-        this.dynamic = filtgrpDynamic;
-    }
 }
