@@ -49,49 +49,31 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(columnDefinition = "uuid", name = "moveconn_id")
+    @Column(columnDefinition = "uuid", name = "id")
     private UUID id;    //this is the asset ID
 
-    @Column(name = "moveconn_flagstate")
-    private String flagState;
-
-    @Column(name = "moveconn_name")
-    private String name;
-
-    @JoinColumn(name = "moveconn_latest_move", referencedColumnName = "id")
-    @JoinColumn(name = "moveconn_latest_move_timestamp", referencedColumnName = "timestamp")
+    @JoinColumn(name = "latest_movement", referencedColumnName = "id")
+    @JoinColumn(name = "latest_movement_timestamp", referencedColumnName = "timestamp")
     @OneToOne(fetch = FetchType.LAZY)
     private Movement latestMovement;
 
-    @JoinColumn(name = "moveconn_latest_vms", referencedColumnName = "id")
-    @JoinColumn(name = "moveconn_latest_vms_timestamp", referencedColumnName = "timestamp")
+    @JoinColumn(name = "latest_vms", referencedColumnName = "id")
+    @JoinColumn(name = "latest_vms_timestamp", referencedColumnName = "timestamp")
     @OneToOne(fetch = FetchType.LAZY)
     private Movement latestVMS;
 
     @NotNull
-    @Column(name = "moveconn_updattim")
+    @Column(name = "update_time")
     private Instant updated;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 60)
-    @Column(name = "moveconn_upuser")
+    @Column(name = "update_user")
     private String updatedBy;
 
-    @Column(name = "moveconn_latest_location")
+    @Column(name = "latest_location")
     private Point latestLocation;
-
-    public MovementConnect() {
-    }
-
-    public MovementConnect(UUID id, String flagState, String name, Instant updated, String updatedBy, Point latestLocation) {
-        this.id = id;
-        this.flagState = flagState;
-        this.name = name;
-        this.updated = updated;
-        this.updatedBy = updatedBy;
-        this.latestLocation = latestLocation;
-    }
 
     @PreUpdate
     public void preUpdate(){
@@ -120,22 +102,6 @@ public class MovementConnect implements Serializable, Comparable<MovementConnect
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public String getFlagState() {
-        return flagState;
-    }
-
-    public void setFlagState(String flagState) {
-        this.flagState = flagState;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Movement getLatestMovement() {

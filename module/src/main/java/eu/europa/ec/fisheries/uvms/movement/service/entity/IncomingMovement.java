@@ -10,9 +10,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "incomingmovement", indexes = {
-        @Index(columnList = "alarmreport_id", name = "incomingmovement_alarmreport_fk_inx", unique = false)
-})
+@Table(name = "incomingmovement")
 public class IncomingMovement {
 
 	@Id

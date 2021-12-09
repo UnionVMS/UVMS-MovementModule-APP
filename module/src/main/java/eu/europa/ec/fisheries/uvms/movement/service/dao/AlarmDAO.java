@@ -1,5 +1,6 @@
 package eu.europa.ec.fisheries.uvms.movement.service.dao;
 
+import eu.europa.ec.fisheries.uvms.movement.service.dto.AlarmStatusType;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.alarm.AlarmReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +23,9 @@ public class AlarmDAO {
 
     public AlarmReport getOpenAlarmReportByMovementGuid(UUID guid) {
         try {
-            TypedQuery<AlarmReport> query = em.createNamedQuery(AlarmReport.FIND_OPEN_ALARM_REPORT_BY_MOVEMENT_GUID, AlarmReport.class);
+            TypedQuery<AlarmReport> query = em.createNamedQuery(AlarmReport.FIND_ALARM_REPORT_BY_MOVEMENT_GUID_AND_STATUS, AlarmReport.class);
             query.setParameter("movementGuid", guid);
+            query.setParameter("status", AlarmStatusType.OPEN);
             return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
@@ -43,7 +45,8 @@ public class AlarmDAO {
     }
 
     public long getNumberOfOpenAlarms() {
-        TypedQuery<Long> query = em.createNamedQuery(AlarmReport.COUNT_OPEN_ALARMS, Long.class);
+        TypedQuery<Long> query = em.createNamedQuery(AlarmReport.COUNT_ALARMS_BY_STATUS, Long.class);
+        query.setParameter("status", AlarmStatusType.OPEN);
         return query.getSingleResult();
     }
 

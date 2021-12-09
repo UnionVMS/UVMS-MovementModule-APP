@@ -3,28 +3,19 @@ package eu.europa.ec.fisheries.uvms.movement.service.entity.alarm;
 import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
-//@formatter:off
 @Entity
-@Table(name = "alarmitem", indexes = {
-        @Index(columnList = "alarmreport_id", name = "alarmitem_alarmreport_fk_inx", unique = false)
-})
-@XmlRootElement
-//@formatter:on
-public class AlarmItem implements Serializable {
-    
-    private static final long serialVersionUID = 1L;
+@Table(name = "alarmitem")
+public class AlarmItem {
 
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid", name = "id")
-    private UUID id;                // DB ID
-    private String ruleName;        //exists in Type, same name
-    private String ruleGuid;        //exists in Type, same name
+    private UUID id;
+    private String ruleName;
+    private String ruleGuid;
     @NotNull
     private Instant updated;
     @NotNull

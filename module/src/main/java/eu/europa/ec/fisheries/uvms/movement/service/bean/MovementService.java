@@ -124,13 +124,6 @@ public class MovementService {
             return movementDao.createMovementConnect(connect);
         }
 
-        if (connect.getName() != null && !connect.getName().equals(movementConnect.getName())) {
-            movementConnect.setName(connect.getName());
-        }
-        if (connect.getFlagState() != null && !connect.getFlagState().equals(movementConnect.getFlagState())) {
-            movementConnect.setFlagState(connect.getFlagState());
-        }
-
         return movementConnect;
     }
 
@@ -275,15 +268,11 @@ public class MovementService {
             newMovementConnect.setUpdated(Instant.now());
             newMovementConnect.setUpdatedBy("UVMS");
             newMovementConnect.setId(UUID.fromString(newMovementConnectId));
-            newMovementConnect.setFlagState(oldMovementConnect == null ? null : oldMovementConnect.getFlagState());
-            newMovementConnect.setName(oldMovementConnect == null ? null : oldMovementConnect.getName());
 
             newMovementConnect = movementDao.createMovementConnect(newMovementConnect);
         }
 
-        int numberOfChanged = movementDao.updateToNewMovementConnect(oldMovementConnect.getId(), newMovementConnect.getId(), 10000);
-
-        return numberOfChanged;
+        return movementDao.updateToNewMovementConnect(oldMovementConnect.getId(), newMovementConnect.getId(), 10000);
     }
 
     public void removeMovementConnect(String movementConnectId){

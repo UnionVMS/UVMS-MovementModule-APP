@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.7.xsd"
+                   logicalFilePath="changelog/v5.6.9/db-changelog-rename-movementconnect-columns.xml">
+
+    <changeSet id="Rename movementconnect columns" author="peerik">
+        <renameColumn tableName="movementconnect" oldColumnName="moveconn_id" newColumnName="id"/>
+        <renameColumn tableName="movementconnect" oldColumnName="moveconn_latest_move" newColumnName="latest_movement"/>
+        <renameColumn tableName="movementconnect" oldColumnName="moveconn_latest_move_timestamp" newColumnName="latest_movement_timestamp"/>
+        <renameColumn tableName="movementconnect" oldColumnName="moveconn_latest_vms" newColumnName="latest_vms"/>
+        <renameColumn tableName="movementconnect" oldColumnName="moveconn_latest_vms_timestamp" newColumnName="latest_vms_timestamp"/>
+        <renameColumn tableName="movementconnect" oldColumnName="moveconn_updattim" newColumnName="update_time"/>
+        <renameColumn tableName="movementconnect" oldColumnName="moveconn_upuser" newColumnName="update_user"/>
+        <renameColumn tableName="movementconnect" oldColumnName="moveconn_latest_location" newColumnName="latest_location"/>
+
+        <dropColumn tableName="movementconnect">
+            <column name="moveconn_flagstate"/>
+        </dropColumn>
+
+        <dropColumn tableName="movementconnect">
+            <column name="moveconn_name"/>
+        </dropColumn>
+    </changeSet>
+</databaseChangeLog>

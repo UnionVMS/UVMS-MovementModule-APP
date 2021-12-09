@@ -4,11 +4,9 @@ import eu.europa.ec.fisheries.schema.movement.v1.MovementSourceType;
 import eu.europa.ec.fisheries.schema.movement.v1.MovementTypeType;
 import eu.europa.ec.fisheries.uvms.asset.client.model.AssetMTEnrichmentResponse;
 import eu.europa.ec.fisheries.uvms.movement.model.constants.SatId;
-import eu.europa.ec.fisheries.uvms.movement.service.dto.SegmentCalculations;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.IncomingMovement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.Movement;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.MovementConnect;
-import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
 import eu.europa.ec.fisheries.uvms.movementrules.model.dto.MovementDetails;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -62,8 +60,6 @@ public class IncomingMovementMapper {
         //MovementConnect (aka asset)
         MovementConnect movementConnect = new MovementConnect();
         movementConnect.setId(UUID.fromString(ic.getAssetGuid()));
-        movementConnect.setFlagState(ic.getFlagState());
-        movementConnect.setName(ic.getAssetName());
         movementConnect.setUpdated(Instant.now());
         movementConnect.setUpdatedBy(username);
         return movementConnect;

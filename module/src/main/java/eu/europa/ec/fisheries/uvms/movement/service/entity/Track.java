@@ -21,16 +21,14 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- **/
+@NamedQuery(name = "Track.findAll", query = "SELECT t FROM Track t")
+@NamedQuery(name = "Track.findByDistance", query = "SELECT t FROM Track t WHERE t.distance = :distance")
+@NamedQuery(name = "Track.findByDuration", query = "SELECT t FROM Track t WHERE t.duration = :duration")
+@NamedQuery(name = "Track.findByUpdated", query = "SELECT t FROM Track t WHERE t.updated = :updated")
+@NamedQuery(name = "Track.findByUpdatedBy", query = "SELECT t FROM Track t WHERE t.updatedBy = :updatedBy")
+
 @Entity
 @Table(name = "track")
-@NamedQueries({
-    @NamedQuery(name = "Track.findAll", query = "SELECT t FROM Track t"),
-    @NamedQuery(name = "Track.findByDistance", query = "SELECT t FROM Track t WHERE t.distance = :distance"),
-    @NamedQuery(name = "Track.findByDuration", query = "SELECT t FROM Track t WHERE t.duration = :duration"),
-    @NamedQuery(name = "Track.findByUpdated", query = "SELECT t FROM Track t WHERE t.updated = :updated"),
-    @NamedQuery(name = "Track.findByUpdatedBy", query = "SELECT t FROM Track t WHERE t.updatedBy = :updatedBy")})
 @DynamicUpdate
 @DynamicInsert
 public class Track implements Serializable {
