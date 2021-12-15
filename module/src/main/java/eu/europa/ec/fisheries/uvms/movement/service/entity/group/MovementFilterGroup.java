@@ -24,10 +24,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "movementfiltergroup")
-@NamedQueries({
-    @NamedQuery(name = MovementFilterGroup.GROUP_VESSEL_FIND_ALL, query = "SELECT f FROM MovementFilterGroup f"),
-    @NamedQuery(name = MovementFilterGroup.GROUP_VESSEL_BY_USER, query="SELECT f FROM MovementFilterGroup f WHERE f.user = :user")
-})
+@NamedQuery(name = MovementFilterGroup.GROUP_VESSEL_FIND_ALL, query = "SELECT f FROM MovementFilterGroup f")
+@NamedQuery(name = MovementFilterGroup.GROUP_VESSEL_BY_USER, query="SELECT f FROM MovementFilterGroup f WHERE f.user = :user")
 @DynamicUpdate
 @DynamicInsert
 public class MovementFilterGroup implements Serializable {
@@ -68,9 +66,6 @@ public class MovementFilterGroup implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="filterGroup")
     @Column(name = "movefilt_movefiltgrp_id")
     private List<MovementFilter> filters;
-
-    public MovementFilterGroup() {
-    }
 
     public UUID getId() {
         return id;
@@ -142,16 +137,8 @@ public class MovementFilterGroup implements Serializable {
 
     public List<MovementFilter> getFilters() {
         if (this.filters == null) {
-            this.filters = new ArrayList<MovementFilter>();
+            this.filters = new ArrayList<>();
         }
         return this.filters;
-    }
-
-    public String getFiltgrpDynamic() {
-        return dynamic;
-    }
-
-    public void setFiltgrpDynamic(String filtgrpDynamic) {
-        this.dynamic = filtgrpDynamic;
     }
 }

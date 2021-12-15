@@ -12,9 +12,7 @@ copy of the GNU General Public License along with the IFDM Suite. If not, see <h
 package eu.europa.ec.fisheries.uvms.movement.service.mapper;
 
 import eu.europa.ec.fisheries.schema.movement.search.v1.GroupListCriteria;
-import eu.europa.ec.fisheries.schema.movement.search.v1.ListCriteria;
 import eu.europa.ec.fisheries.schema.movement.search.v1.MovementSearchGroup;
-import eu.europa.ec.fisheries.schema.movement.search.v1.SearchKey;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilter;
 import eu.europa.ec.fisheries.uvms.movement.service.entity.group.MovementFilterGroup;
 import eu.europa.ec.fisheries.uvms.movement.service.util.CalculationUtil;
@@ -24,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MovementGroupMapper {
+
+    private MovementGroupMapper() {}
 
     public static MovementFilterGroup toGroupEntity(MovementFilterGroup filterGroup, MovementSearchGroup searchGroup, String username) {
         validateMovementSearchGroup(searchGroup);
@@ -55,7 +55,7 @@ public class MovementGroupMapper {
 
     public static MovementSearchGroup toMovementSearchGroup(MovementFilterGroup filterGroup) {
         MovementSearchGroup group = new MovementSearchGroup();
-        group.setDynamic(getBoolean(filterGroup.getFiltgrpDynamic()));
+        group.setDynamic(getBoolean(filterGroup.getDynamic()));
         group.setName(filterGroup.getName());
         group.setUser(filterGroup.getUser());
 
@@ -72,7 +72,6 @@ public class MovementGroupMapper {
 
     private static MovementFilter toFilterEntity(MovementFilterGroup parent, GroupListCriteria searchField, String username) {
         MovementFilter filter = new MovementFilter();
-        //filter.setId(parent.getId());
         filter.setField(searchField.getKey());
         filter.setValue(searchField.getValue());
         filter.setUpdated(Instant.now());
@@ -87,17 +86,6 @@ public class MovementGroupMapper {
         searchField.setKey(filter.getField());
         searchField.setValue(filter.getValue());
         searchField.setType(filter.getMovementFilterType());
-        return searchField;
-    }
-
-    //ToDo: Setter in class ListCriteria called setValue() allows setting an arbitrary String when requiring the
-    //ToDo: following specific MovementTypeType enum values only: POS, ENT, EXI or MAN.
-    //ToDo: Method toListCriteria() is the only usage of this setter but toListCriteria() is itself never used.
-    //ToDo: Needs decision on if toListCriteria() method and the setter method ListCriteria.setValue() should be removed.
-    private static ListCriteria toListCriteria(MovementFilter filter) {
-        ListCriteria searchField = new ListCriteria();
-        searchField.setKey(SearchKey.fromValue(filter.getField()));
-        searchField.setValue(filter.getValue());
         return searchField;
     }
 

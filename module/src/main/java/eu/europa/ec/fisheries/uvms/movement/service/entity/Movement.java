@@ -28,8 +28,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 import java.util.UUID;
 
 @NamedQuery(name = Movement.FIND_BY_ID, query = "SELECT m FROM Movement m WHERE m.id = :id")
@@ -101,7 +99,7 @@ public class Movement implements Serializable, Comparable<Movement> {
     @JsonbTransient
     @NotNull
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "movementconnect_id", referencedColumnName = "moveconn_id")
+    @JoinColumn(name = "movementconnect_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.MERGE)
     private MovementConnect movementConnect;
 
