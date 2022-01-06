@@ -94,12 +94,6 @@
       </dependency>
       <dependency>
         <groupId>fish.focus.uvms.maven</groupId>
-        <artifactId>uvms-pom-logging-deps</artifactId>
-        <version>1.21</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>fish.focus.uvms.maven</groupId>
         <artifactId>uvms-pom-test-deps</artifactId>
         <version>1.21</version>
         <type>pom</type>
@@ -151,9 +145,8 @@
     <profile>
       <id>enforce-jdk-version</id>
       <activation>
-        <!-- To disable profile, define property -Dfocus-pom.enforce.jdk.version.disabled=true -->
         <property>
-          <name>!focus-pom.enforce.jdk.version.disabled</name>
+          <name>focus-pom.enforce.jdk.version.enabled</name>
         </property>
       </activation>
       <build>

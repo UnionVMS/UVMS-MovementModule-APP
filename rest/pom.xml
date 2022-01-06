@@ -35,6 +35,7 @@
             <groupId>eu.europa.ec.fisheries.uvms</groupId>
             <artifactId>usm4uvms</artifactId>
             <version>${usm4uvms.version}</version>
+            <scope>provided</scope>
             <exclusions>
             	<exclusion>
             		<groupId>eu.europa.ec.fisheries.uvms</groupId>
@@ -52,7 +53,7 @@
 				    <groupId>net.sf.ehcache</groupId>
   					<artifactId>ehcache</artifactId>				
 				</exclusion>
-			</exclusions>
+            </exclusions>
 		</dependency>
 		<dependency>
 		    <groupId>net.sf.ehcache.internal</groupId>

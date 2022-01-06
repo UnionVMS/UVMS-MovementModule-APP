@@ -20,6 +20,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
                 <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Logging-Profile>movement-logging-profile</Logging-Profile>
+                        </manifestEntries>
+                    </archive>
                     <modules>
                         <ejbModule>
                             <groupId>${project.groupId}</groupId>
@@ -163,6 +168,12 @@
             <groupId>eu.europa.ec.mare.usm</groupId>
             <artifactId>jwt-handler-impl</artifactId>
             <version>${usm.jwt-handler.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>fish.focus.uvms.maven</groupId>
+                    <artifactId>uvms-pom-logging-deps</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 		<dependency>
 			<groupId>fish.focus.uvms.maven</groupId>
